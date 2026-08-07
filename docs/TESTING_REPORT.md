@@ -6,6 +6,13 @@ Everything below was executed. Where a tier could not run on this machine, that
 is stated explicitly with the reason and where it now runs instead — nothing in
 this report is inferred from reading the code.
 
+> **Superseded on CI.** This report predates the move to Jenkins. Every
+> `.github/workflows/*` and Dependabot reference below describes a setup that no
+> longer exists — in particular, the scans listed as running in `quality.yml`
+> (audit, Semgrep, Trivy, Lighthouse, k6) now run nowhere automatically. The gate
+> is `Jenkinsfile`: lint, unit, e2e and build, then a promotion of `dev` to
+> `main`. See the CI / CD section of the README. The measurements stand.
+
 ---
 
 ## Summary

@@ -4,6 +4,12 @@
 **Date:** 2026-07-23. **Mode:** no files modified except this report.
 **Package manager (auto-detected):** **npm** — `package-lock.json` in root, `admin/`, `backend/`; no `pnpm-lock.yaml`/`yarn.lock`/`bun.lockb`.
 
+> **Superseded on CI.** This report predates the move to Jenkins. Every
+> `.github/workflows/*` and Dependabot reference below describes a setup that no
+> longer exists; the gate is now `Jenkinsfile`, which promotes `dev` to `main`
+> only after lint, unit, e2e and build all pass. See the CI / CD section of the
+> README. The rest of the audit stands.
+
 ## Project shape
 
 Three independent npm packages, **not** an npm workspace (no `workspaces` field). Root scripts orchestrate the others via `npm --prefix`:

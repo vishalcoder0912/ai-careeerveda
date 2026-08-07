@@ -34,10 +34,11 @@ steps:
   # Cloud Run env var. Changing the domain means rebuilding, not just redeploying.
   # --pull on all three. This used to be what kept the bases current; since the
   # Dockerfiles pin each FROM to a digest it no longer is — a digest resolves to
-  # one immutable image, so there is nothing newer for --pull to find. What
-  # refreshes the base now is Dependabot's weekly docker PR bumping that digest
-  # (.github/dependabot.yml), which means an unmerged Dependabot PR is an
-  # unpatched base image, where before it was merely an out-of-date one.
+  # one immutable image, so there is nothing newer for --pull to find. Nothing
+  # refreshes the base automatically any more — Dependabot went with the GitHub
+  # Actions setup — so bumping the pinned digest in each Dockerfile is a manual
+  # job, and a stale pin is now an unpatched base image rather than merely an
+  # out-of-date one.
   #
   # The flag stays because it still does something: it re-verifies the pinned
   # digest against the registry rather than trusting whatever is in the local

@@ -109,7 +109,11 @@ npm run check         # lint + test:all + build:all — the pre-push gate
 | Accessibility | `@axe-core/playwright` | `e2e/accessibility.spec.js` |
 | Visual regression | Playwright `toHaveScreenshot` | `e2e/accessibility.spec.js-snapshots/` |
 | Load + stress | k6 (separate binary) | `tests/load/public-read.js` |
-| Security, containers, Lighthouse | Semgrep, Trivy, npm audit, Lighthouse | `.github/workflows/quality.yml` |
+
+Load, container and dependency scanning are run by hand (`npm audit`,
+`osv-scanner`, `k6 run tests/load/public-read.js`). They are deliberately not in
+the pipeline: they go red for reasons worth reading that are not reasons to
+block a release, and a gate people learn to override is not a gate.
 
 Baselines are committed PNGs, so visual regression needs no Percy or Chromatic
 account. They are platform-specific — the committed ones end `-win32.png`, and a
@@ -120,61 +124,53 @@ The home page is checked for accessibility but excluded from visual regression:
 its three.js hero never stops animating, so Playwright's stability check never
 settles. See the comment in `e2e/accessibility.spec.js`.
 
-A third workflow runs React Doctor (`.github/workflows/react-doctor.yml`); the
-same scan is available locally as `npm run doctor`.
+React Doctor is available locally as `npm run doctor`.
 
 ## CI / CD
 
-`.github/workflows/tests.yml` is the release gate:
+`Jenkinsfile` is the release gate, and the only thing that writes to `main`.
 
-| Job      | Runs on            | Does                                                  |
-| -------- | ------------------ | ----------------------------------------------------- |
-| `tests`  | every push + PR    | `npm run lint` then `npm run test:all`                |
-| `e2e`    | every push + PR    | Playwright against the full stack                     |
-| `deploy` | green `main`, opt-in | `scripts/deploy-cloudrun.sh` — build, push, deploy   |
+```
+git push origin dev  ──►  Jenkins  ──►  origin/main
+                            │
+                            └─ lint · unit + integration · e2e · build
+```
 
-`deploy` has `needs: [tests, e2e]`, so a red build cannot ship. It runs the same
-script you would run by hand, so there is no second copy of the deploy steps to
-drift out of date.
+| Stage                     | Does                                                    |
+| ------------------------- | ------------------------------------------------------- |
+| Install                   | `npm ci` × 3 packages                                    |
+| Lint                      | `npm run lint`                                           |
+| Unit & integration tests  | `npm run test:all`                                       |
+| E2E tests                 | Playwright against the full stack, in-memory DB          |
+| Build                     | `npm run build` × 3 packages                             |
+| Publish to main           | pushes the tested commit to `main` — **`dev` only**      |
 
-`.github/workflows/quality.yml` runs the scans that should **not** gate a
-release — they are slower, and several go red for reasons that are worth reading
-but are not a reason to stop shipping:
+Work goes to `dev`. A stage that fails aborts the pipeline before Publish, so
+`main` never receives a commit that was not lint-clean, tested and buildable.
+Any other branch runs the same checks and skips Publish, so a feature branch is
+still verified without being able to promote itself.
 
-| Job          | Runs on                        | Does                                     |
-| ------------ | ------------------------------ | ---------------------------------------- |
-| `audit`      | push + PR + weekly             | `npm audit --audit-level=high` × 3 packages |
-| `sast`       | push + PR + weekly             | Semgrep → GitHub code scanning            |
-| `containers` | push + PR + weekly             | Trivy on all three images → code scanning |
-| `lighthouse` | push + PR + weekly             | Lighthouse on the production bundle, uploaded as an artifact |
-| `load`       | manual (`workflow_dispatch`)   | k6 against `tests/load/public-read.js`    |
+The push is not `--force`. `checkout scm` leaves HEAD detached at the exact
+commit that was tested, and pushing it to `main` is rejected if `main` has moved
+on underneath — a build that cannot fast-forward fails and gets looked at rather
+than overwriting someone else's work.
 
-Dependency updates come from `.github/dependabot.yml`: weekly, grouped into one
-PR per ecosystem, covering all three lockfiles plus the Dockerfiles and the
-Actions themselves.
+### Setting it up
 
-Configure once in **Settings → Secrets and variables → Actions**:
+1. **Jenkins → Manage Jenkins → Credentials → System → Global → Add**
+   - Kind: *Username with password*
+   - Username: your GitHub username
+   - Password: a GitHub **fine-grained Personal Access Token** with
+     *Contents: Read and write* on this repository only
+   - ID: `github-push` ← the pipeline looks this up by name
+2. **New Item → Pipeline**, Pipeline script from SCM, this repo, branch `dev`,
+   script path `Jenkinsfile`. Polls every 5 minutes.
+3. On GitHub, protect `main`: **Settings → Branches → Add rule** on `main`,
+   *Restrict who can push* → the Jenkins token's account. Without this the gate
+   is a convention rather than a rule; anyone can still push straight to `main`.
 
-| Secret               | Required | What                                              |
-| -------------------- | -------- | ------------------------------------------------- |
-| `GCP_SA_KEY`         | yes      | Service-account JSON with Cloud Run Admin, Artifact Registry Writer, Service Account User, Cloud Scheduler Admin |
-| `GCP_PROJECT_ID`     | yes      | GCP project id                                    |
-| `DOMAIN`             | yes      | Root domain, e.g. `careerveda.in`                 |
-| `MONGODB_URI`        | yes      | Atlas connection string                           |
-| `JWT_ACCESS_SECRET`  | yes      | ≥32 chars                                         |
-| `JWT_REFRESH_SECRET` | yes      | ≥32 chars                                         |
-
-Plus two **variables** (not secrets):
-
-| Variable         | Default        | What                                        |
-| ---------------- | -------------- | ------------------------------------------- |
-| `DEPLOY_ENABLED` | unset (off)    | Set to `true` to turn the `deploy` job on    |
-| `GCP_REGION`     | `asia-south1`  | Cloud Run region                             |
-
-`deploy` stays skipped until `DEPLOY_ENABLED` is `true`. That is deliberate:
-until the secrets exist the job can only fail at the auth step, and a `main`
-that is permanently red for a reason unrelated to the code teaches everyone to
-stop reading the build status. Add the secrets, then flip the variable.
+There is no deploy stage. Publishing to `main` is a git push, not a release —
+see *Deploying* below for what ships, which stays a deliberate manual step.
 
 ## Deploying
 

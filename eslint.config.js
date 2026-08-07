@@ -113,8 +113,6 @@ export default [
       "backend/**/*.js",
       "api/**/*.js",
       "scripts/**/*.{js,mjs,cjs}",
-      // The CI helper scripts are Node too — `scripts/**` does not match them.
-      ".github/scripts/**/*.{js,mjs,cjs}",
       "*.config.js",
       "*.js",
     ],
