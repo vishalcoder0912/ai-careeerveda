@@ -2,7 +2,7 @@
 # Dockerfile — Node 20 is past end-of-life as of April 2026. Both stages must
 # stay on the same major: native modules are compiled against this one in the
 # dependencies stage and loaded by the other.
-FROM node:22-bookworm-slim@sha256:6c74791e557ce11fc957704f6d4fe134a7bc8d6f5ca4403205b2966bd488f6b3 AS dependencies
+FROM node:25-bookworm-slim@sha256:81db02c4b671288a03915da9534dbd54f96d0e7c24d80ccc54f5b36b2e684370 AS dependencies
 
 WORKDIR /app
 
