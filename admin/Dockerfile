@@ -1,6 +1,6 @@
 # Node 22, matching CI and the sibling images. See the note in the root
 # Dockerfile — Node 20 is past end-of-life as of April 2026.
-FROM node:22-bookworm-slim@sha256:6c74791e557ce11fc957704f6d4fe134a7bc8d6f5ca4403205b2966bd488f6b3 AS build
+FROM node:25-bookworm-slim@sha256:81db02c4b671288a03915da9534dbd54f96d0e7c24d80ccc54f5b36b2e684370 AS build
 
 # This Dockerfile is built from the project root.  The admin package has a
 # local `file:..` dependency, so npm needs the parent package manifest in the
