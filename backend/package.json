@@ -41,7 +41,7 @@
     "mongoose": "^8.9.5",
     "multer": "^2.0.0",
     "pino": "^9.6.0",
-    "pino-http": "^10.4.0",
+    "pino-http": "^11.0.0",
     "zod": "^3.24.1"
   },
   "devDependencies": {
