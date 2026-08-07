@@ -1,0 +1,26 @@
+/* The brand lockup used to be a text tile reading "CV" next to the wordmark.
+   That tile is now the real logo, so `.brand span` no longer exists and the
+   dozen-odd rules that styled it simply stop matching — nothing to unwind.
+   These rules give the image the same 36px footprint the tile had, so the
+   navbar and footer keep their existing rhythm. */
+body .brand .brand-mark {
+  flex: none;
+  /* Height-driven so a wider-than-tall logo fills the bar at its natural aspect
+     instead of being letterboxed inside a 36px square. max-width guards against
+     an unexpectedly wide asset crowding the wordmark. */
+  /* 52px, not the 36px a one-line mark needed: the lockup now carries the
+     "Learn. Analyze. Lead." line under the wordmark, and at 36px that second
+     line degrades into a smudge. */
+  width: auto;
+  height: 52px;
+  max-width: 210px;
+  /* contain, not cover: a logo must never be cropped to fill a box. */
+  object-fit: contain;
+}
+
+@media (max-width: 640px) {
+  body .brand .brand-mark {
+    height: 42px;
+    max-width: 165px;
+  }
+}

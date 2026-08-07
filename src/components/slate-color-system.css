@@ -1,0 +1,584 @@
+:root {
+  --cv-slate: #34445c;
+  --cv-slate-dark: #263447;
+  --cv-slate-deep: #1f2b3a;
+  --cv-slate-soft: #40536e;
+  --cv-slate-light: #eef3f6;
+  --cv-mint: #10b981;
+  --cv-teal: #0f766e;
+  --cv-teal-bright: #2dd4bf;
+  --cv-white: #ffffff;
+  --cv-light-text: #f8fafc;
+  --cv-muted-on-dark: #cbd5e1;
+  --cv-dark-border: rgba(255, 255, 255, 0.12);
+  --cv-slate-shadow: 0 24px 70px rgba(15, 23, 42, 0.24);
+  --cv-navbar-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body {
+  background: var(--cv-slate);
+}
+
+body .spline-page {
+  color: var(--cv-light-text);
+  background:
+    radial-gradient(circle at 12% 4%, rgba(45, 212, 191, 0.12), transparent 28%),
+    radial-gradient(circle at 88% 18%, rgba(16, 185, 129, 0.1), transparent 26%),
+    linear-gradient(180deg, var(--cv-slate) 0%, var(--cv-slate-dark) 46%, var(--cv-slate) 100%) !important;
+}
+
+body .hero-shell {
+  background:
+    radial-gradient(circle at 84% 18%, rgba(45, 212, 191, 0.16), transparent 35%),
+    radial-gradient(circle at 12% 18%, rgba(16, 185, 129, 0.1), transparent 28%),
+    linear-gradient(135deg, var(--cv-slate) 0%, var(--cv-slate-dark) 55%, var(--cv-slate-deep) 100%) !important;
+}
+
+body .hero-vignette {
+  background:
+    linear-gradient(90deg, rgba(31, 43, 58, 0.86), rgba(31, 43, 58, 0.26) 52%, rgba(31, 43, 58, 0.48)),
+    radial-gradient(circle at 68% 44%, transparent 0%, rgba(38, 52, 71, 0.2) 55%, rgba(31, 43, 58, 0.78) 100%) !important;
+}
+
+body .hero-word {
+  color: rgba(248, 250, 252, 0.055) !important;
+  text-shadow: none !important;
+}
+
+body .hero-copy h1,
+body .consultation-copy h2,
+body .site-footer h3,
+body .site-footer .brand {
+  color: var(--cv-white) !important;
+}
+
+body .hero-copy > p,
+body .hero-copy .trust-line,
+body .trust-line,
+body .consultation-copy p:last-child,
+body .site-footer p,
+body .site-footer a,
+body .site-footer small {
+  color: rgba(248, 250, 252, 0.82) !important;
+}
+
+body .eyebrow,
+body .hero-dashboard-card p,
+body .hero-dashboard-card b,
+body .site-footer a:hover {
+  color: rgba(94, 234, 212, 0.96) !important;
+}
+
+body .spline-glow {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(45, 212, 191, 0.42), transparent 38%),
+    radial-gradient(circle at 58% 48%, rgba(16, 185, 129, 0.22), transparent 50%),
+    radial-gradient(circle at 35% 70%, rgba(238, 243, 246, 0.18), transparent 44%) !important;
+}
+
+body .hero-dashboard-card,
+body .ai-label,
+body .spline-loader,
+body .stat-strip {
+  border-color: var(--cv-dark-border) !important;
+  background: rgba(38, 52, 71, 0.58) !important;
+  color: rgba(248, 250, 252, 0.88) !important;
+  box-shadow: var(--cv-slate-shadow) !important;
+}
+
+body .stat-strip strong {
+  color: var(--cv-white) !important;
+}
+
+body .stat-strip span {
+  color: rgba(203, 213, 225, 0.78) !important;
+}
+
+body .scroll-progress {
+  background: linear-gradient(90deg, var(--cv-teal-bright), var(--cv-mint), var(--cv-slate-light)) !important;
+  box-shadow: 0 0 28px rgba(45, 212, 191, 0.42) !important;
+}
+
+body .light-section,
+body .support-section,
+body .review-section,
+body .faq-section,
+body .partner-band,
+body .program-showcase-section,
+body #faculty.dark-section,
+body .dark-section,
+body .strategy-section,
+body .consultation-section,
+body .site-footer {
+  background:
+    radial-gradient(circle at 14% 12%, rgba(45, 212, 191, 0.12), transparent 30%),
+    radial-gradient(circle at 88% 20%, rgba(16, 185, 129, 0.09), transparent 26%),
+    linear-gradient(135deg, var(--cv-slate) 0%, var(--cv-slate-dark) 62%, var(--cv-slate-deep) 100%) !important;
+}
+
+body .partner-band {
+  color: var(--cv-light-text) !important;
+}
+
+body .section-block > .section-heading :is(h1, h2),
+body .partner-band h2,
+body .faq-section > .section-heading :is(h1, h2),
+body .program-showcase-section > .section-heading :is(h1, h2),
+body #faculty .section-heading :is(h1, h2) {
+  color: var(--cv-white) !important;
+  background: none !important;
+  -webkit-text-fill-color: var(--cv-white) !important;
+}
+
+body .section-block > .section-heading p:not(.section-label),
+body .partner-band p,
+body .faq-section > .section-heading p:not(.section-label),
+body .program-showcase-section > .section-heading p:not(.section-label),
+body #faculty.dark-section .section-heading p:last-child {
+  color: var(--cv-muted-on-dark) !important;
+}
+
+body .light-section .section-label,
+body .support-section .section-label,
+body .review-section .section-label,
+body .faq-section .section-label,
+body .consultation-section .section-label,
+body .program-showcase-section > .section-heading .section-label,
+body #faculty .section-label,
+body .partner-band > p {
+  color: rgba(94, 234, 212, 0.96) !important;
+}
+
+body #faculty .section-label {
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 18px 46px rgba(15, 23, 42, 0.18) !important;
+}
+
+body #faculty.dark-section::before {
+  opacity: 0.28 !important;
+  background-image: radial-gradient(rgba(45, 212, 191, 0.2) 1px, transparent 1px) !important;
+}
+
+body #faculty.dark-section::after {
+  color: rgba(238, 243, 246, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  background:
+    linear-gradient(rgba(52, 68, 92, 0.74), rgba(38, 52, 71, 0.74)) padding-box,
+    conic-gradient(from 120deg, rgba(45, 212, 191, 0.4), rgba(16, 185, 129, 0.28), rgba(238, 243, 246, 0.2), rgba(45, 212, 191, 0.4)) border-box !important;
+  box-shadow: 0 28px 90px rgba(15, 23, 42, 0.2) !important;
+}
+
+body .partner-marquee {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+body .partner-marquee span {
+  color: rgba(248, 250, 252, 0.76) !important;
+}
+
+body .support-grid article,
+body .achiever-grid article,
+body .review-grid article,
+body .rating-row div,
+body .faq-list details {
+  border-color: rgba(226, 232, 240, 0.94) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.14) !important;
+}
+
+body .support-grid article:hover,
+body .achiever-grid article:hover,
+body .review-grid article:hover,
+body .rating-row div:hover,
+body .faq-list details:hover,
+body .faq-list details[open] {
+  border-color: rgba(45, 212, 191, 0.34) !important;
+  box-shadow: 0 30px 84px rgba(15, 23, 42, 0.18) !important;
+}
+
+body .difference-grid article,
+body .step-list article,
+body .project-number {
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.16) !important;
+}
+
+body .difference-grid article h3,
+body .step-list article h3,
+body .project-number strong {
+  color: var(--cv-white) !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+body .difference-grid article p,
+body .step-list article p,
+body .project-number p {
+  color: rgba(203, 213, 225, 0.82) !important;
+}
+
+body .difference-grid span,
+body .project-number span,
+body .step-list span,
+body .achiever-grid span,
+body .rating-row strong,
+body .step-list small {
+  color: var(--cv-teal-bright) !important;
+}
+
+body .consultation-form {
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: var(--cv-slate-shadow) !important;
+}
+
+body .consultation-form h3,
+body .consultation-form label {
+  color: var(--cv-white) !important;
+}
+
+body .consultation-form input,
+body .consultation-form select {
+  color: #0f172a !important;
+  background: rgba(255, 255, 255, 0.94) !important;
+}
+
+body .primary-action,
+body .secondary-action,
+body .consultation-form button {
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.22) !important;
+}
+
+body .primary-action,
+body .consultation-form button {
+  background: linear-gradient(135deg, var(--cv-teal), var(--cv-mint)) !important;
+  color: var(--cv-white) !important;
+}
+
+body .secondary-action {
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: var(--cv-white) !important;
+}
+
+body .mobile-menu-overlay {
+  background: rgba(31, 43, 58, 0.94) !important;
+}
+
+body .mobile-menu-nav a,
+body .mobile-menu-cta {
+  color: var(--cv-white) !important;
+}
+
+body .site-nav,
+body .site-nav.is-scrolled {
+  height: 84px !important;
+  min-height: 84px !important;
+  padding: 8px max(24px, calc((100vw - 1180px) / 2)) !important;
+  color: rgba(255, 255, 255, 0.86) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(52, 68, 92, 0.34) !important;
+  box-shadow: 0 10px 34px rgba(15, 23, 42, 0.1) !important;
+  backdrop-filter: blur(10px) saturate(1.08) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(1.08) !important;
+  transition:
+    height 480ms var(--cv-navbar-ease),
+    min-height 480ms var(--cv-navbar-ease),
+    padding 480ms var(--cv-navbar-ease),
+    background-color 480ms ease,
+    border-color 480ms ease,
+    backdrop-filter 480ms ease,
+    -webkit-backdrop-filter 480ms ease,
+    box-shadow 480ms ease !important;
+}
+
+body .site-nav.is-scrolled {
+  height: 68px !important;
+  min-height: 68px !important;
+  padding: 4px max(24px, calc((100vw - 1180px) / 2)) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.12) !important;
+  background: rgba(52, 68, 92, 0.86) !important;
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.22) !important;
+  backdrop-filter: blur(20px) saturate(1.16) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.16) !important;
+}
+
+body .site-nav .brand,
+body .site-nav-brand {
+  color: var(--cv-white) !important;
+  transform-origin: left center !important;
+  transition:
+    transform 480ms var(--cv-navbar-ease),
+    color 480ms ease !important;
+}
+
+body .site-nav.is-scrolled .brand,
+body .site-nav.is-scrolled .site-nav-brand {
+  transform: scale(0.95) !important;
+}
+
+body .site-nav .brand span {
+  background: linear-gradient(135deg, var(--cv-teal), var(--cv-mint)) !important;
+  box-shadow: 0 12px 28px rgba(16, 185, 129, 0.22) !important;
+  transition:
+    transform 480ms var(--cv-navbar-ease),
+    box-shadow 480ms ease,
+    background 480ms ease !important;
+}
+
+body .site-nav.is-scrolled .brand span {
+  transform: scale(0.92) !important;
+}
+
+body .site-nav-links,
+body .site-nav nav,
+body .site-nav.is-scrolled nav {
+  transition:
+    gap 480ms var(--cv-navbar-ease),
+    opacity 480ms ease !important;
+}
+
+body .site-nav nav a,
+body .site-nav.is-scrolled nav a {
+  min-height: 62px !important;
+  color: rgba(255, 255, 255, 0.82) !important;
+  transition:
+    min-height 480ms var(--cv-navbar-ease),
+    color 220ms ease,
+    background-color 220ms ease !important;
+}
+
+body .site-nav.is-scrolled nav a {
+  min-height: 52px !important;
+}
+
+body .site-nav nav a::after {
+  bottom: 13px !important;
+  background: var(--cv-teal-bright) !important;
+  transition: opacity 220ms ease, transform 220ms var(--cv-navbar-ease) !important;
+}
+
+body .site-nav nav a:hover,
+body .site-nav nav a:focus-visible,
+body .site-nav nav a.is-active {
+  color: var(--cv-white) !important;
+}
+
+body .nav-cta,
+body .site-nav.is-scrolled .nav-cta {
+  min-height: 44px !important;
+  color: var(--cv-white) !important;
+  background: linear-gradient(135deg, var(--cv-teal), var(--cv-mint)) !important;
+  box-shadow: 0 14px 34px rgba(16, 185, 129, 0.22) !important;
+  transition:
+    min-height 480ms var(--cv-navbar-ease),
+    padding 480ms var(--cv-navbar-ease),
+    transform 220ms ease,
+    background 220ms ease,
+    box-shadow 220ms ease !important;
+}
+
+body .site-nav.is-scrolled .nav-cta {
+  min-height: 40px !important;
+  padding-inline: 20px !important;
+}
+
+body .nav-cta:hover,
+body .nav-cta:focus-visible {
+  color: var(--cv-white) !important;
+  background: linear-gradient(135deg, var(--cv-mint), var(--cv-teal-bright)) !important;
+  box-shadow: 0 18px 42px rgba(16, 185, 129, 0.28) !important;
+}
+
+body .hamburger-btn {
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  transition:
+    background-color 220ms ease,
+    border-color 220ms ease,
+    transform 480ms var(--cv-navbar-ease) !important;
+}
+
+body .hamburger-btn span {
+  background: var(--cv-white) !important;
+}
+
+/* Keep program cards and recommended cards on the original CareerVeda mint-white theme. */
+body .program-explorer .section-label {
+  color: #10b981 !important;
+}
+
+body .program-explorer .program-detail-head h3,
+body .program-explorer .program-pricing strong {
+  color: #071a18 !important;
+}
+
+body .program-explorer .program-description,
+body .program-explorer .program-detail-list li {
+  color: #475569 !important;
+}
+
+body .program-explorer .program-subtitle,
+body .program-explorer .cta-secondary {
+  color: #0f766e !important;
+}
+
+/* The recommended strip used to need five colour rules here to undo the slate
+   above it. It is a dark panel now and sets its own ink, so the rules that
+   named .recommended-card-copy and .recommended-meta-row are gone with the
+   elements. Note that .program-explorer is also the recommended section's root
+   class — the rules above are all scoped to descendants that only exist inside
+   the actual explorer, which is why they do not reach it. */
+
+@media (max-width: 980px) {
+  /* Matches SplineLanding.css's ≤980px value — both files declare this and
+     which one wins depends on import order, so keep them the same. */
+  body .hero-shell {
+    padding-top: 72px !important;
+  }
+
+  body .site-nav,
+  body .site-nav.is-scrolled {
+    height: 72px !important;
+    min-height: 72px !important;
+    padding: 6px 18px !important;
+  }
+
+  body .site-nav.is-scrolled {
+    height: 62px !important;
+    min-height: 62px !important;
+    padding-block: 4px !important;
+  }
+
+  body .site-nav .brand,
+  body .site-nav-brand {
+    font-size: 17px !important;
+  }
+
+  body .site-nav.is-scrolled .brand,
+  body .site-nav.is-scrolled .site-nav-brand {
+    transform: scale(0.96) !important;
+  }
+
+  body .nav-cta,
+  body .site-nav.is-scrolled .nav-cta {
+    min-height: 44px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  body .section-block,
+  body .partner-band,
+  body .consultation-section,
+  body .faq-section,
+  body .site-footer {
+    background:
+      radial-gradient(circle at 12% 8%, rgba(45, 212, 191, 0.1), transparent 32%),
+      linear-gradient(180deg, var(--cv-slate) 0%, var(--cv-slate-dark) 100%) !important;
+  }
+}
+
+/* ── Support & strategy sections: last of the pre-slate accents ──
+   These two sections were built against an earlier palette and still carried its
+   blue index chips, orange bullets and purple outcome card, which read as three
+   unrelated brands stacked down one page. Everything below is the same accent
+   the rest of the site uses: teal on the white cards (it has the contrast for
+   it), teal-bright on the dark ones.
+
+   The selectors are one level deeper than the rules they replace — the source
+   files reach these elements through `.support-section …` / `.strategy-section …`,
+   so `body` alone would lose the specificity tie. */
+body .support-section .support-grid article::before {
+  color: var(--cv-teal) !important;
+  border-color: rgba(15, 118, 110, 0.16) !important;
+  box-shadow: 0 12px 30px rgba(15, 118, 110, 0.12) !important;
+}
+
+/* The three cards keep their separate corner glows — that rhythm was worth
+   keeping — but as three steps along the teal ramp rather than three hues. */
+body .support-section .support-grid article::after {
+  background: radial-gradient(circle, rgba(45, 212, 191, 0.2), transparent 68%) !important;
+}
+
+body .support-section .support-grid article:nth-child(2)::after {
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.18), transparent 68%) !important;
+}
+
+body .support-section .support-grid article:nth-child(3)::after {
+  background: radial-gradient(circle, rgba(15, 118, 110, 0.16), transparent 68%) !important;
+}
+
+body .support-section .support-grid article li::before {
+  background: var(--cv-teal) !important;
+}
+
+body .support-section .support-grid article ul::after {
+  color: var(--cv-teal) !important;
+  background: rgba(15, 118, 110, 0.09) !important;
+}
+
+body .support-section .support-grid article:hover ul::after {
+  color: var(--cv-white) !important;
+  background: var(--cv-teal) !important;
+}
+
+/* Outcome card: was a purple-bordered panel with a magenta glow, sitting inside
+   a slate section. Same glass as every other card on a dark background. */
+body .strategy-section .project-number {
+  color: var(--cv-light-text) !important;
+  border-color: var(--cv-dark-border) !important;
+  background: linear-gradient(180deg, rgba(38, 52, 71, 0.94), rgba(31, 43, 58, 0.9)) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 0 54px rgba(16, 185, 129, 0.12),
+    0 32px 100px rgba(2, 6, 23, 0.5) !important;
+}
+
+body .strategy-section .project-number::before {
+  color: rgba(226, 232, 240, 0.86) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+body .strategy-section .project-number p::before,
+body .strategy-section .project-number p::after {
+  color: rgba(203, 213, 225, 0.82) !important;
+}
+
+body .strategy-section .step-list article::after {
+  color: var(--cv-teal-bright) !important;
+  border-color: rgba(45, 212, 191, 0.34) !important;
+  background:
+    radial-gradient(circle, rgba(45, 212, 191, 0.12), transparent 60%),
+    rgba(31, 43, 58, 0.72) !important;
+  box-shadow: 0 0 34px rgba(45, 212, 191, 0.14) !important;
+}
+
+body .strategy-section .step-list small {
+  color: var(--cv-teal-bright) !important;
+  background: rgba(45, 212, 191, 0.12) !important;
+  border-color: rgba(45, 212, 191, 0.24) !important;
+}
+
+/* Section labels: each section decorated its eyebrow in a different leftover
+   colour — orange sparkles here, orange dots there, a purple rule under the
+   third. Same mark, same teal, so the three eyebrows read as one system. */
+body #faculty .section-label::before,
+body #faculty .section-label::after {
+  color: var(--cv-teal-bright) !important;
+}
+
+body .support-section .section-label::before,
+body .support-section .section-label::after {
+  background: var(--cv-teal-bright) !important;
+}
+
+body .strategy-section .section-label,
+body .strategy-section .section-label::before {
+  color: rgba(94, 234, 212, 0.96) !important;
+}
+
+body .strategy-section .section-label::after {
+  background: linear-gradient(90deg, var(--cv-teal-bright), transparent) !important;
+}

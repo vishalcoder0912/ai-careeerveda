@@ -1,0 +1,185 @@
+# Build + deploy all three CareerVeda services to Cloud Run in one shot.
+#
+#   gcloud builds submit --config cloudbuild.yaml \
+#     --substitutions=_DOMAIN=careerveda.in,_TAG=$(git rev-parse --short HEAD)
+#
+# One-time setup before the first run (see scripts/deploy-cloudrun.sh for the
+# domain mapping + Cloud Scheduler steps, which are infra, not per-deploy):
+#
+#   gcloud services enable run.googleapis.com cloudbuild.googleapis.com \
+#     artifactregistry.googleapis.com secretmanager.googleapis.com
+#   gcloud artifacts repositories create careerveda --repository-format=docker --location=asia-south1
+#   printf '%s' 'mongodb+srv://...' | gcloud secrets create careerveda-mongodb-uri --data-file=-
+#   printf '%s' '<48 random bytes>'  | gcloud secrets create careerveda-jwt-access-secret --data-file=-
+#   printf '%s' '<48 random bytes>'  | gcloud secrets create careerveda-jwt-refresh-secret --data-file=-
+#   gcloud projects add-iam-policy-binding $PROJECT_ID \
+#     --member=serviceAccount:$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')-compute@developer.gserviceaccount.com \
+#     --role=roles/secretmanager.secretAccessor
+
+substitutions:
+  _REGION: asia-south1
+  _AR_REPO: careerveda
+  _DOMAIN: careerveda.in
+  _TAG: latest
+
+options:
+  machineType: E2_HIGHCPU_8
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: 1800s
+
+steps:
+  # ── Build ───────────────────────────────────────────────────────────────────
+  # The Vite apps bake the API URL at BUILD time, so it is a --build-arg, not a
+  # Cloud Run env var. Changing the domain means rebuilding, not just redeploying.
+  # --pull on all three. This used to be what kept the bases current; since the
+  # Dockerfiles pin each FROM to a digest it no longer is — a digest resolves to
+  # one immutable image, so there is nothing newer for --pull to find. What
+  # refreshes the base now is Dependabot's weekly docker PR bumping that digest
+  # (.github/dependabot.yml), which means an unmerged Dependabot PR is an
+  # unpatched base image, where before it was merely an out-of-date one.
+  #
+  # The flag stays because it still does something: it re-verifies the pinned
+  # digest against the registry rather than trusting whatever is in the local
+  # cache under that name.
+  - id: build-backend
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --pull
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/backend:${_TAG}
+      - ./backend
+    waitFor: ['-']
+
+  - id: build-frontend
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --pull
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/frontend:${_TAG}
+      - --build-arg
+      - VITE_PUBLIC_API_BASE_URL=https://api.${_DOMAIN}/api/v1
+      - -f
+      - Dockerfile
+      - .
+    waitFor: ['-']
+
+  # Built from the project root: the admin package has a `file:..` dependency,
+  # so npm needs the parent manifest in the context.
+  - id: build-admin
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --pull
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/admin:${_TAG}
+      - --build-arg
+      - VITE_ADMIN_API_BASE_URL=https://api.${_DOMAIN}/api/v1
+      - --build-arg
+      - VITE_PUBLIC_SITE_URL=https://${_DOMAIN}
+      - -f
+      - admin/Dockerfile
+      - .
+    waitFor: ['-']
+
+  # ── Push ────────────────────────────────────────────────────────────────────
+  # Explicit, not the top-level `images:` field: that pushes only after every
+  # step finishes, and the deploy steps below need the images to exist first.
+  - id: push-backend
+    name: gcr.io/cloud-builders/docker
+    args: [push, '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/backend:${_TAG}']
+    waitFor: [build-backend]
+
+  - id: push-frontend
+    name: gcr.io/cloud-builders/docker
+    args: [push, '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/frontend:${_TAG}']
+    waitFor: [build-frontend]
+
+  - id: push-admin
+    name: gcr.io/cloud-builders/docker
+    args: [push, '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/admin:${_TAG}']
+    waitFor: [build-admin]
+
+  # ── Deploy ──────────────────────────────────────────────────────────────────
+  # Secrets are referenced from Secret Manager, never passed through this file
+  # or the build log. The optional provider keys are attached only if the secret
+  # actually exists, so a deploy without job aggregation needs no dummy secrets.
+  #
+  # --min-instances=1, not 0. At 0 the first request after an idle period pays
+  # Node boot plus the Mongo handshake before it sees any application code, and
+  # on a lead-generation site that request is usually a visitor arriving from an
+  # ad who then watches the contact form hang. One warm instance is a few dollars
+  # a month. The frontend and admin services stay at 0 — they are static nginx
+  # and start in milliseconds.
+  #
+  # Note on Atlas: Cloud Run egress IPs are dynamic, so the Atlas Network Access
+  # list cannot name them. Either attach a VPC connector with Cloud NAT and
+  # allowlist that one static IP (see scripts/deploy-cloudrun.sh), or the backend
+  # will deploy successfully and then fail every database call at runtime.
+  #
+  # `^@^` switches the env-var separator from comma to @: several values here
+  # are themselves comma-separated lists (CORS_ALLOWED_ORIGINS), and with the
+  # default separator gcloud splits mid-value and fails on the fragment.
+  - id: deploy-backend
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        SECRETS="MONGODB_URI=careerveda-mongodb-uri:latest"
+        SECRETS="$$SECRETS,JWT_ACCESS_SECRET=careerveda-jwt-access-secret:latest"
+        SECRETS="$$SECRETS,JWT_REFRESH_SECRET=careerveda-jwt-refresh-secret:latest"
+        gcloud run deploy careerveda-backend \
+          --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/backend:${_TAG} \
+          --region=${_REGION} \
+          --platform=managed \
+          --allow-unauthenticated \
+          --port=8080 \
+          --cpu=1 --memory=512Mi \
+          --min-instances=1 --max-instances=10 \
+          --set-secrets="$$SECRETS" \
+          --set-env-vars="^@^NODE_ENV=production@MONGODB_DB_NAME=careerveda\
+        @FRONTEND_URL=https://${_DOMAIN}@ADMIN_URL=https://admin.${_DOMAIN}\
+        @CORS_ALLOWED_ORIGINS=https://${_DOMAIN},https://admin.${_DOMAIN}\
+        @COOKIE_SECURE=true@COOKIE_DOMAIN=.${_DOMAIN}@LOG_LEVEL=info"
+    waitFor: [push-backend]
+
+  # Static nginx images: no secrets, no env vars — the API URL is already baked in.
+  - id: deploy-frontend
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - careerveda-frontend
+      - --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/frontend:${_TAG}
+      - --region=${_REGION}
+      - --platform=managed
+      - --allow-unauthenticated
+      - --port=8080
+      - --cpu=1
+      - --memory=256Mi
+      - --min-instances=0
+      - --max-instances=10
+    waitFor: [push-frontend]
+
+  - id: deploy-admin
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - careerveda-admin
+      - --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/admin:${_TAG}
+      - --region=${_REGION}
+      - --platform=managed
+      - --allow-unauthenticated
+      - --port=8080
+      - --cpu=1
+      - --memory=256Mi
+      - --min-instances=0
+      - --max-instances=5
+    waitFor: [push-admin]

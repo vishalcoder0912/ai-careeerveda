@@ -1,0 +1,58 @@
+{
+  "name": "careerveda-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "build": "node --check src/server.js && echo \"backend build ok\"",
+    "_comment:test": "Both runners. CI calls `npm test` (via test:all) and nothing else, so a script that ran only vitest left tests/unit — sanitize, validate, permissions, password strength — passing on a developer's machine and never executing on a pull request. Jest first because it is three seconds against vitest's ninety, so a broken helper fails fast.",
+    "test": "npm run test:unit && vitest run",
+    "test:integration": "vitest run",
+    "test:watch": "vitest",
+    "_comment:jest": "node --experimental-vm-modules, not NODE_OPTIONS=, so the flag works the same on Windows and CI without cross-env.",
+    "test:unit": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:unit:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
+    "seed:admin": "node scripts/seed-admin.js",
+    "migrate:content": "node scripts/migrate-content.js",
+    "migrate:content:dry-run": "node scripts/migrate-content.js --dry-run",
+    "backfill:blog-reader": "node scripts/backfill-blog-reader-fields.js",
+    "backfill:blog-reader:dry-run": "node scripts/backfill-blog-reader-fields.js --dry-run",
+    "migrate:media": "node scripts/migrate-media.js",
+    "migrate:media:dry-run": "node scripts/migrate-media.js --dry-run",
+    "migrate:static-images": "node scripts/migrate-static-images.js",
+    "migrate:static-images:dry-run": "node scripts/migrate-static-images.js --dry-run"
+  },
+  "dependencies": {
+    "@imagekit/nodejs": "^7.10.0",
+    "argon2": "^0.41.1",
+    "compression": "^1.7.5",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.9.5",
+    "multer": "^2.0.0",
+    "pino": "^9.6.0",
+    "pino-http": "^10.4.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "fast-check": "^4.9.0",
+    "jest": "^30.4.2",
+    "mongodb-memory-server": "^10.1.4",
+    "supertest": "^7.0.0",
+    "vitest": "^4.1.10"
+  },
+  "_comment:overrides": "GHSA-mh99-v99m-4gvg — unbounded brace expansion crashes the process with OOM. Fixed only in brace-expansion 5.0.8; no 1.x or 2.x patch exists, and jest reaches both (minimatch 3 via test-exclude, minimatch 9 via @jest/reporters). Neither is attacker-reachable — the only patterns expanded are our own test globs — but there is no cost to forcing the fixed release, and 5.0.8 still publishes a CommonJS build so minimatch 3's require() keeps working. Drop this when jest ships a tree that no longer pulls minimatch 3.",
+  "overrides": {
+    "brace-expansion": "^5.0.8"
+  }
+}

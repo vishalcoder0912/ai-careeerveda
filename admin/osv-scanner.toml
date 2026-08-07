@@ -1,0 +1,24 @@
+# The admin panel's copy of the root osv-scanner.toml exception.
+#
+# It exists because the config is resolved *next to the manifest being scanned*,
+# not once per repository. The root file covers ./package-lock.json; this one
+# covers admin/package-lock.json, which carries its own react-router-dom and so
+# reports the same advisory independently. Scorecard's Vulnerabilities check
+# scans every manifest it finds, so one of the two uncovered is enough to keep
+# the alert open.
+#
+# The reasoning lives in the root osv-scanner.toml — read that, not this. Keep
+# the id and the date identical in both; an exception that expires in one file
+# and not the other just moves the red X somewhere less obvious.
+
+[[IgnoredVulns]]
+id = "GHSA-qwww-vcr4-c8h2"
+ignoreUntil = 2026-10-01
+reason = """
+React Router RSC-mode CSRF bypass. The admin panel is a client-only Vite SPA on
+BrowserRouter/Routes with no RouterProvider, no data-mode loaders or actions and
+no server entry, so the vulnerable path is not in its bundle. Not upgraded
+because the only patched release is 8.3.0, which removes the react-router-dom
+package outright and requires Vite 7 with Node >=22.22.0 while this app is on
+Vite ^6.0.7. Full reasoning in ../osv-scanner.toml.
+"""

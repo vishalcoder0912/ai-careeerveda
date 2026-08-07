@@ -1,0 +1,222 @@
+/* TrustedCompanies — two-row opposite-direction logo marquee.
+   Scoped entirely under .trusted-companies / .tc- so nothing leaks out. */
+
+.trusted-companies {
+  /* Card + gap sizing lives in variables so the responsive steps only need to
+     re-declare a few numbers. */
+  --tc-card-w: 300px;
+  --tc-card-h: 125px;
+  --tc-gap: 32px;
+
+  width: 100%;
+  padding: 100px 0;
+  overflow: hidden; /* belt-and-braces against horizontal page overflow */
+  background: linear-gradient(180deg, #ffffff 0%, #f7f8fb 100%);
+}
+
+/* Embedded in an existing section (e.g. the alumni "Where they work" block):
+   the host provides the heading, padding and background, so the marquee is just
+   the rows. The edge-fade mask still reveals whatever background sits behind. */
+.trusted-companies--embedded {
+  padding: 0;
+  background: transparent;
+}
+
+/* ── Heading ─────────────────────────────────────────────────────────────── */
+.tc-head {
+  max-width: 760px;
+  margin: 0 auto 52px;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.tc-title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: clamp(1.6rem, 1rem + 2.2vw, 2.75rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #0e1526;
+}
+
+/* ── Rows ────────────────────────────────────────────────────────────────── */
+.tc-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.tc-row {
+  position: relative;
+  overflow: hidden;
+  /* Soft edge fade. mask makes the edges transparent, revealing the section
+     background behind — so it always matches, whatever that background is. */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+}
+
+/* ── Marquee track ───────────────────────────────────────────────────────── */
+.tc-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* Wrapper carries no box of its own, so its cards lay out directly in the flex
+   track — the margin-based gap math (below) stays exact. */
+.tc-group {
+  display: contents;
+}
+
+/* Top row drifts left → right; bottom row right → left. Slightly different
+   durations so the two rows never lock into a mechanical rhythm. */
+.tc-track--ltr {
+  animation-name: tc-scroll-ltr;
+  animation-duration: 40s;
+}
+.tc-track--rtl {
+  animation-name: tc-scroll-rtl;
+  animation-duration: 44s;
+}
+
+/* Move by exactly one sequence. Because every card (including the last) carries
+   its gap as margin-right, one sequence is N*(card+gap) wide and -50% of the
+   doubled track lands copy 2 precisely on copy 1's start. Seamless. */
+@keyframes tc-scroll-rtl {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+@keyframes tc-scroll-ltr {
+  from {
+    transform: translate3d(-50%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Pause the whole row on hover, keyboard focus within it, or touch-hold. */
+.tc-row:hover .tc-track,
+.tc-row:focus-within .tc-track,
+.tc-row.is-paused .tc-track {
+  animation-play-state: paused;
+}
+
+/* ── Card ────────────────────────────────────────────────────────────────── */
+.tc-card {
+  flex: 0 0 auto;
+  width: var(--tc-card-w);
+  height: var(--tc-card-h);
+  margin-right: var(--tc-gap); /* gap-as-margin keeps the loop pixel-perfect */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 26px;
+  background: #ffffff;
+  border: 1px solid #e6e8ec;
+  border-radius: 14px;
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 6px 16px -8px rgba(16, 24, 40, 0.12);
+  outline: none;
+  transition:
+    box-shadow 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.25s ease;
+}
+
+/* Subtle emphasis only — never enough to break row alignment. */
+.tc-card:hover,
+.tc-card:focus-visible {
+  border-color: #d0d4db;
+  box-shadow:
+    0 2px 6px rgba(16, 24, 40, 0.07),
+    0 12px 26px -10px rgba(16, 24, 40, 0.22);
+  transform: scale(1.02);
+}
+
+.tc-card:focus-visible {
+  outline: 2px solid rgba(79, 70, 229, 0.55);
+  outline-offset: 2px;
+}
+
+.tc-card__logo {
+  max-width: 78%;
+  max-height: 62%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Shown until a real image exists at the logo path. */
+.tc-card__fallback {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: clamp(0.9rem, 0.7rem + 0.5vw, 1.05rem);
+  letter-spacing: -0.01em;
+  color: #5a6479;
+  white-space: nowrap;
+}
+
+/* ── Tablet ──────────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .trusted-companies {
+    --tc-card-w: 240px;
+    --tc-card-h: 108px;
+    --tc-gap: 24px;
+  }
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .trusted-companies {
+    --tc-card-w: 175px;
+    --tc-card-h: 88px;
+    --tc-gap: 16px;
+    padding: 64px 0;
+  }
+  .tc-head {
+    margin-bottom: 32px;
+  }
+  .tc-rows {
+    gap: 18px;
+  }
+  /* Slow the drift a touch so smaller cards stay readable. */
+  .tc-track--ltr {
+    animation-duration: 50s;
+  }
+  .tc-track--rtl {
+    animation-duration: 54s;
+  }
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .tc-row {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .tc-track {
+    animation: none;
+    transform: none;
+  }
+  /* One static, scrollable set — drop the duplicate. */
+  .tc-group[aria-hidden="true"] {
+    display: none;
+  }
+  .tc-card {
+    scroll-snap-align: start;
+  }
+}

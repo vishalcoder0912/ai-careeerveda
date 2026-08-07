@@ -1,0 +1,62 @@
+/* Social icons under the footer brand. Glass squares on the dark footer, matching
+   the treatment the hamburger and the drawer's close button already use — the site
+   has one way of drawing a small square button, and this is it. */
+.social-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The `.site-footer` prefix is deliberate: the mobile footer stylesheet turns
+   every footer <a> into a full-width 44px flex row (padding: 6px 0). That rule
+   is right for the text links and wrong for these icon squares, so we out-specify
+   it here (`.site-footer .social-links a` beats `.site-footer a`) and keep the
+   icons a fixed square in every viewport. */
+.social-links a,
+.site-footer .social-links li a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  /* 40px, not the icon's own 20px: the footer is the one place people tap by
+     accident, and a link you have to aim at is a link you miss. */
+  width: 40px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0;
+  border: 1px solid var(--cv-dark-border, rgba(255, 255, 255, 0.12));
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(248, 250, 252, 0.82);
+  transition: color 200ms ease, background 200ms ease, border-color 200ms ease,
+    transform 200ms ease;
+}
+
+.social-links a:hover,
+.social-links a:focus-visible {
+  color: #ffffff;
+  border-color: rgba(45, 212, 191, 0.42);
+  background: rgba(45, 212, 191, 0.14);
+  transform: translateY(-2px);
+}
+
+.social-links svg {
+  width: 19px;
+  height: 19px;
+  /* fill, not stroke: these are solid brand marks, and currentColor lets the hover
+     state above drive them without a second rule. */
+  fill: currentColor;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .social-links a {
+    transition: none;
+  }
+
+  .social-links a:hover {
+    transform: none;
+  }
+}

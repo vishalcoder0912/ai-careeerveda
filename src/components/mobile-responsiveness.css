@@ -1,0 +1,1545 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   Mobile Responsiveness Layer
+   Scope: Mobile-only (< 768px) and small-mobile (< 480px) overrides.
+   Nothing here targets desktop viewports.
+   -------------------------------------------------------------------------- */
+
+/* ── Touch targets ──
+   Measured with Playwright at 390px across every route: these links all rendered
+   between 27px and 34px tall. A finger needs ~44px, so each one was a link you
+   had to aim at. Padding, not height, so the text stays where it is and only the
+   hit area grows. */
+@media (max-width: 768px) {
+  .site-footer a:not(.brand),
+  .legal-toc a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  /* Inline chips, so they grow by padding rather than stretching full width. */
+  .press-sources a,
+  .press-wall-grid a {
+    display: inline-flex;
+    padding-block: 11px;
+  }
+
+  /* The header logo: a 27px-tall link in the corner of the screen. */
+  .site-nav .brand,
+  .site-nav-brand,
+  .site-footer .brand {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
+
+/* ── Section spacing improvements ── */
+@media (max-width: 768px) {
+  .section-block,
+  .partner-band,
+  .consultation-section,
+  .faq-section,
+  .site-footer {
+    padding-inline: 20px;
+  }
+
+  .section-heading {
+    text-align: left;
+    align-items: flex-start;
+    margin-bottom: 32px;
+  }
+
+  .section-heading :is(h1, h2) {
+    font-size: clamp(28px, 8.5vw, 38px) !important;
+    line-height: 1.08 !important;
+  }
+
+  .section-heading p:last-child {
+    font-size: 15px !important;
+  }
+
+  .partner-band h2 {
+    font-size: clamp(22px, 6vw, 32px) !important;
+  }
+
+  .consultation-copy h2 {
+    font-size: clamp(28px, 8.5vw, 38px) !important;
+    text-align: center;
+  }
+
+  .consultation-section {
+    padding-block: 64px;
+  }
+
+  .consultation-section .consultation-copy p {
+    text-align: center;
+  }
+
+  .faq-section {
+    padding-block: 64px;
+  }
+
+  .faq-list {
+    gap: 12px;
+  }
+
+  .faq-list details {
+    border-radius: 18px;
+  }
+
+  .faq-list summary {
+    padding: 16px 18px;
+    font-size: 15px;
+  }
+
+  .faq-list p {
+    padding: 0 18px 18px;
+    font-size: 14px;
+  }
+
+  .faq-list details[open] summary {
+    padding-bottom: 12px;
+  }
+}
+
+/* ── Footer mobile layout ── */
+@media (max-width: 768px) {
+  .site-footer {
+    display: flex !important;
+    flex-direction: column;
+    gap: 32px;
+    padding-block: 48px 24px;
+  }
+
+  .site-footer > div {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .site-footer h3 {
+    margin-bottom: 12px;
+    font-size: 16px;
+  }
+
+  .site-footer a {
+    font-size: 14px;
+    padding: 6px 0;
+  }
+
+  .site-footer p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .site-footer small {
+    margin-top: 8px;
+    font-size: 12px;
+    text-align: center;
+    opacity: 0.7;
+  }
+
+  .site-footer .brand {
+    margin-bottom: 8px;
+  }
+}
+
+/* ── Hero section mobile refinements ── */
+@media (max-width: 768px) {
+  body .hero-shell {
+    padding-bottom: 24px !important;
+  }
+
+  body .hero-layout {
+    gap: 24px !important;
+    /* No top padding on phones: .hero-shell's padding-top already equals the
+       fixed nav's height, so the eyebrow starts flush under the nav border.
+       Anything here reads as a gap between the nav and the hero copy. */
+    padding-top: 0 !important;
+    padding-bottom: 24px !important;
+  }
+
+  body .hero-copy h1 {
+    font-size: clamp(28px, 9vw, 38px) !important;
+    line-height: 1.15 !important;
+  }
+
+  body .hero-copy > p {
+    font-size: 14px !important;
+    margin-top: 14px !important;
+  }
+
+  body .trust-line {
+    font-size: 13px !important;
+    margin-top: 12px !important;
+  }
+
+  body .eyebrow {
+    font-size: clamp(12px, 3.5vw, 14px) !important;
+    margin-bottom: 10px !important;
+  }
+
+  body .hero-actions {
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px !important;
+  }
+
+  body .primary-action,
+  body .secondary-action {
+    width: 100%;
+    min-height: 48px !important;
+    font-size: 14px !important;
+    justify-content: center;
+  }
+
+  body .hero-visual-shell {
+    min-height: 38vh !important;
+    border-radius: 20px !important;
+  }
+
+  body .stat-strip {
+    width: min(100% - 24px, 520px) !important;
+    border-radius: 14px !important;
+  }
+
+  body .stat-strip div {
+    min-height: auto !important;
+    padding: 12px 14px !important;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  body .stat-strip strong {
+    font-size: clamp(20px, 6vw, 28px) !important;
+  }
+
+  body .stat-strip span {
+    font-size: 11px !important;
+    margin-top: 4px;
+  }
+
+  body .hero-dashboard-card {
+    width: min(260px, 72%) !important;
+    padding: 14px !important;
+    border-radius: 16px !important;
+    right: 6px !important;
+    bottom: 6px !important;
+  }
+}
+
+/* ── Navbar mobile + tablet improvements ──
+   Widened from 768px to 980px so the hamburger and the slate drawer appear at
+   exactly the width the desktop nav links disappear (they hide at ≤980px in
+   SplineLanding.css and navbar-interaction-fix.css). Below 980px the desktop
+   links were already gone while this block — the only thing that shows the
+   hamburger and styles the drawer — did not start until 768px, leaving 769–980px
+   (iPad portrait, landscape phones) with no navigation at all: brand and CTA
+   only. Matching the two breakpoints closes that gap and extends the same tested
+   phone treatment across the tablet range. */
+@media (max-width: 980px) {
+  body .site-nav {
+    gap: 10px;
+    /* 24px, the gutter .ps-inner and the footer already use on a phone. At 16px
+       the logo sat 8px outside the content it heads, which reads as a wonky
+       page rather than as a deliberately wider bar. */
+    padding-inline: 24px !important;
+  }
+
+  body .site-nav,
+  body .site-nav.is-scrolled {
+    height: 64px !important;
+    min-height: 64px !important;
+  }
+
+  body .brand {
+    font-size: 16px !important;
+  }
+
+  /* Height-driven, not a 30px square. These were written for the old square "CV"
+     tile; the real logo is a ~2.5:1 lockup, so forcing it into a square left
+     object-fit: contain to shrink it to a ~30x12 sliver. That was survivable
+     while the "CareerVeda" wordmark sat next to it — now that the image is the
+     whole brand, it has to be legible on its own. */
+  body .brand .brand-mark {
+    width: auto !important;
+    height: 42px !important;
+    max-width: 165px !important;
+  }
+
+  /* Enroll Now and the menu button sit side by side on the right, as one matched
+     pair. This file is imported last, so its `display: none` on the CTA was what
+     actually removed it from the phone header — leaving a lone hamburger and an
+     empty grid track where the button should have been. */
+  body .site-nav,
+  body .site-nav.is-scrolled {
+    grid-template-columns: 1fr auto auto !important;
+    gap: 10px !important;
+  }
+
+  body .nav-cta {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    /* Same 44px box as the menu button beside it. */
+    height: 44px !important;
+    min-height: 44px !important;
+    padding: 0 15px !important;
+    border-radius: 10px !important;
+    font-size: 13px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  /* Glass on the slate bar, matching the close button inside the drawer it
+     opens. It used to be a white box with dark bars, which was left over from a
+     white header the site no longer has. */
+  body .hamburger-btn {
+    display: flex !important;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--cv-dark-border, rgba(255, 255, 255, 0.12)) !important;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08) !important;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+    flex: 0 0 auto;
+  }
+
+  /* The brand gives up width first, so the pair on the right is never squeezed
+     off the edge on a narrow phone. */
+  body .site-nav .brand,
+  body .site-nav-brand {
+    min-width: 0 !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+  }
+
+  body .hamburger-btn span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--cv-white, #ffffff) !important;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  .hamburger-btn.is-open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .hamburger-btn.is-open span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .hamburger-btn.is-open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* ── Mobile menu: a slate side drawer that carries the site's own theme ──
+     The old overlay covered the whole viewport — including the header — so the
+     hamburger that closes it was buried underneath and there was no visible way
+     out. The drawer carries its own header with an explicit close button, and
+     the dimmed strip beside it is tappable to dismiss.
+
+     Colours come from the slate/teal system (--cv-*) that the navbar and the
+     page behind it use, so the drawer reads as the site's own surface sliding
+     in rather than a white sheet from a different design. */
+  body .mobile-menu-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 9999 !important;
+    /* Reset the native <dialog> chrome so it fills the viewport like the plain
+       overlay div did: the drawer is its own element sliding in, and the dim veil
+       stays on this element's background (::backdrop is neutralised below). */
+    max-width: none !important;
+    max-height: none !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    border: 0 !important;
+    padding: 0 !important;
+    color: inherit;
+    display: flex !important;
+    align-items: stretch !important;
+    justify-content: flex-end !important;
+    background: rgba(15, 23, 42, 0.62) !important;
+    backdrop-filter: blur(10px) saturate(1.08);
+    -webkit-backdrop-filter: blur(10px) saturate(1.08);
+    animation: cv-drawer-fade-in 280ms ease-out both;
+  }
+
+  body .mobile-menu-overlay::backdrop {
+    background: transparent;
+  }
+
+  /* The drawer's entry and exit, which gsap used to drive from JS. See the note
+     at the top of SiteNavbar.jsx for why they are CSS now. `both` matters: it
+     holds the first frame from the moment the element exists, so the panel is
+     never painted at its resting position and then yanked off screen.
+
+     .is-closing is set by closeMenu(), which then unmounts the overlay after
+     EXIT_MS — keep these durations and that constant in step. */
+  body .mobile-menu-overlay.is-closing {
+    animation: cv-drawer-fade-out 280ms ease-in both;
+  }
+
+  body .mobile-menu-panel {
+    /* Overshoot-free ease-out, the CSS reading of gsap's power3.out. */
+    animation: cv-drawer-panel-in 450ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  body .mobile-menu-overlay.is-closing .mobile-menu-panel {
+    animation: cv-drawer-panel-out 280ms ease-in both;
+  }
+
+  /* The row stagger: gsap ran this as one tween with stagger 0.05 and delay 0.12,
+     which in CSS is a per-row delay. Ten rows covers six nav items plus the two
+     external links plus the two footer actions; a row past the tenth simply lands
+     on the last step rather than never arriving, because :nth-child(n + 10) has no
+     upper bound. */
+  body .mobile-menu-nav a,
+  body .mobile-menu-foot > * {
+    animation: cv-drawer-row-in 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  body .mobile-menu-nav a:nth-child(1) { animation-delay: 120ms; }
+  body .mobile-menu-nav a:nth-child(2) { animation-delay: 170ms; }
+  body .mobile-menu-nav a:nth-child(3) { animation-delay: 220ms; }
+  body .mobile-menu-nav a:nth-child(4) { animation-delay: 270ms; }
+  body .mobile-menu-nav a:nth-child(5) { animation-delay: 320ms; }
+  body .mobile-menu-nav a:nth-child(6) { animation-delay: 370ms; }
+  body .mobile-menu-nav a:nth-child(7) { animation-delay: 420ms; }
+  body .mobile-menu-nav a:nth-child(n + 8) { animation-delay: 470ms; }
+  body .mobile-menu-foot > *:nth-child(1) { animation-delay: 520ms; }
+  body .mobile-menu-foot > *:nth-child(n + 2) { animation-delay: 570ms; }
+
+  /* On the way out the panel carries the rows with it; re-running their entry
+     animation would fade them back in as the drawer leaves. */
+  body .mobile-menu-overlay.is-closing .mobile-menu-nav a,
+  body .mobile-menu-overlay.is-closing .mobile-menu-foot > * {
+    animation: none;
+  }
+
+  body .mobile-menu-panel {
+    display: flex;
+    flex-direction: column;
+    width: min(92vw, 400px);
+    height: 100%;
+    padding: 0 20px calc(20px + env(safe-area-inset-bottom));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    /* Same mint/teal wash the hero and page background carry, so the drawer is
+       lit from the same direction as everything behind it. */
+    background:
+      radial-gradient(circle at 92% 4%, rgba(45, 212, 191, 0.16), transparent 42%),
+      radial-gradient(circle at 8% 88%, rgba(16, 185, 129, 0.1), transparent 38%),
+      linear-gradient(
+        180deg,
+        var(--cv-slate-dark, #263447) 0%,
+        var(--cv-slate-deep, #1f2b3a) 100%
+      ) !important;
+    border-left: 1px solid var(--cv-dark-border, rgba(255, 255, 255, 0.12));
+    border-radius: 24px 0 0 24px;
+    box-shadow: -24px 0 70px rgba(2, 6, 23, 0.46);
+  }
+
+  /* Drawer header: keeps the brand anchored and puts the close button exactly
+     where the hamburger was, so the tap that opened the menu closes it too.
+     Semi-transparent + blurred so rows scroll under it without a hard seam. */
+  body .mobile-menu-head {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 64px;
+    margin-inline: -20px;
+    padding: calc(8px + env(safe-area-inset-top)) 20px 8px;
+    background: rgba(38, 52, 71, 0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--cv-dark-border, rgba(255, 255, 255, 0.12));
+  }
+
+  body .mobile-menu-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--cv-white, #ffffff) !important;
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+  }
+
+  /* Mirrors the hamburger it replaces: same size, same glass treatment. */
+  body .mobile-menu-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--cv-dark-border, rgba(255, 255, 255, 0.12));
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--cv-white, #ffffff);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body .mobile-menu-close svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  /* align-items must be reset: the desktop rule centres these links, which left
+     each row only as wide as its own text instead of filling the drawer. */
+  body .mobile-menu-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch !important;
+    padding-block: 8px;
+  }
+
+  /* Each row is a full-width target with a number, the label, what the page is
+     for, and a chevron — scannable with one thumb instead of a stack of pills. */
+  body .mobile-menu-nav a {
+    position: relative;
+    display: grid !important;
+    grid-template-columns: 26px 1fr 20px;
+    align-items: center;
+    gap: 14px;
+    min-height: 64px;
+    padding: 12px 12px 12px 14px;
+    border-radius: 14px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.88) !important;
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  /* Divider as a pseudo-element rather than a border: the row's corner radius
+     would otherwise bend the line up at both ends. */
+  body .mobile-menu-nav a::after {
+    content: "";
+    position: absolute;
+    right: 12px;
+    bottom: 0;
+    left: 14px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  body .mobile-menu-nav a:last-child::after {
+    display: none;
+  }
+
+  /* Teal-bright rail on the current page — the drawer's echo of the underline
+     the desktop nav puts under its active link. */
+  body .mobile-menu-nav a::before {
+    content: "";
+    position: absolute;
+    top: 12px;
+    bottom: 12px;
+    left: 0;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: linear-gradient(
+      180deg,
+      var(--cv-teal-bright, #2dd4bf),
+      var(--cv-mint, #10b981)
+    );
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  body .mobile-menu-index {
+    font-size: 12px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--cv-teal-bright, #2dd4bf);
+    opacity: 0.72;
+  }
+
+  body .mobile-menu-label {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  body .mobile-menu-label small {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.35;
+    color: var(--cv-muted-on-dark, #cbd5e1);
+    opacity: 0.78;
+  }
+
+  body .mobile-menu-chevron {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: var(--cv-muted-on-dark, #cbd5e1);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.5;
+  }
+
+  body .mobile-menu-nav a:active {
+    background: rgba(255, 255, 255, 0.06);
+    transform: scale(0.985);
+  }
+
+  body .mobile-menu-nav a.is-active {
+    background: rgba(45, 212, 191, 0.12);
+  }
+
+  body .mobile-menu-nav a.is-active::before {
+    opacity: 1;
+  }
+
+  body .mobile-menu-nav a.is-active .mobile-menu-label {
+    color: var(--cv-white, #ffffff);
+  }
+
+  body .mobile-menu-nav a.is-active .mobile-menu-index {
+    color: var(--cv-teal-bright, #2dd4bf);
+    opacity: 1;
+  }
+
+  body .mobile-menu-nav a.is-active .mobile-menu-chevron {
+    stroke: var(--cv-teal-bright, #2dd4bf);
+    opacity: 1;
+  }
+
+  /* Pinned to the bottom of the drawer: the two things a visitor on a phone is
+     most likely to want are always in thumb reach, no scrolling. */
+  body .mobile-menu-foot {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 18px;
+  }
+
+  /* Same teal→mint gradient and 10px radius as the Enroll Now button in the bar
+     above, so it stays recognisably the same button after the drawer opens. */
+  body .mobile-menu-cta {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 54px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--cv-white, #ffffff) !important;
+    background: linear-gradient(
+      135deg,
+      var(--cv-teal, #0f766e),
+      var(--cv-mint, #10b981)
+    ) !important;
+    text-decoration: none;
+    box-shadow: 0 16px 34px rgba(16, 185, 129, 0.24);
+  }
+
+  body .mobile-menu-call {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 50px;
+    padding: 12px 20px;
+    border: 1px solid var(--cv-dark-border, rgba(255, 255, 255, 0.12));
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--cv-white, #ffffff) !important;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  body .mobile-menu-call svg {
+    width: 18px;
+    height: 18px;
+    fill: var(--cv-teal-bright, #2dd4bf);
+    opacity: 0.9;
+  }
+}
+
+/* ── Stats / Metrics mobile ── */
+@media (max-width: 768px) {
+  /* column-reverse, not column: the metrics are tiles now and the value sits
+     above its label. Padding stays, or the copy touches the tile's edge. */
+  .outcome-stories-metrics div {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 8px;
+    min-height: auto;
+    padding: 18px !important;
+  }
+
+  .outcome-stories-metrics dt {
+    max-width: 100%;
+    font-size: 0.75rem;
+  }
+
+  .outcome-stories-metrics dd {
+    font-size: 1.6rem;
+  }
+}
+
+/* ── Outcome stories cards mobile ── */
+@media (max-width: 768px) {
+  .outcome-story-card {
+    padding: 22px !important;
+    gap: 20px;
+    min-height: auto !important;
+  }
+
+  .outcome-story-card blockquote p {
+    font-size: 1rem !important;
+  }
+
+  .outcome-stories-heading h2 {
+    font-size: 2rem !important;
+  }
+}
+
+/* ── Program explorer mobile ── */
+@media (max-width: 768px) {
+  .program-explorer {
+    width: min(100% - 16px, 1180px) !important;
+  }
+
+  .program-detail-head h3 {
+    font-size: clamp(1.3rem, 5.5vw, 1.7rem) !important;
+  }
+
+  .program-meta-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .program-tabs {
+    width: 100%;
+    border-radius: 16px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+
+  .tab-pill {
+    flex-shrink: 0;
+    font-size: 0.72rem;
+    padding: 7px 12px;
+  }
+
+  .program-description {
+    font-size: 0.9rem !important;
+  }
+
+  .program-detail-list li {
+    font-size: 0.84rem !important;
+    padding: 10px 12px 10px 34px !important;
+  }
+
+  .cta-primary,
+  .cta-secondary {
+    font-size: 0.82rem !important;
+    min-height: 44px !important;
+  }
+}
+
+/* ── Recommended courses mobile ──
+   The card overrides that used to live here (.recommended-card,
+   .recommended-card-copy, .recommended-meta-row) went with the bento redesign —
+   the section owns its own phone layout in RecommendedCourses1.css now, and
+   these were sizing elements that no longer exist. Only the panel inset stays,
+   because 768px sits between that file's two breakpoints. */
+@media (max-width: 768px) {
+  .recommended-courses-section {
+    width: min(100% - 16px, 1240px) !important;
+    padding: 26px 16px 30px !important;
+  }
+}
+
+/* ── Career advantage / difference grid mobile ── */
+@media (max-width: 768px) {
+  #faculty .section-heading :is(h1, h2) {
+    font-size: clamp(26px, 8vw, 36px) !important;
+  }
+
+  #faculty .difference-grid article {
+    padding: 20px !important;
+    border-radius: 16px !important;
+  }
+
+  #faculty .difference-grid h3 {
+    font-size: 17px !important;
+  }
+
+  #faculty .difference-grid p {
+    font-size: 13.5px !important;
+  }
+}
+
+/* ── Strategy section mobile ── */
+@media (max-width: 768px) {
+  .strategy-section .section-heading :is(h1, h2) {
+    font-size: clamp(26px, 8vw, 36px) !important;
+  }
+
+  .strategy-section .section-heading p {
+    font-size: 14px !important;
+  }
+
+  .strategy-section .strategy-layout {
+    gap: 18px !important;
+  }
+
+  /* The desktop treatment is a timeline: a 70px gutter holding a vertical rail,
+     a dot per card, and the step number parked outside the card at left:-124px.
+     A phone has no room for a gutter, so the cards ended up indented 52px from
+     the "500+" card above them, two of them ran 108%/96% wide (one overflowing,
+     one short), and the numbers sat off-canvas — which is why the steps read as
+     "01"-less boxes that didn't line up with anything.
+     On a phone it is just a stack: no gutter, no rail, every card the same width
+     as the card above it, and the number comes back inside as a badge. */
+  .strategy-section .step-list {
+    padding-left: 0 !important;
+  }
+
+  .strategy-section .step-list::before {
+    display: none !important;
+  }
+
+  .strategy-section .step-list article,
+  .strategy-section .step-list article:nth-child(2),
+  .strategy-section .step-list article:nth-child(3) {
+    width: 100% !important;
+    min-height: 0 !important;
+    padding: 20px !important;
+    border-radius: 18px !important;
+  }
+
+  /* The rail's dot, and the big glyph disc that the 116px left padding used to
+     make room for. Both are anchored to a gutter that no longer exists. */
+  .strategy-section .step-list article::before,
+  .strategy-section .step-list article::after {
+    display: none !important;
+  }
+
+  .step-list h3 {
+    font-size: 17px !important;
+  }
+
+  .step-list p {
+    font-size: 14px !important;
+  }
+
+  /* Back in the flow, above the title, instead of absolutely positioned out in
+     the gutter. */
+  .strategy-section .step-list article > span {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    transform: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 36px !important;
+    height: 36px !important;
+    margin-bottom: 10px !important;
+    border-radius: 12px !important;
+    font-family: inherit !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+  }
+
+  .project-number {
+    padding: 24px !important;
+    border-radius: 22px !important;
+  }
+
+  .project-number strong {
+    font-size: clamp(52px, 16vw, 72px) !important;
+  }
+
+  .project-number span {
+    font-size: clamp(16px, 4vw, 20px) !important;
+  }
+
+  .project-number p {
+    font-size: 14px !important;
+  }
+
+  .project-number p::before,
+  .project-number p::after {
+    display: block !important;
+    width: 100% !important;
+    padding-left: 0 !important;
+    border-left: 0 !important;
+  }
+
+  .project-number p::after {
+    margin-top: 14px !important;
+  }
+}
+
+/* ── Support section mobile ── */
+@media (max-width: 768px) {
+  .support-section .section-heading :is(h1, h2) {
+    font-size: clamp(26px, 8vw, 36px) !important;
+  }
+
+  .support-section .support-grid {
+    width: min(100% - 24px, 520px) !important;
+  }
+
+  .support-section .support-grid article {
+    padding: 22px !important;
+    border-radius: 16px !important;
+  }
+
+  .support-section .support-grid article h3 {
+    font-size: clamp(20px, 6vw, 26px) !important;
+  }
+
+  .support-section .support-grid article li {
+    font-size: 14px !important;
+  }
+
+  .support-section .support-grid article::before {
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 12px !important;
+  }
+}
+
+/* ── Partner logos mobile ── */
+@media (max-width: 768px) {
+  body .partner-band .partner-trail {
+    height: auto;
+    min-height: 180px;
+  }
+
+  body .partner-band .partner-trail__strip li {
+    width: 90px;
+    height: 42px;
+  }
+
+  body .partner-band .partner-trail__strip img {
+    max-width: 80px;
+    height: 24px;
+  }
+
+  .partner-band h2 {
+    font-size: clamp(18px, 5vw, 28px) !important;
+  }
+
+  .partner-band h2::after {
+    font-size: 14px !important;
+    margin-top: 12px !important;
+  }
+}
+
+/* ── Consultation form mobile ── */
+@media (max-width: 768px) {
+  .consultation-section {
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .consultation-form {
+    padding: 22px !important;
+    border-radius: 20px !important;
+    width: 100%;
+  }
+
+  .consultation-form input,
+  .consultation-form select {
+    min-height: 48px !important;
+    font-size: 15px !important;
+  }
+
+  .consultation-form button {
+    min-height: 50px !important;
+    font-size: 15px !important;
+  }
+
+  .consultation-form h3 {
+    font-size: 19px !important;
+  }
+
+  .consultation-form label {
+    font-size: 13px !important;
+    gap: 6px !important;
+  }
+}
+
+/* ── Page shell inner pages mobile ── */
+@media (max-width: 768px) {
+  .page-hero__title {
+    font-size: clamp(28px, 8.5vw, 38px) !important;
+  }
+
+  .page-hero__lead {
+    font-size: 14px !important;
+  }
+
+  .page-hero {
+    padding-top: 96px !important;
+  }
+
+  .page-section {
+    padding-block: 32px !important;
+  }
+
+  .page-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+  }
+
+  .page-card {
+    padding: 20px !important;
+    border-radius: 16px !important;
+  }
+
+  .page-stat-row {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px;
+  }
+
+  .page-cta {
+    padding: 28px 20px !important;
+    border-radius: 20px !important;
+  }
+
+  .page-cta h2 {
+    font-size: clamp(20px, 6vw, 28px) !important;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .page-split {
+    grid-template-columns: 1fr !important;
+  }
+
+  .page-heading h2 {
+    font-size: clamp(22px, 7vw, 30px) !important;
+  }
+}
+
+/* ── Jobs page mobile ── */
+@media (max-width: 768px) {
+  .jobs-hero__title {
+    font-size: clamp(28px, 8.5vw, 38px) !important;
+  }
+
+  .jobs-hero {
+    padding-top: 96px !important;
+  }
+
+  .jobs-toolbar {
+    flex-direction: column;
+    padding: 16px 0 20px;
+  }
+
+  .jobs-search {
+    flex: 1 1 auto;
+  }
+
+  .jobs-filters {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .jobs-filters__select {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .jobs-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+
+  .job-card {
+    padding: 18px !important;
+    border-radius: 16px !important;
+  }
+
+  .job-card__title {
+    font-size: 16px !important;
+  }
+
+  .job-card__header {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .job-card__footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .job-card__apply {
+    justify-content: center;
+  }
+}
+
+/* ── Press section mobile ── */
+@media (max-width: 768px) {
+  .press-section-heading h2 {
+    font-size: clamp(22px, 7vw, 30px) !important;
+  }
+
+  .press-card.scroll-stack-card {
+    padding: 22px !important;
+    border-radius: 20px !important;
+  }
+
+  .press-card h3 {
+    font-size: clamp(18px, 5vw, 22px) !important;
+  }
+
+  .press-excerpt {
+    font-size: 14px !important;
+  }
+
+  .press-stat-row {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+/* ── Alumni page mobile ── */
+@media (max-width: 768px) {
+  .alumni-spotlight__intro h2 {
+    font-size: clamp(24px, 7.5vw, 32px) !important;
+  }
+
+  .alumni-spotlight__experience {
+    grid-template-columns: 1fr !important;
+  }
+
+  .alumni-spotlight__gallery-wrap {
+    min-height: 340px !important;
+    border-radius: 20px !important;
+  }
+
+  .alumni-spotlight__profile {
+    display: flex !important;
+    flex-direction: column !important;
+    border-radius: 20px !important;
+    padding: 20px !important;
+  }
+
+  .alumni-spotlight__photo-wrap {
+    aspect-ratio: 1.2 !important;
+  }
+
+  .alumni-spotlight__profile h3 {
+    font-size: clamp(20px, 6vw, 26px) !important;
+  }
+
+  .alumni-spotlight__role {
+    font-size: 0.85rem !important;
+  }
+
+  .alumni-spotlight__story {
+    font-size: 0.9rem !important;
+  }
+}
+
+/* ── Small mobile (< 480px) refinements ── */
+@media (max-width: 480px) {
+  body .site-nav,
+  body .site-nav.is-scrolled {
+    height: 58px !important;
+    min-height: 58px !important;
+    /* Same 24px as every other block on the page — see the 980px rule above. */
+    padding-inline: 24px !important;
+  }
+
+  body .brand {
+    font-size: 15px !important;
+  }
+
+  /* Same reason as the 30px block above — square box, wide logo. */
+  body .brand .brand-mark {
+    width: auto !important;
+    height: 38px !important;
+    max-width: 150px !important;
+  }
+
+  /* Stays 44px — it's a touch target, and it has to match the Enroll Now button
+     sitting next to it. Only the bars inside get smaller. */
+  .hamburger-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .hamburger-btn span {
+    width: 16px;
+  }
+
+  body .nav-cta {
+    padding: 0 12px !important;
+    font-size: 12.5px !important;
+  }
+
+  body .hero-layout {
+    width: min(100% - 16px, 520px) !important;
+  }
+
+  body .hero-copy h1 {
+    font-size: clamp(24px, 8.5vw, 32px) !important;
+  }
+
+  body .stat-strip {
+    width: min(100% - 16px, 520px) !important;
+  }
+
+  body .stat-strip div {
+    padding: 10px 12px !important;
+  }
+
+  body .stat-strip strong {
+    font-size: clamp(18px, 5.5vw, 24px) !important;
+  }
+
+  .section-block,
+  .partner-band,
+  .consultation-section,
+  .faq-section,
+  .site-footer {
+    padding-inline: 16px;
+  }
+
+  .section-heading :is(h1, h2) {
+    font-size: clamp(24px, 7.5vw, 32px) !important;
+  }
+
+  .outcome-stories-heading h2 {
+    font-size: 1.7rem !important;
+  }
+
+  .outcome-story-card {
+    padding: 18px !important;
+  }
+
+  .program-detail-head h3 {
+    font-size: clamp(1.1rem, 5vw, 1.4rem) !important;
+  }
+
+  .program-meta-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .program-track-item {
+    min-width: 130px !important;
+  }
+
+  .page-stat-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Rows stay above the 44px touch minimum; only the type scales down. */
+  body .mobile-menu-nav a {
+    min-height: 58px;
+  }
+
+  body .mobile-menu-label {
+    font-size: 17px;
+  }
+
+  body .mobile-menu-label small {
+    font-size: 12.5px;
+  }
+
+  body .mobile-menu-cta {
+    min-height: 50px;
+    font-size: 16px;
+  }
+}
+
+/* ── Tablet refinements (768px - 1024px) ── */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .section-heading {
+    margin-bottom: 36px;
+  }
+
+  .program-explorer {
+    grid-template-columns: 240px 1fr;
+  }
+
+  .program-sidebar {
+    min-height: 600px;
+  }
+
+  .program-detail-card {
+    min-height: 600px;
+  }
+
+  .jobs-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── Remove decorative elements that look messy on mobile ── */
+@media (max-width: 768px) {
+  body .light-section::after,
+  body .support-section::after,
+  body .review-section::after,
+  body #faculty.dark-section::after,
+  body .strategy-section::after {
+    display: none !important;
+  }
+
+  #faculty.dark-section::after {
+    display: none !important;
+  }
+
+  .strategy-section::before,
+  .strategy-section::after {
+    display: none !important;
+  }
+
+  .support-section::after {
+    display: none !important;
+  }
+}
+
+/* ── Smooth scroll on mobile ── */
+@media (max-width: 768px) {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* ── Landscape phone adjustments ── */
+@media (max-width: 768px) and (orientation: landscape) {
+  body .hero-visual-shell {
+    min-height: 60vh !important;
+  }
+
+  /* Landscape: barely any vertical room, so the rows lose their sub-labels and
+     the drawer scrolls rather than squeezing the pinned CTA off-screen. */
+  body .mobile-menu-nav a {
+    min-height: 48px;
+  }
+
+  body .mobile-menu-label {
+    font-size: 16px;
+  }
+
+  body .mobile-menu-label small {
+    display: none;
+  }
+}
+
+/* ── No floating labels on stacked layouts ──
+   The seven badges (Personalized Learning, Expert Mentorship, …) are a desktop
+   device: they ring the robot in the space its grid column leaves around it. In
+   the band below the stat strip there is no such space, so they land on top of
+   the robot and read as text scattered over it.
+
+   Hiding the container rather than the badges: one rule instead of fighting the
+   .ai-label declarations spread across nine stylesheets, and it takes their
+   labelFloat animation and per-badge backdrop-filter down with it. They are
+   aria-hidden decoration, so nothing is lost but the ornament.
+
+   This replaces a block that re-showed them as a single-column ladder — that
+   layout was an attempt to fit them beside a robot that no longer has a beside. */
+@media (max-width: 980px) {
+  body .floating-labels {
+    display: none !important;
+  }
+}
+
+/* ── Robot below the stat strip on stacked layouts ──
+   At 980px .hero-layout drops to one column, and Hero.jsx renders the robot as
+   this band — after the stat strip, before Recommended Courses — instead of as
+   the grid's second column. Desktop is untouched: the band element does not
+   exist there at all, so none of this needs to be undone above the breakpoint.
+
+   Outside .hero-layout the shell no longer inherits that grid's width, so the
+   band carries the same gutter the stat strip uses at each step: 680px here,
+   520px below 480px. Both mirror the stat-strip rules so the two stay the same
+   width as each other. */
+@media (max-width: 980px) {
+  body .hero-visual-band {
+    width: min(100% - 32px, 680px);
+    margin: 0 auto clamp(24px, 6vw, 40px);
+  }
+
+  /* SplineLanding.css:1250 pins the shell to grid-row 1 for the stacked hero.
+     In the band there is no grid, so it is inert — but it would fight the day
+     the band becomes one. */
+  body .hero-visual-band .hero-visual-shell {
+    grid-row: auto !important;
+  }
+
+  /* Centre the robot in the band.
+     The band is centred, but the scene is not centred within it: Spline's camera
+     reframes for the box it is given, and in the band's landscape box it lands the
+     robot at ~40% with dead space to its right. On desktop the floating labels
+     filled that space, so the bias never showed; in the band there are no labels,
+     which is what exposed it.
+
+     Measured in Chromium: at 390px the robot lands at ~49% of the band, at 768px
+     at ~54%. Not one constant, because Spline reframes on the box's aspect ratio
+     rather than its width, and the band goes from 1.16 to 2.0 across the range —
+     no single number is exact at both ends. 10% is tuned for phone widths, where
+     the traffic is; a few percent right of centre on a tablet is not worth a
+     second breakpoint. A percentage rather than pixels so it at least tracks the
+     box instead of drifting further with every width.
+
+     Overrides image-position-fix.css's `transform: none` on the same element —
+     this selector is a class more specific.
+
+     The poster is deliberately excluded: it is object-fit: contain on a still, so
+     it is already centred, and this shift would push it off. Re-measure if the
+     Spline scene itself is ever replaced — the number belongs to that scene. */
+  body .hero-visual-band .spline-frame iframe {
+    transform: translateX(10%) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  body .hero-visual-band {
+    width: min(100% - 16px, 520px);
+  }
+}
+
+/* ── The robot takes touch only when asked ──
+   The Spline iframe is a WebGL canvas that claims the gestures made over it. On a
+   phone that means a swipe to scroll the page, started on the robot, is taken as
+   a drag on the robot and the page stays put — the hero becomes a trap you have to
+   scroll around. So the frame starts inert and the page scrolls normally; tapping
+   the hint below sets `.is-interactive` and the robot becomes draggable until the
+   visitor scrolls or taps away. The embed is cross-origin, so `touch-action` never
+   reaches its listeners — pointer-events is the only lever we have here.
+
+   Desktop is unaffected — a cursor can hover over the scene without committing to
+   it, and the component sets `.is-interactive` there from the start. */
+body .spline-frame {
+  pointer-events: none !important;
+}
+
+body .spline-frame.is-interactive {
+  pointer-events: auto !important;
+}
+
+/* The tap target is the whole robot, not the pill — see the comment in
+   SplineHeroScene.jsx. Sits above the frame, which image-position-fix.css pins
+   to z-index 2. Transparent and not an iframe, so a swipe scrolls the page
+   straight through it; only a tap is acted on. Rendered on touch alone, and only
+   until that tap lands, so there is nothing to hide on desktop. */
+.spline-tap-layer {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  pointer-events: auto;
+  /* A drag on the robot is a scroll until the visitor opts in, so the layer must
+     not start a text selection or a long-press callout on the way. */
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Purely the affordance; the layer above it does the listening. Follows
+   .alumni-spotlight__hint's pill so the two read as one idiom. */
+.spline-tap-hint {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 14px;
+  border: 1px solid rgba(226, 232, 240, 0.14);
+  border-radius: 999px;
+  color: rgba(241, 245, 249, 0.8);
+  background: rgba(15, 23, 42, 0.68);
+  backdrop-filter: blur(10px);
+  font-size: 0.76rem;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+/* ── Mobile drawer keyframes ──────────────────────────────────────────────────
+   Top level rather than inside the drawer's media query: @keyframes are global
+   whatever they are nested in, and keeping them here says so.
+
+   Only transform and opacity, so the whole drawer animates on the compositor —
+   the reason this is worth doing on a phone at all. closeMenu() in SiteNavbar.jsx
+   unmounts the overlay after EXIT_MS; the -out durations above must match it. */
+@keyframes cv-drawer-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes cv-drawer-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes cv-drawer-panel-in {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes cv-drawer-panel-out {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+
+@keyframes cv-drawer-row-in {
+  from { transform: translateX(24px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Reduced motion gets the drawer, not the performance: it appears already in
+   place. closeMenu() likewise skips the exit and unmounts immediately, so the
+   menu still closes when these animations are off. */
+@media (prefers-reduced-motion: reduce) {
+  body .mobile-menu-overlay,
+  body .mobile-menu-overlay.is-closing,
+  body .mobile-menu-panel,
+  body .mobile-menu-overlay.is-closing .mobile-menu-panel,
+  body .mobile-menu-nav a,
+  body .mobile-menu-foot > * {
+    animation: none !important;
+  }
+}

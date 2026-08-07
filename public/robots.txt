@@ -1,0 +1,86 @@
+# Files in public/ are copied to the root of dist/ and served as real files.
+# That matters here: vercel.json rewrites every path except /api/ to
+# /index.html, so before this file existed a crawler asking for /robots.txt was
+# handed the site's HTML document instead. Vercel checks the filesystem before
+# applying rewrites, so a real file at this path wins over that fallback.
+#
+# The Sitemap line below is safe to publish: scripts/generate-sitemap.mjs writes
+# public/sitemap.xml and runs from `prebuild`, so the file is regenerated on
+# every deploy rather than going stale. It was omitted before because the
+# generator did not exist, and pointing a crawler at a URL that 404s is worse
+# than saying nothing at all.
+
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# ── AI and answer-engine crawlers ───────────────────────────────────────────
+#
+# These are already covered by the `*` group above — an unlisted crawler is an
+# allowed one, and none of these were ever blocked. They are named explicitly
+# for two reasons.
+#
+# The first is that a blanket `Disallow: /` is the single most common thing a
+# future edit adds to a robots.txt, and it would silently remove this site from
+# every AI answer that cites its sources. A named Allow survives that edit and
+# makes the intent legible to whoever makes it.
+#
+# The second is Google-Extended. It does not affect crawling or Search ranking
+# at all — Googlebot handles both. What it controls is whether the content may
+# be used to ground Gemini and the AI answers shown above search results.
+# Blocking it removes this site from those answers while leaving it in the blue
+# links, which is the opposite of what an ed-tech brand competing on
+# discoverability wants.
+#
+# Being crawlable is necessary but not sufficient: these crawlers do not execute
+# JavaScript, so what they read is whatever is in the HTML. That is what
+# scripts/snapshot.mjs exists to put there.
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+# Must name the same host as SITE_URL in src/config/siteMeta.js — the apex, not
+# www. scripts/generate-sitemap.mjs asserts that on every build, because this
+# file is hand-maintained and already drifted once: it still pointed at
+# www.careerveda.in after the canonical host moved to the apex, which sends every
+# crawler that reads it to a redirect on the first request it makes.
+Sitemap: https://careerveda.in/sitemap.xml

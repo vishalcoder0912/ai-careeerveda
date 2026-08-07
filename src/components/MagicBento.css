@@ -1,0 +1,246 @@
+/* MagicBento — scoped to .bento-grid / .magic-bento-card.
+   Two things from the upstream stylesheet are deliberately gone:
+     · its `:root` block, which redefined --white and set `color-scheme: light dark`
+       globally. On this always-dark site that would have leaked into every page.
+     · the hardcoded purple. The glow reads from --glow-color, set per card by the
+       component, so the section matches the site's teal. */
+
+/* A six-column track the nine cards span unevenly, rather than the uniform
+   `repeat(auto-fit, minmax(280px, 1fr))` this used to be. Nine equal cards in a
+   3×3 read as a spreadsheet — every row identical, nothing leading the eye. The
+   spans below break that up while still filling every row exactly:
+
+     row 1   ▓▓▓▓ ▓▓        4 + 2
+     row 2   ▓▓ ▓▓▓▓        2 + 4     (mirrored, so it doesn't look like a mistake)
+     row 3   ▓▓▓ ▓▓▓        3 + 3
+     row 4   ▓▓ ▓▓ ▓▓        2 + 2 + 2
+
+   Six columns is what makes it work: it divides by both 2 and 3, so wide, half
+   and third cards all land on the same track. */
+.bento-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(6, 1fr);
+  grid-auto-flow: dense;
+  width: min(1180px, calc(100% - 48px));
+  margin-inline: auto;
+}
+
+/* Spans are positional, not per-card: the component renders whatever `cards` it
+   is handed, so the rhythm has to live in the grid. If the list ever grows past
+   nine, anything unmatched falls through to the 2-column default below and the
+   rows still close. */
+.bento-grid > * {
+  grid-column: span 2;
+}
+
+.bento-grid > *:nth-child(1) { grid-column: span 4; }
+.bento-grid > *:nth-child(4) { grid-column: span 4; }
+.bento-grid > *:nth-child(5),
+.bento-grid > *:nth-child(6) { grid-column: span 3; }
+
+/* Asymmetry in height too, or the wide cards just read as stretched versions of
+   the narrow ones. The two 4-wide cards get room to breathe; the rest stay tight. */
+.bento-grid > *:nth-child(1),
+.bento-grid > *:nth-child(4) {
+  min-height: 250px;
+}
+
+.magic-bento-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+  /* Height comes from the copy, not a fixed aspect-ratio: these cards carry real
+     paragraphs, and 4/3 would have clipped the longer ones. */
+  min-height: 210px;
+  padding: 26px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #f1f5f9;
+  overflow: hidden;
+  transition: transform 300ms ease, border-color 300ms ease, background 300ms ease;
+
+  --glow-x: 50%;
+  --glow-y: 50%;
+  --glow-intensity: 0;
+  --glow-radius: 200px;
+}
+
+.magic-bento-card:hover {
+  border-color: rgba(148, 163, 184, 0.28);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.magic-bento-card__header {
+  display: flex;
+  position: relative;
+  z-index: 2;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.magic-bento-card__label {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  background: linear-gradient(120deg, #2dd4bf, #10b981);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.magic-bento-card__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+.magic-bento-card__title {
+  margin: 0 0 8px;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.magic-bento-card__description {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: rgba(226, 232, 240, 0.68);
+}
+
+.magic-bento-card--text-autohide .magic-bento-card__title,
+.magic-bento-card--text-autohide .magic-bento-card__description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.magic-bento-card--text-autohide .magic-bento-card__title {
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+}
+
+.magic-bento-card--text-autohide .magic-bento-card__description {
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+/* Border glow: a radial gradient masked to the 6px border ring, lit by the
+   cursor's proximity (--glow-intensity is written by the spotlight). */
+.magic-bento-card--border-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: 6px;
+  background: radial-gradient(
+    var(--glow-radius) circle at var(--glow-x) var(--glow-y),
+    rgba(var(--glow-color), calc(var(--glow-intensity) * 0.8)) 0%,
+    rgba(var(--glow-color), calc(var(--glow-intensity) * 0.4)) 30%,
+    transparent 60%
+  );
+  border-radius: inherit;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  transition: opacity 300ms ease;
+}
+
+.magic-bento-card--border-glow:hover {
+  box-shadow:
+    0 18px 50px rgba(2, 6, 23, 0.45),
+    0 0 30px rgba(var(--glow-color), 0.2);
+}
+
+.bento-particle-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.bento-global-spotlight {
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.bento-section {
+  position: relative;
+  user-select: none;
+}
+
+/* Tablet: six uneven columns would squeeze the 2-wide cards to a sliver, so the
+   track drops to four. The rhythm is kept, just simpler — one full-width card
+   opening each half, the rest paired. */
+@media (max-width: 1020px) {
+  .bento-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .bento-grid > * {
+    grid-column: span 2;
+  }
+
+  /* 1 and 6 open each half full-width. 9 is last and would otherwise sit alone in
+     a half-empty row, so it runs full-width too and closes the grid. */
+  .bento-grid > *:nth-child(1),
+  .bento-grid > *:nth-child(6),
+  .bento-grid > *:nth-child(9) {
+    grid-column: span 4;
+  }
+
+  .bento-grid > *:nth-child(4),
+  .bento-grid > *:nth-child(5) {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .bento-grid {
+    grid-template-columns: 1fr;
+    width: calc(100% - 32px);
+    gap: 12px;
+  }
+
+  /* One column: every card is full width, so the spans above have to go or they
+     would overflow the single track. Asymmetry is a desktop luxury — on a phone
+     these are just nine stacked cards.
+
+     :nth-child(n) rather than a list of numbers: it matches every card at the
+     same specificity as the :nth-child(N) spans set above, so no span can
+     survive here. Listing them by hand is how card 9 kept its tablet `span 4`,
+     which spawned three implicit columns and crushed each card to one character
+     per line. */
+  .bento-grid > *,
+  .bento-grid > *:nth-child(n) {
+    grid-column: span 1;
+  }
+
+  .magic-bento-card,
+  .bento-grid > *:nth-child(1),
+  .bento-grid > *:nth-child(4) {
+    min-height: 0;
+    padding: 22px;
+  }
+}
+
+/* The component already withholds every effect from reduced-motion users; this
+   catches the CSS-side hover transform too. */
+@media (prefers-reduced-motion: reduce) {
+  .magic-bento-card {
+    transition: none;
+  }
+}

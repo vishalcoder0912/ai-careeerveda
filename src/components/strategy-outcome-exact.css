@@ -1,0 +1,610 @@
+.strategy-section {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(92px, 9vw, 128px) clamp(24px, 6vw, 112px) 44px;
+  color: #f5f0ff;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(19, 11, 56, 0.92), transparent 20%),
+    radial-gradient(circle at 94% 2%, rgba(210, 153, 255, 0.72), transparent 24%),
+    radial-gradient(circle at 93% 40%, rgba(255, 224, 244, 0.38), transparent 20%),
+    linear-gradient(140deg, #120c35 0%, #211456 38%, #5f3ab0 64%, #1b0e43 100%) !important;
+}
+
+.strategy-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 7% 5%, rgba(0, 0, 0, 0.22) 0 0, transparent 9%),
+    radial-gradient(circle at 100% 38%, rgba(255, 235, 255, 0.38) 0 0, transparent 19%),
+    linear-gradient(180deg, rgba(8, 4, 26, 0.08), rgba(8, 4, 26, 0.58)),
+    url("data:image/svg+xml,%3Csvg width='1600' height='900' viewBox='0 0 1600 900' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 760C180 655 275 712 420 602C570 488 690 535 830 448C1015 334 1137 392 1290 250C1430 120 1534 115 1600 100V900H0Z' fill='%23220f49' fill-opacity='.65'/%3E%3Cpath d='M0 805C155 736 290 760 445 660C575 576 704 606 843 520C988 430 1100 462 1267 325C1445 180 1525 175 1600 150V900H0Z' fill='%235b2e9e' fill-opacity='.42'/%3E%3Cpath d='M0 845C150 790 310 813 485 720C640 638 740 686 920 594C1075 515 1205 542 1355 425C1480 327 1550 323 1600 292V900H0Z' fill='%23120733' fill-opacity='.75'/%3E%3C/svg%3E");
+  background-position: center bottom;
+  background-size: cover;
+}
+
+.strategy-section::after {
+  content: "";
+  position: absolute;
+  right: -7vw;
+  top: 13%;
+  z-index: 0;
+  width: min(44vw, 560px);
+  aspect-ratio: 1;
+  pointer-events: none;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.36);
+  background: radial-gradient(circle at 34% 32%, rgba(255, 255, 255, 0.54), rgba(209, 152, 255, 0.22) 40%, transparent 69%);
+  box-shadow: inset 0 0 80px rgba(255, 255, 255, 0.2), 0 0 110px rgba(209, 152, 255, 0.36);
+}
+
+.strategy-section > * {
+  position: relative;
+  z-index: 1;
+}
+
+.strategy-section .section-heading.compact {
+  max-width: 700px;
+  margin: 0 0 36px;
+  text-align: left;
+}
+
+.strategy-section .section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  margin: 0 0 26px;
+  color: #ff874f;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.strategy-section .section-label {
+  font-size: 0;
+}
+
+.strategy-section .section-label::before {
+  content: "STRATEGY TODAY. IMPACT TOMORROW.";
+  font-size: clamp(13px, 1vw, 16px);
+}
+
+.strategy-section .section-label::after {
+  content: "";
+  width: 30px;
+  height: 1px;
+  background: linear-gradient(90deg, #8b5cf6, transparent);
+}
+
+.strategy-section .section-heading :is(h1, h2) {
+  max-width: 720px;
+  margin: 0;
+  color: #f4efff;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0;
+  font-weight: 700;
+  line-height: 0.96;
+  letter-spacing: -0.055em;
+  text-wrap: balance;
+}
+
+.strategy-section .section-heading :is(h1, h2)::before {
+  content: "Shaping Tomorrow\A with Today’s Strategies";
+  white-space: pre-line;
+  font-size: clamp(46px, 5vw, 70px);
+}
+
+.strategy-section .section-heading.compact::after {
+  content: "Real outcomes. Relevant skills. Recognized by industry.";
+  display: block;
+  max-width: 660px;
+  margin-top: 22px;
+  color: rgba(232, 222, 255, 0.72);
+  font-size: clamp(16px, 1.45vw, 20px);
+  line-height: 1.55;
+}
+
+.strategy-section .strategy-layout {
+  display: grid;
+  grid-template-columns: minmax(420px, 0.95fr) minmax(420px, 0.9fr);
+  align-items: stretch;
+  gap: clamp(44px, 7vw, 92px);
+  width: min(1390px, 100%);
+  margin-inline: auto;
+}
+
+.strategy-section .step-list {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  padding-left: 70px;
+}
+
+.strategy-section .step-list::before {
+  content: "";
+  position: absolute;
+  left: 34px;
+  top: 24px;
+  bottom: 54px;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(189, 123, 255, 0.64), rgba(189, 123, 255, 0.48), transparent);
+}
+
+.strategy-section .step-list article {
+  position: relative;
+  min-height: 118px;
+  padding: 22px 28px 22px 116px;
+  border: 1px solid rgba(191, 125, 255, 0.34);
+  border-radius: 12px;
+  color: #efe9ff;
+  background: linear-gradient(135deg, rgba(92, 59, 168, 0.52), rgba(34, 17, 86, 0.42));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 20px 64px rgba(14, 6, 44, 0.28);
+  backdrop-filter: blur(14px);
+  transition: transform 260ms ease, border-color 260ms ease, background 260ms ease, box-shadow 260ms ease;
+}
+
+.strategy-section .step-list article:nth-child(2) {
+  width: 108%;
+  background:
+    linear-gradient(104deg, rgba(89, 48, 143, 0.5) 0 86%, rgba(255, 131, 73, 0.34) 86% 100%),
+    rgba(25, 12, 65, 0.48);
+  border-color: rgba(255, 136, 78, 0.58);
+}
+
+.strategy-section .step-list article:nth-child(3) {
+  width: 96%;
+}
+
+.strategy-section .step-list article:hover {
+  transform: translateX(8px);
+  border-color: rgba(255, 184, 122, 0.76);
+  background: linear-gradient(135deg, rgba(112, 69, 196, 0.66), rgba(38, 17, 91, 0.54));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 24px 76px rgba(116, 68, 205, 0.2);
+}
+
+.strategy-section .step-list article::before {
+  content: "";
+  position: absolute;
+  left: -65px;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: #b77bff;
+  box-shadow: 0 0 0 7px rgba(183, 123, 255, 0.12), 0 0 24px rgba(183, 123, 255, 0.86);
+  transform: translateY(-50%);
+}
+
+.strategy-section .step-list article span {
+  position: absolute;
+  left: -124px;
+  top: 50%;
+  color: #b684ff;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+.strategy-section .step-list article h3 {
+  margin: 0 0 9px;
+  color: #ffffff;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(22px, 2vw, 27px);
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+}
+
+.strategy-section .step-list article h3,
+.strategy-section .step-list article p {
+  font-size: inherit;
+}
+
+.strategy-section .step-list article:nth-child(1) h3,
+.strategy-section .step-list article:nth-child(1) p,
+.strategy-section .step-list article:nth-child(2) h3,
+.strategy-section .step-list article:nth-child(2) p,
+.strategy-section .step-list article:nth-child(3) h3,
+.strategy-section .step-list article:nth-child(3) p {
+  font-size: 0;
+}
+
+.strategy-section .step-list article:nth-child(1) h3::before {
+  content: "500+ Projects";
+  font-size: clamp(22px, 2vw, 27px);
+}
+
+.strategy-section .step-list article:nth-child(1) p::before {
+  content: "Build a professional portfolio with real, reviewable projects across diverse domains.";
+}
+
+.strategy-section .step-list article:nth-child(2) h3::before {
+  content: "Hands-On Project Experience";
+  font-size: clamp(22px, 2vw, 27px);
+}
+
+.strategy-section .step-list article:nth-child(2) p::before {
+  content: "Get rigorous peer reviews and expert mentor feedback on every line of code or product roadmap.";
+}
+
+.strategy-section .step-list article:nth-child(3) h3::before {
+  content: "Industry-Recognized Certifications";
+  font-size: clamp(22px, 2vw, 27px);
+}
+
+.strategy-section .step-list article:nth-child(3) p::before {
+  content: "Earn certificates that top recruiters actually look for during the screening process.";
+}
+
+.strategy-section .step-list article p::before {
+  display: block;
+  color: rgba(229, 221, 255, 0.74);
+  font-family: Poppins, Inter, sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.strategy-section .step-list article div {
+  display: none;
+}
+
+.strategy-section .step-list article::after {
+  content: "";
+  position: absolute;
+  left: 24px;
+  top: 50%;
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, rgba(255, 131, 73, 0.12), transparent 60%),
+    rgba(21, 14, 66, 0.72);
+  border: 1px solid rgba(255, 131, 73, 0.42);
+  box-shadow: 0 0 34px rgba(255, 131, 73, 0.14);
+  transform: translateY(-50%);
+}
+
+.strategy-section .project-number {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+  min-height: 560px;
+  padding: clamp(42px, 5vw, 72px) clamp(38px, 5vw, 64px);
+  border: 1px solid rgba(188, 122, 255, 0.9);
+  border-radius: 42px;
+  color: #efe9ff;
+  background: linear-gradient(180deg, rgba(19, 10, 52, 0.94), rgba(7, 4, 25, 0.9));
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1) inset, 0 0 54px rgba(174, 92, 255, 0.58), 0 32px 100px rgba(7, 4, 24, 0.56);
+  backdrop-filter: blur(22px);
+}
+
+.strategy-section .project-number::before {
+  content: "Outcomes that matter";
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  margin-left: auto;
+  margin-bottom: 34px;
+  padding: 10px 18px;
+  border: 1px solid rgba(176, 117, 255, 0.3);
+  border-radius: 999px;
+  color: rgba(234, 222, 255, 0.78);
+  background: rgba(107, 62, 176, 0.24);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.strategy-section .project-number strong {
+  display: block;
+  color: transparent;
+  background: linear-gradient(90deg, #ff7f4f, #ffd166 45%, #ff7a55);
+  -webkit-background-clip: text;
+  background-clip: text;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(96px, 10vw, 152px);
+  font-weight: 800;
+  line-height: 0.82;
+  letter-spacing: -0.08em;
+}
+
+.strategy-section .project-number strong {
+  font-size: 0;
+}
+
+.strategy-section .project-number strong::before {
+  content: "900+";
+  font-size: clamp(96px, 10vw, 152px);
+}
+
+.strategy-section .project-number span {
+  display: block;
+  margin-top: 22px;
+  padding-bottom: 34px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(232, 222, 255, 0.72);
+  font-size: 0;
+  font-weight: 800;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+}
+
+.strategy-section .project-number span::before {
+  content: "RECRUITMENT PARTNERS";
+  font-size: clamp(16px, 1.8vw, 24px);
+}
+
+.strategy-section .project-number p {
+  margin: 34px 0 0;
+  color: transparent;
+  font-size: 0;
+}
+
+.strategy-section .project-number p::before {
+  content: "Avg Salary Growth\A 86%\A Year over Year";
+  display: inline-block;
+  width: 49%;
+  color: rgba(232, 222, 255, 0.8);
+  white-space: pre-line;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.strategy-section .project-number p::after {
+  content: "Career Boost\A 3.2x\A Faster Growth";
+  display: inline-block;
+  width: 49%;
+  padding-left: 36px;
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(232, 222, 255, 0.8);
+  white-space: pre-line;
+  font-size: 15px;
+  line-height: 1.65;
+  vertical-align: top;
+}
+
+/* The CTA that used to live here was a ::after with `content: "Download Outcome
+   Report"` — it carried a cursor and a hover lift but was a pseudo-element, so
+   there was nothing to click and no report behind it. This is the real link the
+   page renders in its place; it goes to /programs, which is what the card is
+   selling. */
+.strategy-section .project-number .outcome-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 62px;
+  margin-top: 38px;
+  border-radius: 10px;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--cv-teal, #0f766e), var(--cv-mint, #10b981));
+  box-shadow: 0 18px 44px rgba(16, 185, 129, 0.24);
+  font-size: 18px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+
+.strategy-section .project-number .outcome-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 24px 54px rgba(16, 185, 129, 0.32);
+}
+
+.partner-band {
+  position: relative;
+  overflow: hidden;
+  padding: 34px clamp(24px, 6vw, 112px) clamp(54px, 6vw, 82px);
+  border-top: 1px solid rgba(176, 117, 255, 0.42);
+  color: #f5f0ff;
+  background: linear-gradient(180deg, #120b36, #160d3f 52%, #120b36) !important;
+}
+
+.partner-band p {
+  display: none;
+}
+
+.partner-band h2 {
+  max-width: 960px;
+  margin: 0 auto 26px;
+  color: #f6efff;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(28px, 3.2vw, 42px);
+  line-height: 1.08;
+  text-align: center;
+  letter-spacing: -0.04em;
+}
+
+.partner-band h2::after {
+  content: "Partnerships for hiring, capstones, and curriculum guidance.";
+  display: block;
+  margin-top: 20px;
+  color: rgba(232, 222, 255, 0.68);
+  font-family: Poppins, Inter, sans-serif;
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.partner-band::before,
+.partner-band::after {
+  position: absolute;
+  top: 54%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border: 1px solid rgba(181, 109, 255, 0.72);
+  border-radius: 999px;
+  color: #e8ddff;
+  background: rgba(65, 34, 135, 0.48);
+  box-shadow: 0 0 30px rgba(158, 84, 255, 0.28);
+  font-size: 38px;
+  line-height: 1;
+}
+
+.partner-band::before {
+  content: "‹";
+  left: clamp(18px, 3vw, 42px);
+}
+
+.partner-band::after {
+  content: "›";
+  right: clamp(18px, 3vw, 42px);
+}
+
+.partner-marquee {
+  overflow: visible;
+  width: min(1270px, calc(100% - 110px));
+  margin-inline: auto;
+}
+
+.partner-marquee div {
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(130px, 1fr));
+  gap: 12px;
+  animation: none !important;
+  transform: none !important;
+}
+
+.partner-marquee span {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 78px;
+  padding: 16px 18px;
+  border: 1px solid rgba(151, 89, 238, 0.34);
+  border-radius: 8px;
+  color: rgba(234, 226, 255, 0.86);
+  background: linear-gradient(180deg, rgba(74, 42, 139, 0.5), rgba(32, 18, 83, 0.62));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 20px 42px rgba(9, 4, 32, 0.18);
+  font-size: 0;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.partner-marquee span:nth-child(n + 13) {
+  display: none !important;
+}
+
+.partner-marquee span::before {
+  margin-right: 10px;
+  color: rgba(235, 229, 255, 0.78);
+  font-size: 27px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.partner-marquee span::after {
+  font-size: 14px;
+}
+
+.partner-marquee span:nth-child(1)::before { content: "d+"; }
+.partner-marquee span:nth-child(1)::after { content: "Datalynk"; }
+.partner-marquee span:nth-child(2)::before { content: "R"; }
+.partner-marquee span:nth-child(2)::after { content: "Revalsys"; }
+.partner-marquee span:nth-child(3)::before { content: "AZ"; }
+.partner-marquee span:nth-child(3)::after { content: "Azurewave"; }
+.partner-marquee span:nth-child(4)::before { content: "◎"; }
+.partner-marquee span:nth-child(4)::after { content: "Nexora"; }
+.partner-marquee span:nth-child(5)::before { content: "A"; }
+.partner-marquee span:nth-child(5)::after { content: "Apexon"; }
+.partner-marquee span:nth-child(6)::before { content: "BR"; }
+.partner-marquee span:nth-child(6)::after { content: "Bricklayer"; }
+.partner-marquee span:nth-child(7)::before { content: "Z"; }
+.partner-marquee span:nth-child(7)::after { content: "Zenovate"; }
+.partner-marquee span:nth-child(8)::before { content: "H"; }
+.partner-marquee span:nth-child(8)::after { content: "Hiverse"; }
+.partner-marquee span:nth-child(9)::before { content: "pw"; }
+.partner-marquee span:nth-child(9)::after { content: "Pivotwise"; }
+.partner-marquee span:nth-child(10)::before { content: "▦"; }
+.partner-marquee span:nth-child(10)::after { content: "Cubix Labs"; }
+.partner-marquee span:nth-child(11)::before { content: "⬡"; }
+.partner-marquee span:nth-child(11)::after { content: "Integra Systems"; }
+.partner-marquee span:nth-child(12)::before { content: "A"; }
+.partner-marquee span:nth-child(12)::after { content: "Altiitus"; }
+
+@media (max-width: 1120px) {
+  .strategy-section .strategy-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .strategy-section .project-number {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .strategy-section .step-list article:nth-child(2),
+  .strategy-section .step-list article:nth-child(3) {
+    width: 100%;
+  }
+
+  .partner-marquee div {
+    grid-template-columns: repeat(3, minmax(130px, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .strategy-section {
+    padding-inline: 20px;
+  }
+
+  .strategy-section .step-list {
+    padding-left: 52px;
+  }
+
+  .strategy-section .step-list article {
+    padding: 22px 20px 22px 92px;
+  }
+
+  .strategy-section .step-list article span {
+    left: -86px;
+    font-size: 28px;
+  }
+
+  .strategy-section .step-list article::before {
+    left: -45px;
+  }
+
+  .strategy-section .step-list article::after {
+    width: 52px;
+    height: 52px;
+    left: 20px;
+  }
+
+  .strategy-section .project-number {
+    min-height: auto;
+    padding: 34px 24px;
+    border-radius: 28px;
+  }
+
+  .strategy-section .project-number p::before,
+  .strategy-section .project-number p::after {
+    display: block;
+    width: 100%;
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .strategy-section .project-number p::after {
+    margin-top: 18px;
+  }
+
+  .partner-marquee {
+    width: min(100%, calc(100vw - 48px));
+  }
+
+  .partner-marquee div {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+
+  .partner-band::before,
+  .partner-band::after {
+    display: none;
+  }
+}

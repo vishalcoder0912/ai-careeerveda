@@ -1,0 +1,6234 @@
+{
+  "info": {
+    "name": "CareerVeda API",
+    "description": "Every endpoint in the Express backend, plus the two Vercel functions.\n\n**Start here:** set `baseUrl`, `adminEmail`, `adminPassword` in the collection variables, then run `Auth > Login`. Its test script writes `accessToken` and `csrfToken` for everything else.\n\nAuth model: Bearer access token for admin routes; httpOnly `cv_refresh` cookie + `X-CSRF-Token` header for refresh/logout only; a shared secret for the cron sync.\n\nAll responses use `{success, data, meta}`; lists add `meta.pagination`.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "description": "Unversioned, outside /api. No auth.",
+      "item": [
+        {
+          "name": "Liveness",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": "Always 200 while the process is up. Does NOT check MongoDB."
+          }
+        },
+        {
+          "name": "Readiness",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ready",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ready"
+              ]
+            },
+            "description": "200 when MongoDB is connected, 503 when it is not."
+          }
+        },
+        {
+          "name": "Route map (dev only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/routes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "routes"
+              ]
+            },
+            "description": "404s in production on purpose."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "description": "Login first — its test script populates {{accessToken}} for the whole collection.",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const b = pm.response.json();",
+                  "pm.test(\"login ok\", () => pm.response.to.have.status(200));",
+                  "if (b.data && b.data.accessToken) {",
+                  "  pm.collectionVariables.set(\"accessToken\", b.data.accessToken);",
+                  "  pm.collectionVariables.set(\"csrfToken\", b.data.csrfToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Run this first. The test script stores accessToken + csrfToken as collection variables; every other request reads {{accessToken}}. Sets cv_refresh (httpOnly) and cv_csrf cookies. Rate limit: authLimiter."
+          }
+        },
+        {
+          "name": "Refresh",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const b = pm.response.json();",
+                  "pm.test(\"login ok\", () => pm.response.to.have.status(200));",
+                  "if (b.data && b.data.accessToken) {",
+                  "  pm.collectionVariables.set(\"accessToken\", b.data.accessToken);",
+                  "  pm.collectionVariables.set(\"csrfToken\", b.data.csrfToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/refresh",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh"
+              ]
+            },
+            "description": "Cookie-authenticated (cv_refresh), no Bearer. Requires the X-CSRF-Token header to match the cv_csrf cookie. Rotates both."
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "me"
+              ]
+            },
+            "description": "Current admin + resolved permissions."
+          }
+        },
+        {
+          "name": "List sessions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/sessions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "sessions"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Revoke session",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/sessions/{{sessionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "sessions",
+                "{{sessionId}}"
+              ]
+            },
+            "description": "sessionId = a 24-hex id from List sessions."
+          }
+        },
+        {
+          "name": "Change password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"{{adminPassword}}\",\n  \"newPassword\": \"NewStr0ng!Passw0rd\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/change-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "change-password"
+              ]
+            },
+            "description": "Strength is enforced server-side. Revokes other sessions."
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout"
+              ]
+            },
+            "description": "Cookie + CSRF, not Bearer. Always 200."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Public",
+      "description": "No auth. Rate limit: publicLimiter. Responses are ETagged and CDN-cached.",
+      "item": [
+        {
+          "name": "List programs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/programs?page=1&limit=20&search=&category=&featured=true&sort=&order=desc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "programs"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "featured",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "sort",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "order",
+                  "value": "desc",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Published only. Returns ETag — resend with If-None-Match to get a 304. No status/includeDeleted accepted here."
+          }
+        },
+        {
+          "name": "Get programs by slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/programs/{{programsSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "programs",
+                "{{programsSlug}}"
+              ]
+            },
+            "description": "404 for drafts and for missing records alike — deliberately indistinguishable."
+          }
+        },
+        {
+          "name": "List faculty",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/faculty?page=1&limit=20&search=&category=&featured=true&sort=&order=desc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "faculty"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "featured",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "sort",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "order",
+                  "value": "desc",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Published only. Returns ETag — resend with If-None-Match to get a 304. No status/includeDeleted accepted here."
+          }
+        },
+        {
+          "name": "Get faculty by slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/faculty/{{facultySlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "faculty",
+                "{{facultySlug}}"
+              ]
+            },
+            "description": "404 for drafts and for missing records alike — deliberately indistinguishable."
+          }
+        },
+        {
+          "name": "List alumni",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/alumni?page=1&limit=20&search=&category=&featured=true&sort=&order=desc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "alumni"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "featured",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "sort",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "order",
+                  "value": "desc",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Published only. Returns ETag — resend with If-None-Match to get a 304. No status/includeDeleted accepted here."
+          }
+        },
+        {
+          "name": "Get alumni by slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/alumni/{{alumniSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "alumni",
+                "{{alumniSlug}}"
+              ]
+            },
+            "description": "404 for drafts and for missing records alike — deliberately indistinguishable."
+          }
+        },
+        {
+          "name": "List blogs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/blogs?page=1&limit=20&search=&category=&featured=true&sort=&order=desc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "blogs"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "featured",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "sort",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "order",
+                  "value": "desc",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Published only. Returns ETag — resend with If-None-Match to get a 304. No status/includeDeleted accepted here."
+          }
+        },
+        {
+          "name": "Get blogs by slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/blogs/{{blogsSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "blogs",
+                "{{blogsSlug}}"
+              ]
+            },
+            "description": "404 for drafts and for missing records alike — deliberately indistinguishable."
+          }
+        },
+        {
+          "name": "List jobs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/jobs?page=1&limit=20&search=&category=&featured=true&sort=&order=desc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "jobs"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "featured",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "sort",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "order",
+                  "value": "desc",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Published only. Returns ETag — resend with If-None-Match to get a 304. No status/includeDeleted accepted here."
+          }
+        },
+        {
+          "name": "Get jobs by slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/jobs/{{jobsSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "jobs",
+                "{{jobsSlug}}"
+              ]
+            },
+            "description": "404 for drafts and for missing records alike — deliberately indistinguishable."
+          }
+        },
+        {
+          "name": "List policies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/policies?page=1&limit=20&search=&category=&featured=true&sort=&order=desc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "policies"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "featured",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "sort",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "order",
+                  "value": "desc",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Published only. Returns ETag — resend with If-None-Match to get a 304. No status/includeDeleted accepted here."
+          }
+        },
+        {
+          "name": "Get policies by slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/policies/{{policiesSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "policies",
+                "{{policiesSlug}}"
+              ]
+            },
+            "description": "404 for drafts and for missing records alike — deliberately indistinguishable."
+          }
+        },
+        {
+          "name": "List faqs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/faqs?page=1&limit=20&search=&category=&featured=true&sort=&order=desc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "faqs"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "featured",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "sort",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "order",
+                  "value": "desc",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Published only. Returns ETag — resend with If-None-Match to get a 304. No status/includeDeleted accepted here."
+          }
+        },
+        {
+          "name": "Get faqs by slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/faqs/{{faqsSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "faqs",
+                "{{faqsSlug}}"
+              ]
+            },
+            "description": "404 for drafts and for missing records alike — deliberately indistinguishable."
+          }
+        },
+        {
+          "name": "Submit lead (public form)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"consultation\",\n  \"name\": \"Test Lead\",\n  \"email\": \"test.lead@example.com\",\n  \"mobile\": \"9876543210\",\n  \"userType\": \"Student\",\n  \"program\": \"Data Science Bootcamp\",\n  \"message\": \"Please call me back.\",\n  \"sourcePage\": \"/\",\n  \"source\": \"postman\",\n  \"utm\": {\n    \"source\": \"postman\",\n    \"medium\": \"test\",\n    \"campaign\": \"api-check\",\n    \"term\": \"\",\n    \"content\": \"\"\n  },\n  \"consent\": true,\n  \"company\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/leads",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "leads"
+              ]
+            },
+            "description": "The only unauthenticated write in the API. `company` is a honeypot — fill it and you get 200 with nothing written. mobile must be an Indian mobile (+91 optional, starts 6-9, 10 digits). type: consultation | enrollment | contact (see Lead model). Rate limit: formLimiter, per IP."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin — Content",
+      "description": "All require a Bearer token and the resource's permission. Rate limit: adminLimiter.",
+      "item": [
+        {
+          "name": "programs",
+          "description": "",
+          "item": [
+            {
+              "name": "List",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/programs?page=1&limit=20&search=&status=draft&category=&featured=true&sort=updatedAt&order=desc&includeDeleted=true",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "programs"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    },
+                    {
+                      "key": "search",
+                      "value": "",
+                      "disabled": true
+                    },
+                    {
+                      "key": "status",
+                      "value": "draft",
+                      "disabled": true
+                    },
+                    {
+                      "key": "category",
+                      "value": "",
+                      "disabled": true
+                    },
+                    {
+                      "key": "featured",
+                      "value": "true",
+                      "disabled": true
+                    },
+                    {
+                      "key": "sort",
+                      "value": "updatedAt",
+                      "disabled": true
+                    },
+                    {
+                      "key": "order",
+                      "value": "desc",
+                      "disabled": true
+                    },
+                    {
+                      "key": "includeDeleted",
+                      "value": "true",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "status: draft | in_review | scheduled | published | archived."
+              }
+            },
+            {
+              "name": "Create",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const b = pm.response.json();",
+                      "if (b.data && b.data._id) pm.collectionVariables.set(\"programsId\", b.data._id);"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Data Science Bootcamp\",\n  \"slug\": \"data-science-bootcamp\",\n  \"category\": \"Technology\",\n  \"description\": \"A hands-on program.\",\n  \"duration\": \"6 months\",\n  \"featured\": true,\n  \"displayOrder\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/programs",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "programs"
+                  ]
+                },
+                "description": "Stores the new _id into {{programsId}}. Created as a draft — status is not settable here."
+              }
+            },
+            {
+              "name": "Get by id",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/programs/{{programsId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "programs",
+                    "{{programsId}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Get by slug",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/programs/slug/{{programsSlug}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "programs",
+                    "slug",
+                    "{{programsSlug}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Update (PATCH)",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Data Science Bootcamp\",\n  \"revision\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/programs/{{programsId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "programs",
+                    "{{programsId}}"
+                  ]
+                },
+                "description": "Partial. `revision` is the optimistic-concurrency check — send the value you last read or you get a conflict."
+              }
+            },
+            {
+              "name": "Update (PUT)",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Data Science Bootcamp\",\n  \"slug\": \"data-science-bootcamp\",\n  \"category\": \"Technology\",\n  \"description\": \"A hands-on program.\",\n  \"duration\": \"6 months\",\n  \"featured\": true,\n  \"displayOrder\": 1,\n  \"revision\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/programs/{{programsId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "programs",
+                    "{{programsId}}"
+                  ]
+                },
+                "description": "Alias for PATCH, same semantics."
+              }
+            },
+            {
+              "name": "Submit for review",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/programs/{{programsId}}/submit-review",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "programs",
+                    "{{programsId}}",
+                    "submit-review"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Publish",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/programs/{{programsId}}/publish",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "programs",
+                    "{{programsId}}",
+                    "publish"
+                  ]
+                },
+                "description": "Send {} to publish now, or {\"scheduledAt\":\"2026-12-31T00:00:00.000Z\"} to schedule."
+              }
+            },
+            {
+              "name": "Unpublish",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/programs/{{programsId}}/unpublish",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "programs",
+                    "{{programsId}}",
+                    "unpublish"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Archive",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"Superseded\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/programs/{{programsId}}/archive",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "programs",
+                    "{{programsId}}",
+                    "archive"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Duplicate",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/programs/{{programsId}}/duplicate",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "programs",
+                    "{{programsId}}",
+                    "duplicate"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Revisions",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/programs/{{programsId}}/revisions",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "programs",
+                    "{{programsId}}",
+                    "revisions"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Rollback to revision",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/programs/{{programsId}}/rollback/1",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "programs",
+                    "{{programsId}}",
+                    "rollback",
+                    "1"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Reorder",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"items\": [\n    {\n      \"id\": \"000000000000000000000000\",\n      \"displayOrder\": 1\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/programs/reorder",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "programs",
+                    "reorder"
+                  ]
+                },
+                "description": "Replace the id with a real 24-hex id. Max 200 items."
+              }
+            },
+            {
+              "name": "Bulk set status",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"000000000000000000000000\"\n  ],\n  \"status\": \"published\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/programs/bulk/status",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "programs",
+                    "bulk",
+                    "status"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Bulk delete",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"000000000000000000000000\"\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/programs/bulk/delete",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "programs",
+                    "bulk",
+                    "delete"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Bulk restore",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"000000000000000000000000\"\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/programs/bulk/restore",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "programs",
+                    "bulk",
+                    "restore"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Soft delete",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/programs/{{programsId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "programs",
+                    "{{programsId}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Restore",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/programs/{{programsId}}/restore",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "programs",
+                    "{{programsId}}",
+                    "restore"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "PERMANENT delete",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/programs/{{programsId}}/permanent",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "programs",
+                    "{{programsId}}",
+                    "permanent"
+                  ]
+                },
+                "description": "Irreversible. Super-admin AND content.purge — both, not either."
+              }
+            }
+          ]
+        },
+        {
+          "name": "faculty",
+          "description": "",
+          "item": [
+            {
+              "name": "List",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faculty?page=1&limit=20&search=&status=draft&category=&featured=true&sort=updatedAt&order=desc&includeDeleted=true",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faculty"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    },
+                    {
+                      "key": "search",
+                      "value": "",
+                      "disabled": true
+                    },
+                    {
+                      "key": "status",
+                      "value": "draft",
+                      "disabled": true
+                    },
+                    {
+                      "key": "category",
+                      "value": "",
+                      "disabled": true
+                    },
+                    {
+                      "key": "featured",
+                      "value": "true",
+                      "disabled": true
+                    },
+                    {
+                      "key": "sort",
+                      "value": "updatedAt",
+                      "disabled": true
+                    },
+                    {
+                      "key": "order",
+                      "value": "desc",
+                      "disabled": true
+                    },
+                    {
+                      "key": "includeDeleted",
+                      "value": "true",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "status: draft | in_review | scheduled | published | archived."
+              }
+            },
+            {
+              "name": "Create",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const b = pm.response.json();",
+                      "if (b.data && b.data._id) pm.collectionVariables.set(\"facultyId\", b.data._id);"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Dr. Asha Rao\",\n  \"slug\": \"asha-rao\",\n  \"role\": \"Lead Instructor\",\n  \"company\": \"CareerVeda\",\n  \"shortBio\": \"15 years in analytics.\",\n  \"displayOrder\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faculty",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faculty"
+                  ]
+                },
+                "description": "Stores the new _id into {{facultyId}}. Created as a draft — status is not settable here."
+              }
+            },
+            {
+              "name": "Get by id",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faculty/{{facultyId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faculty",
+                    "{{facultyId}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Get by slug",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faculty/slug/{{facultySlug}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faculty",
+                    "slug",
+                    "{{facultySlug}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Update (PATCH)",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Dr. Asha Rao\",\n  \"revision\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faculty/{{facultyId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faculty",
+                    "{{facultyId}}"
+                  ]
+                },
+                "description": "Partial. `revision` is the optimistic-concurrency check — send the value you last read or you get a conflict."
+              }
+            },
+            {
+              "name": "Update (PUT)",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Dr. Asha Rao\",\n  \"slug\": \"asha-rao\",\n  \"role\": \"Lead Instructor\",\n  \"company\": \"CareerVeda\",\n  \"shortBio\": \"15 years in analytics.\",\n  \"displayOrder\": 1,\n  \"revision\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faculty/{{facultyId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faculty",
+                    "{{facultyId}}"
+                  ]
+                },
+                "description": "Alias for PATCH, same semantics."
+              }
+            },
+            {
+              "name": "Submit for review",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faculty/{{facultyId}}/submit-review",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faculty",
+                    "{{facultyId}}",
+                    "submit-review"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Publish",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faculty/{{facultyId}}/publish",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faculty",
+                    "{{facultyId}}",
+                    "publish"
+                  ]
+                },
+                "description": "Send {} to publish now, or {\"scheduledAt\":\"2026-12-31T00:00:00.000Z\"} to schedule."
+              }
+            },
+            {
+              "name": "Unpublish",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faculty/{{facultyId}}/unpublish",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faculty",
+                    "{{facultyId}}",
+                    "unpublish"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Archive",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"Superseded\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faculty/{{facultyId}}/archive",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faculty",
+                    "{{facultyId}}",
+                    "archive"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Duplicate",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faculty/{{facultyId}}/duplicate",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faculty",
+                    "{{facultyId}}",
+                    "duplicate"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Revisions",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faculty/{{facultyId}}/revisions",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faculty",
+                    "{{facultyId}}",
+                    "revisions"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Rollback to revision",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faculty/{{facultyId}}/rollback/1",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faculty",
+                    "{{facultyId}}",
+                    "rollback",
+                    "1"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Reorder",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"items\": [\n    {\n      \"id\": \"000000000000000000000000\",\n      \"displayOrder\": 1\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faculty/reorder",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faculty",
+                    "reorder"
+                  ]
+                },
+                "description": "Replace the id with a real 24-hex id. Max 200 items."
+              }
+            },
+            {
+              "name": "Bulk set status",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"000000000000000000000000\"\n  ],\n  \"status\": \"published\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faculty/bulk/status",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faculty",
+                    "bulk",
+                    "status"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Bulk delete",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"000000000000000000000000\"\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faculty/bulk/delete",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faculty",
+                    "bulk",
+                    "delete"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Bulk restore",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"000000000000000000000000\"\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faculty/bulk/restore",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faculty",
+                    "bulk",
+                    "restore"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Soft delete",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faculty/{{facultyId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faculty",
+                    "{{facultyId}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Restore",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faculty/{{facultyId}}/restore",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faculty",
+                    "{{facultyId}}",
+                    "restore"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "PERMANENT delete",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faculty/{{facultyId}}/permanent",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faculty",
+                    "{{facultyId}}",
+                    "permanent"
+                  ]
+                },
+                "description": "Irreversible. Super-admin AND content.purge — both, not either."
+              }
+            }
+          ]
+        },
+        {
+          "name": "alumni",
+          "description": "",
+          "item": [
+            {
+              "name": "List",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/alumni?page=1&limit=20&search=&status=draft&category=&featured=true&sort=updatedAt&order=desc&includeDeleted=true",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "alumni"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    },
+                    {
+                      "key": "search",
+                      "value": "",
+                      "disabled": true
+                    },
+                    {
+                      "key": "status",
+                      "value": "draft",
+                      "disabled": true
+                    },
+                    {
+                      "key": "category",
+                      "value": "",
+                      "disabled": true
+                    },
+                    {
+                      "key": "featured",
+                      "value": "true",
+                      "disabled": true
+                    },
+                    {
+                      "key": "sort",
+                      "value": "updatedAt",
+                      "disabled": true
+                    },
+                    {
+                      "key": "order",
+                      "value": "desc",
+                      "disabled": true
+                    },
+                    {
+                      "key": "includeDeleted",
+                      "value": "true",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "status: draft | in_review | scheduled | published | archived."
+              }
+            },
+            {
+              "name": "Create",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const b = pm.response.json();",
+                      "if (b.data && b.data._id) pm.collectionVariables.set(\"alumniId\", b.data._id);"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Rohit Sharma\",\n  \"slug\": \"rohit-sharma\",\n  \"currentRole\": \"Data Analyst\",\n  \"currentCompany\": \"Acme\",\n  \"graduationYear\": \"2024\",\n  \"quote\": \"Changed my career.\",\n  \"showOnAlumniPage\": true\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/alumni",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "alumni"
+                  ]
+                },
+                "description": "Stores the new _id into {{alumniId}}. Created as a draft — status is not settable here."
+              }
+            },
+            {
+              "name": "Get by id",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/alumni/{{alumniId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "alumni",
+                    "{{alumniId}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Get by slug",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/alumni/slug/{{alumniSlug}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "alumni",
+                    "slug",
+                    "{{alumniSlug}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Update (PATCH)",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Rohit Sharma\",\n  \"revision\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/alumni/{{alumniId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "alumni",
+                    "{{alumniId}}"
+                  ]
+                },
+                "description": "Partial. `revision` is the optimistic-concurrency check — send the value you last read or you get a conflict."
+              }
+            },
+            {
+              "name": "Update (PUT)",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Rohit Sharma\",\n  \"slug\": \"rohit-sharma\",\n  \"currentRole\": \"Data Analyst\",\n  \"currentCompany\": \"Acme\",\n  \"graduationYear\": \"2024\",\n  \"quote\": \"Changed my career.\",\n  \"showOnAlumniPage\": true,\n  \"revision\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/alumni/{{alumniId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "alumni",
+                    "{{alumniId}}"
+                  ]
+                },
+                "description": "Alias for PATCH, same semantics."
+              }
+            },
+            {
+              "name": "Submit for review",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/alumni/{{alumniId}}/submit-review",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "alumni",
+                    "{{alumniId}}",
+                    "submit-review"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Publish",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/alumni/{{alumniId}}/publish",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "alumni",
+                    "{{alumniId}}",
+                    "publish"
+                  ]
+                },
+                "description": "Send {} to publish now, or {\"scheduledAt\":\"2026-12-31T00:00:00.000Z\"} to schedule."
+              }
+            },
+            {
+              "name": "Unpublish",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/alumni/{{alumniId}}/unpublish",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "alumni",
+                    "{{alumniId}}",
+                    "unpublish"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Archive",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"Superseded\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/alumni/{{alumniId}}/archive",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "alumni",
+                    "{{alumniId}}",
+                    "archive"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Duplicate",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/alumni/{{alumniId}}/duplicate",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "alumni",
+                    "{{alumniId}}",
+                    "duplicate"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Revisions",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/alumni/{{alumniId}}/revisions",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "alumni",
+                    "{{alumniId}}",
+                    "revisions"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Rollback to revision",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/alumni/{{alumniId}}/rollback/1",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "alumni",
+                    "{{alumniId}}",
+                    "rollback",
+                    "1"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Reorder",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"items\": [\n    {\n      \"id\": \"000000000000000000000000\",\n      \"displayOrder\": 1\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/alumni/reorder",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "alumni",
+                    "reorder"
+                  ]
+                },
+                "description": "Replace the id with a real 24-hex id. Max 200 items."
+              }
+            },
+            {
+              "name": "Bulk set status",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"000000000000000000000000\"\n  ],\n  \"status\": \"published\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/alumni/bulk/status",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "alumni",
+                    "bulk",
+                    "status"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Bulk delete",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"000000000000000000000000\"\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/alumni/bulk/delete",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "alumni",
+                    "bulk",
+                    "delete"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Bulk restore",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"000000000000000000000000\"\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/alumni/bulk/restore",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "alumni",
+                    "bulk",
+                    "restore"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Soft delete",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/alumni/{{alumniId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "alumni",
+                    "{{alumniId}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Restore",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/alumni/{{alumniId}}/restore",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "alumni",
+                    "{{alumniId}}",
+                    "restore"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "PERMANENT delete",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/alumni/{{alumniId}}/permanent",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "alumni",
+                    "{{alumniId}}",
+                    "permanent"
+                  ]
+                },
+                "description": "Irreversible. Super-admin AND content.purge — both, not either."
+              }
+            }
+          ]
+        },
+        {
+          "name": "blogs",
+          "description": "",
+          "item": [
+            {
+              "name": "List",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/blogs?page=1&limit=20&search=&status=draft&category=&featured=true&sort=updatedAt&order=desc&includeDeleted=true",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "blogs"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    },
+                    {
+                      "key": "search",
+                      "value": "",
+                      "disabled": true
+                    },
+                    {
+                      "key": "status",
+                      "value": "draft",
+                      "disabled": true
+                    },
+                    {
+                      "key": "category",
+                      "value": "",
+                      "disabled": true
+                    },
+                    {
+                      "key": "featured",
+                      "value": "true",
+                      "disabled": true
+                    },
+                    {
+                      "key": "sort",
+                      "value": "updatedAt",
+                      "disabled": true
+                    },
+                    {
+                      "key": "order",
+                      "value": "desc",
+                      "disabled": true
+                    },
+                    {
+                      "key": "includeDeleted",
+                      "value": "true",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "status: draft | in_review | scheduled | published | archived."
+              }
+            },
+            {
+              "name": "Create",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const b = pm.response.json();",
+                      "if (b.data && b.data._id) pm.collectionVariables.set(\"blogsId\", b.data._id);"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Breaking Into Data Science\",\n  \"slug\": \"breaking-into-data-science\",\n  \"category\": \"Career\",\n  \"author\": \"CareerVeda Team\",\n  \"excerpt\": \"Where to start.\",\n  \"tags\": [\n    \"career\",\n    \"data\"\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/blogs",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "blogs"
+                  ]
+                },
+                "description": "Stores the new _id into {{blogsId}}. Created as a draft — status is not settable here."
+              }
+            },
+            {
+              "name": "Get by id",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/blogs/{{blogsId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "blogs",
+                    "{{blogsId}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Get by slug",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/blogs/slug/{{blogsSlug}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "blogs",
+                    "slug",
+                    "{{blogsSlug}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Update (PATCH)",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Breaking Into Data Science\",\n  \"revision\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/blogs/{{blogsId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "blogs",
+                    "{{blogsId}}"
+                  ]
+                },
+                "description": "Partial. `revision` is the optimistic-concurrency check — send the value you last read or you get a conflict."
+              }
+            },
+            {
+              "name": "Update (PUT)",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Breaking Into Data Science\",\n  \"slug\": \"breaking-into-data-science\",\n  \"category\": \"Career\",\n  \"author\": \"CareerVeda Team\",\n  \"excerpt\": \"Where to start.\",\n  \"tags\": [\n    \"career\",\n    \"data\"\n  ],\n  \"revision\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/blogs/{{blogsId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "blogs",
+                    "{{blogsId}}"
+                  ]
+                },
+                "description": "Alias for PATCH, same semantics."
+              }
+            },
+            {
+              "name": "Submit for review",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/blogs/{{blogsId}}/submit-review",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "blogs",
+                    "{{blogsId}}",
+                    "submit-review"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Publish",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/blogs/{{blogsId}}/publish",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "blogs",
+                    "{{blogsId}}",
+                    "publish"
+                  ]
+                },
+                "description": "Send {} to publish now, or {\"scheduledAt\":\"2026-12-31T00:00:00.000Z\"} to schedule."
+              }
+            },
+            {
+              "name": "Unpublish",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/blogs/{{blogsId}}/unpublish",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "blogs",
+                    "{{blogsId}}",
+                    "unpublish"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Archive",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"Superseded\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/blogs/{{blogsId}}/archive",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "blogs",
+                    "{{blogsId}}",
+                    "archive"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Duplicate",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/blogs/{{blogsId}}/duplicate",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "blogs",
+                    "{{blogsId}}",
+                    "duplicate"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Revisions",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/blogs/{{blogsId}}/revisions",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "blogs",
+                    "{{blogsId}}",
+                    "revisions"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Rollback to revision",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/blogs/{{blogsId}}/rollback/1",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "blogs",
+                    "{{blogsId}}",
+                    "rollback",
+                    "1"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Reorder",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"items\": [\n    {\n      \"id\": \"000000000000000000000000\",\n      \"displayOrder\": 1\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/blogs/reorder",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "blogs",
+                    "reorder"
+                  ]
+                },
+                "description": "Replace the id with a real 24-hex id. Max 200 items."
+              }
+            },
+            {
+              "name": "Bulk set status",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"000000000000000000000000\"\n  ],\n  \"status\": \"published\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/blogs/bulk/status",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "blogs",
+                    "bulk",
+                    "status"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Bulk delete",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"000000000000000000000000\"\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/blogs/bulk/delete",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "blogs",
+                    "bulk",
+                    "delete"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Bulk restore",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"000000000000000000000000\"\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/blogs/bulk/restore",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "blogs",
+                    "bulk",
+                    "restore"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Soft delete",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/blogs/{{blogsId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "blogs",
+                    "{{blogsId}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Restore",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/blogs/{{blogsId}}/restore",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "blogs",
+                    "{{blogsId}}",
+                    "restore"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "PERMANENT delete",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/blogs/{{blogsId}}/permanent",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "blogs",
+                    "{{blogsId}}",
+                    "permanent"
+                  ]
+                },
+                "description": "Irreversible. Super-admin AND content.purge — both, not either."
+              }
+            }
+          ]
+        },
+        {
+          "name": "jobs",
+          "description": "",
+          "item": [
+            {
+              "name": "List",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/jobs?page=1&limit=20&search=&status=draft&category=&featured=true&sort=updatedAt&order=desc&includeDeleted=true",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "jobs"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    },
+                    {
+                      "key": "search",
+                      "value": "",
+                      "disabled": true
+                    },
+                    {
+                      "key": "status",
+                      "value": "draft",
+                      "disabled": true
+                    },
+                    {
+                      "key": "category",
+                      "value": "",
+                      "disabled": true
+                    },
+                    {
+                      "key": "featured",
+                      "value": "true",
+                      "disabled": true
+                    },
+                    {
+                      "key": "sort",
+                      "value": "updatedAt",
+                      "disabled": true
+                    },
+                    {
+                      "key": "order",
+                      "value": "desc",
+                      "disabled": true
+                    },
+                    {
+                      "key": "includeDeleted",
+                      "value": "true",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "status: draft | in_review | scheduled | published | archived."
+              }
+            },
+            {
+              "name": "Create",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const b = pm.response.json();",
+                      "if (b.data && b.data._id) pm.collectionVariables.set(\"jobsId\", b.data._id);"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Junior Data Analyst\",\n  \"slug\": \"junior-data-analyst\",\n  \"company\": \"Acme\",\n  \"location\": \"Bengaluru\",\n  \"workMode\": \"Hybrid\",\n  \"employmentType\": \"Full-time\",\n  \"skills\": [\n    \"SQL\",\n    \"Python\"\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/jobs",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "jobs"
+                  ]
+                },
+                "description": "Stores the new _id into {{jobsId}}. Created as a draft — status is not settable here."
+              }
+            },
+            {
+              "name": "Get by id",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/jobs/{{jobsId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "jobs",
+                    "{{jobsId}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Get by slug",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/jobs/slug/{{jobsSlug}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "jobs",
+                    "slug",
+                    "{{jobsSlug}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Update (PATCH)",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Junior Data Analyst\",\n  \"revision\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/jobs/{{jobsId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "jobs",
+                    "{{jobsId}}"
+                  ]
+                },
+                "description": "Partial. `revision` is the optimistic-concurrency check — send the value you last read or you get a conflict."
+              }
+            },
+            {
+              "name": "Update (PUT)",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Junior Data Analyst\",\n  \"slug\": \"junior-data-analyst\",\n  \"company\": \"Acme\",\n  \"location\": \"Bengaluru\",\n  \"workMode\": \"Hybrid\",\n  \"employmentType\": \"Full-time\",\n  \"skills\": [\n    \"SQL\",\n    \"Python\"\n  ],\n  \"revision\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/jobs/{{jobsId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "jobs",
+                    "{{jobsId}}"
+                  ]
+                },
+                "description": "Alias for PATCH, same semantics."
+              }
+            },
+            {
+              "name": "Submit for review",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/jobs/{{jobsId}}/submit-review",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "jobs",
+                    "{{jobsId}}",
+                    "submit-review"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Publish",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/jobs/{{jobsId}}/publish",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "jobs",
+                    "{{jobsId}}",
+                    "publish"
+                  ]
+                },
+                "description": "Send {} to publish now, or {\"scheduledAt\":\"2026-12-31T00:00:00.000Z\"} to schedule."
+              }
+            },
+            {
+              "name": "Unpublish",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/jobs/{{jobsId}}/unpublish",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "jobs",
+                    "{{jobsId}}",
+                    "unpublish"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Archive",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"Superseded\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/jobs/{{jobsId}}/archive",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "jobs",
+                    "{{jobsId}}",
+                    "archive"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Duplicate",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/jobs/{{jobsId}}/duplicate",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "jobs",
+                    "{{jobsId}}",
+                    "duplicate"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Revisions",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/jobs/{{jobsId}}/revisions",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "jobs",
+                    "{{jobsId}}",
+                    "revisions"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Rollback to revision",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/jobs/{{jobsId}}/rollback/1",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "jobs",
+                    "{{jobsId}}",
+                    "rollback",
+                    "1"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Reorder",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"items\": [\n    {\n      \"id\": \"000000000000000000000000\",\n      \"displayOrder\": 1\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/jobs/reorder",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "jobs",
+                    "reorder"
+                  ]
+                },
+                "description": "Replace the id with a real 24-hex id. Max 200 items."
+              }
+            },
+            {
+              "name": "Bulk set status",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"000000000000000000000000\"\n  ],\n  \"status\": \"published\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/jobs/bulk/status",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "jobs",
+                    "bulk",
+                    "status"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Bulk delete",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"000000000000000000000000\"\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/jobs/bulk/delete",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "jobs",
+                    "bulk",
+                    "delete"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Bulk restore",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"000000000000000000000000\"\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/jobs/bulk/restore",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "jobs",
+                    "bulk",
+                    "restore"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Soft delete",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/jobs/{{jobsId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "jobs",
+                    "{{jobsId}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Restore",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/jobs/{{jobsId}}/restore",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "jobs",
+                    "{{jobsId}}",
+                    "restore"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "PERMANENT delete",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/jobs/{{jobsId}}/permanent",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "jobs",
+                    "{{jobsId}}",
+                    "permanent"
+                  ]
+                },
+                "description": "Irreversible. Super-admin AND content.purge — both, not either."
+              }
+            }
+          ]
+        },
+        {
+          "name": "policies",
+          "description": "",
+          "item": [
+            {
+              "name": "List",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/policies?page=1&limit=20&search=&status=draft&category=&featured=true&sort=updatedAt&order=desc&includeDeleted=true",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "policies"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    },
+                    {
+                      "key": "search",
+                      "value": "",
+                      "disabled": true
+                    },
+                    {
+                      "key": "status",
+                      "value": "draft",
+                      "disabled": true
+                    },
+                    {
+                      "key": "category",
+                      "value": "",
+                      "disabled": true
+                    },
+                    {
+                      "key": "featured",
+                      "value": "true",
+                      "disabled": true
+                    },
+                    {
+                      "key": "sort",
+                      "value": "updatedAt",
+                      "disabled": true
+                    },
+                    {
+                      "key": "order",
+                      "value": "desc",
+                      "disabled": true
+                    },
+                    {
+                      "key": "includeDeleted",
+                      "value": "true",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "status: draft | in_review | scheduled | published | archived."
+              }
+            },
+            {
+              "name": "Create",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const b = pm.response.json();",
+                      "if (b.data && b.data._id) pm.collectionVariables.set(\"policiesId\", b.data._id);"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Privacy Policy\",\n  \"slug\": \"privacy-policy\",\n  \"eyebrow\": \"Legal\",\n  \"lead\": \"How we handle your data.\",\n  \"version\": \"1.0\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/policies",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "policies"
+                  ]
+                },
+                "description": "Stores the new _id into {{policiesId}}. Created as a draft — status is not settable here."
+              }
+            },
+            {
+              "name": "Get by id",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/policies/{{policiesId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "policies",
+                    "{{policiesId}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Get by slug",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/policies/slug/{{policiesSlug}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "policies",
+                    "slug",
+                    "{{policiesSlug}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Update (PATCH)",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Privacy Policy\",\n  \"revision\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/policies/{{policiesId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "policies",
+                    "{{policiesId}}"
+                  ]
+                },
+                "description": "Partial. `revision` is the optimistic-concurrency check — send the value you last read or you get a conflict."
+              }
+            },
+            {
+              "name": "Update (PUT)",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Privacy Policy\",\n  \"slug\": \"privacy-policy\",\n  \"eyebrow\": \"Legal\",\n  \"lead\": \"How we handle your data.\",\n  \"version\": \"1.0\",\n  \"revision\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/policies/{{policiesId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "policies",
+                    "{{policiesId}}"
+                  ]
+                },
+                "description": "Alias for PATCH, same semantics."
+              }
+            },
+            {
+              "name": "Submit for review",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/policies/{{policiesId}}/submit-review",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "policies",
+                    "{{policiesId}}",
+                    "submit-review"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Publish",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/policies/{{policiesId}}/publish",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "policies",
+                    "{{policiesId}}",
+                    "publish"
+                  ]
+                },
+                "description": "Send {} to publish now, or {\"scheduledAt\":\"2026-12-31T00:00:00.000Z\"} to schedule."
+              }
+            },
+            {
+              "name": "Unpublish",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/policies/{{policiesId}}/unpublish",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "policies",
+                    "{{policiesId}}",
+                    "unpublish"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Archive",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"Superseded\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/policies/{{policiesId}}/archive",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "policies",
+                    "{{policiesId}}",
+                    "archive"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Duplicate",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/policies/{{policiesId}}/duplicate",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "policies",
+                    "{{policiesId}}",
+                    "duplicate"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Revisions",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/policies/{{policiesId}}/revisions",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "policies",
+                    "{{policiesId}}",
+                    "revisions"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Rollback to revision",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/policies/{{policiesId}}/rollback/1",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "policies",
+                    "{{policiesId}}",
+                    "rollback",
+                    "1"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Reorder",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"items\": [\n    {\n      \"id\": \"000000000000000000000000\",\n      \"displayOrder\": 1\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/policies/reorder",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "policies",
+                    "reorder"
+                  ]
+                },
+                "description": "Replace the id with a real 24-hex id. Max 200 items."
+              }
+            },
+            {
+              "name": "Bulk set status",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"000000000000000000000000\"\n  ],\n  \"status\": \"published\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/policies/bulk/status",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "policies",
+                    "bulk",
+                    "status"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Bulk delete",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"000000000000000000000000\"\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/policies/bulk/delete",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "policies",
+                    "bulk",
+                    "delete"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Bulk restore",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"000000000000000000000000\"\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/policies/bulk/restore",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "policies",
+                    "bulk",
+                    "restore"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Soft delete",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/policies/{{policiesId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "policies",
+                    "{{policiesId}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Restore",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/policies/{{policiesId}}/restore",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "policies",
+                    "{{policiesId}}",
+                    "restore"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "PERMANENT delete",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/policies/{{policiesId}}/permanent",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "policies",
+                    "{{policiesId}}",
+                    "permanent"
+                  ]
+                },
+                "description": "Irreversible. Super-admin AND content.purge — both, not either."
+              }
+            }
+          ]
+        },
+        {
+          "name": "faqs",
+          "description": "",
+          "item": [
+            {
+              "name": "List",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faqs?page=1&limit=20&search=&status=draft&category=&featured=true&sort=updatedAt&order=desc&includeDeleted=true",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faqs"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    },
+                    {
+                      "key": "search",
+                      "value": "",
+                      "disabled": true
+                    },
+                    {
+                      "key": "status",
+                      "value": "draft",
+                      "disabled": true
+                    },
+                    {
+                      "key": "category",
+                      "value": "",
+                      "disabled": true
+                    },
+                    {
+                      "key": "featured",
+                      "value": "true",
+                      "disabled": true
+                    },
+                    {
+                      "key": "sort",
+                      "value": "updatedAt",
+                      "disabled": true
+                    },
+                    {
+                      "key": "order",
+                      "value": "desc",
+                      "disabled": true
+                    },
+                    {
+                      "key": "includeDeleted",
+                      "value": "true",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "status: draft | in_review | scheduled | published | archived."
+              }
+            },
+            {
+              "name": "Create",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const b = pm.response.json();",
+                      "if (b.data && b.data._id) pm.collectionVariables.set(\"faqsId\", b.data._id);"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"question\": \"Do you offer placement support?\",\n  \"answer\": \"Yes, for all flagship programs.\",\n  \"slug\": \"placement-support\",\n  \"category\": \"General\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faqs",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faqs"
+                  ]
+                },
+                "description": "Stores the new _id into {{faqsId}}. Created as a draft — status is not settable here."
+              }
+            },
+            {
+              "name": "Get by id",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faqs/{{faqsId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faqs",
+                    "{{faqsId}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Get by slug",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faqs/slug/{{faqsSlug}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faqs",
+                    "slug",
+                    "{{faqsSlug}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Update (PATCH)",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"question\": \"Do you offer placement support?\",\n  \"revision\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faqs/{{faqsId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faqs",
+                    "{{faqsId}}"
+                  ]
+                },
+                "description": "Partial. `revision` is the optimistic-concurrency check — send the value you last read or you get a conflict."
+              }
+            },
+            {
+              "name": "Update (PUT)",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"question\": \"Do you offer placement support?\",\n  \"answer\": \"Yes, for all flagship programs.\",\n  \"slug\": \"placement-support\",\n  \"category\": \"General\",\n  \"revision\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faqs/{{faqsId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faqs",
+                    "{{faqsId}}"
+                  ]
+                },
+                "description": "Alias for PATCH, same semantics."
+              }
+            },
+            {
+              "name": "Submit for review",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faqs/{{faqsId}}/submit-review",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faqs",
+                    "{{faqsId}}",
+                    "submit-review"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Publish",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faqs/{{faqsId}}/publish",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faqs",
+                    "{{faqsId}}",
+                    "publish"
+                  ]
+                },
+                "description": "Send {} to publish now, or {\"scheduledAt\":\"2026-12-31T00:00:00.000Z\"} to schedule."
+              }
+            },
+            {
+              "name": "Unpublish",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faqs/{{faqsId}}/unpublish",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faqs",
+                    "{{faqsId}}",
+                    "unpublish"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Archive",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"Superseded\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faqs/{{faqsId}}/archive",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faqs",
+                    "{{faqsId}}",
+                    "archive"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Duplicate",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faqs/{{faqsId}}/duplicate",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faqs",
+                    "{{faqsId}}",
+                    "duplicate"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Revisions",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faqs/{{faqsId}}/revisions",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faqs",
+                    "{{faqsId}}",
+                    "revisions"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Rollback to revision",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faqs/{{faqsId}}/rollback/1",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faqs",
+                    "{{faqsId}}",
+                    "rollback",
+                    "1"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Reorder",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"items\": [\n    {\n      \"id\": \"000000000000000000000000\",\n      \"displayOrder\": 1\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faqs/reorder",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faqs",
+                    "reorder"
+                  ]
+                },
+                "description": "Replace the id with a real 24-hex id. Max 200 items."
+              }
+            },
+            {
+              "name": "Bulk set status",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"000000000000000000000000\"\n  ],\n  \"status\": \"published\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faqs/bulk/status",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faqs",
+                    "bulk",
+                    "status"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Bulk delete",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"000000000000000000000000\"\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faqs/bulk/delete",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faqs",
+                    "bulk",
+                    "delete"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Bulk restore",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"ids\": [\n    \"000000000000000000000000\"\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faqs/bulk/restore",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faqs",
+                    "bulk",
+                    "restore"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Soft delete",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faqs/{{faqsId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faqs",
+                    "{{faqsId}}"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "Restore",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faqs/{{faqsId}}/restore",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faqs",
+                    "{{faqsId}}",
+                    "restore"
+                  ]
+                },
+                "description": ""
+              }
+            },
+            {
+              "name": "PERMANENT delete",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{accessToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/faqs/{{faqsId}}/permanent",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "faqs",
+                    "{{faqsId}}",
+                    "permanent"
+                  ]
+                },
+                "description": "Irreversible. Super-admin AND content.purge — both, not either."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Admin — Leads",
+      "description": "",
+      "item": [
+        {
+          "name": "List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/leads?page=1&limit=25&type=consultation&status=new&search=&archived=false&from=2026-01-01&to=2026-12-31",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "leads"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "25"
+                },
+                {
+                  "key": "type",
+                  "value": "consultation",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "new",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "archived",
+                  "value": "false",
+                  "disabled": true
+                },
+                {
+                  "key": "from",
+                  "value": "2026-01-01",
+                  "disabled": true
+                },
+                {
+                  "key": "to",
+                  "value": "2026-12-31",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/leads/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "leads",
+                "stats"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Export CSV",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/leads/export?type=consultation&ids=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "leads",
+                "export"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "consultation",
+                  "disabled": true
+                },
+                {
+                  "key": "ids",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Same filters as List, plus `ids` as a comma-separated 24-hex list. Needs forms.export."
+          }
+        },
+        {
+          "name": "Get one",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/leads/{{leadId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "leads",
+                "{{leadId}}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"contacted\",\n  \"archived\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/leads/{{leadId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "leads",
+                "{{leadId}}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Add note",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"body\": \"Called, no answer.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/leads/{{leadId}}/notes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "leads",
+                "{{leadId}}",
+                "notes"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/leads/{{leadId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "leads",
+                "{{leadId}}"
+              ]
+            },
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin — Media",
+      "description": "",
+      "item": [
+        {
+          "name": "List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/media?page=1&limit=24&search=&folder=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "media"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "24"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "folder",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Upload",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": [],
+                  "description": "Pick an image. One file only."
+                },
+                {
+                  "key": "folder",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "alt",
+                  "value": "Alt text",
+                  "type": "text",
+                  "disabled": true
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/media/upload",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "media",
+                "upload"
+              ]
+            },
+            "description": "multipart/form-data — do NOT set Content-Type by hand, Postman sets the boundary. Field name must be `file`. Goes straight to ImageKit; nothing is written to disk. Rate limit: uploadLimiter."
+          }
+        },
+        {
+          "name": "Get one",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/media/{{mediaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "media",
+                "{{mediaId}}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "References",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/media/{{mediaId}}/references",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "media",
+                "{{mediaId}}",
+                "references"
+              ]
+            },
+            "description": "Which content documents use this asset. Check before deleting."
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"hero.jpg\",\n  \"alt\": \"Students in a workshop\",\n  \"caption\": \"Cohort 12\",\n  \"tags\": [\n    \"hero\"\n  ],\n  \"focalPoint\": {\n    \"x\": 0.5,\n    \"y\": 0.4\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/media/{{mediaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "media",
+                "{{mediaId}}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/media/{{mediaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "media",
+                "{{mediaId}}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Restore",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/media/{{mediaId}}/restore",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "media",
+                "{{mediaId}}",
+                "restore"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "PERMANENT delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/media/{{mediaId}}/permanent",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "media",
+                "{{mediaId}}",
+                "permanent"
+              ]
+            },
+            "description": "Destroys the remote ImageKit object. Super-admin AND content.purge."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vercel Functions (marketing site)",
+      "description": "Base URL is the site host ({{siteUrl}}), not the API host. Point {{baseUrl}} at the site or edit these two URLs.",
+      "item": [
+        {
+          "name": "Consultation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"mobile\": \"9876543210\",\n  \"program\": \"Data Science Bootcamp\",\n  \"message\": \"Interested.\",\n  \"company\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/consultation",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "consultation"
+              ]
+            },
+            "description": "Separate from the Express API — these live in /api and run on Vercel. `program` must match a title in src/data/programCatalog.js. `company` is a honeypot."
+          }
+        },
+        {
+          "name": "Enroll",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"mobile\": \"9876543210\",\n  \"program\": \"Data Science Bootcamp\",\n  \"company\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/enroll",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enroll"
+              ]
+            },
+            "description": "Max 2 submissions per person, matched on email OR last-10-digits of mobile."
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "siteUrl",
+      "value": "http://localhost:5173",
+      "type": "string"
+    },
+    {
+      "key": "adminEmail",
+      "value": "admin@careerveda.in",
+      "type": "string"
+    },
+    {
+      "key": "adminPassword",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "csrfToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "sessionId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "leadId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "mediaId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "programsId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "programsSlug",
+      "value": "data-science-bootcamp",
+      "type": "string"
+    },
+    {
+      "key": "facultyId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "facultySlug",
+      "value": "asha-rao",
+      "type": "string"
+    },
+    {
+      "key": "alumniId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "alumniSlug",
+      "value": "rohit-sharma",
+      "type": "string"
+    },
+    {
+      "key": "blogsId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "blogsSlug",
+      "value": "breaking-into-data-science",
+      "type": "string"
+    },
+    {
+      "key": "jobsId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "jobsSlug",
+      "value": "junior-data-analyst",
+      "type": "string"
+    },
+    {
+      "key": "policiesId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "policiesSlug",
+      "value": "privacy-policy",
+      "type": "string"
+    },
+    {
+      "key": "faqsId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "faqsSlug",
+      "value": "placement-support",
+      "type": "string"
+    }
+  ]
+}

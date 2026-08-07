@@ -1,0 +1,78 @@
+# React Doctor — finds security, performance, correctness, accessibility,
+# bundle-size, and architecture issues in React codebases.
+#
+# Docs: https://www.react.doctor/ci
+# Source: https://github.com/millionco/react-doctor
+
+name: React Doctor
+
+on:
+  # Scans the PR's changed files and posts a sticky summary comment listing only the new issues introduced relative to the merge base of the target branch.
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  # Scans `main` on every push to track the health-score trend and catch regressions that slipped past PR review.
+  push:
+    branches: ["main"]
+
+# Read-only by default; the write scopes live on the one job that needs them.
+# A workflow-level write grant applies to every job, including any added later,
+# so Scorecard's Token-Permissions check reports it — the concern is not this
+# job but the next one someone appends without thinking about the token.
+permissions:
+  contents: read
+
+# Grouped per commit, so a run is never cancelled.
+#
+# The usual grouping is per PR with cancel-in-progress: true, and it worked —
+# but GitHub renders a cancelled run as a red X with error annotations on
+# whichever step it killed, which at a glance is indistinguishable from a scan
+# that genuinely found something. Copilot's autofix branches push twice within
+# seconds (the PR opens, then synchronizes), so every one of them produced a
+# spurious failure: run 100 on alert-autofix-204 was cancelled 8 seconds before
+# run 101 passed on the same branch.
+#
+# The cost is runner minutes — each commit now gets its own full scan instead of
+# superseding the one before it. The sticky comment is keyed to the PR, so the
+# last run to finish is still the summary reviewers see.
+concurrency:
+  group: react-doctor-${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  react-doctor:
+    runs-on: ubuntu-latest
+    # A job-level block replaces the workflow default outright rather than
+    # adding to it, so contents: read has to be repeated here for checkout.
+    permissions:
+      contents: read
+      # The sticky summary comment, and the commit status it sets.
+      pull-requests: write
+      issues: write
+      statuses: write
+    steps:
+      # fetch-depth: 0 gives React Doctor the full git history it needs to find the merge base with the target branch. Without it a shallow checkout has no merge base, so PR runs can't compare against the base and fall back to reporting every issue in the changed files (pre-existing ones included) instead of only the ones the PR introduced.
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - uses: millionco/react-doctor@01820bb4fd4d0a4aebcd8df2b2a143a098649cb2 # v2
+        # Advisory by default: React Doctor reports findings on every PR — a
+        # sticky summary comment, inline review comments, and a commit status
+        # with the health score — but never fails the check, so it won't red-X
+        # a teammate's PR on day one. When your team trusts the signal, graduate
+        # the gate: uncomment the block below and set blocking to "error" (fail
+        # on new error-severity findings) or "warning" (fail on any finding).
+        # Full reference: https://www.react.doctor/ci
+        # with:
+        #   blocking: error          # Gate level: "none" (advisory, the default) | "warning" | "error"
+        #   scope: full              # On PRs, scan the whole project instead of just changed files
+        #   comment: false           # Disable the sticky PR summary comment
+        #   review-comments: false   # Disable inline review comments on changed lines
+        #   commit-status: false     # Disable the commit status (score + counts, links to the run)
+        #   version: "0.4.0"         # Pin to a specific react-doctor version instead of "latest"
+        #   directory: apps/web      # Scan a sub-directory (default: ".")
+        #   project: "web,admin"     # In a monorepo, scan specific workspace project(s)

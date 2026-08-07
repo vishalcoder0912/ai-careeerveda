@@ -1,0 +1,34 @@
+.git
+.github
+.claude
+.codex
+node_modules
+**/node_modules
+dist
+**/dist
+test-results
+coverage
+graphify-out
+e2e
+*.log
+.env
+**/.env
+
+# Both root-context images (Dockerfile and admin/Dockerfile) COPY an explicit
+# list of paths, so nothing below is ever in an image — it is only context sent
+# to the daemon on every build. `admin` is deliberately absent: admin/Dockerfile
+# builds from this same root context and needs it.
+#
+# The backend builds from ./backend against its own .dockerignore, so its source
+# has no reason to be here either.
+backend
+api
+tests
+playwright.config.js
+doctor.config.mjs
+eslint.config.js
+cloudbuild.yaml
+compose.yaml
+Dockerfile
+*.md
+LICENSE

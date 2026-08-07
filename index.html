@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      href="https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/brand/cvfavicon-039eb18e.jpg?tr=w-64&updatedAt=1783702268532"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/brand/cvfavicon-039eb18e.jpg?tr=w-180&updatedAt=1783702268532"
+    />
+    <!-- These are the crawler-visible defaults. seoTags.js rewrites them per
+         route once React boots, which Google honours because it executes JS —
+         but Facebook, LinkedIn, WhatsApp and X read this raw HTML and never run
+         a line of it. So whatever is written here is what every shared link
+         shows, for every URL on the site. It describes the organisation rather
+         than "the landing page", which is what it said before and which is not
+         a sentence anyone searching for a course wants to read. -->
+    <meta
+      name="description"
+      content="CareerVeda offers mentor-led PG programs in Product Management, Data Analytics, Data Science with AI, Investment Banking, Cybersecurity and Data Engineering — with placement assistance and industry projects."
+    />
+    <!-- Apex, not www — this must match SITE_URL in src/config/siteMeta.js, which
+         nginx.conf 301s www to. prerender.mjs rewrites this per route, so the
+         literal here only ships on a route the prerender missed; when that
+         happens it should still name the host that answers rather than the one
+         that redirects. -->
+    <link rel="canonical" href="https://careerveda.in/" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="theme-color" content="#0b1220" />
+
+    <meta property="og:site_name" content="CareerVeda" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://careerveda.in/" />
+    <meta property="og:title" content="CareerVeda — AI-Powered Career Platform" />
+    <meta
+      property="og:description"
+      content="Mentor-led PG programs in Product Management, Data Analytics, Data Science with AI, Investment Banking, Cybersecurity and Data Engineering, with placement assistance."
+    />
+    <meta
+      property="og:image"
+      content="https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/brand/cvfavicon-039eb18e.jpg?tr=w-1200,h-630,cm-pad_resize,bg-0B1220"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_IN" />
+
+    <!-- summary_large_image, not summary: the small card crops a 1200x630 image
+         to a square thumbnail and throws most of it away. -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="CareerVeda — AI-Powered Career Platform" />
+    <meta
+      name="twitter:description"
+      content="Mentor-led PG programs with placement assistance in product, analytics, AI, finance and security."
+    />
+    <meta
+      name="twitter:image"
+      content="https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/brand/cvfavicon-039eb18e.jpg?tr=w-1200,h-630,cm-pad_resize,bg-0B1220"
+    />
+
+    <!-- Every image on the site comes from ImageKit. Opening the connection here
+         means the first card image is not also paying for DNS + TLS. -->
+    <link rel="preconnect" href="https://ik.imagekit.io" crossorigin />
+    <link rel="dns-prefetch" href="https://ik.imagekit.io" />
+
+    <!-- fonts.css used to be an @import at the top of styles.css, which the
+         browser can only discover after it has downloaded and parsed styles.css:
+         a blocking request chained behind another blocking request. As a <link>
+         it is fetched in parallel with the stylesheet instead. -->
+    <link rel="stylesheet" href="/fonts/fonts.css" />
+    <!-- One variable file per family now covers every weight the site uses, so
+         there are two fonts to preload instead of the six Inter weights that
+         used to be fetched separately. -->
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/inter-var-latin.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/manrope-var-latin.woff2"
+      crossorigin
+    />
+
+    <title>CareerVeda</title>
+
+    <!-- Google Analytics 4. send_page_view is off because this is a single-page
+         app: the tag loads once, but the visitor moves through a dozen routes
+         without another document load. RouteMeta in App.jsx sends the page_view
+         on every location change, first one included — so GA sees every route,
+         and the landing page is not counted twice. -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1P67KR40MJ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-1P67KR40MJ", {send_page_view: false});
+    </script>
+
+    <!-- The app is client-rendered, so until React boots there is nothing in the
+         document to show. Painting the page's own background on the root element
+         means that stretch reads as the site loading rather than as a white flash,
+         and because the colour matches what React renders, nothing changes when it
+         mounts. No placeholder element: a splash that gets torn down is one more
+         thing to see, and the visitor did not ask to look at it. -->
+    <style>
+      html {
+        background: #0b1220
+          radial-gradient(circle at 50% 30%, #16233d 0%, #0b1220 70%) no-repeat;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

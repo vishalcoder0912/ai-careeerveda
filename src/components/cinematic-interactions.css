@@ -1,0 +1,186 @@
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  width: 100%;
+  height: 3px;
+  pointer-events: none;
+  background: linear-gradient(90deg, var(--blue), #8b5cf6, var(--teal));
+  box-shadow: 0 0 28px rgba(37, 99, 235, 0.55);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.section-block,
+.partner-band,
+.consultation-section {
+  background-size: 140% 140%;
+}
+
+/* No `will-change: transform` and no `transform-style: preserve-3d` here, and
+   both were removed rather than never added — they were costing real frames.
+
+   Nothing in this rule animates a transform: the transition list is
+   border-color, box-shadow and background. `will-change: transform` was
+   therefore promoting every one of these elements to its own compositor layer
+   in preparation for an animation that never runs. On the home page that is
+   forty-odd permanent layers — program cards, difference and support grids, the
+   step list, achievers, ratings, reviews, every FAQ row — each holding GPU
+   memory for the life of the page. That is the documented failure mode of
+   will-change: applied broadly it does not speed anything up, it just makes the
+   compositor carry more, and phones feel it first.
+
+   `preserve-3d` was not needed either. The stacking this rule depends on is
+   plain 2D: children are position:relative z-index:1 and the ::after glow is
+   z-index:0, which resolves the same way without a 3D rendering context — and a
+   3D context brings its own layer promotion along with it. */
+.program-card,
+.difference-grid article,
+.support-grid article,
+.step-list article,
+.achiever-grid article,
+.rating-row div,
+.review-grid article,
+.faq-list details,
+.consultation-form {
+  position: relative;
+  overflow: hidden;
+  transition:
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    background 220ms ease;
+}
+
+.program-card > *,
+.difference-grid article > *,
+.support-grid article > *,
+.step-list article > *,
+.achiever-grid article > *,
+.rating-row div > *,
+.review-grid article > *,
+.faq-list details > *,
+.consultation-form > * {
+  position: relative;
+  z-index: 1;
+}
+
+.program-card::after,
+.difference-grid article::after,
+.support-grid article::after,
+.step-list article::after,
+.achiever-grid article::after,
+.rating-row div::after,
+.review-grid article::after,
+.faq-list details::after,
+.consultation-form::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    280px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(37, 99, 235, 0.2),
+    transparent 48%
+  );
+  transition: opacity 220ms ease;
+}
+
+.program-card:hover,
+.support-grid article:hover,
+.achiever-grid article:hover,
+.rating-row div:hover,
+.review-grid article:hover,
+.faq-list details:hover {
+  border-color: rgba(37, 99, 235, 0.28);
+  box-shadow: 0 30px 90px rgba(15, 23, 42, 0.14);
+}
+
+.difference-grid article:hover,
+.step-list article:hover,
+.consultation-form:hover {
+  border-color: rgba(147, 197, 253, 0.34);
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: 0 34px 110px rgba(2, 6, 23, 0.34);
+}
+
+.program-card:hover::after,
+.difference-grid article:hover::after,
+.support-grid article:hover::after,
+.step-list article:hover::after,
+.achiever-grid article:hover::after,
+.rating-row div:hover::after,
+.review-grid article:hover::after,
+.faq-list details:hover::after,
+.consultation-form:hover::after {
+  opacity: 1;
+}
+
+.primary-action,
+.secondary-action,
+.program-card a,
+.consultation-form button {
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    background 220ms ease,
+    color 220ms ease,
+    filter 220ms ease;
+}
+
+.primary-action:hover,
+.secondary-action:hover,
+.program-card a:hover,
+.consultation-form button:hover {
+  transform: translateY(-2px);
+  filter: saturate(1.08);
+  box-shadow: 0 22px 60px rgba(37, 99, 235, 0.34);
+}
+
+.partner-marquee:hover div {
+  animation-play-state: paused;
+}
+
+.faq-list details[open] {
+  border-color: rgba(37, 99, 235, 0.3);
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.08);
+}
+
+@media (hover: none) {
+  .program-card,
+  .difference-grid article,
+  .support-grid article,
+  .step-list article,
+  .achiever-grid article,
+  .rating-row div,
+  .review-grid article,
+  .faq-list details,
+  .consultation-form {
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-progress {
+    display: none;
+  }
+
+  .program-card,
+  .difference-grid article,
+  .support-grid article,
+  .step-list article,
+  .achiever-grid article,
+  .rating-row div,
+  .review-grid article,
+  .faq-list details,
+  .consultation-form,
+  .primary-action,
+  .secondary-action,
+  .program-card a,
+  .consultation-form button {
+    transition: none;
+    transform: none !important;
+  }
+}

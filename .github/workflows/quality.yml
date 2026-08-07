@@ -1,0 +1,492 @@
+# Security, performance and quality scans.
+#
+# Deliberately NOT part of tests.yml. That workflow is the deploy gate — its jobs
+# must stay fast and must fail only on things that genuinely block a release.
+# These scans are slower, and several of them (Lighthouse scores, a fresh CVE in
+# a base image) go red for reasons that are worth a look but are not a reason to
+# stop shipping. Mixing them into the gate is how teams learn to ignore a red X.
+name: Quality
+
+on:
+  pull_request:
+  push:
+    branches: ["main"]
+  # New CVEs land against unchanged code, so a scan that only runs on push
+  # silently goes stale on a quiet week.
+  schedule:
+    - cron: "0 3 * * 1"
+  # Required for the load job below, which is manual-only. Without this trigger
+  # its `if:` condition can never be true and the job silently never runs.
+  workflow_dispatch:
+    inputs:
+      refresh_visual_baselines:
+        description: "Re-record the visual baselines on Linux and upload them as an artifact"
+        type: boolean
+        default: false
+
+# Read-only by default. security-events: write is granted per job (sast, codeql,
+# scorecard, containers) rather than here, because a workflow-level write grant
+# reaches every job in the file — including the ones that only run npm audit or
+# Lighthouse, and including whichever job gets appended next. That breadth is
+# what Scorecard's Token-Permissions check reports.
+permissions:
+  contents: read
+
+jobs:
+  # Code quality (ESLint) is NOT here — it lives in tests.yml, where it gates the
+  # deploy. It is fast and currently green, so there is no reason to demote it to
+  # an advisory scan.
+
+  # ── Dependency scanning ─────────────────────────────────────────────────────
+  # Dependabot (.github/dependabot.yml) opens the PRs; this fails the build when
+  # a high-severity advisory is already present, so a vulnerable dependency
+  # cannot sit unnoticed between Dependabot's weekly runs.
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      # A script rather than an inline `npm audit`, so that an advisory with no
+      # available fix can be waived with a written reason and an expiry date
+      # instead of leaving the build permanently red — and so the same gate can
+      # be run locally before pushing. See .github/scripts/audit.mjs.
+      - name: npm audit (production dependencies)
+        run: node .github/scripts/audit.mjs
+
+  # Complements the audit job rather than repeating it. That one asks "is anything
+  # vulnerable in this tree"; this asks "does this PR ADD something vulnerable" —
+  # and answers before the merge rather than on the next scheduled run. It also
+  # catches licence changes, which nothing else here looks at.
+  #
+  # pull_request only: the action diffs the base ref against the head ref, and on
+  # a push there is no such pair to compare.
+  dependency-review:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4.9.0
+        # The action needs the repository's Dependency graph switched on, and it
+        # fails hard when it is not — "Dependency review is not supported on this
+        # repository" — which is a repository setting talking, not a finding
+        # about the code. Without this guard that configuration error blocks
+        # every pull request.
+        #
+        # This repository is public, so the graph is the only requirement (on a
+        # PRIVATE repository the action additionally needs GitHub Advanced
+        # Security, and no workflow change can substitute for it):
+        #
+        #   Settings -> Advanced Security -> Dependency graph -> Enable
+        #
+        # REMOVE this line once that is on. It suppresses genuine findings too,
+        # so while it is here `fail-on-severity` below cannot actually fail
+        # anything — the step turns red in the UI and the job stays green.
+        continue-on-error: true
+        with:
+          # high, not critical: by the time something is scored critical it has
+          # usually been public long enough that it should never have reached a
+          # PR here in the first place.
+          fail-on-severity: high
+          comment-summary-in-pr: on-failure
+
+  # OSV, Google's database. Overlaps npm audit and Dependabot deliberately — the
+  # three draw from different sources (GitHub Advisories, npm's own feed, OSV), so
+  # each sees advisories the others have not picked up yet. The cost of the
+  # overlap is duplicate findings; the cost of not having it is a window.
+  #
+  # All three lockfiles explicitly, because this repo is three npm packages and a
+  # scan of the root alone would miss mongoose, jsonwebtoken and multer entirely —
+  # the same trap .github/dependabot.yml calls out.
+  osv:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: google/osv-scanner-action/osv-scanner-action@9bb69575e74019c2ad085a1860787043adf47ccb # v2.2.4
+        # Advisory, like Trivy. An unfixable transitive advisory should not wedge
+        # every PR in the repository.
+        continue-on-error: true
+        with:
+          # --config explicitly: osv-scanner only auto-discovers an
+          # osv-scanner.toml sitting beside the manifest it is scanning, so the
+          # root file would apply to ./package-lock.json and silently not to the
+          # other two. One config for all three lockfiles instead of three copies
+          # to keep in step.
+          scan-args: |-
+            --config=./osv-scanner.toml
+            --lockfile=./package-lock.json
+            --lockfile=./backend/package-lock.json
+            --lockfile=./admin/package-lock.json
+
+  # ── Static application security testing ─────────────────────────────────────
+  # Runs in CI only: semgrep has no native Windows build, so a developer on this
+  # project cannot run it locally even if they want to.
+  sast:
+    runs-on: ubuntu-latest
+    # Replaces the workflow default rather than extending it, so contents: read
+    # is repeated for checkout. security-events: write is for the SARIF upload.
+    permissions:
+      contents: read
+      security-events: write
+    container:
+      image: semgrep/semgrep
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - run: semgrep ci --config=p/default --config=p/nodejs --config=p/express --config=p/react --sarif --output=semgrep.sarif || true
+      # Code scanning ingests SARIF only on public repositories, or on private
+      # ones with GitHub Advanced Security. Without it the upload is rejected and
+      # the job goes red over a scan that ran perfectly well — so it is
+      # conditional, and the findings are kept as an artifact either way. The
+      # test is `== 'public'` rather than `!...private` on purpose: if the
+      # payload has no repository object the expression is false and the step
+      # skips, where the negated form would be true and fail the job.
+      - uses: github/codeql-action/upload-sarif@4187e74d05793876e9989daffde9c3e66b4acd07 # v3
+        if: ${{ always() && github.event.repository.visibility == 'public' }}
+        with:
+          sarif_file: semgrep.sarif
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: ${{ !cancelled() }}
+        with:
+          name: semgrep-sarif
+          path: semgrep.sarif
+          retention-days: 14
+
+  # ── Secret scanning ─────────────────────────────────────────────────────────
+  # The one scan in this file that is allowed to fail the job outright. Every
+  # other finding here is advisory — a base-image CVE with no patch, a Lighthouse
+  # score, a semgrep maybe. A committed credential is not advisory: it is valid
+  # until it is rotated, and the window starts the moment it is pushed.
+  #
+  # fetch-depth: 0 is the whole point of using gitleaks over a grep of the working
+  # tree. .gitignore has covered .env since early on, so the tree is clean — but a
+  # secret that was committed once and deleted in the next commit is still sitting
+  # in the history, readable by anyone with the repository. A shallow clone sees
+  # only the tip and would report clean on exactly the case worth catching.
+  #
+  # This job going red for the first time is not a CI problem to silence. It means
+  # something is in the history, and deleting the file does not help: the value has
+  # to be ROTATED at the provider (Atlas, ImageKit, the JWT secrets), because a
+  # push cannot be recalled.
+  secrets:
+    runs-on: ubuntu-latest
+    # See the note on the sast job — job-level blocks replace, not extend, so
+    # contents: read is repeated for checkout.
+    #
+    # pull-requests is what this job was missing. On a pull_request event the
+    # action lists the PR's commits to decide what range to scan, and with only
+    # the workflow default it 403d on that call and died with "Resource not
+    # accessible by integration" — a permissions error dressed up as a crash,
+    # reported before it had scanned anything.
+    #
+    # write rather than read because the failing path and the finding path need
+    # different scopes: listing commits is a read, but annotating the PR with a
+    # leak it found is a write. Granting only read fixes today's crash and
+    # reintroduces it on the one run that actually matters.
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ── Semantic code analysis ──────────────────────────────────────────────────
+  # CodeQL is NOT here. It lives in .github/workflows/codeql.yml, and running it
+  # in both places is what produced GitHub's "code scanning configuration error".
+  #
+  # Two analyses may not claim the same category on the same ref. This file used
+  # to analyse javascript-typescript under /language:javascript-typescript on
+  # codeql-action v3, while codeql.yml analysed the same language under the same
+  # category on v4. GitHub cannot tell which is authoritative, so it flagged the
+  # configuration and alerts flipped between open and fixed as the two runs
+  # raced each other.
+  #
+  # codeql.yml won because it is a strict superset: same language, plus `actions`
+  # and `python`, on the newer action. Its matrix now carries the one setting
+  # that was unique to the job deleted from here — queries: security-extended on
+  # javascript-typescript. Semgrep above is unaffected; it overlaps CodeQL
+  # deliberately and uploads under its own category.
+
+  # ── Supply-chain posture ────────────────────────────────────────────────────
+  # OpenSSF Scorecard, which grades the REPOSITORY rather than the code: branch
+  # protection, token permissions, whether Actions are pinned, whether releases
+  # are signed. Nothing else in this file looks at any of that — every other job
+  # here reads the tree, and none of them can see that `main` accepts a direct
+  # push.
+  #
+  # Expect a middling first score, and expect Pinned-Dependencies to be the
+  # loudest complaint: every action in this file is pinned to a moving tag
+  # (@v5, @v4) rather than a commit SHA. That is a real supply-chain finding —
+  # a tag can be repointed at new code — and it is also a trade this repo has
+  # already made in exchange for getting security patches without a PR per
+  # action. Read the score, do not chase it to 10.
+  #
+  # push/schedule only: Scorecard reads repository settings, which a fork's PR
+  # cannot see, so on pull_request it fails on permissions rather than content.
+  scorecard:
+    if: ${{ github.event.repository.visibility == 'public' && (github.event_name == 'push' || github.event_name == 'schedule') }}
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+      # Required by the action even with publish_results off — it requests an
+      # OIDC token to attest where the results came from.
+      id-token: write
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          # Scorecard asks for a clean checkout with no credentials left in the
+          # git config; it reports a finding against itself otherwise.
+          persist-credentials: false
+      - uses: ossf/scorecard-action@62b2cac7ed8198b15735ed49ab1e5cf35480ba46 # v2.4.0
+        with:
+          results_file: scorecard.sarif
+          results_format: sarif
+          # Off by default. Turning it on publishes the score to the public
+          # OpenSSF dashboard under this repository's name — a deliberate act of
+          # disclosure, not a CI detail, so it is left to you.
+          publish_results: false
+      - uses: github/codeql-action/upload-sarif@4187e74d05793876e9989daffde9c3e66b4acd07 # v3
+        if: ${{ !cancelled() }}
+        with:
+          sarif_file: scorecard.sarif
+          category: scorecard
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: ${{ !cancelled() }}
+        with:
+          name: scorecard-sarif
+          path: scorecard.sarif
+          retention-days: 14
+
+  # ── Container scanning ──────────────────────────────────────────────────────
+  # The images ship to Cloud Run, so an unpatched base layer is a production
+  # exposure, not a build-time nit. Scanned per image because they have different
+  # bases: the backend runtime is distroless nodejs22-debian12, the two web
+  # images are nginx-alpine.
+  containers:
+    runs-on: ubuntu-latest
+    # See the note on the sast job — job-level blocks replace, not extend.
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: backend
+            context: ./backend
+            dockerfile: ./backend/Dockerfile
+          - name: frontend
+            context: .
+            dockerfile: ./Dockerfile
+          - name: admin
+            context: .
+            dockerfile: ./admin/Dockerfile
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Build ${{ matrix.name }} image
+        # --pull, matching cloudbuild.yaml. The FROM lines are digest-pinned, so
+        # this no longer pulls anything newer — it verifies the pinned digest
+        # against the registry instead of trusting the local cache. What this
+        # job now reports is the CVE state of the digest currently committed,
+        # which is the honest thing to report: it is what a deploy would ship.
+        run: docker build --pull -t careerveda-${{ matrix.name }}:scan -f ${{ matrix.dockerfile }} ${{ matrix.context }}
+      - name: Trivy scan
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: careerveda-${{ matrix.name }}:scan
+          format: sarif
+          output: trivy-${{ matrix.name }}.sarif
+          severity: HIGH,CRITICAL
+          # Report, do not block. A base-image CVE with no fix released yet would
+          # otherwise wedge every PR on a problem nobody in this repo can fix.
+          exit-code: "0"
+      # Conditional for the same reason as the SAST upload above — see the
+      # comment there.
+      - uses: github/codeql-action/upload-sarif@4187e74d05793876e9989daffde9c3e66b4acd07 # v3
+        if: ${{ always() && github.event.repository.visibility == 'public' }}
+        with:
+          sarif_file: trivy-${{ matrix.name }}.sarif
+          category: trivy-${{ matrix.name }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: ${{ !cancelled() }}
+        with:
+          name: trivy-${{ matrix.name }}-sarif
+          path: trivy-${{ matrix.name }}.sarif
+          retention-days: 14
+
+  # ── Performance + accessibility ─────────────────────────────────────────────
+  # Lighthouse against the real production bundle, not the dev server: the dev
+  # server ships unminified modules and no code splitting, so its numbers say
+  # nothing about what a visitor downloads.
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run build:frontend
+      - name: Serve dist and run Lighthouse
+        run: |
+          npx --yes http-server dist -p 4173 --silent &
+          npx --yes wait-on http://127.0.0.1:4173 -t 60000
+          npx --yes lighthouse http://127.0.0.1:4173 \
+            --output=html --output=json --output-path=./lighthouse \
+            --chrome-flags="--headless --no-sandbox" \
+            --only-categories=performance,accessibility,best-practices,seo
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: ${{ !cancelled() }}
+        with:
+          name: lighthouse-report
+          path: lighthouse.*
+          retention-days: 14
+
+  # ── Visual regression ───────────────────────────────────────────────────────
+  # Here rather than in the deploy gate, for the same reason Trivy is: a failure
+  # is often nothing to do with the code. Playwright names each baseline after
+  # the platform that recorded it, so a shot taken on a workstation
+  # (public-about-chromium-win32.png) is invisible to this runner, which looks
+  # for -chromium-linux.png. Font hinting and GPU compositing then differ enough
+  # between machines that even a matching platform needs a tolerance.
+  #
+  # There is no way to record a Linux baseline on a Windows workstation, so this
+  # job is also how you create them:
+  #
+  #   Actions -> Quality -> Run workflow -> "refresh visual baselines: true"
+  #
+  # That run rewrites every baseline, uploads them as the visual-baselines
+  # artifact, and passes. Download it, unzip over
+  # e2e/accessibility.spec.js-snapshots/, commit, and later runs compare against
+  # them. Review the images before committing — this records whatever the page
+  # looks like today, including a regression.
+  visual:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm ci --prefix backend
+      - run: npm ci --prefix admin
+      - run: npx playwright install --with-deps chromium
+      - name: Visual regression
+        # continue-on-error, not `|| true`: the step still reports red in the UI
+        # so a real diff is visible, while the job stays green so nothing here
+        # can wedge a PR. Same trade as the Trivy scan above.
+        continue-on-error: true
+        run: |
+          # github.event.inputs rather than inputs: this workflow also runs on
+          # push, pull_request and schedule, where the inputs context does not
+          # exist. This form evaluates to an empty string there instead.
+          if [ "${{ github.event.inputs.refresh_visual_baselines }}" = "true" ]; then
+            npx playwright test --grep @visual --update-snapshots
+          else
+            npx playwright test --grep @visual
+          fi
+      - name: Upload baselines
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: visual-baselines
+          path: e2e/accessibility.spec.js-snapshots/
+          retention-days: 14
+      # The diff images, so a failure can be judged without rerunning anything.
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: ${{ !cancelled() }}
+        with:
+          name: visual-diffs
+          path: test-results/
+          retention-days: 7
+
+  # ── Load and stress ─────────────────────────────────────────────────────────
+  # Manual only. A load test on every PR burns runner minutes to measure the
+  # runner, not the service — the number that matters comes from pointing this at
+  # a real deploy (-e BASE=https://api.<domain>).
+  load:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - run: npm ci --prefix backend
+      - name: Boot the API against an in-memory database
+        run: node scripts/e2e-server.js &
+        working-directory: ./backend
+        env:
+          E2E_API_PORT: "8080"
+      # k6 used to start the instant the step above returned, which it does
+      # immediately — `&` backgrounds the server, it does not wait for it to
+      # listen. The boot downloads and starts an in-memory mongod, which on a
+      # cold runner is always the slow path: playwright.config.js allows 180s for
+      # the same thing. So every run of this job hit a dead port, failed every
+      # request, and tripped the thresholds — a red job that said nothing about
+      # the service. Same wait-on pattern the lighthouse job above already uses.
+      - name: Wait for the API to accept connections
+        run: npx --yes wait-on http://127.0.0.1:8080/health -t 180000
+      - uses: grafana/setup-k6-action@db07bd9765aac508ef18982e52ab937fe633a065 # v1
+      - uses: grafana/run-k6-action@de51a7390bdf0ac85a3bef493691bd71d4c7c158 # v1
+        with:
+          path: tests/load/public-read.js
