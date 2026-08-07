@@ -129,7 +129,7 @@ jobs:
           # Workload Identity Federation (workload_identity_provider +
           # service_account) when you want keyless auth with no key to rotate.
           credentials_json: ${{ secrets.GCP_SA_KEY }}
-      - uses: google-github-actions/setup-gcloud@e427ad8a34f8676edf47cf7d7925499adf3eb74f # v2
+      - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
         with:
           # The script's final domain-mapping step is `gcloud beta`, which would
           # otherwise try to install the component interactively and hang.
