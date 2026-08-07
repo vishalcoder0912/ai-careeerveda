@@ -4,6 +4,12 @@
 **Date:** 2026-07-24. **Branch:** `feature/full-admin-backend-cms`.
 **Mode:** changes applied, nothing committed. Test suite green (59/59).
 
+> **Superseded on CI.** This report predates the move to Jenkins. Every
+> `.github/workflows/*` and Dependabot reference below describes a setup that no
+> longer exists; the gate is now `Jenkinsfile`, which promotes `dev` to `main`
+> only after lint, unit, e2e and build all pass. See the CI / CD section of the
+> README. The rest of the report stands.
+
 ---
 
 ## 1. React Doctor

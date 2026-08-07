@@ -35,7 +35,7 @@ In scope:
 - the Express API under `backend/`
 - the admin panel under `admin/`
 - the public site at the repository root
-- the deployment configuration (`Dockerfile`, `cloudbuild.yaml`, `.github/workflows/`)
+- the deployment configuration (`Dockerfile`, `cloudbuild.yaml`, `Jenkinsfile`)
 
 Out of scope:
 
@@ -47,7 +47,15 @@ Out of scope:
 
 ## Automated scanning
 
-Pull requests and `main` are scanned by CodeQL, Semgrep, Trivy, OSV, gitleaks
-and OpenSSF Scorecard (`.github/workflows/quality.yml`), and dependencies are
-tracked by Dependabot (`.github/dependabot.yml`). Findings from those tools are
-triaged in the repository's Security tab.
+There is currently **no automated scanning**. CodeQL, Semgrep, Trivy, OSV,
+Scorecard and Dependabot all ran from GitHub Actions, which was removed; the
+Jenkins pipeline (`Jenkinsfile`) is a test-and-build gate on what reaches `main`
+and runs none of them.
+
+What remains is manual and only as current as the last time someone ran it:
+gitleaks on commit (`.pre-commit-config.yaml`), and `npm audit` / `osv-scanner`
+(`osv-scanner.toml`) by hand. Base image digests in the Dockerfiles are likewise
+pinned and no longer bumped by anything automatic.
+
+Treat a dependency or container finding as un-triaged until proven otherwise
+rather than assuming a scanner already caught it.

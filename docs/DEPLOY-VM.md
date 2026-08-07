@@ -568,21 +568,26 @@ sudo systemctl reload nginx
 
 ---
 
-## Later — GitHub Actions
+## Later — automating this from Jenkins
 
-When you automate this, **build in the Actions runner, not on the VM**, and
-rsync the finished `dist/` folders over. Three reasons:
+CI here is Jenkins (`Jenkinsfile`), which already builds all three apps on every
+green run of `dev`. It has no deploy stage, deliberately — `main` is a gate on
+what is *tested*, not a trigger for what ships.
 
-- The runner has 4 cores and 16 GB; the VM has 2 shared vCPUs and 4 GB, and
-  during a build the box serving your site is the box compiling it.
+When you do automate it, **build on the Jenkins agent, not on the VM**, and rsync
+the finished `dist/` folders over. Three reasons:
+
+- The agent is a full workstation; the VM has 2 shared vCPUs and 4 GB, and during
+  a build the box serving your site is the box compiling it.
 - A build that fails in CI never touches production. A build that fails on the
   VM has already deleted the previous one.
-- The `VITE_*` values become repository variables, so the class of bug in Step 9
-  cannot recur.
+- The `VITE_*` values live in the pipeline's `environment` block, so the class of
+  bug in Step 9 cannot recur.
 
 The VM side then reduces to: rsync the two `dist/` folders, `git pull` +
-`npm ci --omit=dev --prefix backend`, `pm2 restart careerveda-api`. Needs a
-deploy SSH key in repository secrets.
+`npm ci --omit=dev --prefix backend`, `pm2 restart careerveda-api`. Needs a deploy
+SSH key as a Jenkins credential, and the deploy stage gated on `branch 'main'` so
+only commits the pipeline already promoted can ship.
 
 ---
 

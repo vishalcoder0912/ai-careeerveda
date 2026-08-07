@@ -1,7 +1,12 @@
-# Node 22, matching the version CI builds and tests on (.github/workflows both
-# pin node-version: 22). Node 20 left its maintenance window in April 2026, so
-# it no longer receives security patches — and an image built on a different
-# major than CI verified is a build nobody has actually tested.
+# Node 22. Node 20 left its maintenance window in April 2026, so it no longer
+# receives security patches.
+#
+# This no longer matches CI: the Jenkins pipeline takes node from the build
+# machine's PATH rather than pinning one, so the suite that gates a push may run
+# on a different major than this image. Either pin a NodeJS tool in Jenkins to
+# 22, or move this FROM to whatever the build machine runs — but the two should
+# agree, because an image built on a major CI never verified is a build nobody
+# has actually tested.
 FROM node:22-bookworm-slim@sha256:6c74791e557ce11fc957704f6d4fe134a7bc8d6f5ca4403205b2966bd488f6b3 AS build
 
 WORKDIR /app

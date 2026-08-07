@@ -96,8 +96,9 @@ test.describe("accessibility", () => {
 // invisible to the Linux runner, which then reports "a snapshot doesn't exist"
 // and fails — on a correct page, for a reason nobody on Windows can fix.
 // Font hinting and GPU compositing differ enough between machines that this is
-// not worth fighting: the suite runs on Linux in the Quality workflow, where the
-// baselines match and a diff is advisory. See .github/workflows/quality.yml.
+// not worth fighting. So the Jenkins gate runs `npm run test:e2e`, which is
+// --grep-invert @visual: this suite is a local check (`npm run test:visual`),
+// where a diff is information rather than a blocked push.
 test.describe("visual regression @visual", () => {
   // Both projects run Chromium, so browserName cannot tell them apart — the
   // project name is the only thing that distinguishes desktop from Pixel 7.
