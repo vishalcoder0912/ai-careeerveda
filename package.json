@@ -57,7 +57,7 @@
     "react-router-dom": "^7.18.2",
     "tailwindcss": "^4.3.2",
     "three": "^0.185.1",
-    "vite": "^6.0.7"
+    "vite": "^8.2.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.12.1",
