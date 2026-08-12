@@ -128,11 +128,11 @@ React Doctor is available locally as `npm run doctor`.
 
 ## CI / CD
 
-`Jenkinsfile` is the release gate, and the only thing that writes to `main`.
+`Jenkinsfile` verifies `dev`. GitHub blocks the merge until it is green.
 
 ```
-git push origin dev  ──►  Jenkins  ──►  origin/main
-                            │
+git push origin dev  ──►  Jenkins  ──►  PR dev → main
+                            │              (merge button disabled until green)
                             └─ lint · unit + integration · e2e · build
 ```
 
@@ -143,34 +143,28 @@ git push origin dev  ──►  Jenkins  ──►  origin/main
 | Unit & integration tests  | `npm run test:all`                                       |
 | E2E tests                 | Playwright against the full stack, in-memory DB          |
 | Build                     | `npm run build` × 3 packages                             |
-| Publish to main           | pushes the tested commit to `main` — **`dev` only**      |
 
-Work goes to `dev`. A stage that fails aborts the pipeline before Publish, so
-`main` never receives a commit that was not lint-clean, tested and buildable.
-Any other branch runs the same checks and skips Publish, so a feature branch is
-still verified without being able to promote itself.
-
-The push is not `--force`. `checkout scm` leaves HEAD detached at the exact
-commit that was tested, and pushing it to `main` is rejected if `main` has moved
-on underneath — a build that cannot fast-forward fails and gets looked at rather
-than overwriting someone else's work.
+The pipeline itself writes nothing — it reports a status, and the branch
+protection rule is what refuses the merge. That split is deliberate. A publish
+stage that pushed to `main` itself would need a write-scoped token to rotate,
+would race anyone else merging at the same moment, and would put "what may reach
+main" in two places at once. GitHub already has the checkbox.
 
 ### Setting it up
 
-1. **Jenkins → Manage Jenkins → Credentials → System → Global → Add**
-   - Kind: *Username with password*
-   - Username: your GitHub username
-   - Password: a GitHub **fine-grained Personal Access Token** with
-     *Contents: Read and write* on this repository only
-   - ID: `github-push` ← the pipeline looks this up by name
-2. **New Item → Pipeline**, Pipeline script from SCM, this repo, branch `dev`,
-   script path `Jenkinsfile`. Polls every 5 minutes.
-3. On GitHub, protect `main`: **Settings → Branches → Add rule** on `main`,
-   *Restrict who can push* → the Jenkins token's account. Without this the gate
-   is a convention rather than a rule; anyone can still push straight to `main`.
+1. **New Item → Pipeline**, Pipeline script from SCM, this repo, branch `dev`,
+   script path `Jenkinsfile`. Polls every 5 minutes. The existing read-only
+   credential is enough — the job only clones.
+2. Report the result to GitHub so a PR can see it: install the
+   **GitHub plugin** in Jenkins and tick *GitHub hook trigger* / commit status,
+   or run Jenkins behind the **GitHub Checks** plugin.
+3. **GitHub → Settings → Branches → Add rule** on `main`:
+   *Require a pull request*, *Require status checks to pass*, then select the
+   Jenkins check. Without step 3 the gate is a convention — anyone can still
+   merge or push straight to `main`.
 
-There is no deploy stage. Publishing to `main` is a git push, not a release —
-see *Deploying* below for what ships, which stays a deliberate manual step.
+There is no deploy stage. A green `main` is tested code, not shipped code — see
+*Deploying* below, which stays a deliberate manual step.
 
 ## Deploying
 
