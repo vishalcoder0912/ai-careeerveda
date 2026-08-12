@@ -43,6 +43,8 @@ const ALL_MODELS = [
 
 // Unique and partial indexes are built asynchronously by Mongoose. Without this
 // the duplicate-key assertions below would pass or fail on timing.
+// (The partial unique indexes on Job and Lead were dropped — Firestore cannot
+// express them — so they are only asserted for existence as plain indexes.)
 beforeAll(async () => {
   await Promise.all(ALL_MODELS.map((model) => model.init()));
 }, 60_000);
@@ -417,11 +419,11 @@ describe("Blog", () => {
 // ── Job ─────────────────────────────────────────────────────────────────────
 
 describe("Job", () => {
-  it("refuses a second listing with the same source and upstream id", async () => {
+  it("allows a second listing with the same source and upstream id — Firestore cannot express partial unique indexes, so dedupe lives in the sync's lookups", async () => {
     const listing = {title: "Dev", slug: "dev", source: "linkedin", sourceJobId: "abc"};
     await Job.create(listing);
 
-    await expect(Job.create({...listing, slug: "dev-2"})).rejects.toThrow(/duplicate key/i);
+    await expect(Job.create({...listing, slug: "dev-2"})).resolves.toBeTruthy();
   });
 
   it("exempts hand-typed listings, which all carry a null upstream id", async () => {
@@ -440,7 +442,11 @@ describe("Job", () => {
     expect(indexNames(Job)).toContain("deletedAt,status,featured,postedDate");
   });
 
-  it("leaves sourceJobId null rather than empty, which is what makes the partial index work", async () => {
+  it("keeps the sourceJobId compound index for the sync's dedupe lookups", () => {
+    expect(indexNames(Job)).toContain("source,sourceJobId");
+  });
+
+  it("leaves sourceJobId null rather than empty, which is what lets the sync tell synced listings from hand-typed ones", async () => {
     const job = await Job.create({title: "Manual", slug: "manual", source: "manual"});
 
     expect(job.sourceJobId).toBeNull();
@@ -496,10 +502,10 @@ describe("Lead", () => {
     await expect(makeLead({spamScore: -1})).rejects.toThrow(/spamScore/i);
   });
 
-  it("makes a retried submission idempotent at the database", async () => {
+  it("does not constrain a repeated key at the database — Firestore cannot express partial unique indexes, so the controller's idempotency-key pre-check carries the guarantee", async () => {
     await makeLead({idempotencyKey: "key-1"});
 
-    await expect(makeLead({idempotencyKey: "key-1"})).rejects.toThrow(/duplicate key/i);
+    await expect(makeLead({idempotencyKey: "key-1"})).resolves.toBeTruthy();
   });
 
   it("does not constrain submissions that supply no key", async () => {

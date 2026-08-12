@@ -47,10 +47,15 @@ Out of scope:
 
 ## Automated scanning
 
-There is currently **no automated scanning**. CodeQL, Semgrep, Trivy, OSV,
-Scorecard and Dependabot all ran from GitHub Actions, which was removed; the
-Jenkins pipeline (`Jenkinsfile`) is a test-and-build gate on what reaches `main`
-and runs none of them.
+CodeQL, Semgrep, Trivy, OSV and Scorecard all ran from GitHub Actions, which was
+removed, so **none of them run now**. The Jenkins pipeline (`Jenkinsfile`) is a
+test-and-build gate on what reaches `main` and runs no scanners.
+
+Dependabot's *grouped version updates* were driven by `.github/dependabot.yml`,
+which went with the same removal — the ~19 open `dependabot/*` PRs predate it and
+are the last batch that config will ever produce. Dependabot *security* alerts
+are a repository setting rather than a file, so they may still be active; check
+**Settings → Code security** rather than assuming either way.
 
 What remains is manual and only as current as the last time someone ran it:
 gitleaks on commit (`.pre-commit-config.yaml`), and `npm audit` / `osv-scanner`

@@ -71,17 +71,15 @@ jobSchema.plugin(contentPlugin, {
 // The listing page sorts newest-first within featured; this covers it.
 jobSchema.index({deletedAt: 1, status: 1, featured: -1, postedDate: -1});
 
-// Idempotent ingestion. The hourly sync re-fetches the same listings every run,
-// so the database — not the sync code — is what guarantees one row per upstream
-// job. Partial, so it applies only to synced rows: manual jobs have
-// sourceJobId: null and are exempt rather than all colliding on one value.
+// Idempotent ingestion. The hourly sync re-fetches the same listings every run
+// and deduplicates on sourceJobId + dedupeKey before writing, so one row per
+// upstream job is guaranteed by lookup — not by an index.
 //
-// This index is why a re-run cannot create duplicates even if two Cloud Run
-// instances sync concurrently: the second insert fails on the unique key and is
-// counted as a duplicate instead of becoming a second copy.
-jobSchema.index(
-  {source: 1, sourceJobId: 1},
-  {unique: true, partialFilterExpression: {sourceJobId: {$type: "string"}}},
-);
+// Firestore with MongoDB compatibility cannot express Mongo's partial unique
+// index (partialFilterExpression is unsupported), and a plain unique index
+// would reject every manual job: Firebase indexes absent fields as null, so the
+// second listing with sourceJobId: null would collide. The plain compound index
+// below stays for the $in dedupe lookups.
+jobSchema.index({source: 1, sourceJobId: 1});
 
 export const Job = mongoose.model("Job", jobSchema);

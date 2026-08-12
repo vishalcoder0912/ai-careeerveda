@@ -82,12 +82,16 @@ leadSchema.index({archived: 1, createdAt: -1});
 leadSchema.index({type: 1, status: 1, createdAt: -1});
 // Supports the enrollment cap check, which is an $or over both keys.
 leadSchema.index({emailKey: 1, mobileKey: 1});
-// Idempotency lookups. Sparse and unique: only submissions that supply a key
-// are constrained, and the same key cannot create two leads.
-leadSchema.index(
-  {idempotencyKey: 1},
-  {unique: true, partialFilterExpression: {idempotencyKey: {$type: "string"}}},
-);
+// Idempotency lookups. The controller checks the key before writing (and still
+// maps a duplicate-key write error), so idempotency is enforced at the app
+// layer.
+//
+// Firestore with MongoDB compatibility cannot express Mongo's partial unique
+// index (partialFilterExpression is unsupported), and a plain unique index
+// would reject every lead without a key: Firebase indexes absent fields as
+// null, so the second submission with idempotencyKey: null would collide. The
+// plain index here stays for the lookup.
+leadSchema.index({idempotencyKey: 1});
 
 export const Lead = mongoose.model("Lead", leadSchema);
 
