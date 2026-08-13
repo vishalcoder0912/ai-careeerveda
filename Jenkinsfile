@@ -36,9 +36,10 @@ pipeline {
 
     // Baked into the verification build so `npm run build` exercises the real
     // config. postbuild's snapshot crawl issues read-only GETs against these.
-    VITE_PUBLIC_API_BASE_URL = 'https://backend.careerveda.in/api/v1'
-    VITE_ADMIN_API_BASE_URL  = 'https://backend.careerveda.in/api/v1'
-    VITE_PUBLIC_SITE_URL     = 'https://careerveda.in'
+    // Local-only: no external domains, everything runs on localhost.
+    VITE_PUBLIC_API_BASE_URL = 'http://localhost:8091/api/v1'
+    VITE_ADMIN_API_BASE_URL  = 'http://localhost:8091/api/v1'
+    VITE_PUBLIC_SITE_URL     = 'http://localhost:5293'
   }
 
   options {
