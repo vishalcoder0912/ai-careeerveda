@@ -74,9 +74,12 @@ pipeline {
     }
 
     stage('E2E tests') {
+      options {
+        timeout(time: 10, unit: 'MINUTES')
+      }
       steps {
-        // --with-deps is Linux-only and fails on Windows.
-        bat 'npx playwright install chromium'
+        // --with-deps is Linux-only and fails on Windows. --yes avoids interactive prompts.
+        bat 'npx --yes playwright install chromium'
         bat 'npm run test:e2e'
       }
     }

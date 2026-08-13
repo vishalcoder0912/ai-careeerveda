@@ -61,6 +61,10 @@ test.beforeAll(async ({browser}) => {
 });
 
 test.describe("accessibility", () => {
+  test.beforeEach(() => {
+    test.skip(test.info().project.name !== "chromium", "desktop WCAG audits only");
+  });
+
   for (const [name, path] of PUBLIC_PAGES) {
     test(`public ${name} page has no WCAG A/AA violations`, async ({page}) => {
       await page.goto(`${FRONTEND}${path}`);

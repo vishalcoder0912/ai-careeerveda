@@ -40,7 +40,7 @@ export const avatarPlaceholder = ({ initials, accent, accentEnd }) => {
 const spotlightProfiles = [
   {
     id: "anant-shiva",
-    imageUrl: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever1-4e81fee0.jpg",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever1-4e81fee0_jpg.webp?updatedAt=1786622628341",
     initials: "AS",
     name: "Anant Shiva",
     hike: "86% Hike",
@@ -51,7 +51,7 @@ const spotlightProfiles = [
   },
   {
     id: "syed-arif",
-    imageUrl: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/SYED-ARIF-b2eea077.jpg",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/SYED-ARIF-b2eea077_jpg.webp?updatedAt=1786622628709",
     initials: "SA",
     name: "Syed Arif",
     hike: "118% Hike",
