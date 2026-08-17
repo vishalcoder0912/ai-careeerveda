@@ -38,6 +38,18 @@ const listQuery = z.object({
   folder: z.enum(ALLOWED_FOLDERS).optional(),
 });
 
+// The URL itself is validated for shape here; the ik.imagekit.io host check
+// lives in the controller, which owns the trusted-host rule.
+const fromUrlBody = z.object({
+  url: z
+    .string()
+    .max(1000)
+    .refine((value) => /^https?:\/\//i.test(value), "URL must start with http(s)"),
+  folder: z.enum(ALLOWED_FOLDERS).optional(),
+  name: z.string().max(300).transform(stripTags).optional(),
+  alt: z.string().max(300).transform(stripTags).optional(),
+});
+
 const updateBody = z.object({
   name: z.string().max(300).transform(stripTags).optional(),
   alt: z.string().max(300).transform(stripTags).optional(),
@@ -46,6 +58,16 @@ const updateBody = z.object({
   focalPoint: z
     .object({x: z.number().min(0).max(1), y: z.number().min(0).max(1)})
     .optional(),
+  // The delivery URL may be rewritten (account moves, CDN changes), but only
+  // to an http(s) address — a javascript: value in an image src is an XSS
+  // vector on some renderers. fileId stays immutable: it is the handle for
+  // deleting the remote object and must describe the bytes actually stored.
+  url: z
+    .string()
+    .max(1000)
+    .refine((value) => /^https?:\/\//i.test(value), "URL must start with http(s)")
+    .optional(),
+  thumbnailUrl: z.string().max(1000).optional(),
 });
 
 mediaRouter.use(authenticate);
@@ -56,6 +78,15 @@ mediaRouter.get(
   validate({query: listQuery}),
   requirePermission(PERMISSIONS.MEDIA_MANAGE),
   media.list,
+);
+
+// Add an existing ImageKit URL to the library without uploading the bytes.
+mediaRouter.post(
+  "/from-url",
+  uploadLimiter,
+  validate({body: fromUrlBody}),
+  requirePermission(PERMISSIONS.MEDIA_MANAGE),
+  media.createFromUrl,
 );
 
 // multer runs before the permission check because the body must be parsed for

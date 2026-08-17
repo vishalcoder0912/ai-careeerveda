@@ -1,4 +1,4 @@
-import {expect} from "@playwright/test";
+﻿import {expect} from "@playwright/test";
 
 import {FRONTEND, ADMIN, API} from "../playwright.config.js";
 
@@ -35,7 +35,7 @@ export const loginAsAdmin = async (page, email = ACCOUNTS.superAdmin) => {
 
 /**
  * The public API as the site sees it. Used to assert publication state
- * independently of any page's caching — if this says a record is gone, the
+ * independently of any page's caching â€” if this says a record is gone, the
  * frontend not showing it is a real result rather than a stale render.
  */
 export const publicList = async (request, resource, params = "") => {
@@ -78,7 +78,7 @@ export const createPublishableProgram = async (request, headers, title) => {
       duration: "6 Months",
       mentorship: ["Expert Trainers"],
       format: "Live Online",
-      image: {url: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/programs/data-c3b60741.jpg"},
+      image: {url: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/data-c3b60741.jpg"},
       overview: ["Overview point"],
       curriculum: ["Curriculum point"],
       outcomes: ["Outcome point"],

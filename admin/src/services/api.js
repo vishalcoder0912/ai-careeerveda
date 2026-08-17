@@ -235,6 +235,8 @@ export const mediaApi = {
     if (alt) form.append("alt", alt);
     return request("/admin/media/upload", {method: "POST", body: form});
   },
+  addFromUrl: (url, {folder, alt} = {}) =>
+    request("/admin/media/from-url", {method: "POST", body: {url, folder, alt}}),
   update: (id, body) => api.patch(`/admin/media/${id}`, body),
   references: (id) => api.get(`/admin/media/${id}/references`),
   remove: (id) => api.delete(`/admin/media/${id}`),

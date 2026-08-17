@@ -1,33 +1,33 @@
-
+﻿
 export const pressLogos = {
   // "IndiaNews24": "/press/indianews24.png",
   // "The Indi-Forbes": "https://ik.imagekit.io/anwnlsdyv/careerveda/press/indiforbes.png",
-  "IndiaNews24": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/press/cropped-India-News24-PNG-b24338bd.png",
-  "The Indi-Forbes": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/press/theindianforbes-df6206e5.png",
-  "Hindustan Insider": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/press/hindustaninsider-9a75e37e.jpg",
-  "Hindustan Metro": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/press/hindustanmetro-cfc1bd68.png",
+  "IndiaNews24": "https://ik.imagekit.io/q7ucn1rfni/careerveda/press/cropped-India-News24-PNG-b24338bd_png.webp?updatedAt=1786622627531",
+  "The Indi-Forbes": "https://ik.imagekit.io/q7ucn1rfni/careerveda/press/theindianforbes-df6206e5_png.jpeg?updatedAt=1786622627715",
+  "Hindustan Insider": "https://ik.imagekit.io/q7ucn1rfni/careerveda/press/hindustaninsider-9a75e37e_jpg.webp?updatedAt=1786622627659",
+  "Hindustan Metro": "https://ik.imagekit.io/q7ucn1rfni/careerveda/press/hindustanmetro-cfc1bd68_png.webp?updatedAt=1786622627861",
   "Hindustan Bytes": "",
-  "The Viral Bytes": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/press/the%20viral%20bytes.jpg",
-  "Punjab Bytes": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/press/punjab_bytes-5a917311.png",
-  "Entrepreneur Hunt": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/press/entrepreneu-hunt-796c3957.png",
-  "TPTV": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/press/tptc-9571c98a.png",
-  "The Daily Beat": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/press/The_daily_beat-fe2d5c62.png",
-  "Influencive India": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/press/influencive_india-47c660cf.png",
-  "InstaStory": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/press/insta_story-523a01e0.png",
-  "DailyHunt": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/press/daily%20hunt%201.jpg",
+  "The Viral Bytes": "https://ik.imagekit.io/q7ucn1rfni/careerveda/press/the%20viral%20bytes.jpg?updatedAt=1786622627558",
+  "Punjab Bytes": "https://ik.imagekit.io/q7ucn1rfni/careerveda/press/punjab_bytes-5a917311_png.webp?updatedAt=1786622627793",
+  "Entrepreneur Hunt": "https://ik.imagekit.io/q7ucn1rfni/careerveda/press/entrepreneu-hunt-796c3957.png?updatedAt=1786622627468",
+  "TPTV": "https://ik.imagekit.io/q7ucn1rfni/careerveda/press/tptc-9571c98a_png.webp?updatedAt=1786622627753",
+  "The Daily Beat": "https://ik.imagekit.io/q7ucn1rfni/careerveda/press/The_daily_beat-fe2d5c62_png.webp?updatedAt=1786622627830",
+  "Influencive India": "https://ik.imagekit.io/q7ucn1rfni/careerveda/press/influencive_india-47c660cf_png.webp?updatedAt=1786622627694",
+  "InstaStory": "https://ik.imagekit.io/q7ucn1rfni/careerveda/press/insta_story-523a01e0_png.webp?updatedAt=1786622627807",
+  "DailyHunt": "https://ik.imagekit.io/q7ucn1rfni/careerveda/press/daily%20hunt%201.jpg",
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  STORY ARTWORK — PUT THE CARD IMAGE URL IN `image` BELOW
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  STORY ARTWORK â€” PUT THE CARD IMAGE URL IN `image` BELOW
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 //
 // Each story card can carry one picture, shown in its top-right corner. Set the
 // `image` field on the article and it appears; leave it "" (or delete the line)
 // and the story simply runs the full width of the card, as it does today.
 //
-// Same rules as the logos: any URL works — an ImageKit link, or a file dropped in
+// Same rules as the logos: any URL works â€” an ImageKit link, or a file dropped in
 // `public/press/` and referenced as "/press/name.jpg". ImageKit URLs are resized
 // on the way out, so you can paste the full-size original. A URL that fails to
 // load removes its own frame rather than leaving a broken image in the corner.
@@ -41,16 +41,16 @@ export const pressArticles = [
     title:
       "CareerVeda Sets New Placement Benchmarks in Product Management & Analytics Programs",
     excerpt:
-      "CareerVeda closed its latest placement season with standout results across its Product Management, Business Analytics, and Data Analytics programs — with over 68% of the Product Management batch placed within just 18 days, driven by practical, mentor-led learning.",
+      "CareerVeda closed its latest placement season with standout results across its Product Management, Business Analytics, and Data Analytics programs â€” with over 68% of the Product Management batch placed within just 18 days, driven by practical, mentor-led learning.",
     stats: [
       ["300+", "Students placed"],
       ["130+", "Recruiters"],
       ["68%", "Placed in 18 days"],
-      ["₹20+ LPA", "Highest package"],
+      ["â‚¹20+ LPA", "Highest package"],
     ],
     highlights: [
-      "72%+ secured packages above ₹10 LPA",
-      "Average package ₹7–10 LPA",
+      "72%+ secured packages above â‚¹10 LPA",
+      "Average package â‚¹7â€“10 LPA",
       "20+ first-time recruiters onboarded",
     ],
     sources: [
@@ -67,7 +67,7 @@ export const pressArticles = [
     title:
       "CareerVeda Recognized as India's Best Institute for Online Upskilling with Placement Support",
     excerpt:
-      "CareerVeda has earned recognition as India's premier online upskilling institute, praised for its industry-aligned programs in Data Science, Business Analytics, and emerging technologies — backed by hands-on projects, real-world case studies, and dedicated placement support.",
+      "CareerVeda has earned recognition as India's premier online upskilling institute, praised for its industry-aligned programs in Data Science, Business Analytics, and emerging technologies â€” backed by hands-on projects, real-world case studies, and dedicated placement support.",
     highlights: [
       "Industry-aligned curriculum",
       "Hands-on projects & case studies",

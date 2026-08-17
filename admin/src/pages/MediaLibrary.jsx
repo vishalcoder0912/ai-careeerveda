@@ -19,6 +19,8 @@ const MediaLibrary = () => {
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [urlValue, setUrlValue] = useState("");
+  const [addingUrl, setAddingUrl] = useState(false);
   const fileInput = useRef(null);
 
   const load = useCallback(async () => {
@@ -71,6 +73,23 @@ const MediaLibrary = () => {
     await load();
   };
 
+  const addFromUrl = async () => {
+    const url = urlValue.trim();
+    if (!url) return;
+
+    setAddingUrl(true);
+    try {
+      const response = await mediaApi.addFromUrl(url);
+      toast.success(response.data.duplicate ? "That URL was already in the library." : "Image added from URL.");
+      setUrlValue("");
+      await load();
+    } catch (failure) {
+      toast.error(failure.message || "Could not add that URL.");
+    } finally {
+      setAddingUrl(false);
+    }
+  };
+
   const askDelete = async (media) => {
     // Ask the API which content uses this image before offering to delete it.
     // The server refuses a referenced delete anyway; showing the list first
@@ -117,6 +136,7 @@ const MediaLibrary = () => {
         name: selected.name,
         alt: selected.alt,
         caption: selected.caption,
+        url: selected.url,
       });
       setSelected(response.data);
       toast.success("Saved.");
@@ -158,6 +178,25 @@ const MediaLibrary = () => {
           onChange={(event) => setSearch(event.target.value)}
         />
       </div>
+
+      <form
+        className="url-add"
+        onSubmit={(event) => {
+          event.preventDefault();
+          addFromUrl();
+        }}
+      >
+        <input
+          type="url"
+          placeholder="Can't pick a file? Paste an ImageKit URL (https://ik.imagekit.io/…)"
+          aria-label="ImageKit URL"
+          value={urlValue}
+          onChange={(event) => setUrlValue(event.target.value)}
+        />
+        <button type="submit" className="btn" disabled={addingUrl || !urlValue.trim()}>
+          {addingUrl ? "Adding…" : "Add URL"}
+        </button>
+      </form>
 
       <div
         className={`drop-zone ${dragging ? "drop-zone--active" : ""}`}
@@ -245,6 +284,14 @@ const MediaLibrary = () => {
             <label className="inline-label">
               Caption
               <input value={selected.caption || ""} onChange={(event) => setSelected({...selected, caption: event.target.value})} />
+            </label>
+            <label className="inline-label">
+              URL
+              <input
+                value={selected.url || ""}
+                placeholder="https://…"
+                onChange={(event) => setSelected({...selected, url: event.target.value})}
+              />
             </label>
 
             <p className="muted">

@@ -31,6 +31,8 @@ export const MediaPicker = ({onSelect, onClose}) => {
   const [folder, setFolder] = useState("");
   const [uploading, setUploading] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [urlValue, setUrlValue] = useState("");
+  const [addingUrl, setAddingUrl] = useState(false);
   const fileInput = useRef(null);
 
   const load = async () => {
@@ -71,6 +73,26 @@ export const MediaPicker = ({onSelect, onClose}) => {
       toast.error(failure.message || "Upload failed.");
     } finally {
       setUploading(false);
+    }
+  };
+
+  // Fallback for when the file cannot be picked — drag-drop or the picker both
+  // failing, a remote file, a URL copied from elsewhere. Registers the URL as
+  // a library item instead of the bytes.
+  const addFromUrl = async () => {
+    const url = urlValue.trim();
+    if (!url) return;
+
+    setAddingUrl(true);
+    try {
+      const response = await mediaApi.addFromUrl(url, {folder: folder || "/careerveda"});
+      const media = response.data.media;
+      toast.success(response.data.duplicate ? "That URL was already in the library." : "Image added from URL.");
+      onSelect(media);
+    } catch (failure) {
+      toast.error(failure.message || "Could not add that URL.");
+    } finally {
+      setAddingUrl(false);
     }
   };
 
@@ -125,6 +147,29 @@ export const MediaPicker = ({onSelect, onClose}) => {
           }}
         >
           Drop an image here to upload it
+        </div>
+
+        {/* A div, not a form: the picker renders inside the editor's own
+            <form>, and a nested form's submit would bubble into the editor's
+            save handler (or be silently blocked by URL validation). */}
+        <div className="url-add">
+          <input
+            type="text"
+            inputMode="url"
+            placeholder="Can't pick a file? Paste an ImageKit URL (https://ik.imagekit.io/…)"
+            aria-label="ImageKit URL"
+            value={urlValue}
+            onChange={(event) => setUrlValue(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                addFromUrl();
+              }
+            }}
+          />
+          <button type="button" className="btn" disabled={addingUrl || !urlValue.trim()} onClick={addFromUrl}>
+            {addingUrl ? "Adding…" : "Add URL"}
+          </button>
         </div>
 
         {loading ? <Skeleton rows={3} /> : null}

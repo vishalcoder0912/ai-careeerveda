@@ -1,8 +1,3 @@
-// Single source of truth for the browser-tab title (and meta description) of
-// every route. Before this, only /jobs set document.title, so every other page
-// kept the static "CareerVeda" from index.html no matter where you navigated.
-// RouteMeta in App.jsx reads this on each route change; the one dynamic route
-// (/programs/:slug) sets its own title from the program name — see below.
 
 export const SITE_NAME = "CareerVeda";
 
@@ -32,7 +27,7 @@ export const DEFAULT_DESCRIPTION =
  */
 export const pageMeta = {
   "/": {
-    title: "Online PG Programs with Placement Assistance",
+    title: "India's No 1 PG Program",
     description:
       "Mentor-led online PG programs in data science, generative AI, analytics, product management and investment banking — live classes, projects, placement support.",
   },

@@ -1,3 +1,5 @@
+import {createHash} from "node:crypto";
+
 import {Media} from "../models/Media.js";
 import {RESOURCES} from "../config/resources.js";
 import {AUDIT_ACTIONS} from "../models/AuditLog.js";
@@ -9,6 +11,7 @@ import {
   safeFileName,
   hashBuffer,
   detectImageType,
+  isImageKitUrl,
   ALLOWED_FOLDERS,
 } from "../services/imagekit.service.js";
 import {escapeRegex} from "../utils/sanitize.js";
@@ -123,6 +126,61 @@ export const upload = async (request, response, next) => {
   }
 };
 
+// Register an existing ImageKit URL as a library item without uploading bytes
+// through this server — for when the image already lives on ImageKit and the
+// editor has the address rather than the file (an external share, a URL copied
+// from another asset, a file the picker cannot reach). Only ik.imagekit.io
+// URLs are accepted, so the record always points at a host we trust.
+//
+// The asset is marked external: no fileId exists for it, so it can be
+// referenced, renamed and soft-deleted, but never purged from ImageKit.
+export const createFromUrl = async (request, response, next) => {
+  try {
+    const {url, folder = "/careerveda", name, alt} = request.body;
+
+    if (!ALLOWED_FOLDERS.includes(folder)) return next(badRequest("That folder is not allowed."));
+    if (!isImageKitUrl(url)) {
+      return next(badRequest("Only ImageKit URLs (ik.imagekit.io) can be added here."));
+    }
+
+    // Same URL already registered: hand back the existing asset instead of
+    // creating a second record for the same bytes.
+    const duplicate = await Media.findOne({url, deletedAt: null});
+    if (duplicate) return ok(response, {media: duplicate, duplicate: true});
+
+    const fileName = String(url.split("/").pop()?.split("?")[0] || "image").slice(0, 120);
+    const baseName = fileName.replace(/\.[^.]*$/, "") || "image";
+
+    const media = await Media.create({
+      name: name || baseName,
+      fileName,
+      url,
+      thumbnailUrl: "",
+      // No ImageKit file handle exists for a URL-only asset, but the schema
+      // requires a unique one — a derived pseudo-id that can never collide
+      // with a real fileId (real ones never start with "external-").
+      fileId: `external-${createHash("sha1").update(url).digest("hex").slice(0, 20)}${Math.random().toString(36).slice(2, 8)}`,
+      folder,
+      alt: alt || "",
+      external: true,
+      originalUrl: url,
+      uploadedBy: request.admin._id,
+    });
+
+    await recordAudit(request, {
+      action: AUDIT_ACTIONS.MEDIA_UPLOADED,
+      actor: request.admin,
+      targetType: "media",
+      targetId: media._id,
+      metadata: {fileName, folder, external: true},
+    });
+
+    return created(response, {media, duplicate: false});
+  } catch (error) {
+    return next(error);
+  }
+};
+
 export const list = async (request, response, next) => {
   try {
     // The route validates this query with zod before we are called. Re-deriving
@@ -178,21 +236,26 @@ export const getOne = async (request, response, next) => {
   }
 };
 
-// Editorial metadata only. The URL, fileId and dimensions describe the stored
-// object and are not the admin's to rewrite — letting them be edited would let
-// a record point at an arbitrary URL while claiming to be a managed asset.
+// Editorial metadata plus the delivery URL. The URL is editable so an asset
+// that moves hosts — an ImageKit account switch, a CDN change — can be pointed
+// at its new address without re-uploading the bytes. fileId and dimensions
+// describe the stored object and are not the admin's to rewrite: fileId is the
+// only handle for deleting the remote file, so letting it be edited would let
+// a record claim to be a managed asset it cannot actually delete.
 export const update = async (request, response, next) => {
   try {
     const media = await Media.findOne({_id: request.params.id, deletedAt: null});
     if (!media) return next(notFound("Media not found"));
 
-    const {name, alt, caption, tags, focalPoint} = request.body;
+    const {name, alt, caption, tags, focalPoint, url, thumbnailUrl} = request.body;
 
     if (name !== undefined) media.name = name;
     if (alt !== undefined) media.alt = alt;
     if (caption !== undefined) media.caption = caption;
     if (tags !== undefined) media.tags = tags;
     if (focalPoint !== undefined) media.focalPoint = focalPoint;
+    if (url !== undefined) media.url = url;
+    if (thumbnailUrl !== undefined) media.thumbnailUrl = thumbnailUrl;
 
     await media.save();
 

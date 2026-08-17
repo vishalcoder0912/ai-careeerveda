@@ -39,6 +39,15 @@ const Leads = () => {
   const [confirm, setConfirm] = useState(null);
   const [busy, setBusy] = useState(false);
 
+  // A background refresh of the stat cards only — never the list, which would
+  // flash the skeleton over rows the user is looking at.
+  const refreshStats = useCallback(() => {
+    leadsApi
+      .stats()
+      .then((summary) => setStats(summary.data))
+      .catch(() => {});
+  }, []);
+
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -56,16 +65,13 @@ const Leads = () => {
       // Deliberately unfiltered: these are the totals for the whole inbox, not
       // for the current page of results. A failed summary must not take the
       // list down with it, so it is caught separately.
-      leadsApi
-        .stats()
-        .then((summary) => setStats(summary.data))
-        .catch(() => setStats(null));
+      refreshStats();
     } catch (failure) {
       setError(failure);
     } finally {
       setLoading(false);
     }
-  }, [page, search, status, type]);
+  }, [page, search, status, type, refreshStats]);
 
   useEffect(() => {
     const timer = setTimeout(load, search ? 300 : 0);
@@ -73,12 +79,17 @@ const Leads = () => {
   }, [load, search]);
 
   const updateStatus = async (lead, next) => {
+    // Set before the request so the select reflects the choice immediately;
+    // a failed request reverts it below.
+    setItems((rows) => rows.map((row) => (row._id === lead._id ? {...row, status: next} : row)));
     try {
       await leadsApi.update(lead._id, {status: next});
-      toast.success("Status updated.");
-      await load();
       if (open && open._id === lead._id) setOpen({...open, status: next});
+      toast.success("Status updated.");
     } catch (failure) {
+      // Revert only the affected row; the rest of the page never moved.
+      setItems((rows) => rows.map((row) => (row._id === lead._id ? {...row, status: lead.status} : row)));
+      if (open && open._id === lead._id) setOpen({...open, status: lead.status});
       toast.error(failure.message || "Could not update the lead.");
     }
   };
@@ -102,7 +113,16 @@ const Leads = () => {
       toast.success("Lead deleted.");
       setConfirm(null);
       if (open && open._id === lead._id) setOpen(null);
-      await load();
+
+      // The row leaves in place; only the record count and the stat cards are
+      // re-derived, and the page itself never flashes.
+      setItems((rows) => rows.filter((row) => row._id !== lead._id));
+      setMeta((current) => ({...current, total: Math.max(0, current.total - 1)}));
+      refreshStats();
+
+      // Deleting the only row on the last page leaves an empty page — step
+      // back, which re-runs load naturally.
+      if (page > 1 && items.length === 1) setPage(page - 1);
     } catch (failure) {
       toast.error(failure.message || "Could not delete the lead.");
     } finally {

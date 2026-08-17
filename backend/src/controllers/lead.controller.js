@@ -20,6 +20,27 @@ const lastTenDigits = (mobile) => String(mobile || "").replace(/\D/g, "").slice(
 const hashIp = (ip) =>
   ip ? createHmac("sha256", env.JWT_REFRESH_SECRET).update(String(ip)).digest("hex") : "";
 
+// The site and its admissions team are in India. Cloud Run runs in UTC, so a
+// `setHours(0,0,0,0)` day boundary would roll "today" over at 5:30 AM IST —
+// a lead dropped at 11 PM would be missing from Today for hours. The boundary
+// is therefore anchored to midnight Asia/Kolkata, regardless of the host's
+// timezone.
+const IST_TZ = "Asia/Kolkata";
+
+// Returns the UTC instant of midnight at the start of today in Kolkata.
+const startOfTodayIST = () => {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: IST_TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const part = (type) => Number(parts.find((entry) => entry.type === type).value);
+  // Date.UTC builds midnight UTC for the calendar date seen in Kolkata; IST is
+  // UTC+5:30, so midnight IST is five and a half hours earlier.
+  return Date.UTC(part("year"), part("month") - 1, part("day")) - 5.5 * 60 * 60 * 1000;
+};
+
 // ── Public submission ───────────────────────────────────────────────────────
 
 export const submit = async (request, response, next) => {
@@ -346,8 +367,7 @@ export const exportCsv = async (request, response, next) => {
 
 export const stats = async (request, response, next) => {
   try {
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
+    const todayStart = new Date(startOfTodayIST());
 
     const [byStatus, byType, total, recent, todayCount, byUserType] = await Promise.all([
       Lead.aggregate([{$match: {archived: false}}, {$group: {_id: "$status", count: {$sum: 1}}}]),
