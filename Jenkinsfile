@@ -70,11 +70,26 @@ pipeline {
       steps { bat 'npm run test:all' }
     }
 
+    stage('Free E2E ports') {
+      // Playwright with CI=true refuses to reuse an occupied port, so a stale
+      // process left by an interrupted run fails the whole build. Kill
+      // whatever still listens on the e2e ports (8091/5293/5294) before booting.
+      steps {
+        bat '''
+          @echo off
+          for /f "tokens=5" %%p in ('netstat -ano ^| findstr ":8091" ^| findstr "LISTENING"') do taskkill /F /PID %%p 2>nul
+          for /f "tokens=5" %%p in ('netstat -ano ^| findstr ":5293" ^| findstr "LISTENING"') do taskkill /F /PID %%p 2>nul
+          for /f "tokens=5" %%p in ('netstat -ano ^| findstr ":5294" ^| findstr "LISTENING"') do taskkill /F /PID %%p 2>nul
+        '''
+      }
+    }
+
     stage('E2E tests') {
       options {
-        // The suite alone runs ~10 min on this machine; give it headroom
-        // so a slow first-run of playwright's browser install never aborts it.
-        timeout(time: 25, unit: 'MINUTES')
+        // The full suite (chromium + mobile-chromium) measured ~35 min on this
+        // machine, so 25 min was aborting it every run. 45 min covers it plus
+        // a slow first-run of playwright's browser install.
+        timeout(time: 45, unit: 'MINUTES')
       }
       steps {
         // --with-deps is Linux-only and fails on Windows. --yes avoids interactive prompts.
