@@ -1,12 +1,11 @@
- // The release gate. Verification only — nothing here writes to a branch.
+// The release gate. Work is pushed to `dev`; this pipeline is the only thing
+// that writes to `main`, and only after every check has passed. So `main` holds
+// nothing that was not lint-clean, unit-tested, e2e-tested and buildable.
 //
-//   PR dev ──► main   blocked until this pipeline is green
+//   git push origin dev  ──►  Jenkins  ──►  origin/main   (green only)
 //
-// The blocking is GitHub's, not this file's: point the job at `dev`, then make
-// it a required status check on `main` (Settings → Branches → Add rule). That is
-// a checkbox doing what a publish stage here would need thirty lines of Groovy
-// and a write-scoped PAT to do worse — a token to rotate, a push that races
-// anyone else's merge, and a second place for "what may reach main" to live.
+// Point the job at the `dev` branch. Any other branch runs the same checks and
+// simply skips the Publish stage, so a feature branch is still verified.
 //
 // Runs on the Windows controller, so every step is `bat`. Node and git come
 // from the machine PATH — no NodeJS tool is configured in this Jenkins, and
@@ -18,8 +17,8 @@
 //   - e2e boots its own stack against in-memory mongo with ImageKit disabled
 //     (backend/scripts/e2e-server.js), on ports offset from the dev defaults so
 //     a build cannot hijack servers you already have open.
-//   - there is no deploy stage, and no credential: the job needs read access to
-//     clone and nothing more.
+//   - there is still no deploy stage. Publishing to `main` is a git push, not a
+//     release; whatever deploys from `main` stays a separate, deliberate step.
 
 pipeline {
   agent any
@@ -34,9 +33,7 @@ pipeline {
     E2E_FRONTEND_PORT = '5293'
     E2E_ADMIN_PORT    = '5294'
 
-    // Baked into the verification build so `npm run build` exercises the real
-    // config. postbuild's snapshot crawl issues read-only GETs against these.
-    // Local-only: no external domains, everything runs on localhost.
+    // Local development URLs - no external domains
     VITE_PUBLIC_API_BASE_URL = 'http://localhost:8091/api/v1'
     VITE_ADMIN_API_BASE_URL  = 'http://localhost:8091/api/v1'
     VITE_PUBLIC_SITE_URL     = 'http://localhost:5293'
@@ -44,7 +41,7 @@ pipeline {
 
   options {
     timestamps()
-    timeout(time: 40, unit: 'MINUTES')
+    timeout(time: 60, unit: 'MINUTES')
     disableConcurrentBuilds()
   }
 
@@ -75,7 +72,9 @@ pipeline {
 
     stage('E2E tests') {
       options {
-        timeout(time: 10, unit: 'MINUTES')
+        // The suite alone runs ~10 min on this machine; give it headroom
+        // so a slow first-run of playwright's browser install never aborts it.
+        timeout(time: 25, unit: 'MINUTES')
       }
       steps {
         // --with-deps is Linux-only and fails on Windows. --yes avoids interactive prompts.
@@ -91,6 +90,36 @@ pipeline {
         bat 'npm run build:backend'
       }
     }
+
+    // Reached only when every stage above passed — a failure anywhere aborts
+    // the pipeline before here, which is the whole gate.
+    stage('Publish to main') {
+      when {
+        // BRANCH_NAME on a multibranch job, GIT_BRANCH ("origin/dev") on a
+        // plain one. Neither set means a job configured without a branch, and
+        // an empty string matches nothing, so publishing is off by default.
+        expression { (env.BRANCH_NAME ?: env.GIT_BRANCH ?: '') ==~ /(.*\/)?dev/ }
+      }
+      steps {
+        withCredentials([usernamePassword(
+          credentialsId: 'github-push',
+          usernameVariable: 'GIT_USER',
+          passwordVariable: 'GIT_TOKEN'
+        )]) {
+          // @echo off so the URL — which carries the token — is never printed.
+          // Jenkins masks the secret in the log anyway; this is the second lock.
+          //
+          // No --force. checkout scm leaves HEAD detached at the commit that was
+          // actually tested, and pushing it to main is rejected if main has moved
+          // on. A build that cannot fast-forward should fail and be looked at,
+          // not overwrite whatever someone else put there.
+          bat '''
+            @echo off
+            git push https://%GIT_USER%:%GIT_TOKEN%@github.com/vishalcoder0912/ai-careeerveda.git HEAD:refs/heads/main
+          '''
+        }
+      }
+    }
   }
 
   post {
@@ -98,7 +127,7 @@ pipeline {
       // Failure artifacts only; a green run writes nothing here.
       archiveArtifacts artifacts: 'test-results/**', allowEmptyArchive: true
     }
-    success { echo 'Pipeline green - tested and built. Safe to merge.' }
-    failure { echo 'Pipeline failed - see console output.' }
+    success { echo 'Pipeline green - tested and built. main updated if this was dev.' }
+    failure { echo 'Pipeline failed - main untouched. See console output.' }
   }
 }
