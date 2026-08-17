@@ -1,18 +1,3 @@
-// Load and stress profile for the public read path — the only endpoints that
-// see visitor traffic, and the ones Cloud Run will autoscale on.
-//
-//   k6 run tests/load/public-read.js                        # against localhost
-//   k6 run -e BASE=https://api.careerveda.in tests/load/public-read.js
-//
-// k6 is a single static binary (winget install k6 / brew install k6); it is not
-// an npm package, which is why this is a standalone script rather than an
-// `npm run` target.
-//
-// On 429: the public limiter allows 200 requests/minute PER IP. A load test runs
-// from one IP, so past ~3 req/s every extra request is correctly rejected. A 429
-// here is the rate limiter working, not a failure — so it is counted separately
-// and excluded from the error rate. What the thresholds actually guard is the
-// latency of the requests that DID get served.
 
 import http from "k6/http";
 import {check, sleep} from "k6";

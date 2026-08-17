@@ -17,20 +17,6 @@ export const pressLogos = {
   "DailyHunt": "https://ik.imagekit.io/q7ucn1rfni/careerveda/press/daily%20hunt%201.jpg",
 };
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-//  STORY ARTWORK â€” PUT THE CARD IMAGE URL IN `image` BELOW
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-//
-// Each story card can carry one picture, shown in its top-right corner. Set the
-// `image` field on the article and it appears; leave it "" (or delete the line)
-// and the story simply runs the full width of the card, as it does today.
-//
-// Same rules as the logos: any URL works â€” an ImageKit link, or a file dropped in
-// `public/press/` and referenced as "/press/name.jpg". ImageKit URLs are resized
-// on the way out, so you can paste the full-size original. A URL that fails to
-// load removes its own frame rather than leaving a broken image in the corner.
 
 export const pressArticles = [
   {
@@ -41,16 +27,16 @@ export const pressArticles = [
     title:
       "CareerVeda Sets New Placement Benchmarks in Product Management & Analytics Programs",
     excerpt:
-      "CareerVeda closed its latest placement season with standout results across its Product Management, Business Analytics, and Data Analytics programs â€” with over 68% of the Product Management batch placed within just 18 days, driven by practical, mentor-led learning.",
+      "CareerVeda closed its latest placement season with standout results across its Product Management, Business Analytics, and Data Analytics programs  with over 68% of the Product Management batch placed within just 18 days, driven by practical, mentor-led learning.",
     stats: [
       ["300+", "Students placed"],
       ["130+", "Recruiters"],
       ["68%", "Placed in 18 days"],
-      ["â‚¹20+ LPA", "Highest package"],
+      ["20+ LPA", "Highest package"],
     ],
     highlights: [
-      "72%+ secured packages above â‚¹10 LPA",
-      "Average package â‚¹7â€“10 LPA",
+      "72%+ secured packages above 10 LPA",
+      "Average package 10 LPA",
       "20+ first-time recruiters onboarded",
     ],
     sources: [

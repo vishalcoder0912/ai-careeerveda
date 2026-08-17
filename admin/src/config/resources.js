@@ -11,6 +11,7 @@ import {writePath} from "../components/fieldPath";
 //   select    fixed options
 //   kv        array of {question, answer} style pairs
 //   sections  array of {heading, body[]} article blocks
+//   policySections  array of {heading, body[], callout, list[], groups[{title, list[]}], closing} policy blocks
 //   modules   array of {n, title, points[]} curriculum blocks
 //
 // Two different kinds of "required", deliberately kept apart:
@@ -255,7 +256,7 @@ export const RESOURCES = {
       {name: "updated", label: "Updated (display)", kind: "text", publish: true, group: "Basics"},
       ...commonFields,
       {name: "lead", label: "Lead paragraph", kind: "textarea", publish: true, group: "Content"},
-      {name: "sections", label: "Sections", kind: "sections", publish: true, group: "Content"},
+      {name: "sections", label: "Sections", kind: "policySections", publish: true, group: "Content"},
       ...seoFields,
     ],
   },

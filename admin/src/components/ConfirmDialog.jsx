@@ -10,9 +10,6 @@ export const ConfirmDialog = ({
   cancelLabel = "Cancel",
   tone = "default",
   busy = false,
-  // Optional: asks for one value before confirming — used by Reject, which is
-  // not a decision anyone should be able to record without saying why. When
-  // set, the chosen value is passed to onConfirm.
   prompt = null,
   onConfirm,
   onCancel,
@@ -22,8 +19,7 @@ export const ConfirmDialog = ({
   if (!open) return null;
 
   const options = prompt?.options || [];
-  // A free-text "Other" would be a second input to manage for a field nobody
-  // reads in aggregate; the listed reasons are the ones worth counting.
+  
   const missing = Boolean(prompt?.required && !value);
 
   const close = () => {
