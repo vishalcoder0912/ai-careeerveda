@@ -78,9 +78,9 @@ pipeline {
       steps {
         bat '''
           @echo off
-          for /f "tokens=5" %%p in ('C:\\Windows\\System32\\netstat.exe -ano ^| findstr ":8091" ^| findstr "LISTENING"') do C:\\Windows\\System32\\taskkill.exe /F /PID %%p 2>nul
-          for /f "tokens=5" %%p in ('C:\\Windows\\System32\\netstat.exe -ano ^| findstr ":5293" ^| findstr "LISTENING"') do C:\\Windows\\System32\\taskkill.exe /F /PID %%p 2>nul
-          for /f "tokens=5" %%p in ('C:\\Windows\\System32\\netstat.exe -ano ^| findstr ":5294" ^| findstr "LISTENING"') do C:\\Windows\\System32\\taskkill.exe /F /PID %%p 2>nul
+          for /f "tokens=5" %%p in ('C:\\Windows\\System32\\netstat.exe -ano ^| C:\\Windows\\System32\\findstr.exe ":8091" ^| C:\\Windows\\System32\\findstr.exe "LISTENING"') do C:\\Windows\\System32\\taskkill.exe /F /PID %%p 2>nul
+          for /f "tokens=5" %%p in ('C:\\Windows\\System32\\netstat.exe -ano ^| C:\\Windows\\System32\\findstr.exe ":5293" ^| C:\\Windows\\System32\\findstr.exe "LISTENING"') do C:\\Windows\\System32\\taskkill.exe /F /PID %%p 2>nul
+          for /f "tokens=5" %%p in ('C:\\Windows\\System32\\netstat.exe -ano ^| C:\\Windows\\System32\\findstr.exe ":5294" ^| C:\\Windows\\System32\\findstr.exe "LISTENING"') do C:\\Windows\\System32\\taskkill.exe /F /PID %%p 2>nul
         '''
       }
     }
