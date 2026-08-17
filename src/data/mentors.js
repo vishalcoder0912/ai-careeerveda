@@ -1,70 +1,9 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  CAREERVEDA MENTORS — ADD YOUR FACULTY AND THEIR PHOTOS HERE
-// ─────────────────────────────────────────────────────────────────────────────
-//
-// One entry per mentor. The cards on /faculty are built straight from this list,
-// so adding a mentor is adding an object here — no component change needed.
-//
-//  photo      The headshot. Put the file in `public/mentors/` and reference it as
-//             "/mentors/name.jpg", or paste any image URL (ImageKit, etc).
-//             Leave it "" and the card shows a teal monogram of the mentor's
-//             initials instead — so you can publish the list now and add faces as
-//             they come in, without a hole in the grid. A URL that fails to load
-//             falls back to the monogram too.
-//             Any crop works: the portrait is a fixed frame and the image is
-//             cropped to fill it, so every card stays level with its neighbours.
-//             A square or portrait headshot, face centred, looks best.
-//
-//  discipline The short field label on the chip above the name. Use the same
-//             vocabulary as the programs — Finance, Analytics, Data Science,
-//             Engineering, Security — so faculty and programs read as one system.
-//
-//  role       Where they actually work, in plain terms: title, then company.
-//             This is the line that earns the mentor their credibility, so be
-//             specific. "VP, M&A — Kotak Investment Banking" beats "Industry Expert".
-//
-//  facts      Two or three hard specifics. Years in practice, what they mentor on,
-//             deals or projects shipped. Keep them short; they render as a bulleted
-//             list. Anything you cannot stand behind, leave out.
-//
-//  A CARD IS CLICKABLE when it carries any of the profile fields below; clicking
-//  opens a modal with the full record. Every one is optional — the modal simply
-//  omits the sections a mentor does not have — so you can fill them in one mentor,
-//  one field at a time. A mentor with none of these stays a plain, non-clickable
-//  card exactly as before.
-//
-//  bio            The "About" paragraph. Who they are and what they mentor on.
-//  education      Their qualification, e.g. "MBA in Product Management".
-//  experience     Years in industry, e.g. "10+ Years".
-//  specialization Their focus areas as one comma-separated string; shown as chips.
-//  achievements   Array of short, standalone wins; render as a bulleted list.
-//  expertise      Array of concrete tools/skills; render as chips.
-//  courseSlug     Program id in programCatalog.js for the "Enroll in Their Course"
-//                 button. Leave "" (or omit) and the button falls back to /programs.
-//
-//  programs   The programs they teach. `slug` is the program's id in
-//             programCatalog.js, and it makes the chip a link to /programs/<slug>.
-//             Leave slug "" and the chip is plain text — correct for a program that
-//             has no page yet.
-//
-// ─────────────────────────────────────────────────────────────────────────────
-//
-// Each mentor below carries only what we can stand behind today: a name, their
-// current role, and a discipline chip. `bio`, `facts` and `programs` are optional —
-// the card simply leaves them out when they are absent — so a mentor can go live on
-// name and role alone, and gain a bio or a teaching load later without a code change.
-//
-// PHOTOS: every mentor below ships with a monogram (their initials) because we do
-// not have headshots yet. To add a face, drop the file in `public/mentors/` and set
-// `photo: "/mentors/aditya-sharma.jpg"` on that entry — nothing else changes.
-//
-// To hide a mentor without deleting them, add `draft: true` to their entry; anything
-// with that flag is never rendered.
+﻿
 
 export const mentors = [
   {
     id: "aditya-sharma",
-    photo: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/faculty/faculty1-de594e86.jpg?updatedAt=1784010443438",
+    photo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/faculty1-de594e86.jpg?updatedAt=1784010443438",
     discipline: "Product Management",
     name: "Aditya Sharma",
     description: "senior developer",
@@ -89,7 +28,7 @@ export const mentors = [
   },
   {
     id: "antriksh-kumar",
-    photo: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/faculty/faculty2-93539455.jpg?updatedAt=1784010443180",
+    photo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/faculty2-93539455.jpg?updatedAt=1784010443180",
     discipline: "Analytics",
     name: "Antriksh Kumar",
     role: "Sr. Data Analyst at Capgemini",
@@ -106,7 +45,7 @@ export const mentors = [
   },
   {
     id: "prateek-singh",
-    photo:  "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/faculty/faculty3-1fbba623.jpg?updatedAt=1784010442857",
+    photo:  "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/faculty3-1fbba623.jpg?updatedAt=1784010442857",
     discipline: "Product Management",
     name: "Prateek Singh",
     role: "Product Manager at Deloitte",
@@ -132,7 +71,7 @@ export const mentors = [
   },
   {
     id: "gagan-chaudhary",
-    photo: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/faculty/faculty4-856a91e8.jpg?updatedAt=1784010443568",
+    photo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/faculty4-856a91e8.jpg?updatedAt=1784010443568",
     discipline: "Data Science",
     name: "Gagan Chaudhary",
     role: "Sr. Data Scientist & GEN AI Expert at Accenture",
@@ -160,7 +99,7 @@ export const mentors = [
   },
   {
     id: "surya-deepta-mazumdaar",
-    photo: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/faculty/faculty5-2429702b.jpg?updatedAt=1784010442770",
+    photo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/faculty5-2429702b.jpg?updatedAt=1784010442770",
     discipline: "Data Science",
     name: "Surya Deepta Mazumdaar",
     role: "Decision Scientist at Mu Sigma Inc.",
@@ -185,7 +124,7 @@ export const mentors = [
   },
   {
     id: "ashwani-jain",
-    photo: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/faculty/faculty6-d366f6dd.jpg?updatedAt=1784010442986",
+    photo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/faculty6-d366f6dd.jpg?updatedAt=1784010442986",
     discipline: "Product Management",
     name: "Ashwani Jain",
     role: "Senior Product Manager",
@@ -211,7 +150,7 @@ export const mentors = [
   
   {
     id: "geetanjali-adhikari",
-    photo: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/faculty/faculty7-0548a4b9.jpg?updatedAt=1784010443376",
+    photo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/faculty7-0548a4b9.jpg?updatedAt=1784010443376",
     discipline: "Product Management",
     name: "Geetanjali Adhikari",
     role: "Deputy Manager at Tata AIG",
@@ -236,7 +175,7 @@ export const mentors = [
   },
   {
     id: "Pankaj Kumar",
-    photo: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/faculty/faculty8-65907da2.jpg",
+    photo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/faculty8-65907da2.jpg",
     discipline: "Product Management",
     name: "Pankaj Kumar",
     role: "Senior Product Manager",
@@ -261,7 +200,7 @@ export const mentors = [
   },
   {
     id: "Awantika Sinha",
-    photo: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/faculty/Screenshot-2026-07-16-171225-596ad29f.jpg",
+    photo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/Screenshot-2026-07-16-171225-596ad29f.jpg",
     discipline: "Business Analytics",
     name: "Awantika Sinha",
     role: "Senior Business Analyst",
@@ -289,12 +228,12 @@ export const mentors = [
 ];
 
 /* The only list anything is allowed to render. A mentor is published by deleting
-   their `draft` flag, so scaffolding cannot reach a visitor by being forgotten —
+   their `draft` flag, so scaffolding cannot reach a visitor by being forgotten â€”
    it has to be deliberately released. */
 export const publishedMentors = mentors.filter((mentor) => !mentor.draft);
 
 // Initials for the monogram shown when a mentor has no photo yet. Takes the first
-// letter of the first and last word, so "Priya Raghavan" reads PR — the shape a
+// letter of the first and last word, so "Priya Raghavan" reads PR â€” the shape a
 // name badge would take.
 export const initialsOf = (name) => {
   const words = name.trim().split(/\s+/).filter(Boolean);

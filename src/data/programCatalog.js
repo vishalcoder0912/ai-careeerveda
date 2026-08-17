@@ -1,8 +1,8 @@
-// One record per program, and the single source of truth for all of them.
+﻿// One record per program, and the single source of truth for all of them.
 //
 // This used to be a PROGRAMS const inside ProgramExplorer.jsx. It moved here so
 // the explorer card, the /programs/:slug detail page, and the enrol form's
-// program picker all read the same data — a program can't exist in one place and
+// program picker all read the same data â€” a program can't exist in one place and
 // not the others, and its price can't drift between the card and the page.
 //
 // `id` is the URL slug: /programs/investment-banking.
@@ -10,10 +10,10 @@
 // Fields the detail page treats as optional, and simply omits the section when
 // they're missing: modules, gains, internship, softSkills, nextBatch, seats,
 // projects, eligibility. Fill them in for a program and its page grows the
-// section automatically — no component change needed.
+// section automatically â€” no component change needed.
 
 export const programCatalog = [
-  /* Product Management leads the list — see ProgramExplorer, which numbers the rail
+  /* Product Management leads the list â€” see ProgramExplorer, which numbers the rail
      off this order rather than off the records.
 
      Everything below comes from the program's own brochure. The one thing the
@@ -21,7 +21,7 @@ export const programCatalog = [
      absent rather than guessed: the card drops its price block and the page drops
      its fee panel when they are missing, which is the honest state for a program
      that has not been priced. Add the three fields and both reappear. Same for
-     `nextBatch` and `seats` — no batch date has been announced. */
+     `nextBatch` and `seats` â€” no batch date has been announced. */
   {
     id: "product-management",
     title: "PG Program in Product Management",
@@ -32,7 +32,7 @@ export const programCatalog = [
     duration: "6 Months",
     mentorship: "Expert Trainers",
     format: "Live Online",
-    image: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/programs/product-management-6b8b2802.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/product-management-6b8b2802.jpg",
     overview: [
       "Product strategy, customer discovery, market research and UX fundamentals",
       "Agile methodologies, product roadmapping and stakeholder management",
@@ -53,20 +53,20 @@ export const programCatalog = [
     fullTitle: "PG Program in Product Management",
     badges: ["Industry-Aligned", "AI-Powered PM", "Lifetime Placement Assistance"],
     lead:
-      "Manage products from ideation to launch and scale. Master product strategy, customer discovery, market research, UX fundamentals, agile methodologies, roadmapping and stakeholder management — and learn to drive decisions with product metrics, pricing strategy and go-to-market planning, through real-world case studies and a capstone project.",
+      "Manage products from ideation to launch and scale. Master product strategy, customer discovery, market research, UX fundamentals, agile methodologies, roadmapping and stakeholder management â€” and learn to drive decisions with product metrics, pricing strategy and go-to-market planning, through real-world case studies and a capstone project.",
     learners: "10,000+",
     projects: "30+",
     eligibility: "Freshers, Graduates, Experienced",
-    startingPrice: "₹1,45,000",
+    startingPrice: "â‚¹1,45,000",
     // The price card. Without these the detail page renders no fee, no batch date
-    // and no "Reserve your seat" panel at all — the sections are optional and were
+    // and no "Reserve your seat" panel at all â€” the sections are optional and were
     // simply being skipped. Figures taken from the live careerveda.in page.
     //
     // nextBatch is stored WITHOUT the quote marks the live site currently shows
     // around it ('July 11, 2026'). Those quotes are inside the string there, so
     // they print on the page; every other program here stores the bare date.
-    fee: {label: "Program Investment", amount: "₹1,45,000", note: "Including GST"},
-    emi: "3, 6, 9 & 12 months (No Cost EMIs) · Zero hidden charges",
+    fee: {label: "Program Investment", amount: "â‚¹1,45,000", note: "Including GST"},
+    emi: "3, 6, 9 & 12 months (No Cost EMIs) Â· Zero hidden charges",
     nextBatch: "July 18, 2026",
     seats: "Few seats left",
     internship: [
@@ -78,7 +78,7 @@ export const programCatalog = [
       "Industry Mentorship by Senior PMs",
     ],
     gainsIntro:
-      "Six months of 100% live, instructor-led learning from expert trainers at top technology companies, with daily doubt-solving, real industry projects and lifetime placement assistance. No coding background needed — product management is taught from the fundamentals.",
+      "Six months of 100% live, instructor-led learning from expert trainers at top technology companies, with daily doubt-solving, real industry projects and lifetime placement assistance. No coding background needed â€” product management is taught from the fundamentals.",
     gains: [
       "100% Live Instructor-Led Classes",
       "Expert Trainers from Top Technology Companies",
@@ -86,7 +86,7 @@ export const programCatalog = [
       "Real Industry Projects",
       "25+ Assignments & Industry Case Studies",
       "Three Globally Recognised Certifications",
-      "Dedicated Profile Building — Portfolio, Resume & LinkedIn",
+      "Dedicated Profile Building â€” Portfolio, Resume & LinkedIn",
       "Lifetime Placement Assistance",
       "LMS Access for 2 Years",
       "Full Access to Recordings & Notes",
@@ -102,7 +102,7 @@ export const programCatalog = [
       "Hiring Preparation Support",
     ],
     curriculumIntro:
-      "A structured roadmap from aspiring product manager to product leader. Twelve modules take you from product thinking and customer obsession through research, strategy, roadmaps, UX, agile delivery, analytics and AI, to growth, leadership and a full capstone — each one leaving you a portfolio deliverable you keep.",
+      "A structured roadmap from aspiring product manager to product leader. Twelve modules take you from product thinking and customer obsession through research, strategy, roadmaps, UX, agile delivery, analytics and AI, to growth, leadership and a full capstone â€” each one leaving you a portfolio deliverable you keep.",
     modules: [
       {
         n: 1,
@@ -301,8 +301,8 @@ export const programCatalog = [
     duration: "6 Months",
     mentorship: "Expert Mentor",
     format: "Live Online",
-    startingPrice: "₹1,25,000",
-    image: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/programs/Business_analytics_images-4145ed42.jpg",
+    startingPrice: "â‚¹1,25,000",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Business_analytics_images-4145ed42.jpg",
     overview: [
       "Excel, SQL, Python, Power BI and Generative AI workflows",
       "25+ business analytics projects and case studies",
@@ -323,9 +323,9 @@ export const programCatalog = [
     fullTitle: "PG Program in Business Analytics with Generative AI",
     badges: ["Industry-Aligned", "Enrolling Now", "100% Placement Assurance"],
     lead:
-      "Master business analytics end to end — Excel, SQL, Power BI, Tableau, Python and applied AI — and learn to turn business questions into dashboards and decisions that stakeholders act on.",
+      "Master business analytics end to end â€” Excel, SQL, Power BI, Tableau, Python and applied AI â€” and learn to turn business questions into dashboards and decisions that stakeholders act on.",
     learners: "10,000+",
-    fee: {label: "Program Investment", amount: "₹1,25,000", note: "Including GST"},
+    fee: {label: "Program Investment", amount: "â‚¹1,25,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
     nextBatch: "July 18, 2026",
     seats: "Few seats left",
@@ -639,8 +639,8 @@ export const programCatalog = [
     duration: "6 Months",
     mentorship: "Career Mentor",
     format: "Live Online",
-    startingPrice: "₹1,35,000",
-    image: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/programs/Data_analytics-ba31dcb9.jpg",
+    startingPrice: "â‚¹1,35,000",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Data_analytics-ba31dcb9.jpg",
     overview: [
       "Excel, SQL, Python, Power BI and dashboard reporting",
       "Data cleaning, visualization and business decision support",
@@ -663,7 +663,7 @@ export const programCatalog = [
     lead:
       "Learn data analysis, visualisation and reporting with the AI-assisted workflows modern analyst roles now expect, and finish with capstone projects built on real company data.",
     learners: "10,000+",
-    fee: {label: "Program Investment", amount: "₹1,35,000", note: "Including GST"},
+    fee: {label: "Program Investment", amount: "â‚¹1,35,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
     nextBatch: "July 18, 2026",
     seats: "Few seats left",
@@ -976,8 +976,8 @@ export const programCatalog = [
     duration: "6 Months",
     mentorship: "1:1 Mentorship",
     format: "Live Online",
-    startingPrice: "₹1,55,000",
-    image: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/programs/investing-banking-images-59ab0040.jpg",
+    startingPrice: "â‚¹1,55,000",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/investing-banking-images-59ab0040.jpg",
     overview: [
       "Financial modeling, valuation, M&A, IPO and equity research",
       "Build deal-ready reports, pitch books and finance dashboards",
@@ -1001,7 +1001,7 @@ export const programCatalog = [
     lead:
       "Master the world of Investment Banking with comprehensive training in financial modeling, M&A analysis, equity research, and deal execution. Learn from industry experts and build the skills needed to excel in top investment banks and financial institutions.",
     learners: "10,000+",
-    fee: {label: "Program Investment", amount: "₹1,55,000", note: "Including GST"},
+    fee: {label: "Program Investment", amount: "â‚¹1,55,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
     nextBatch: "July 18, 2026",
     seats: "Few seats left",
@@ -1315,8 +1315,8 @@ export const programCatalog = [
     duration: "12 Months",
     mentorship: "AI Mentor",
     format: "Live Online",
-    startingPrice: "₹1,55,000",
-    image: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/programs/data-c3b60741.jpg",
+    startingPrice: "â‚¹1,55,000",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/data-c3b60741.jpg",
     overview: [
       "Machine learning, deep learning, NLP and computer vision",
       "LLM projects, AI agents and applied generative AI workflows",
@@ -1339,7 +1339,7 @@ export const programCatalog = [
     lead:
       "Build machine learning, deep learning, NLP and generative AI skills on deployment-focused projects, and go beyond models into the agentic AI workflows teams are actually shipping.",
     learners: "10,000+",
-    fee: {label: "Program Investment", amount: "₹1,55,000", note: "Including GST"},
+    fee: {label: "Program Investment", amount: "â‚¹1,55,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
     nextBatch: "July 18, 2026",
     seats: "Few seats left",
@@ -1653,8 +1653,8 @@ export const programCatalog = [
     duration: "6 Months",
     mentorship: "AI Mentor",
     format: "Live Online",
-    startingPrice: "₹1,40,000",
-    image: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/programs/ChatGPT-Image-Jul-13-2026-04_53_32-PM-fbacfde5.jpg",
+    startingPrice: "â‚¹1,40,000",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/ChatGPT-Image-Jul-13-2026-04_53_32-PM-fbacfde5.jpg",
     overview: [
       "LLMs, prompt engineering and RAG application development",
       "Embeddings, vector databases and agentic AI workflows",
@@ -1677,7 +1677,7 @@ export const programCatalog = [
     lead:
       "Master Generative AI and transform your career with cutting-edge skills. Learn to build intelligent applications using the latest AI models, LLMs, and automation technologies, through hands-on projects and a capstone application.",
     learners: "10,000+",
-    fee: {label: "Program Investment", amount: "₹1,40,000", note: "Including GST"},
+    fee: {label: "Program Investment", amount: "â‚¹1,40,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
     nextBatch: "July 11, 2026",
     seats: "Few seats left",
@@ -1934,8 +1934,8 @@ export const programCatalog = [
     duration: "8 Months",
     mentorship: "Data Mentor",
     format: "Live Online",
-    startingPrice: "₹1,55,000",
-    image: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/programs/ChatGPT-Image-Jul-13-2026-04_53_32-PM-fbacfde5.jpg",
+    startingPrice: "â‚¹1,55,000",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/ChatGPT-Image-Jul-13-2026-04_53_32-PM-fbacfde5.jpg",
     overview: [
       "Data pipelines, ETL, SQL, Python and orchestration fundamentals",
       "Analytics engineering, data quality and AI automation workflows",
@@ -1958,7 +1958,7 @@ export const programCatalog = [
     lead:
       "Learn pipelines, ETL, warehousing and orchestration for modern data teams, plus the generative and agentic AI automation now layered on top of them.",
     learners: "10,000+",
-    fee: {label: "Program Investment", amount: "₹1,55,000", note: "Including GST"},
+    fee: {label: "Program Investment", amount: "â‚¹1,55,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
     nextBatch: "July 18, 2026",
     seats: "Few seats left",
@@ -2272,7 +2272,7 @@ export const programCatalog = [
     duration: "6 Months",
     mentorship: "Engineering Mentor",
     format: "Live Online",
-    startingPrice: "₹1,70,000",
+    startingPrice: "â‚¹1,70,000",
     image: "",
     overview: [
       "Node.js, Express APIs, databases, authentication and deployment",
@@ -2294,9 +2294,9 @@ export const programCatalog = [
     fullTitle: "PG Program in Backend Development Engineering",
     badges: ["Industry-Aligned", "Enrolling Now", "100% Placement Assurance"],
     lead:
-      "Master server-side engineering — REST APIs, databases, authentication, deployment and scalable architecture — on production-style projects that stand up in a developer portfolio.",
+      "Master server-side engineering â€” REST APIs, databases, authentication, deployment and scalable architecture â€” on production-style projects that stand up in a developer portfolio.",
     learners: "10,000+",
-    fee: {label: "Program Investment", amount: "₹1,70,000", note: "Including GST"},
+    fee: {label: "Program Investment", amount: "â‚¹1,70,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
     nextBatch: "July 18, 2026",
     seats: "Few seats left",
@@ -2610,7 +2610,7 @@ export const programCatalog = [
     duration: "6 Months",
     mentorship: "Security Mentor",
     format: "Live Online",
-    startingPrice: "₹1,65,000",
+    startingPrice: "â‚¹1,65,000",
     image: "",
     overview: [
       "Network safety, secure systems thinking and web security fundamentals",
@@ -2632,9 +2632,9 @@ export const programCatalog = [
     fullTitle: "PG Program in CyberSecurity",
     badges: ["Industry-Aligned", "Enrolling Now", "100% Placement Assurance"],
     lead:
-      "Learn defensive security from the ground up — networks, Linux, web fundamentals, monitoring and incident response — through hands-on labs built around awareness, reporting and response.",
+      "Learn defensive security from the ground up â€” networks, Linux, web fundamentals, monitoring and incident response â€” through hands-on labs built around awareness, reporting and response.",
     learners: "10,000+",
-    fee: {label: "Program Investment", amount: "₹1,65,000", note: "Including GST"},
+    fee: {label: "Program Investment", amount: "â‚¹1,65,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
     nextBatch: "July 18, 2026",
     seats: "Few seats left",

@@ -1,12 +1,12 @@
-// Site-level identity used by everything that has to name or link to the site
+﻿// Site-level identity used by everything that has to name or link to the site
 // from the outside: canonical tags, Open Graph, Twitter cards, JSON-LD, and the
 // sitemap generator in scripts/generate-sitemap.mjs.
 //
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // SET SITE_URL BEFORE THE NEXT DEPLOY.
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // This one constant is the origin every absolute URL on the site is built from.
-// Point it at the exact host you serve — scheme included, no trailing slash, and
+// Point it at the exact host you serve â€” scheme included, no trailing slash, and
 // the www/apex spelling you actually redirect *to*. Canonicals that name a host
 // you redirect away from tell Google to index a URL that does not answer, which
 // is worse than having no canonical at all.
@@ -14,11 +14,11 @@
 // It lives here, alone, so that changing domains is one edit rather than a grep.
 //
 // NOW SET. It was commented out, which meant absoluteUrl() referenced an
-// undefined binding and every module that imported this file threw — which is
+// undefined binding and every module that imported this file threw â€” which is
 // why seoTags.js and structuredData.js were written but never wired to a single
 // route. Turning it on is what makes the rest of the SEO surface possible.
 //
-// APEX, NOT www — and this has to stay in step with the deployment.
+// APEX, NOT www â€” and this has to stay in step with the deployment.
 //
 // It read "https://www.careerveda.in" until the GCP review, while the whole
 // Cloud Run setup is apex-based: cloudbuild.yaml deploys `_DOMAIN:
@@ -27,7 +27,7 @@
 // result, and the second is worse than the SEO one:
 //
 //   Every canonical, the sitemap, llms.txt and all 60 prerendered heads named a
-//   host Cloud Run does not serve. A canonical is an instruction, not a hint —
+//   host Cloud Run does not serve. A canonical is an instruction, not a hint â€”
 //   it was telling Google the real address of each page is somewhere that does
 //   not answer.
 //
@@ -45,10 +45,10 @@ export const SITE_NAME = "CareerVeda";
 export const SITE_TAGLINE = "AI-Powered Career Platform";
 
 // The picture social platforms show when a link is posted. Facebook, LinkedIn,
-// WhatsApp and X all want an absolute URL — a relative path silently renders no
-// preview at all — so this is a full ImageKit URL rather than a /public asset.
+// WhatsApp and X all want an absolute URL â€” a relative path silently renders no
+// preview at all â€” so this is a full ImageKit URL rather than a /public asset.
 // 1200x630 is the ratio every one of those platforms crops to.
-export const OG_IMAGE = "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/brand/cvfavicon-039eb18e.jpg?tr=w-1200,h-630,cm-pad_resize,bg-0B1220";
+export const OG_IMAGE = "https://ik.imagekit.io/q7ucn1rfni/careerveda/brand/cvfavicon-039eb18e.jpg?tr=w-1200,h-630,cm-pad_resize,bg-0B1220";
 export const OG_IMAGE_WIDTH = 1200;
 export const OG_IMAGE_HEIGHT = 630;
 
@@ -57,8 +57,8 @@ export const OG_IMAGE_HEIGHT = 630;
 export const ORGANISATION = {
   email: "Info@careerveda.in",
   telephone: "+91 9217801191",
-  logo: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/brand/cvfavicon-039eb18e.jpg?tr=w-512",
-  // Spellings a person plausibly types for this brand. Only real variants —
+  logo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/brand/cvfavicon-039eb18e.jpg?tr=w-512",
+  // Spellings a person plausibly types for this brand. Only real variants â€”
   // padding this with keywords ("data science course") is the classic way to
   // get structured data ignored site-wide, and it would not match a brand query
   // anyway.

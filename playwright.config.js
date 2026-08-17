@@ -35,6 +35,7 @@ export default defineConfig({
   // Each spec drives one shared backend and creates records with unique names,
   // but publishing and unpublishing the same seeded record from two workers at
   // once would make failures depend on timing. Serial is slower and honest.
+  forbidOnly: !!process.env.CI,
   workers: 1,
   fullyParallel: false,
   // A test that only passes on retry is a flaky test, and locally that is
@@ -74,18 +75,22 @@ export default defineConfig({
       },
     },
     {
-      command: `npx vite --port ${FRONTEND_PORT} --strictPort`,
+      command: `node node_modules/vite/bin/vite.js --port ${FRONTEND_PORT} --strictPort`,
       url: FRONTEND,
       timeout: 120_000,
       reuseExistingServer: !process.env.CI,
+      stdout: "pipe",
+      stderr: "pipe",
       env: {VITE_PUBLIC_API_BASE_URL: API},
     },
     {
-      command: `npx vite --port ${ADMIN_PORT} --strictPort`,
+      command: `node ../node_modules/vite/bin/vite.js --port ${ADMIN_PORT} --strictPort`,
       cwd: "./admin",
       url: ADMIN,
       timeout: 120_000,
       reuseExistingServer: !process.env.CI,
+      stdout: "pipe",
+      stderr: "pipe",
       env: {VITE_ADMIN_API_BASE_URL: API, VITE_PUBLIC_SITE_URL: FRONTEND},
     },
   ],

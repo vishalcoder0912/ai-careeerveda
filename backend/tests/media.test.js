@@ -158,6 +158,78 @@ describe("media authorization", () => {
   });
 });
 
+describe("media from URL", () => {
+  const IMAGEKIT_URL = "https://ik.imagekit.io/careerveda/alumni/jane-doe.jpg";
+
+  it("refuses an unauthenticated request", async () => {
+    const response = await request(app).post("/api/v1/admin/media/from-url").send({url: IMAGEKIT_URL});
+
+    expect(response.status).toBe(401);
+  });
+
+  it("refuses a non-ImageKit URL", async () => {
+    await createAdmin();
+    const {accessToken} = await login(app);
+
+    const response = await request(app)
+      .post("/api/v1/admin/media/from-url")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({url: "https://example.com/photo.png"});
+
+    expect(response.status).toBe(400);
+  });
+
+  it("refuses an unlisted folder", async () => {
+    await createAdmin();
+    const {accessToken} = await login(app);
+
+    const response = await request(app)
+      .post("/api/v1/admin/media/from-url")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({url: IMAGEKIT_URL, folder: "/etc"});
+
+    expect(response.status).toBe(400);
+  });
+
+  it("registers an ImageKit URL as an external library item", async () => {
+    await createAdmin();
+    const {accessToken} = await login(app);
+
+    const response = await request(app)
+      .post("/api/v1/admin/media/from-url")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({url: IMAGEKIT_URL, folder: "/careerveda/alumni"});
+
+    expect(response.status).toBe(201);
+    expect(response.body.data.media.url).toBe(IMAGEKIT_URL);
+    expect(response.body.data.media.external).toBe(true);
+    expect(response.body.data.media.fileId).toMatch(/^external-/);
+    expect(response.body.data.media.originalUrl).toBe(IMAGEKIT_URL);
+
+    const stored = await Media.findOne({url: IMAGEKIT_URL});
+    expect(stored.external).toBe(true);
+  });
+
+  it("hands back the existing record when the URL is already registered", async () => {
+    await createAdmin();
+    const {accessToken} = await login(app);
+
+    await request(app)
+      .post("/api/v1/admin/media/from-url")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({url: IMAGEKIT_URL});
+
+    const response = await request(app)
+      .post("/api/v1/admin/media/from-url")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({url: IMAGEKIT_URL});
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.duplicate).toBe(true);
+    expect(await Media.countDocuments({url: IMAGEKIT_URL})).toBe(1);
+  });
+});
+
 describe("deletion protection", () => {
   const seedMedia = (overrides = {}) =>
     Media.create({
@@ -273,7 +345,7 @@ describe("deletion protection", () => {
 });
 
 describe("metadata editing", () => {
-  it("updates alt text and captions but not the URL or fileId", async () => {
+  it("updates alt text, captions and the URL but not the fileId", async () => {
     await createAdmin();
     const {accessToken} = await login(app);
 
@@ -291,15 +363,36 @@ describe("metadata editing", () => {
       .send({
         alt: "A descriptive alt text",
         caption: "A caption",
-        url: "https://evil.example.com/x.png",
+        url: "https://ik.imagekit.io/test/x-moved.png",
         fileId: "hijacked",
       });
 
     expect(response.status).toBe(200);
     expect(response.body.data.alt).toBe("A descriptive alt text");
-    // The identity of the stored object is not the admin's to rewrite.
-    expect(response.body.data.url).toBe("https://ik.imagekit.io/test/x.png");
+    // The delivery URL may be rewritten (account moves, CDN changes)…
+    expect(response.body.data.url).toBe("https://ik.imagekit.io/test/x-moved.png");
+    // …but the identity of the stored object is not the admin's to rewrite.
     expect(response.body.data.fileId).toBe("file-immutable");
+  });
+
+  it("refuses a URL that is not http(s)", async () => {
+    await createAdmin();
+    const {accessToken} = await login(app);
+    const media = await Media.create({
+      name: "X",
+      fileName: "x.png",
+      url: "https://ik.imagekit.io/test/x.png",
+      fileId: "file-url",
+    });
+
+    const response = await request(app)
+      .patch(`/api/v1/admin/media/${media._id}`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({url: "javascript:alert(1)"});
+
+    expect(response.status).toBe(400);
+    const stored = await Media.findById(media._id);
+    expect(stored.url).toBe("https://ik.imagekit.io/test/x.png");
   });
 
   it("strips HTML from alt text", async () => {

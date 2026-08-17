@@ -690,6 +690,20 @@ label {
   background: #f8fafc;
 }
 
+/* URL fallback row: paste an ImageKit URL when a file cannot be picked */
+
+.url-add {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.url-add input[type="url"] {
+  flex: 1;
+  min-width: 0;
+  background: #f8fafc;
+}
+
 .view-toggle {
   padding: 4px;
   border-color: #dbe3ee;

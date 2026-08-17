@@ -1,4 +1,4 @@
-export const navItems = [
+﻿export const navItems = [
   ["/programs", "Programs"],
   ["/alumni", "Alumni"],
   ["/jobs", "Jobs"],
@@ -178,36 +178,36 @@ export const achievers = [
   ],
 ];
 
-// [name, role, quote, program, photo?]. The photo is optional — a card without
+// [name, role, quote, program, photo?]. The photo is optional â€” a card without
 // one falls back to the learner's initials, which is what every card did before.
 export const reviews = [
   [
     "Anant Shiva",
     "Product Development at High Radius",
-    "This program was exactly what I needed to transition into Product Management—the industry-relevant curriculum and strong placement support helped me secure a role at HighRadius. Grateful to Team CareerVeda for the exceptional support throughout my journey!",
+    "This program was exactly what I needed to transition into Product Managementâ€”the industry-relevant curriculum and strong placement support helped me secure a role at HighRadius. Grateful to Team CareerVeda for the exceptional support throughout my journey!",
     "Product Management",
-    "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever1-4e81fee0.jpg?updatedAt=1783935492818"
+    "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever1-4e81fee0.jpg?updatedAt=1783935492818"
   ],
   [
     "Himani Tamta",
     "Associate Product Manager at Wipro",
     "CareerVeda helped me build a strong foundation in problem-solving, feature prioritization, and product planning through practical projects. It equipped me with the data-driven frameworks needed to bridge customer psychology with business growth, ultimately helping me secure my role at Wipro.",
     "Product Management",
-    "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever12jpeg-295bcdbc.jpg",
+    "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever12jpeg-295bcdbc.jpg",
   ],
   [
     "Syed Arif",
     "Product Manager at Razorpay",
     "Built strategic product thinking and secured a high-growth fintech product role.",
     "Product Management",
-    "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/SYED-ARIF-b2eea077.jpg",
+    "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/SYED-ARIF-b2eea077.jpg",
   ],
   [
     "Anjali Singh",
     "Product Owner at Amazon",
     "Achieved rapid professional growth from 5 LPA to 16 LPA through product leadership and execution skills.",
     "Product Management",
-    "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever5-09021396.jpg?updatedAt=1783937327758",
+    "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever5-09021396.jpg?updatedAt=1783937327758",
   ],
 ];
 
@@ -220,7 +220,7 @@ export const ratings = [
   ["4.85", "Trustpilot"],
 ];
 
-// FAQs live in their own module now — see the note at the top of
+// FAQs live in their own module now â€” see the note at the top of
 // src/data/faqs.js. Re-exported here so every existing importer is
 // unaffected.
 export {faqs} from "./faqs";

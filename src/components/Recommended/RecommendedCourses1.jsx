@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import {Link} from "react-router-dom";
 import {useReducedMotion} from "framer-motion";
 import {Reveal} from "../motionPrimitives";
@@ -9,7 +9,7 @@ import {adaptProgram} from "../../lib/contentAdapters";
 import {cdnImage, cdnSrcSet} from "../../lib/imageCdn";
 import "./RecommendedCourses1.css";
 
-/* ── What this section no longer runs, and why ───────────────────────────────
+/* â”€â”€ What this section no longer runs, and why â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  *
  * It used to carry two things that ran work on every single frame while the
  * reader was scrolling through it, and together they were what made the bento
@@ -17,7 +17,7 @@ import "./RecommendedCourses1.css";
  *
  *   The three.js particle field. R3F's useFrame runs on the main thread, so a
  *   160-particle field meant ~160 atan2/sqrt/sin/cos evaluations plus a matrix
- *   compose per particle, 60 times a second — in direct competition with the
+ *   compose per particle, 60 times a second â€” in direct competition with the
  *   scroll, the reveals and image decoding. Trimming the count and the DPR
  *   made it cheaper without making it free; nothing makes a per-frame
  *   main-thread loop free except not running it.
@@ -35,11 +35,11 @@ import "./RecommendedCourses1.css";
  * rest of the page, it cannot afford either.
  */
 
-/* ── The bento ──────────────────────────────────────────────────────────────
+/* â”€â”€ The bento â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  *
  * Six slots on a 12-column grid, and no two of them are the same size. The
  * spans live here rather than in the CSS because they are a property of the
- * running order — slot 0 is the featured program and gets the 2-row block, and
+ * running order â€” slot 0 is the featured program and gets the 2-row block, and
  * the rest are arranged so that each band reads differently from the one above
  * it (7|5, then 4|8, then a single full-width strip).
  *
@@ -47,7 +47,7 @@ import "./RecommendedCourses1.css";
  * hard its description is clamped, because a 12-column strip and a 4-column
  * tile cannot carry the same amount of copy.
  *
- * Placement is by span only, never by explicit line — so the visual order is
+ * Placement is by span only, never by explicit line â€” so the visual order is
  * the DOM order, and a keyboard visitor tabs through the cards in the order
  * they are read. `grid-auto-flow: dense` would break that and is deliberately
  * not used; the spans below already pack without a hole.
@@ -67,7 +67,7 @@ const SLOTS = [
 const SLOT_IMAGE_WIDTH = {hero: 720, wide: 520, tall: 520, compact: 420, panel: 800, banner: 1180};
 
 // Each card now reveals on its own scroll trigger rather than the whole grid
-// hanging off one, so `stagger` is no longer a queue for six cards — it is the
+// hanging off one, so `stagger` is no longer a queue for six cards â€” it is the
 // offset between the two cards that share a band. The bento's spans below pack
 // exactly two cards per row (7|5, 5 beside the hero's second row, 4|8, then the
 // full-width strip), so an even index is always the left-hand card of its band
@@ -84,7 +84,7 @@ const REVEAL_TIERS = {
 };
 
 // Paste an image URL into a course's `image` and it becomes that card's
-// backdrop — no other change needed. Any size or shape works: the picture is
+// backdrop â€” no other change needed. Any size or shape works: the picture is
 // cropped to fill whichever bento slot the course lands in, so a portrait tile
 // and a full-width strip both look deliberate. Leave it "" for no picture, and
 // a URL that fails to load falls back to the card's own gradient rather than
@@ -98,8 +98,8 @@ const REVEAL_TIERS = {
 // Highlight in that order. Two optional fields override the last two when you
 // have figures to put there:
 //
-//   salary:    "₹12.4 LPA"   → replaces the Format stat,    labelled Avg. salary
-//   placement: "94%"          → replaces the Highlight stat, labelled Placement rate
+//   salary:    "â‚¹12.4 LPA"   â†’ replaces the Format stat,    labelled Avg. salary
+//   placement: "94%"          â†’ replaces the Highlight stat, labelled Placement rate
 //
 // They are deliberately absent rather than filled with plausible-looking
 // numbers: an average salary and a placement rate are claims about outcomes,
@@ -109,7 +109,7 @@ const recommendedCourses= [
   {
     id: "product-management",
     slug: "product-management",
-    image: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/programs/product-management-6b8b2802.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/product-management-6b8b2802.jpg",
     label: "Most Popular",
     title: "PG Program in Product Management",
     subtitle: "Become a High-Impact Product Manager",
@@ -120,7 +120,7 @@ const recommendedCourses= [
   {
     id: "data-analytics",
     slug: "data-analytics",
-    image: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/programs/Data_analytics-ba31dcb9.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Data_analytics-ba31dcb9.jpg",
     label: "Career Starter",
     title: "PG Program in Data Analytics with Generative AI",
     subtitle: "Become a Data Analyst with AI Workflows",
@@ -131,7 +131,7 @@ const recommendedCourses= [
   {
     id: "business-analytics",
     slug: "business-analytics",
-    image: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/programs/Business_analytics_images-4145ed42.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Business_analytics_images-4145ed42.jpg",
     label: "In-Demand Skills",
     title: "Post Graduate Program in Business Analytics with Generative AI",
     subtitle: "Become a Business Analyst with AI Skills",
@@ -142,7 +142,7 @@ const recommendedCourses= [
    {
     id: "investment-banking",
     slug: "investment-banking",
-    image: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/programs/investing-banking-images-59ab0040.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/investing-banking-images-59ab0040.jpg",
     label: "High Finance",
     title: "PG Program in Investment Banking",
     subtitle: "Master Financial Modeling & Valuation",
@@ -153,7 +153,7 @@ const recommendedCourses= [
   {
     id: "data-science-ai",
     slug: "data-science-ai",
-    image: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/programs/data-c3b60741.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/data-c3b60741.jpg",
     label: "Advanced Track",
     title: "PG Program in Data Science with Generative AI",
     subtitle: "Build AI, ML and Agentic AI Skills",
@@ -164,7 +164,7 @@ const recommendedCourses= [
   {
     id: "gen-ai",
     slug: "gen-ai",
-    image: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/programs/ChatGPT-Image-Jul-13-2026-04_53_32-PM-fbacfde5.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/ChatGPT-Image-Jul-13-2026-04_53_32-PM-fbacfde5.jpg",
     label: "In-Demand Skills",
     title: "PG Program in GEN AI",
     subtitle: "Become a Generative AI Engineer",
@@ -178,7 +178,7 @@ const STAT_LABELS = ["Duration", "Format", "Highlight"];
 
 // The card's stat row. Built from the program's own three chips, with the two
 // optional outcome fields taking over the second and third slots when a course
-// carries them — see the note on the curated list above.
+// carries them â€” see the note on the curated list above.
 const cardStats = (course) => {
   const stats = (course.meta || [])
     .slice(0, 3)
@@ -192,7 +192,7 @@ const cardStats = (course) => {
 
 // A program record as this strip's card. The card's editorial extras map onto
 // fields the program already carries: the ribbon is its first badge, and the
-// three stats are the same duration/format/mentorship the explorer shows — so
+// three stats are the same duration/format/mentorship the explorer shows â€” so
 // an admin editing a program updates this section too, with nothing here to
 // keep in step by hand.
 const courseFromProgram = (program) => ({
@@ -219,7 +219,7 @@ const BentoCard = ({course, slot, variants, lift}) => {
       style={{"--rc-cols": slot.cols, "--rc-rows": slot.rows}}
       /* The lift is framer's, not CSS's. The reveal leaves an inline
          `transform` on this element, and an inline transform beats a
-         stylesheet's :hover rule — a CSS translateY here would simply never
+         stylesheet's :hover rule â€” a CSS translateY here would simply never
          apply. Everything the hover does that is *not* a transform on the card
          itself (the glow, the shadow, the image zoom, the arrow) stays in CSS,
          where it belongs. */
@@ -229,18 +229,18 @@ const BentoCard = ({course, slot, variants, lift}) => {
           Wrapping would put the artwork, the badge and the stats inside the
           link, so a screen reader would read the whole card out as the link's
           name and a drag on the image would try to drag the link. This is one
-          link, named by the course, sitting invisibly over the card — the click
+          link, named by the course, sitting invisibly over the card â€” the click
           target is the whole card, the accessible name is the title. Skipped
           entirely when a course has no slug. */}
       {course.slug && (
         <Link
           className="rc-link"
           to={`/programs/${course.slug}`}
-          aria-label={`${course.title} — explore program`}
+          aria-label={`${course.title} â€” explore program`}
         />
       )}
 
-      {/* The artwork. A plain div now the scroll parallax is gone — it was a
+      {/* The artwork. A plain div now the scroll parallax is gone â€” it was a
           motion.div only so framer could translate it, and the hover zoom is a
           scale on the <img> inside. */}
       {course.image && (
@@ -261,7 +261,7 @@ const BentoCard = ({course, slot, variants, lift}) => {
       )}
 
       {/* The scrim the spec calls for, as its own layer rather than a
-          pseudo-element on the media — it has to stay put while the picture
+          pseudo-element on the media â€” it has to stay put while the picture
           behind it drifts and zooms. */}
       <span className="rc-scrim" aria-hidden="true" />
       <span className="rc-glow" aria-hidden="true" />
@@ -303,7 +303,7 @@ const BentoCard = ({course, slot, variants, lift}) => {
   );
 };
 
-// This strip is an editorial selection, not a listing — the full catalogue is
+// This strip is an editorial selection, not a listing â€” the full catalogue is
 // the program explorer's job. So the six entries above decide which programs
 // appear and in what order, and the API only supplies their current copy. A
 // program published in the admin panel therefore shows up on /programs without
@@ -317,7 +317,7 @@ const RecommendedCourses1 = () => {
   // The ribbon and the stats stay curated: "Most Popular" and "Career Starter"
   // are claims this section makes about the line-up, not facts about a program,
   // so they are not the CMS's to overwrite. Everything a reader would expect to
-  // change when an admin edits the program — title, subtitle, blurb, artwork —
+  // change when an admin edits the program â€” title, subtitle, blurb, artwork â€”
   // comes from the API when it answers.
   const courses = React.useMemo(() => {
     const live = new Map(published.map((course) => [course.id, course]));
@@ -343,7 +343,7 @@ const RecommendedCourses1 = () => {
   const tier = useViewportTier();
   const {stagger, duration} = REVEAL_TIERS[tier];
   // One variant per bento slot. They differ only in the delay that offsets the
-  // right-hand card of each band — see the note on REVEAL_TIERS. Memoised
+  // right-hand card of each band â€” see the note on REVEAL_TIERS. Memoised
   // because handing framer a freshly-built variants object on some later render
   // can restart a reveal that has already played.
   const cardVariants = React.useMemo(() => {
@@ -370,7 +370,7 @@ const RecommendedCourses1 = () => {
          background with !important colour rules pointed at it from
          slate-color-system.css, and a font-family override in
          typography-stability-fix.css. All of it had to be out-specified from
-         here, and the white background won anyway — this section paints its own
+         here, and the white background won anyway â€” this section paints its own
          panel now. */
       className="recommended-courses-section"
       aria-labelledby="recommended-courses-title"
@@ -385,7 +385,7 @@ const RecommendedCourses1 = () => {
 
       {/* A plain grid, not a StaggerGroup. A stagger container releases all of
           its children off the container's own trigger, so the whole bento fired
-          the moment its top edge came into view — including the banner three
+          the moment its top edge came into view â€” including the banner three
           screens further down, which had finished animating long before anyone
           scrolled to it. Each card owns its trigger now and reveals as the
           reader reaches it. */}

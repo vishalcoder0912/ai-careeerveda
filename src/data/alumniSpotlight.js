@@ -1,4 +1,4 @@
-// Add a hosted image URL to a profile's `imageUrl` field below, or drop a
+﻿// Add a hosted image URL to a profile's `imageUrl` field below, or drop a
 // portrait into src/assets/alumni. A URL takes priority, then the local file,
 // then the generated initials placeholder.
 const uploadedPhotos = import.meta.glob(
@@ -40,18 +40,18 @@ export const avatarPlaceholder = ({ initials, accent, accentEnd }) => {
 const spotlightProfiles = [
   {
     id: "anant-shiva",
-    imageUrl: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever1-4e81fee0.jpg",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever1-4e81fee0_jpg.webp?updatedAt=1786622628341",
     initials: "AS",
     name: "Anant Shiva",
     hike: "86% Hike",
     role: "Product Development, HighRadius",
-    story: "This program was exactly what I needed to transition into Product Management—the industry-relevant curriculum and strong placement support helped me secure a role at HighRadius. Grateful to Team CareerVeda for the exceptional support throughout my journey!",
+    story: "This program was exactly what I needed to transition into Product Managementâ€”the industry-relevant curriculum and strong placement support helped me secure a role at HighRadius. Grateful to Team CareerVeda for the exceptional support throughout my journey!",
     accent: "#0f766e",
     accentEnd: "#164e63",
   },
   {
     id: "syed-arif",
-    imageUrl: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/SYED-ARIF-b2eea077.jpg",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/SYED-ARIF-b2eea077_jpg.webp?updatedAt=1786622628709",
     initials: "SA",
     name: "Syed Arif",
     hike: "118% Hike",
@@ -62,7 +62,7 @@ const spotlightProfiles = [
   },
   {
     id: "anjali-singh",
-    imageUrl: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever5-09021396.jpg",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever5-09021396.jpg",
     initials: "AS",
     name: "Anjali Singh",
     hike: "220% Hike",
@@ -73,7 +73,7 @@ const spotlightProfiles = [
   },
   {
     id: "garima-singh",
-    imageUrl: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever4-9d672823.jpg",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever4-9d672823.jpg",
     initials: "GS",
     name: "Garima Singh",
     hike: "200% Hike",
@@ -84,7 +84,7 @@ const spotlightProfiles = [
   },
   {
     id: "shalini-kumari",
-    imageUrl: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever2-3a2e0a3b.jpg",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever2-3a2e0a3b.jpg",
     initials: "SK",
     name: "Shalini Kumari",
     hike: "58.33% Hike",
@@ -95,7 +95,7 @@ const spotlightProfiles = [
   },
   {
     id: "aditya-ahlawat",
-    imageUrl: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever3-7a90ad07.jpg",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever3-7a90ad07.jpg",
     initials: "AA",
     name: "Aditya Ahlawat",
     hike: "66% Hike",
@@ -106,7 +106,7 @@ const spotlightProfiles = [
   },
   {
     id: "ipsita sen",
-    imageUrl: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever7-4f504cd7.jpg",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever7-4f504cd7.jpg",
     initials: "IS",
     name: "Ipsita Sen",
     hike: "220% Hike",
@@ -117,7 +117,7 @@ const spotlightProfiles = [
   },
   {
     id: "Vikram Singh",
-    imageUrl: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever8-1a1454dd.jpg",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever8-1a1454dd.jpg",
     initials: "VK",
     name: "Vikram Singh",
     hike: "300% Hike",
@@ -128,7 +128,7 @@ const spotlightProfiles = [
   },
   {
     id: "anjali Desai",
-    imageUrl: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever9-ac333547.jpg",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever9-ac333547.jpg",
     initials: "AD",
     name: "Anjali Desai",
     hike: "170% Hike",
@@ -139,18 +139,18 @@ const spotlightProfiles = [
   },
   {
     id: "Aarohi Khurana",
-    imageUrl: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever10-4a35da07.jpg",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever10-4a35da07.jpg",
     initials: "AK",
     name: "Aarohi Khurana",
     hike: "90% Hike",
     role: "Growth Product Manager at Airbnb",
-    story: "Successfully transitioned into a Growth Product Manager role at Airbnb with an outstanding 90% salary hike, increasing from 10 LPA to 19 LPA. Demonstrated exceptional expertise in product growth strategies, user engagement, and data-driven decision-making throughout the transition journey. Secured a high-impact opportunity with one of the world’s leading technology and hospitality platforms, marking significant professional and career growth.",
+    story: "Successfully transitioned into a Growth Product Manager role at Airbnb with an outstanding 90% salary hike, increasing from 10 LPA to 19 LPA. Demonstrated exceptional expertise in product growth strategies, user engagement, and data-driven decision-making throughout the transition journey. Secured a high-impact opportunity with one of the worldâ€™s leading technology and hospitality platforms, marking significant professional and career growth.",
     accent: "#9d174d",
     accentEnd: "#7c2d12",
   },
   {
     id: "Sneha Agarwal",
-    imageUrl: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever11jpeg-79c014b5.jpg?updatedAt=1784010443321",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever11jpeg-79c014b5.jpg?updatedAt=1784010443321",
     initials: "SA",
     name: "Sneha Agarwal",
     hike: "150% Hike",
@@ -161,7 +161,7 @@ const spotlightProfiles = [
   },
    {
      id: "Himani Tamta",
-     imageUrl: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever12jpeg-295bcdbc.jpg",
+     imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever12jpeg-295bcdbc.jpg",
      initials: "HT",
      name: "Himani Tamta",
      hike: "150% Hike",
@@ -172,7 +172,7 @@ const spotlightProfiles = [
    },
    {
     id: "Riya Malhotra",
-    imageUrl: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Riya-Malhotra-877ecf3a.jpg?updatedAt=1784206969785",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Riya-Malhotra-877ecf3a.jpg?updatedAt=1784206969785",
     initials: "RM",
     name: "Riya Malhotra",
     hike: "140% Hike",
@@ -183,7 +183,7 @@ const spotlightProfiles = [
   },
    {
     id: "Niharika Verma",
-    imageUrl: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Niharika-Verma-1a611215.jpg?updatedAt=1784206793089",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Niharika-Verma-1a611215.jpg?updatedAt=1784206793089",
     initials: "NV",
     name: "Niharika Verma",
     hike: "120% Hike",
@@ -194,7 +194,7 @@ const spotlightProfiles = [
   },
    {
     id: "Sanya Kapoor",
-    imageUrl: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Sanya-Kapoor-964e07e6.jpg?updatedAt=1784206653269",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Sanya-Kapoor-964e07e6.jpg?updatedAt=1784206653269",
     initials: "SK",
     name: "Sanya Kapoor",
     hike: "165% Hike",
@@ -205,7 +205,7 @@ const spotlightProfiles = [
   },
    {
     id: "Arjun Mehta",
-    imageUrl: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Arjun-Mehta-743badce.jpg?updatedAt=1784206469468",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Arjun-Mehta-743badce.jpg?updatedAt=1784206469468",
     initials: "AM",
     name: "Arjun Mehta",
     hike: "120% Hike",
@@ -216,7 +216,7 @@ const spotlightProfiles = [
   },
    {
     id: "Karan Sharma",
-    imageUrl: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever13-13af87cb.jpg?updatedAt=1784206303783",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever13-13af87cb.jpg?updatedAt=1784206303783",
     initials: "KS",
     name: "Karan Sharma",
     hike: "100% Hike",
