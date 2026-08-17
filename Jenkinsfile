@@ -74,12 +74,13 @@ pipeline {
       // Playwright with CI=true refuses to reuse an occupied port, so a stale
       // process left by an interrupted run fails the whole build. Kill
       // whatever still listens on the e2e ports (8091/5293/5294) before booting.
+      // Full exe paths: the service PATH on this machine lacks System32.
       steps {
         bat '''
           @echo off
-          for /f "tokens=5" %%p in ('netstat -ano ^| findstr ":8091" ^| findstr "LISTENING"') do taskkill /F /PID %%p 2>nul
-          for /f "tokens=5" %%p in ('netstat -ano ^| findstr ":5293" ^| findstr "LISTENING"') do taskkill /F /PID %%p 2>nul
-          for /f "tokens=5" %%p in ('netstat -ano ^| findstr ":5294" ^| findstr "LISTENING"') do taskkill /F /PID %%p 2>nul
+          for /f "tokens=5" %%p in ('C:\\Windows\\System32\\netstat.exe -ano ^| findstr ":8091" ^| findstr "LISTENING"') do C:\\Windows\\System32\\taskkill.exe /F /PID %%p 2>nul
+          for /f "tokens=5" %%p in ('C:\\Windows\\System32\\netstat.exe -ano ^| findstr ":5293" ^| findstr "LISTENING"') do C:\\Windows\\System32\\taskkill.exe /F /PID %%p 2>nul
+          for /f "tokens=5" %%p in ('C:\\Windows\\System32\\netstat.exe -ano ^| findstr ":5294" ^| findstr "LISTENING"') do C:\\Windows\\System32\\taskkill.exe /F /PID %%p 2>nul
         '''
       }
     }
