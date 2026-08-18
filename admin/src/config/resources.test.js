@@ -13,6 +13,10 @@ describe("new-record defaults", () => {
     expect(form.badges).toContain("Industry-Aligned");
   });
 
+  it("starts every new program in automatic batch-date mode", () => {
+    expect(initialValues(RESOURCES.programs).nextBatchMode).toBe("auto");
+  });
+
   it("leaves the fields that must differ per program empty", () => {
     const form = initialValues(RESOURCES.programs);
 

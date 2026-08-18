@@ -105,7 +105,11 @@ export const RESOURCES = {
       {name: "startingPrice", label: "Starting price", kind: "text", group: "Pricing", hint: "Leave blank until the fee is set — the page drops its fee panel rather than showing a wrong number."},
       {name: "emi", label: "EMI terms", kind: "text", group: "Pricing", initial: "3, 6, 9 & 12 months (No Cost EMIs) · Zero hidden charges"},
       {name: "guarantee", label: "Guarantee", kind: "text", group: "Pricing", initial: "7-Day Money Back Guarantee"},
-      {name: "nextBatch", label: "Next batch", kind: "text", group: "Pricing", hint: "e.g. July 18, 2026. Leave blank until a date is announced."},
+      // The batch date is one value for the whole catalogue. Saving either field
+      // below updates every program: Auto keeps them all on the next Saturday,
+      // Custom makes the typed date apply everywhere.
+      {name: "nextBatch", label: "Next batch", kind: "text", group: "Pricing", hint: "Auto mode keeps this on the next Saturday. In Custom mode, the date you type here is applied to every program when you save."},
+      {name: "nextBatchMode", label: "Next batch mode", kind: "select", group: "Pricing", initial: "auto", options: [{value: "auto", label: "Auto — next Saturday"}, {value: "custom", label: "Custom — I'll type the date"}], hint: "Saving either way updates all programs: Auto rolls every program forward to the next Saturday, Custom pushes the typed date to every program."},
       {name: "seats", label: "Seats", kind: "text", group: "Pricing", initial: "Few seats left"},
       {name: "badges", label: "Badges", kind: "list", group: "Content", initial: ["Industry-Aligned", "Enrolling Now", "100% Placement Assurance"]},
       {name: "overview", label: "Overview points", kind: "list", publish: true, group: "Content"},

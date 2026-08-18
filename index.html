@@ -12,7 +12,7 @@
       href="https://ik.imagekit.io/q7ucn1rfni/careerveda/brand/cvfavicon-039eb18e.jpg?tr=w-180&updatedAt=1783702268532"
     />
     <!-- These are the crawler-visible defaults. seoTags.js rewrites them per
-         route once React boots, which Google honours because it executes JS â€”
+         route once React boots, which Google honours because it executes JS       
          but Facebook, LinkedIn, WhatsApp and X read this raw HTML and never run
          a line of it. So whatever is written here is what every shared link
          shows, for every URL on the site. It describes the organisation rather
@@ -20,9 +20,9 @@
          a sentence anyone searching for a course wants to read. -->
     <meta
       name="description"
-      content="CareerVeda offers mentor-led PG programs in Product Management, Data Analytics, Data Science with AI, Investment Banking, Cybersecurity and Data Engineering â€” with placement assistance and industry projects."
+      content="CareerVeda offers mentor-led PG programs in Product Management, Data Analytics, Data Science with AI, Investment Banking, Cybersecurity and Data Engineering        with placement assistance and industry projects."
     />
-    <!-- Apex, not www â€” this must match SITE_URL in src/config/siteMeta.js, which
+    <!-- Apex, not www        this must match SITE_URL in src/config/siteMeta.js, which
          nginx.conf 301s www to. prerender.mjs rewrites this per route, so the
          literal here only ships on a route the prerender missed; when that
          happens it should still name the host that answers rather than the one
@@ -93,7 +93,7 @@
     <!-- Google Analytics 4. send_page_view is off because this is a single-page
          app: the tag loads once, but the visitor moves through a dozen routes
          without another document load. RouteMeta in App.jsx sends the page_view
-         on every location change, first one included â€” so GA sees every route,
+         on every location change, first one included        so GA sees every route,
          and the landing page is not counted twice. -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-1P67KR40MJ"></script>
     <script>

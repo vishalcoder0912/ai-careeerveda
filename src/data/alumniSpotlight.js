@@ -45,7 +45,7 @@ const spotlightProfiles = [
     name: "Anant Shiva",
     hike: "86% Hike",
     role: "Product Development, HighRadius",
-    story: "This program was exactly what I needed to transition into Product Managementâ€”the industry-relevant curriculum and strong placement support helped me secure a role at HighRadius. Grateful to Team CareerVeda for the exceptional support throughout my journey!",
+    story: "This program was exactly what I needed to transition into Product Management      the industry-relevant curriculum and strong placement support helped me secure a role at HighRadius. Grateful to Team CareerVeda for the exceptional support throughout my journey!",
     accent: "#0f766e",
     accentEnd: "#164e63",
   },

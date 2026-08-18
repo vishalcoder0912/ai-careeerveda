@@ -53,7 +53,7 @@ export const pressArticles = [
     title:
       "CareerVeda Recognized as India's Best Institute for Online Upskilling with Placement Support",
     excerpt:
-      "CareerVeda has earned recognition as India's premier online upskilling institute, praised for its industry-aligned programs in Data Science, Business Analytics, and emerging technologies â€” backed by hands-on projects, real-world case studies, and dedicated placement support.",
+      "CareerVeda has earned recognition as India's premier online upskilling institute, praised for its industry-aligned programs in Data Science, Business Analytics, and emerging technologies  backed by hands-on projects, real-world case studies, and dedicated placement support.",
     highlights: [
       "Industry-aligned curriculum",
       "Hands-on projects & case studies",

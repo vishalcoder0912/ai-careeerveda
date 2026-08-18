@@ -1,4 +1,4 @@
-import {useRef, useEffect, useCallback, useState} from "react";
+import {useRef, useEffect, useCallback, useState, useEffectEvent} from "react";
 import {gsap} from "gsap";
 import "./MagicBento.css";
 
@@ -97,7 +97,13 @@ const ParticleCard = ({
     particlesRef.current = [];
   }, []);
 
-  const animateParticles = useCallback(() => {
+  // An Effect Event, not a useCallback: it is only ever invoked from the
+  // mouseenter listener the effect registers, and it reads latest-render values
+  // (initializeParticles' particleCount/glowColor) without having to sit in the
+  // effect's dependency array. Listed as a dependency it re-subscribed the
+  // listeners on every parent redraw, because initializeParticles changes
+  // whenever its props change.
+  const animateParticles = useEffectEvent(() => {
     if (!cardRef.current || !isHoveredRef.current) return;
 
     if (!particlesInitialized.current) initializeParticles();
@@ -137,7 +143,7 @@ const ParticleCard = ({
 
       timeoutsRef.current.push(timeoutId);
     });
-  }, [initializeParticles]);
+  });
 
   useEffect(() => {
     if (disableAnimations || !cardRef.current) return;
@@ -258,7 +264,6 @@ const ParticleCard = ({
       gsap.killTweensOf(element);
     };
   }, [
-    animateParticles,
     clearAllParticles,
     disableAnimations,
     enableTilt,

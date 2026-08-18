@@ -11,6 +11,7 @@ import {AuditLog, AUDIT_ACTIONS} from "../src/models/AuditLog.js";
 import {CONTENT_STATUS} from "../src/models/plugins/contentPlugin.js";
 import {ROLES} from "../src/config/permissions.js";
 import {createAdmin, login} from "./helpers/auth.js";
+import {formatBatchDate, nextSaturdayDate} from "../src/jobs/updateBatchDates.js";
 
 const app = createApp();
 
@@ -1089,5 +1090,103 @@ describe("public listings honour the admin's site position", () => {
       .expect(200);
 
     expect(await publicNames()).toEqual(["First", "Third", "Fourth"]);
+  });
+});
+
+// The batch date is one site-wide value: editing it on any program applies it
+// to every program, so an editor never repeats a date across nine forms.
+describe("batch dates are one site-wide value", () => {
+  const CUSTOM_DATE = "September 5, 2026";
+  const nextSaturday = formatBatchDate(nextSaturdayDate());
+
+  const getProgram = (token, id) =>
+    request(app)
+      .get(`/api/v1/admin/programs/${id}`)
+      .set("Authorization", `Bearer ${token}`);
+
+  it("applies a custom batch date saved on one program to every program", async () => {
+    const token = await asSuperAdmin();
+    const first = (await makeProgram(token, {title: "First"})).body.data;
+    const second = (await makeProgram(token, {title: "Second"})).body.data;
+    const third = (await makeProgram(token, {title: "Third"})).body.data;
+
+    const saved = await request(app)
+      .patch(`/api/v1/admin/programs/${first._id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({nextBatch: CUSTOM_DATE, nextBatchMode: "custom", revision: first.revision});
+
+    expect(saved.status).toBe(200);
+    expect(saved.body.data.nextBatch).toBe(CUSTOM_DATE);
+    expect(saved.body.data.nextBatchMode).toBe("custom");
+
+    for (const id of [second._id, third._id]) {
+      const other = (await getProgram(token, id)).body.data;
+      expect(other.nextBatch).toBe(CUSTOM_DATE);
+      expect(other.nextBatchMode).toBe("custom");
+    }
+  });
+
+  it("switching one program back to auto rolls every program to the next Saturday", async () => {
+    const token = await asSuperAdmin();
+    const first = (await makeProgram(token, {title: "First"})).body.data;
+    const second = (await makeProgram(token, {title: "Second"})).body.data;
+
+    await request(app)
+      .patch(`/api/v1/admin/programs/${first._id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({nextBatch: CUSTOM_DATE, nextBatchMode: "custom", revision: first.revision});
+
+    const switched = await request(app)
+      .patch(`/api/v1/admin/programs/${first._id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({nextBatch: CUSTOM_DATE, nextBatchMode: "auto", revision: 2});
+
+    expect(switched.status).toBe(200);
+    expect(switched.body.data.nextBatch).toBe(nextSaturday);
+    expect(switched.body.data.nextBatchMode).toBe("auto");
+
+    const other = (await getProgram(token, second._id)).body.data;
+    expect(other.nextBatch).toBe(nextSaturday);
+    expect(other.nextBatchMode).toBe("auto");
+  });
+
+  it("leaves other programs alone when a save does not touch the batch date", async () => {
+    const token = await asSuperAdmin();
+    const first = (await makeProgram(token, {title: "First"})).body.data;
+    const second = (await makeProgram(token, {title: "Second"})).body.data;
+
+    await request(app)
+      .patch(`/api/v1/admin/programs/${first._id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({nextBatch: CUSTOM_DATE, nextBatchMode: "custom", revision: first.revision});
+
+    const secondBefore = (await getProgram(token, second._id)).body.data;
+
+    const untouched = await request(app)
+      .patch(`/api/v1/admin/programs/${first._id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({title: "Renamed", nextBatch: CUSTOM_DATE, nextBatchMode: "custom", revision: 2});
+
+    expect(untouched.status).toBe(200);
+
+    const secondAfter = (await getProgram(token, second._id)).body.data;
+    expect(secondAfter.nextBatch).toBe(secondBefore.nextBatch);
+    expect(secondAfter.nextBatchMode).toBe("custom");
+    // No sync ran, so the other program's revision was not bumped again.
+    expect(secondAfter.revision).toBe(secondBefore.revision);
+  });
+
+  it("answers an auto-mode save with the next Saturday, whatever was typed", async () => {
+    const token = await asSuperAdmin();
+    const first = (await makeProgram(token)).body.data;
+
+    const saved = await request(app)
+      .patch(`/api/v1/admin/programs/${first._id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({nextBatch: "December 25, 2026", nextBatchMode: "auto", revision: first.revision});
+
+    expect(saved.status).toBe(200);
+    expect(saved.body.data.nextBatch).toBe(nextSaturday);
+    expect(saved.body.data.nextBatchMode).toBe("auto");
   });
 });

@@ -3,6 +3,7 @@ import {CONTENT_STATUS, publishedFilter} from "../models/plugins/contentPlugin.j
 import {toSlug, escapeRegex} from "../utils/sanitize.js";
 import {missingForPublish} from "../config/publishRules.js";
 import {notFound, conflict, badRequest} from "../utils/apiError.js";
+import {syncBatchDateToAll, formatBatchDate, nextSaturdayDate} from "../jobs/updateBatchDates.js";
 
 // One CRUD implementation for every content type.
 //
@@ -283,6 +284,12 @@ export const updateContent = async (Model, id, data, {actor, resource, expectedR
   // Snapshot BEFORE mutating, so the revision holds the previous state.
   await saveRevision(resource, document, actor);
 
+  // The batch date is one site-wide value. Whether this save changed it is
+  // judged against the snapshot above, not against the payload: the editor
+  // posts every rendered field, so a title-only save must not count as a
+  // batch-date edit.
+  const previousBatch = {date: document.nextBatch, mode: document.nextBatchMode};
+
   // Renaming re-slugs only when asked. Changing a published URL silently would
   // break every existing link to it and is never what an editor meant by
   // fixing a typo in a title.
@@ -308,7 +315,26 @@ export const updateContent = async (Model, id, data, {actor, resource, expectedR
   Object.assign(document, data);
   document.updatedBy = actor ? actor._id : null;
   document.revision += 1;
+
+  // Auto mode means "the next Saturday", whatever was typed. Canonicalised
+  // before the save so the stored value, the API response and the propagated
+  // value all agree — otherwise the editor would show a date the sweep will
+  // replace within the hour.
+  const batchChanged =
+    resource === "programs" &&
+    (document.nextBatch !== previousBatch.date || document.nextBatchMode !== previousBatch.mode);
+  if (batchChanged && document.nextBatchMode !== "custom") {
+    document.nextBatch = formatBatchDate(nextSaturdayDate());
+  }
+
   await document.save();
+
+  // One program's batch date is every program's batch date: push the saved
+  // date and mode to the rest of the catalogue immediately, so an editor who
+  // types a date once never has to repeat it across nine forms.
+  if (batchChanged) {
+    await syncBatchDateToAll(document);
+  }
 
   if (requestedPosition !== null) {
     await resequence(Model, document._id, requestedPosition);

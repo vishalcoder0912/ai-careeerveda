@@ -27,15 +27,21 @@ const hashIp = (ip) =>
 // timezone.
 const IST_TZ = "Asia/Kolkata";
 
+// Built once, not per call: Intl.DateTimeFormat compiles a locale pattern and is
+// expensive to construct, and startOfTodayIST runs on every stats request.
+const IST_DATE_FORMATTER = new Intl.DateTimeFormat("en-CA", {
+  timeZone: IST_TZ,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
 // Returns the UTC instant of midnight at the start of today in Kolkata.
 const startOfTodayIST = () => {
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: IST_TZ,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).formatToParts(new Date());
-  const part = (type) => Number(parts.find((entry) => entry.type === type).value);
+  const parts = IST_DATE_FORMATTER.formatToParts(new Date());
+  // formatToParts always yields year/month/day for these options; the guard
+  // keeps a future options change from crashing the stats route.
+  const part = (type) => Number(parts.find((entry) => entry.type === type)?.value ?? 0);
   // Date.UTC builds midnight UTC for the calendar date seen in Kolkata; IST is
   // UTC+5:30, so midnight IST is five and a half hours earlier.
   return Date.UTC(part("year"), part("month") - 1, part("day")) - 5.5 * 60 * 60 * 1000;

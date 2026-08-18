@@ -139,10 +139,10 @@ const SectionsField = ({value, onChange, disabled}) => {
             onChange={(body) => update(index, {body})}
           />
           <div className="repeater-actions">
-            <button type="button" className="btn btn--small" disabled={disabled || index === 0} onClick={() => move(index, -1)}>
+            <button type="button" className="btn btn--small" aria-label={`Move section ${index + 1} up`} disabled={disabled || index === 0} onClick={() => move(index, -1)}>
               ↑
             </button>
-            <button type="button" className="btn btn--small" disabled={disabled || index === rows.length - 1} onClick={() => move(index, 1)}>
+            <button type="button" className="btn btn--small" aria-label={`Move section ${index + 1} down`} disabled={disabled || index === rows.length - 1} onClick={() => move(index, 1)}>
               ↓
             </button>
             <button
@@ -269,10 +269,10 @@ const PolicySectionsField = ({value, onChange, disabled}) => {
             onChange={(event) => update(index, {closing: event.target.value})}
           />
           <div className="repeater-actions">
-            <button type="button" className="btn btn--small" disabled={disabled || index === 0} onClick={() => move(index, -1)}>
+            <button type="button" className="btn btn--small" aria-label={`Move section ${index + 1} up`} disabled={disabled || index === 0} onClick={() => move(index, -1)}>
               ↑
             </button>
-            <button type="button" className="btn btn--small" disabled={disabled || index === rows.length - 1} onClick={() => move(index, 1)}>
+            <button type="button" className="btn btn--small" aria-label={`Move section ${index + 1} down`} disabled={disabled || index === rows.length - 1} onClick={() => move(index, 1)}>
               ↓
             </button>
             <button
@@ -539,6 +539,22 @@ export const Field = ({field, value, onChange, disabled, error, needed = false, 
             disabled={disabled}
             onChange={(event) => onChange(event.target.checked)}
           />
+        );
+      case "select":
+        return (
+          <select
+            id={id}
+            value={value || ""}
+            disabled={disabled}
+            aria-describedby={describedBy || undefined}
+            onChange={(event) => onChange(event.target.value)}
+          >
+            {(field.options || []).map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
         );
       case "list":
         return <ListField id={id} value={value} onChange={onChange} disabled={disabled} />;

@@ -3,11 +3,13 @@ import {env} from "./config/env.js";
 import {logger} from "./config/logger.js";
 import {connectDatabase, disconnectDatabase} from "./config/database.js";
 import {startScheduledPublishing} from "./jobs/publishScheduled.js";
+import {startBatchDateUpdater} from "./jobs/updateBatchDates.js";
 
 const start = async () => {
   await connectDatabase();
 
   startScheduledPublishing();
+  startBatchDateUpdater();
 
   const app = createApp();
   // Bind 0.0.0.0, not localhost: Cloud Run routes to the container's external

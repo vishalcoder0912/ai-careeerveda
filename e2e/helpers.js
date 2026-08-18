@@ -35,7 +35,7 @@ export const loginAsAdmin = async (page, email = ACCOUNTS.superAdmin) => {
 
 /**
  * The public API as the site sees it. Used to assert publication state
- * independently of any page's caching â€” if this says a record is gone, the
+ * independently of any page's caching        if this says a record is gone, the
  * frontend not showing it is a real result rather than a stale render.
  */
 export const publicList = async (request, resource, params = "") => {

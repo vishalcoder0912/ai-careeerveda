@@ -178,13 +178,13 @@ export const achievers = [
   ],
 ];
 
-// [name, role, quote, program, photo?]. The photo is optional â€” a card without
+// [name, role, quote, program, photo?]. The photo is optional        a card without
 // one falls back to the learner's initials, which is what every card did before.
 export const reviews = [
   [
     "Anant Shiva",
     "Product Development at High Radius",
-    "This program was exactly what I needed to transition into Product Managementâ€”the industry-relevant curriculum and strong placement support helped me secure a role at HighRadius. Grateful to Team CareerVeda for the exceptional support throughout my journey!",
+    "This program was exactly what I needed to transition into Product Management the industry-relevant curriculum and strong placement support helped me secure a role at HighRadius. Grateful to Team CareerVeda for the exceptional support throughout my journey!",
     "Product Management",
     "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever1-4e81fee0.jpg?updatedAt=1783935492818"
   ],
@@ -220,7 +220,7 @@ export const ratings = [
   ["4.85", "Trustpilot"],
 ];
 
-// FAQs live in their own module now â€” see the note at the top of
+// FAQs live in their own module now        see the note at the top of
 // src/data/faqs.js. Re-exported here so every existing importer is
 // unaffected.
 export {faqs} from "./faqs";

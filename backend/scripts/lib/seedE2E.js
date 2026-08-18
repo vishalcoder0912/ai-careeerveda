@@ -8,7 +8,7 @@
 // else a spec needs, it creates and cleans up itself.
 //
 // The accounts cover the four roles, because the authorization specs assert
-// what each one may and may not do. All share one password â€” this is a
+// what each one may and may not do. All share one password        this is a
 // throwaway in-memory database, and four different ones would be four things to
 // look up with no security gained.
 
@@ -26,7 +26,7 @@ export const E2E_ROLES = Object.freeze({
   [ROLES.VIEWER]: "e2e-viewer@careerveda.test",
 });
 
-// A program that is complete enough to publish â€” it satisfies every rule in
+// A program that is complete enough to publish        it satisfies every rule in
 // config/publishRules.js, so a spec can publish it without first filling in
 // eleven fields through the UI.
 export const SEEDED_PROGRAM = Object.freeze({

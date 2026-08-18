@@ -228,12 +228,12 @@ export const mentors = [
 ];
 
 /* The only list anything is allowed to render. A mentor is published by deleting
-   their `draft` flag, so scaffolding cannot reach a visitor by being forgotten â€”
+   their `draft` flag, so scaffolding cannot reach a visitor by being forgotten       
    it has to be deliberately released. */
 export const publishedMentors = mentors.filter((mentor) => !mentor.draft);
 
 // Initials for the monogram shown when a mentor has no photo yet. Takes the first
-// letter of the first and last word, so "Priya Raghavan" reads PR â€” the shape a
+// letter of the first and last word, so "Priya Raghavan" reads PR        the shape a
 // name badge would take.
 export const initialsOf = (name) => {
   const words = name.trim().split(/\s+/).filter(Boolean);

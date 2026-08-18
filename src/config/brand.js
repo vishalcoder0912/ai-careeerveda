@@ -4,7 +4,7 @@
 //
 // `tr=w-96` asks ImageKit for a 96px-wide copy: the mark renders at 36px, so
 // this still covers a 2x display without shipping the full-size original.
-// updatedAt is ImageKit's cache-buster â€” keep it, or a replaced logo can sit
+// updatedAt is ImageKit's cache-buster        keep it, or a replaced logo can sit
 // stale in the CDN and in visitors' browsers.
 
 // The navbar/footer lockup: the "CareerVeda / Learn. Analyze. Lead." wordmark,
@@ -13,7 +13,7 @@
 // header does not wait on a third-party host for the first thing you see, and
 // so the asset is versioned next to the code that draws it.
 //
-// Exported at 2x with a transparent background and a ~3.55:1 aspect ratio â€” the
+// Exported at 2x with a transparent background and a ~3.55:1 aspect ratio        the
 // CSS sizes it by height and lets the width follow, so this ratio is the only
 // thing the stylesheets need to agree with.
 export const BRAND_LOGO_URL = "/brand/careerveda-logo.png";

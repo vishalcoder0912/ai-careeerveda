@@ -15,6 +15,15 @@ const Harness = ({field, initial}) => {
 const modulesField = {name: "modules", label: "Curriculum modules", kind: "modules"};
 const sectionsField = {name: "sections", label: "Sections", kind: "sections"};
 const policySectionsField = {name: "sections", label: "Sections", kind: "policySections"};
+const selectField = {
+  name: "nextBatchMode",
+  label: "Next batch mode",
+  kind: "select",
+  options: [
+    {value: "auto", label: "Auto — next Saturday"},
+    {value: "custom", label: "Custom — I'll type the date"},
+  ],
+};
 
 describe("multi-line repeater fields", () => {
   afterEach(cleanup);
@@ -125,5 +134,24 @@ describe("multi-line repeater fields", () => {
     await user.click(screen.getByRole("button", {name: "Add module"}));
 
     expect(screen.getByLabelText("Module 2 title")).toBeInTheDocument();
+  });
+});
+
+describe("select field", () => {
+  afterEach(cleanup);
+
+  it("shows every option and reports the chosen value", async () => {
+    const user = userEvent.setup();
+    render(<Harness field={selectField} initial="auto" />);
+
+    const control = screen.getByLabelText("Next batch mode");
+    expect(control).toHaveValue("auto");
+    expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual([
+      "Auto — next Saturday",
+      "Custom — I'll type the date",
+    ]);
+
+    await user.selectOptions(control, "custom");
+    expect(control).toHaveValue("custom");
   });
 });
