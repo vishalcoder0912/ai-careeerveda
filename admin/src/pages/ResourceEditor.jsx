@@ -55,14 +55,7 @@ const ResourceEditor = () => {
   const [dirty, setDirty] = useState(false);
   const [leaveTo, setLeaveTo] = useState(null);
   const [revisions, setRevisions] = useState(null);
-  // Which sections are expanded. `null` until the record has arrived and the
-  // opening layout has been decided.
-  //
-  // Deliberately a snapshot rather than something derived from the live form: an
-  // earlier version recomputed "is this section finished?" on every keystroke,
-  // which meant typing the last missing value in a section collapsed it under
-  // the cursor. The layout is a decision made once, on arrival; after that it
-  // belongs to the editor.
+  
   const [openSections, setOpenSections] = useState(null);
 
   const api = useMemo(() => (resource ? contentApi(resource.name) : null), [resource]);
@@ -84,42 +77,27 @@ const ResourceEditor = () => {
     }
   }, [api, canRead, id, isNew]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  // useEffect(() => {
+  //   load();
+  // }, [load]);
 
   // Decide the opening layout once the record is in hand. A record with work
   // outstanding opens the sections that need attention and folds the settled
   // ones away; a complete record opens everything, because hiding a finished
   // program behind seven closed sections is obstruction, not focus.
-  useEffect(() => {
-    if (!resource || !canRead || loading || openSections) return;
-
+  //
+  // Done during render (the documented "adjust state when a value arrives"
+  // pattern) rather than in an effect: it can only ever run once, and setState
+  // in an effect body would cascade a render for a value decided before commit.
+  const [sectionsDecided, setSectionsDecided] = useState(false);
+  if (resource && canRead && !loading && !sectionsDecided) {
     const names = [...new Set(resource.fields.map((field) => field.group || "Other"))];
     const needy = new Set(missingForPublish(resource, form).map((entry) => entry.group));
-
+    setSectionsDecided(true);
     setOpenSections(
       Object.fromEntries(names.map((name) => [name, needy.size === 0 || needy.has(name)])),
     );
-  }, [resource, canRead, loading, openSections, form]);
-
-  // A refused save names fields. Whichever sections hold them are opened, so the
-  // message is never pointing at something folded out of sight. This only ever
-  // opens sections — it will not close one the editor opened themselves.
-  useEffect(() => {
-    if (!resource || Object.keys(fieldErrors).length === 0) return;
-
-    const guilty = resource.fields
-      .filter((field) => fieldErrors[field.name])
-      .map((field) => field.group || "Other");
-
-    if (guilty.length === 0) return;
-
-    setOpenSections((current) => ({
-      ...current,
-      ...Object.fromEntries(guilty.map((name) => [name, true])),
-    }));
-  }, [fieldErrors, resource]);
+  }
 
   // Warns on a browser-level navigation (tab close, reload, back to another
   // site). In-app navigation is guarded separately by the dialog below, because
@@ -198,6 +176,21 @@ const ResourceEditor = () => {
     }
 
     setFieldErrors(fields);
+
+    // A refused save names fields. Whichever sections hold them are opened, so
+    // the message is never pointing at something folded out of sight. This only
+    // ever opens sections — it will not close one the editor opened themselves.
+    const guilty = [...new Set(
+      resource.fields
+        .filter((field) => fields[field.name])
+        .map((field) => field.group || "Other"),
+    )];
+    if (guilty.length > 0) {
+      setOpenSections((current) => ({
+        ...current,
+        ...Object.fromEntries(guilty.map((name) => [name, true])),
+      }));
+    }
 
     const rendered = new Set(resource.fields.map((field) => field.name));
     const orphans = names.filter((name) => !rendered.has(name));

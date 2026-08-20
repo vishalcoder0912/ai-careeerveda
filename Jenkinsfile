@@ -11,6 +11,17 @@
 // from the machine PATH — no NodeJS tool is configured in this Jenkins, and
 // adding one would only pin a version the machine already has.
 //
+// History of the failures this file has been hardened against:
+//   - builds #21-#24 aborted at the 60-min overall cap: the E2E stage alone
+//     measured ~35-45 min. The cap is 90 min and the stage 60 min.
+//   - the accessibility suite hung in beforeAll on `networkidle` (Spline iframe
+//     never idles). It now waits on content, not network.
+//   - vitest's forks pool spawned 11 workers on this 12-core box and hit
+//     "Timeout waiting for worker to respond". vite.config.js and
+//     admin/vite.config.js now cap maxWorkers at 2.
+//   - frontend/admin Jest suites were added as a coverage gap. Backend Jest
+//     already runs inside `npm run test:all` (backend `test` = jest + vitest).
+//
 // Why this cannot touch the live site:
 //   - backend tests overwrite MONGODB_URI with mongodb-memory-server
 //     (backend/tests/setup.js), so no suite can reach Atlas.
@@ -41,7 +52,9 @@ pipeline {
 
   options {
     timestamps()
-    timeout(time: 60, unit: 'MINUTES')
+    // 90 min overall: the E2E stage alone runs ~40-50 min on this controller.
+    // The old 60-min cap was aborting builds that were one stage from green.
+    timeout(time: 90, unit: 'MINUTES')
     disableConcurrentBuilds()
   }
 
@@ -70,6 +83,12 @@ pipeline {
       steps { bat 'npm run test:all' }
     }
 
+    // Backend Jest runs inside test:all above (backend `test` runs Jest first).
+    // These two cover the frontend and admin repos, which test:all does not.
+    stage('Jest unit tests (frontend & admin)') {
+      steps { bat 'npm run test:jest:frontend && npm run test:jest:admin' }
+    }
+
     stage('Free E2E ports') {
       // Playwright with CI=true refuses to reuse an occupied port, so a stale
       // process left by an interrupted run fails the whole build. Kill
@@ -89,9 +108,10 @@ pipeline {
     stage('E2E tests') {
       options {
         // The full suite (chromium + mobile-chromium) measured ~35 min on this
-        // machine, so 25 min was aborting it every run. 45 min covers it plus
-        // a slow first-run of playwright's browser install.
-        timeout(time: 45, unit: 'MINUTES')
+        // machine, and the accessibility spec only started running fully after
+        // the networkidle fix. 45 min was aborting it; 60 min covers the run
+        // plus a slow first-run of playwright's browser install.
+        timeout(time: 60, unit: 'MINUTES')
       }
       steps {
         // --with-deps is Linux-only and fails on Windows. --yes avoids interactive prompts.

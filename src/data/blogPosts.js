@@ -1,17 +1,4 @@
-﻿// The blog, as plain data        and the source of truth. Posts are written here, in
-// the repo, and nowhere else.
-//
-// /blog and /blog/:slug render this array and make no request, so a post appears
-// on the site when this file ships and not before. The admin panel has no blog
-// screens and the API has no admin blog routes (backend/src/config/resources.js
-// marks the resource codeAuthored), so there is no second copy to disagree with
-// this one.
-//
-// The database keeps a mirror for the public API; refresh it after editing:
-//   npm --prefix backend run migrate:content   (upserts by slug, safe to re-run)
-//
-// `id` is the URL segment (/blog/<id>) and must stay unique and stable        it is
-// the permalink search engines have indexed.
+﻿
 
 const blogPosts = [
   {
@@ -25,7 +12,7 @@ const blogPosts = [
     excerpt:
       "Product Management has always been about building the right thing        but Generative AI has rewritten what 'right' means. From automated user research to AI-assisted roadmap prioritisation, discover why PMs who embrace GenAI are landing the most exciting roles in tech.",
     image:
-      "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Business_analytics_images-4145ed42.jpg",
+      "https://ik.imagekit.io/q7ucn1rfni/careerveda/product-management-ede8ba4a.png?tr=w-840,f-auto,q-80",
     lead: "For most of its history, product management has been a role defined by judgement under uncertainty: deciding what to build, for whom, and why now. Generative AI has not replaced that judgement        it has supercharged the work around it. The PMs pulling ahead in 2026 are the ones who use AI to move faster on the mechanical parts of the job so they can spend more of their time on the human parts that still matter most.",
     sections: [
       {
@@ -78,7 +65,7 @@ const blogPosts = [
     excerpt:
       "Every business decision        pricing, inventory, marketing spend, hiring        is only as good as the data behind it. Business Analytics turns raw numbers into actionable strategy. Here is how CareerVeda's Business Analytics program prepares you to become the decision-maker every company needs.",
     image:
-      "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Data_analytics-ba31dcb9.jpg",
+      "https://ik.imagekit.io/q7ucn1rfni/careerveda/Business_analytics_images-141e26d2.png?tr=w-840,f-auto,q-80",
     lead: "Behind every important business decision        what to charge, how much to stock, where to spend, whom to hire        sits a question that data can answer. Business analytics is the discipline of answering it well. It is not about producing more dashboards; it is about turning raw numbers into choices that move revenue, cut cost, and reduce risk. That is why analysts who can connect data to decisions are so valuable.",
     sections: [
       {
@@ -131,7 +118,7 @@ const blogPosts = [
     excerpt:
       "Data Analytics is one of the fastest-growing career paths in India, with companies across every sector racing to hire skilled analysts. But what does it actually take to go from beginner to job-ready? Here is a complete roadmap        and how CareerVeda's program delivers it.",
     image:
-      "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/data-c3b60741.jpg",
+      "https://ik.imagekit.io/q7ucn1rfni/careerveda/Business_analytics_images-141e26d2.png?tr=w-840,f-auto,q-80",
     lead: "Data analytics is one of the fastest-growing careers in India, with demand climbing across every sector and entry-level salaries starting around â‚¹5 LPA and rising to â‚¹18 LPA and beyond with experience. But the field rewards proof of skill, not just enthusiasm. Going from curious beginner to job-ready analyst is a well-trodden path        here is what it actually looks like, phase by phase.",
     sections: [
       {
@@ -185,7 +172,7 @@ const blogPosts = [
     excerpt:
       "Investment Banking remains one of the most prestigious        and competitive        career paths in finance. What separates candidates who get the offer from those who don't? It comes down to a specific, learnable set of skills. Here is what it actually takes, and how CareerVeda's program gets you deal-ready.",
     image:
-      "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/investing-banking-images-59ab0040.jpg",
+      "https://ik.imagekit.io/q7ucn1rfni/careerveda/investing-banking-images-d0cb7a99.png?tr=w-840,f-auto,q-80",
     lead: "Investment banking analysts are the engine room of every major deal        the people who build the models, run the numbers, and prepare the pitch books that decide whether a merger, acquisition, or IPO goes ahead. It is demanding work, but it rewards skill with responsibility and compensation few other entry-level roles can match. In India, analyst roles typically start in the â‚¹8â€“14 LPA range and climb quickly with experience.",
     sections: [
       {
@@ -237,7 +224,7 @@ const blogPosts = [
     readTime: "8 min read",
     excerpt:
       "Data Science used to end at building a predictive model. Today it starts there. With Generative AI, LLMs, and agentic workflows reshaping the field, the complete AI professional needs a much broader toolkit. Here is what a modern data science career looks like        and how to build it end to end.",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/data-c3b60741.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/PG-WITH-GENAI-803ad9e9.webp?tr=w-840,f-auto,q-80",
     lead: "For years, data science meant statistics, machine learning, and a clean model that predicted something useful. That foundation still matters        but the ceiling has moved. Generative AI has turned data scientists into builders of AI systems: retrieval pipelines, LLM-powered assistants, and autonomous agents that reason through multi-step tasks. The professionals in highest demand can do both the classical and the cutting-edge.",
     sections: [
       {
@@ -291,7 +278,7 @@ const blogPosts = [
     excerpt:
       "Every dashboard, every model, every AI product runs on data that someone had to move, clean, and make reliable. That someone is a Data Engineer        and they are among the most in-demand professionals in tech. Here is why the role is booming, and how to build the skills for it.",
     image:
-      "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/ChatGPT-Image-Jul-13-2026-04_53_32-PM-fbacfde5.jpg",
+      "https://ik.imagekit.io/q7ucn1rfni/careerveda/data-5283dc81.png?tr=w-840,f-auto,q-80",
     lead: "Behind every impressive analytics dashboard and every production AI model is an unglamorous truth: the data had to get there first        cleaned, structured, and flowing reliably. Data engineers build and maintain the pipelines that make this possible, and as companies pour investment into analytics and AI, demand for people who can build that plumbing has surged. Roles in India typically range from â‚¹8 LPA to â‚¹16 LPA and grow fast with experience.",
     sections: [
       {
@@ -345,7 +332,7 @@ const blogPosts = [
     excerpt:
       "Users see the interface, but everything that makes an app actually work        accounts, payments, data, security        lives on the backend. Backend engineers build it. Here is what the role involves, the skills it demands, and how to become production-ready.",
     image:
-      "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Business_analytics_images-4145ed42.jpg",
+      "https://ik.imagekit.io/q7ucn1rfni/careerveda/Backend-davelopment-f9e726ea.webp?tr=w-840,f-auto,q-80",
     lead: "Every app you use has two halves. The front end is what you see; the back end is what makes it real        storing data, checking passwords, processing payments, and serving millions of requests without falling over. Backend engineers own that half, and because it is where the hard reliability and security problems live, strong backend developers are consistently in demand. Entry-level roles in India commonly start around â‚¹5â€“9 LPA and rise steeply with skill.",
     sections: [
       {
@@ -398,7 +385,7 @@ const blogPosts = [
     readTime: "6 min read",
     excerpt:
       "As organisations move everything online, the people who keep systems safe have never mattered more. Defensive cybersecurity is a fast-growing, accessible entry point into tech        and you don't need to be a hacker to start. Here is a practical roadmap into the field.",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Data_analytics-ba31dcb9.jpg",
+    image: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/CyberSecurity-7e85cd39.png?tr=w-840,f-auto,q-80",
     lead: "Cybersecurity is often imagined as elite hackers breaking into systems, but the reality for most professionals        and most jobs        is defensive: monitoring systems, spotting suspicious activity, assessing risk, and responding to incidents before they become disasters. It is one of the most accessible ways into tech, and demand keeps climbing as every organisation moves online. Entry roles like SOC analyst in India typically start around â‚¹3.5â€“6 LPA and grow steadily as you specialise.",
     sections: [
       {
@@ -452,7 +439,7 @@ const blogPosts = [
     excerpt:
       "Generative AI has made almost any feature technically possible        which is exactly why prioritisation has never been harder. Great PMs no longer ask 'can we build it?' but 'should we, and why now?'. Here is how modern product managers decide what to build first.",
     image:
-      "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Business_analytics_images-4145ed42.jpg",
+      "https://ik.imagekit.io/q7ucn1rfni/careerveda/product-management-ede8ba4a.png?tr=w-840,f-auto,q-80",
     lead: "When every idea is suddenly buildable, the scarcest resource is not engineering        it is focus. The best product managers of 2026 spend less time asking whether something can be built and more time deciding whether it deserves a place on the roadmap at all. That shift, from feasibility to judgement, is what separates PMs who ship impact from those who ship features nobody asked for.",
     sections: [
       {
@@ -505,7 +492,7 @@ const blogPosts = [
     readTime: "8 min read",
     excerpt:
       "Retrieval-Augmented Generation is the architecture behind most useful LLM products        from support bots to internal knowledge assistants. Here is how RAG actually works, and how to build one that answers questions from your own data.",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/data-c3b60741.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/PG-WITH-GENAI-803ad9e9.webp?tr=w-840,f-auto,q-80",
     lead: "Large language models are powerful, but they only know what they were trained on        and they will confidently invent answers when they don't. Retrieval-Augmented Generation solves this by giving the model a way to look things up first. Instead of relying on memory, a RAG system retrieves relevant documents from your own data and hands them to the model as context, so answers stay grounded and current.",
     sections: [
       {
@@ -558,7 +545,7 @@ const blogPosts = [
     readTime: "5 min read",
     excerpt:
       "Both Power BI and Tableau dominate the analytics job market, and beginners often freeze on which to learn first. The honest answer depends on your goals        here is a clear, practical comparison to help you choose.",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Data_analytics-ba31dcb9.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/Data_analytics-19c78fb9.png?tr=w-840,f-auto,q-80",
     lead: "Power BI and Tableau are the two most requested visualisation tools in analytics job descriptions, and beginners often freeze on which to learn first. The good news is that the underlying skill        turning data into clear, decision-ready visuals        transfers between them. Once you can think in charts, dashboards, and stories, picking up the second tool takes days, not months.",
     sections: [
       {
@@ -611,7 +598,7 @@ const blogPosts = [
     readTime: "6 min read",
     excerpt:
       "The Security Operations Centre is where cyber defence actually happens        alerts triaged, threats investigated, incidents contained. Here is what a SOC analyst really does all day, and why it is one of the best entry points into cybersecurity.",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Data_analytics-ba31dcb9.jpg",
+    image: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/CyberSecurity-7e85cd39.png?tr=w-840,f-auto,q-80",
     lead: "Most people picture cybersecurity as dramatic hacking, but the reality for the majority of professionals is the Security Operations Centre        a monitoring hub where analysts watch over an organisation's systems around the clock. It is calm, methodical, and genuinely important work: catching the suspicious login, the unusual data transfer, or the malware alert before it becomes a breach.",
     sections: [
       {
@@ -665,7 +652,7 @@ const blogPosts = [
     excerpt:
       "The three-statement model is the foundation every investment banker builds on. Master it and the rest        DCF, LBO, comparables        falls into place. Here is how the income statement, balance sheet, and cash flow connect into one living model.",
     image:
-      "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/investing-banking-images-59ab0040.jpg",
+      "https://ik.imagekit.io/q7ucn1rfni/careerveda/investing-banking-images-d0cb7a99.png?tr=w-840,f-auto,q-80",
     lead: "Ask any investment banker what skill matters most in their first year and the answer is almost always the same: financial modelling. At its heart sits the three-statement model        a single, linked spreadsheet in which the income statement, balance sheet, and cash flow statement all connect and update together. Get this right and you can value companies, test scenarios, and support real deals.",
     sections: [
       {
@@ -719,7 +706,7 @@ const blogPosts = [
     excerpt:
       "Should your data move in scheduled batches or flow in real time? It is one of the first architectural decisions a data engineer makes, and it shapes cost, complexity, and speed. Here is how to choose well.",
     image:
-      "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/ChatGPT-Image-Jul-13-2026-04_53_32-PM-fbacfde5.jpg",
+      "https://ik.imagekit.io/q7ucn1rfni/careerveda/data-5283dc81.png?tr=w-840,f-auto,q-80",
     lead: "One of the earliest choices a data engineer faces is how data should move. Batch processing collects data and handles it in scheduled chunks        nightly, hourly, or on demand        while streaming processes each event as it arrives, in near real time. Both are correct answers to different questions, and picking the wrong one adds cost and complexity you do not need.",
     sections: [
       {
@@ -773,8 +760,8 @@ const blogPosts = [
     excerpt:
       "APIs are the contracts that hold modern software together. REST and GraphQL are the two dominant ways to build them        and knowing when to reach for each is a mark of a serious backend engineer. Here is the practical difference.",
     image:
-      "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Business_analytics_images-4145ed42.jpg",
-    lead: "Every app that talks to a server does so through an API        the agreed contract for how the front end asks for data and the backend responds. For years REST has been the default, and more recently GraphQL has offered a different approach. Knowing when to reach for each is a mark of a serious backend engineer.",
+      "https://ik.imagekit.io/q7ucn1rfni/careerveda/Backend-davelopment-f9e726ea.webp?tr=w-840,f-auto,q-80",
+    lead: "Every app that talks to a server does so through an API the agreed contract for how the front end asks for data and the backend responds. For years REST has been the default, and more recently GraphQL has offered a different approach. Knowing when to reach for each is a mark of a serious backend engineer.",
     sections: [
       {
         heading: "How REST works",
@@ -826,7 +813,7 @@ const blogPosts = [
     readTime: "6 min read",
     excerpt:
       "SQL is the one skill that appears in almost every data analyst job description        and the good news is that a small set of patterns covers most real work. Here are the queries you will actually reach for on the job.",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/data-c3b60741.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/Data_analytics-19c78fb9.png?tr=w-840,f-auto,q-80",
     lead: "If there is a single non-negotiable skill for a data analyst, it is SQL. It is how you pull data out of the databases where companies actually keep it, and it appears in nearly every job description in the field. The encouraging truth is that you do not need to memorise a thousand functions        a compact set of patterns covers the vast majority of day-to-day analysis.",
     sections: [
       {
@@ -880,7 +867,7 @@ const blogPosts = [
     excerpt:
       "Engineers make some of the strongest product managers        they understand what is buildable and speak the team's language. But the switch requires unlearning some habits too. Here is how to move from writing code to owning the product.",
     image:
-      "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Business_analytics_images-4145ed42.jpg",
+      "https://ik.imagekit.io/q7ucn1rfni/careerveda/product-management-ede8ba4a.png?tr=w-840,f-auto,q-80",
     lead: "Engineers have a genuine head start in product management. They understand technical trade-offs, earn credibility with development teams quickly, and can smell an unrealistic estimate a mile off. Many of the best PMs in tech started by writing code. But the transition is not automatic        the job changes from 'how do we build this well?' to 'why are we building this at all, and for whom?'.",
     sections: [
       {
@@ -933,7 +920,7 @@ const blogPosts = [
     readTime: "7 min read",
     excerpt:
       "A model that works in a notebook is a science project. A model that serves users reliably is a product. The discipline that closes that gap is MLOps        and it is fast becoming a core expectation for data scientists.",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/data-c3b60741.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/data-5283dc81.png?tr=w-840,f-auto,q-80",
     lead: "There is a well-known statistic that haunts data teams: most machine-learning models never make it into production. They work beautifully in a notebook, then stall        because getting a model to serve real users reliably is a different discipline from building it. That discipline is MLOps, and it is increasingly what separates data scientists who deliver value from those who only demo it.",
     sections: [
       {
@@ -986,7 +973,7 @@ const blogPosts = [
     readTime: "5 min read",
     excerpt:
       "A perfect dashboard that nobody acts on is a wasted effort. The analysts who get promoted are the ones who turn numbers into a narrative that moves people. Here is how data storytelling works        and why it matters more than another chart.",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Data_analytics-ba31dcb9.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/data-5283dc81.png?tr=w-840,f-auto,q-80",
     lead: "The uncomfortable truth of analytics is that insight without persuasion changes nothing. You can build a flawless dashboard, run an airtight analysis, and still watch the decision go the other way        because the numbers never became a story a busy executive could act on. Data storytelling is the skill that closes that gap, and it is often what separates a senior analyst from a junior one.",
     sections: [
       {
@@ -1014,7 +1001,7 @@ const blogPosts = [
         heading: "Practising it with CareerVeda",
         body: [
           "CareerVeda's Business Analytics program treats storytelling as a core pillar alongside technical fluency and business acumen. Across Excel, SQL, Power BI, Tableau, and Python, you practise not just building the analysis but presenting it        framing insights so they drive action, using live case studies.",
-          "That combination        finding the insight and selling it        is what earns graduates the average 72% salary uplift the program's alumni have seen.",
+          "That combination finding the insight and selling it is what earns graduates the average 72% salary uplift the program's alumni have seen.",
         ],
       },
     ],
@@ -1040,7 +1027,7 @@ const blogPosts = [
     excerpt:
       "Discounted Cash Flow is the valuation method that intimidates beginners and defines analysts. Strip away the jargon and it rests on one simple idea: a company is worth the cash it will generate, adjusted for time and risk. Here is how it works.",
     image:
-      "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/investing-banking-images-59ab0040.jpg",
+      "https://ik.imagekit.io/q7ucn1rfni/careerveda/investing-banking-images-d0cb7a99.png?tr=w-840,f-auto,q-80",
     lead: "Discounted Cash Flow sounds forbidding, but the idea underneath is intuitive: a business is worth all the cash it will produce in the future, with future money worth less than money today because of time and risk. Everything else in a DCF        the projections, the discount rate, the terminal value        is just machinery for making that idea precise. Once it clicks, valuation stops feeling like magic.",
     sections: [
       {
@@ -1093,7 +1080,7 @@ const blogPosts = [
     readTime: "6 min read",
     excerpt:
       "Cybersecurity has two broad camps: the attackers who find weaknesses and the defenders who close them. Both are vital, but they suit very different people        and the entry paths differ too. Here is how to choose the right one for you.",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Data_analytics-ba31dcb9.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Cybersecurity-6b8c8c8c.png?tr=w-840,f-auto,q-80",
     lead: "Cybersecurity careers tend to split along a simple line. Offensive security        ethical hacking and penetration testing        is about thinking like an attacker to find weaknesses before criminals do. Defensive security is about building and running the protections that keep systems safe day to day. Both matter enormously, but they reward different temperaments.",
     sections: [
       {
@@ -1147,7 +1134,7 @@ const blogPosts = [
     excerpt:
       "As data pipelines multiply, someone has to make sure each step runs in the right order, at the right time, and recovers when it fails. Orchestration tools like Airflow do exactly that        and they are a staple skill for data engineers.",
     image:
-      "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/ChatGPT-Image-Jul-13-2026-04_53_32-PM-fbacfde5.jpg",
+      "https://ik.imagekit.io/q7ucn1rfni/careerveda/PG-WITH-GENAI-803ad9e9.webp?tr=w-840,f-auto,q-80",
     lead: "A single data pipeline is easy to run by hand. A hundred of them, with dependencies between steps, schedules to keep, and failures to recover from, is not. Orchestration is the discipline of coordinating all that reliably, and Apache Airflow has become one of its most widely used tools        which is why it appears so often in data-engineering job descriptions.",
     sections: [
       {
@@ -1201,7 +1188,7 @@ const blogPosts = [
     excerpt:
       "Node.js powers a huge share of modern backends, and its event-driven model makes it brilliant at handling many connections at once. But scaling it well takes more than good intentions. Here is what production-grade Node looks like.",
     image:
-      "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Business_analytics_images-4145ed42.jpg",
+      "https://ik.imagekit.io/q7ucn1rfni/careerveda/Backend-davelopment-f9e726ea.webp?tr=w-840,f-auto,q-80",
     lead: "Node.js became a backend favourite for a reason: its non-blocking, event-driven model lets a single process juggle thousands of concurrent connections without breaking a sweat. That makes it a natural fit for the I/O-heavy work most web services do. But 'works on my laptop' and 'serves millions of requests' are very different states.",
     sections: [
       {
@@ -1253,8 +1240,8 @@ const blogPosts = [
     date: "August 2024",
     readTime: "5 min read",
     excerpt:
-      "In an age of Python and Power BI, it is fashionable to dismiss Excel        but walk into any analytics team and you will still find it everywhere. Used well, it is fast, flexible, and powerful. Here are the techniques that still earn their keep.",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/data-c3b60741.jpg",
+      "In an age of Python and Power BI, it is fashionable to dismiss Excel but walk into any analytics team and you will still find it everywhere. Used well, it is fast, flexible, and powerful. Here are the techniques that still earn their keep.",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/Data_analytics-19c78fb9.png?tr=w-840,f-auto,q-80",
     lead: "Every year someone declares Excel obsolete, and every year analysts keep opening it first. The reason is simple: for quick exploration, ad-hoc modelling, and sharing results with non-technical stakeholders, nothing beats a spreadsheet's speed and universality. The tool is not the problem        using it at a beginner level is. Advanced Excel remains a genuinely valuable skill.",
     sections: [
       {
@@ -1306,36 +1293,36 @@ const blogPosts = [
     date: "July 2024",
     readTime: "5 min read",
     excerpt:
-      "The Product Requirements Document is a PM's core artefact        and most of them go unread. A great PRD is short, clear, and answers the questions a team actually has. Here is how to write one that earns attention instead of a shrug.",
+      "The Product Requirements Document is a PM's core artefact  and most of them go unread. A great PRD is short, clear, and answers the questions a team actually has. Here is how to write one that earns attention instead of a shrug.",
     image:
-      "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Business_analytics_images-4145ed42.jpg",
+      "https://ik.imagekit.io/q7ucn1rfni/careerveda/product-management-ede8ba4a.png?tr=w-840,f-auto,q-80",
     lead: "The Product Requirements Document is where a PM turns a fuzzy idea into something a team can build. Yet many PRDs are ignored        too long, too vague, or too focused on describing a solution nobody agreed on. A good PRD is not a novel; it is a shared source of truth that answers the questions engineers, designers, and stakeholders actually have.",
     sections: [
       {
         heading: "Why most PRDs go unread",
         body: [
           "The typical PRD fails in predictable ways: it is too long to finish, too vague to act on, or it jumps straight to a solution before establishing why. Engineers skim it, find no answers to their real questions, and stop reading.",
-          "A PRD that nobody reads is worse than none        it creates the illusion of alignment without the substance.",
+          "A PRD that nobody reads is worse than none  it creates the illusion of alignment without the substance.",
         ],
       },
       {
         heading: "Lead with the why",
         body: [
-          "The best PRDs open with the problem, the user, and the outcome you are trying to move        not with a feature spec. If the team understands why they are building something and for whom, they make better decisions about the how.",
+          "The best PRDs open with the problem, the user, and the outcome you are trying to move not with a feature spec. If the team understands why they are building something and for whom, they make better decisions about the how.",
           "State the goal and, just as importantly, the non-goals, so scope is unambiguous from the start.",
         ],
       },
       {
         heading: "Describe what, not how",
         body: [
-          "Good requirements say what must be true, not how to implement it        that is the engineers' domain. And they surface open questions honestly rather than hiding them, so the team can resolve ambiguity early.",
+          "Good requirements say what must be true, not how to implement it  that is the engineers' domain. And they surface open questions honestly rather than hiding them, so the team can resolve ambiguity early.",
           "Short and clear beats long and comprehensive every time. A one-page PRD that gets read beats a twenty-page one that does not.",
         ],
       },
       {
         heading: "Writing better PRDs with CareerVeda",
         body: [
-          "CareerVeda's Product Management program teaches this as a core skill, and shows how GenAI can accelerate it        drafting first versions, summarising research, and pressure-testing assumptions        so you spend energy on judgement rather than typing.",
+          "CareerVeda's Product Management program teaches this as a core skill, and shows how GenAI can accelerate it drafting first versions, summarising research, and pressure-testing assumptions so you spend energy on judgement rather than typing.",
           "You practise on real product briefs in guided capstones and leave with a portfolio of documents and decisions you can walk an interviewer through, backed by placement support.",
         ],
       },
@@ -1361,7 +1348,7 @@ const blogPosts = [
     readTime: "6 min read",
     excerpt:
       "Prompting an LLM well is a real skill, and for data scientists it is becoming as fundamental as writing a good query. The difference between a vague answer and a useful one often comes down to how you ask. Here is how to ask better.",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/data-c3b60741.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/data-5283dc81.png?tr=w-840,f-auto,q-80",
     lead: "As large language models become part of the data scientist's toolkit, a new skill has quietly become essential: prompting them well. The same model can give you a vague, generic answer or a precise, structured one depending entirely on how you frame the request. Prompt engineering is not a gimmick        it is the interface through which you get real work out of these systems.",
     sections: [
       {

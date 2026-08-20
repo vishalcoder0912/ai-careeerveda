@@ -33,10 +33,15 @@ export const useCinematicInteractions = () => {
     const bar = document.querySelector(".scroll-progress");
     if (bar) {
       let frame = null;
+      let scrollable = 0;
+      const updateMetrics = () => {
+        scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      };
+      updateMetrics();
+
       bar.style.transformOrigin = "left center";
       const paint = () => {
         frame = null;
-        const scrollable = document.documentElement.scrollHeight - window.innerHeight;
         const progress = scrollable > 0 ? window.scrollY / scrollable : 0;
         bar.style.transform = `scaleX(${Math.min(1, Math.max(0, progress))})`;
       };
@@ -45,13 +50,17 @@ export const useCinematicInteractions = () => {
         // screen refreshes, and this runs on every one of them.
         if (frame === null) frame = window.requestAnimationFrame(paint);
       };
+      const onResize = () => {
+        updateMetrics();
+        onScroll();
+      };
       paint();
       window.addEventListener("scroll", onScroll, {passive: true});
-      window.addEventListener("resize", onScroll, {passive: true});
+      window.addEventListener("resize", onResize, {passive: true});
       cleanupFns.push(() => {
         if (frame !== null) window.cancelAnimationFrame(frame);
         window.removeEventListener("scroll", onScroll);
-        window.removeEventListener("resize", onScroll);
+        window.removeEventListener("resize", onResize);
       });
     }
 

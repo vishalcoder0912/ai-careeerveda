@@ -26,7 +26,6 @@ const useIsCompact = () => {
   useEffect(() => {
     const mql = window.matchMedia(COMPACT_QUERY);
     const onChange = (event) => setIsCompact(event.matches);
-    setIsCompact(mql.matches);
     mql.addEventListener("change", onChange);
     return () => mql.removeEventListener("change", onChange);
   }, []);
@@ -107,6 +106,8 @@ export default function AlumniSpotlight() {
             <img
               src={cdnImage(activeProfile.image, PROFILE_PHOTO_WIDTH)}
               alt={`Portrait of ${activeProfile.name}`}
+              width={PROFILE_PHOTO_WIDTH}
+              height={Math.round(PROFILE_PHOTO_WIDTH / 1.15)}
               decoding="async"
             />
           </div>

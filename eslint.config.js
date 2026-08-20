@@ -115,6 +115,10 @@ export default [
       "scripts/**/*.{js,mjs,cjs}",
       "*.config.js",
       "*.js",
+      // Root .cjs files (babel.config.cjs, the two jest configs) and the jest/
+      // directory's CommonJS helpers (style/file mocks, setup) run in Node.
+      "*.cjs",
+      "jest/**/*.cjs",
     ],
     languageOptions: {globals: globals.node},
   },

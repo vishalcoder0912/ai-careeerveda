@@ -30,6 +30,17 @@ const summarise = (violations) =>
     .map((v) => `${v.id} (${v.impact}) x${v.nodes.length}\n    ${v.help}\n    ${v.nodes[0]?.target?.join(" ")}`)
     .join("\n\n");
 
+// networkidle never fires on a page that keeps a connection open — the Spline
+// iframe on home, a lazy image, an API poll — and a 60s hang there failed this
+// file's beforeAll on the CI box on every run. Every list page also ships a
+// static fallback, so "main has substantial text" is the real "the page is
+// finished, not a skeleton" signal, and it cannot hang.
+const contentReady = (page) =>
+  page.waitForFunction(
+    () => document.querySelector("main")?.textContent.trim().length > 100,
+    {timeout: 30000},
+  );
+
 const PUBLIC_PAGES = [
   ["home", "/"],
   ["programs", "/programs"],
@@ -55,9 +66,15 @@ const PUBLIC_PAGES = [
 // warm server.
 test.beforeAll(async ({browser}) => {
   const page = await browser.newPage();
-  await page.goto(`${FRONTEND}/`);
-  await page.waitForLoadState("networkidle");
-  await page.close();
+  try {
+    await page.goto(`${FRONTEND}/`, {waitUntil: "domcontentloaded"});
+    await contentReady(page);
+  } finally {
+    // A failure here (cold cache, reload mid-warm-up) must not strand a page:
+    // an unclosed page is exactly the kind of leftover that made the CI runner
+    // hang after the suite had finished.
+    await page.close().catch(() => {});
+  }
 });
 
 test.describe("accessibility", () => {
@@ -67,10 +84,10 @@ test.describe("accessibility", () => {
 
   for (const [name, path] of PUBLIC_PAGES) {
     test(`public ${name} page has no WCAG A/AA violations`, async ({page}) => {
-      await page.goto(`${FRONTEND}${path}`);
+      await page.goto(`${FRONTEND}${path}`, {waitUntil: "domcontentloaded"});
       // Content arrives from the API, and axe should see the finished page
       // rather than a loading skeleton that trivially passes.
-      await page.waitForLoadState("networkidle");
+      await contentReady(page);
 
       const {violations} = await analyse(page);
       expect(violations.length, `\n${summarise(violations)}\n`).toBe(0);
@@ -174,8 +191,8 @@ test.describe("layout", () => {
 
   for (const [name, path] of [["home", "/"], ["about", "/about"], ["blog", "/blog"]]) {
     test(`${name} footer starts on the same line as the navbar`, async ({page}) => {
-      await page.goto(`${FRONTEND}${path}`);
-      await page.waitForLoadState("networkidle");
+      await page.goto(`${FRONTEND}${path}`, {waitUntil: "domcontentloaded"});
+      await contentReady(page);
 
       const {nav, footer} = await gutters(page);
       expect(nav, "navbar brand not found").not.toBeNull();

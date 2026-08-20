@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import {Link} from "react-router-dom";
 import {useReducedMotion} from "framer-motion";
 import {Reveal} from "../motionPrimitives";
@@ -249,6 +249,8 @@ const BentoCard = ({course, slot, variants, lift}) => {
             src={cdnImage(course.image, SLOT_IMAGE_WIDTH[slot.name])}
             srcSet={cdnSrcSet(course.image, SLOT_IMAGE_WIDTH[slot.name])}
             alt=""
+            width={SLOT_IMAGE_WIDTH[slot.name]}
+            height={Math.round(SLOT_IMAGE_WIDTH[slot.name] * 0.75)}
             loading="lazy"
             decoding="async"
             draggable="false"

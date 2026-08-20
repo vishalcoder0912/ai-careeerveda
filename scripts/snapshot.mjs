@@ -170,7 +170,17 @@ async function snapshot(context, route) {
     await page.goto(`${ORIGIN}${route.loc}`, {waitUntil: "domcontentloaded", timeout: 45000});
     // React has mounted something. Without this the snapshot races the bundle
     // and writes the empty div back over itself.
-    await page.waitForSelector("#root > *", {timeout: 30000});
+    //
+    // index.html now paints a static hero poster inside #root before the app
+    // boots (see index.html). Its selector satisfies any "#root > *" wait
+    // instantly, so the poster must be gone — which happens exactly when React
+    // takes over the container — before the scroll and capture below run.
+    await page.waitForFunction(
+      () =>
+        !document.querySelector("#root img.static-hero-poster") &&
+        document.querySelector("#root > *"),
+      {timeout: 30000},
+    );
 
     await scrollThrough(page);
 
@@ -205,18 +215,25 @@ async function snapshot(context, route) {
 const targetFor = (loc) =>
   loc === "/" ? path.join(DIST, "index.html") : path.join(DIST, loc, "index.html");
 
-// Fills the empty root div in the file prerender.mjs wrote and adds the JSON-LD
+// Fills the root div in the file prerender.mjs wrote and adds the JSON-LD
 // ahead of </head>, leaving every tag that script composed exactly as it is.
 //
-// Anchored on the empty root div specifically: a file that already carries a
+// Anchored on the root div specifically: a file that already carries a
 // body (a re-run without a rebuild in between) is left alone rather than having
 // a second copy nested inside the first — and because both writes are gated on
 // that one check, the schema cannot be appended twice either.
+//
+// index.html ships a static hero poster inside #root (the phone LCP image,
+// painted before React boots — see the note there). It is matched and replaced
+// along with the empty div: leaving it would put a second robot beside the one
+// React renders.
 function inject(html, {body, jsonLd}) {
-  const empty = /<div id="root"><\/div>/;
-  if (!empty.test(html)) return null;
+  const root =
+    /<div id="root"><\/div>/.exec(html) ||
+    /<div id="root">\s*<img class="static-hero-poster"[\s\S]*?<\/div>/.exec(html);
+  if (!root) return null;
 
-  let out = html.replace(empty, `<div id="root">${body}</div>`);
+  let out = html.replace(root[0], `<div id="root">${body}</div>`);
   if (jsonLd) out = out.replace("</head>", `    ${jsonLd}\n  </head>`);
 
   return out;

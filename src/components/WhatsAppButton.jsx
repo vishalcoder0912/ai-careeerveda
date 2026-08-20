@@ -22,6 +22,16 @@ const programSlug = (pathname) => {
 const WhatsAppButton = () => {
   const {pathname} = useLocation();
   const [program, setProgram] = useState(null);
+  // Adjust state during render (the documented pattern for state that mirrors
+  // a prop/route) instead of an effect: a synchronous setProgram(null) in the
+  // effect caused a cascading render, and the stale program had to live past
+  // one render before the effect cleared it. Now the message is generic the
+  // moment the route is, and the effect below only loads a real program.
+  const [programFor, setProgramFor] = useState(pathname);
+  if (programFor !== pathname) {
+    setProgramFor(pathname);
+    setProgram(null);
+  }
 
   // The catalog is 471 KB and this component renders on every route, so it is
   // imported only once we are actually on a programme page — where the detail
@@ -30,10 +40,7 @@ const WhatsAppButton = () => {
   // tap in that window still opens a working chat.
   useEffect(() => {
     const slug = programSlug(pathname);
-    if (!slug) {
-      setProgram(null);
-      return undefined;
-    }
+    if (!slug) return undefined;
 
     let cancelled = false;
     import("../data/programCatalog")

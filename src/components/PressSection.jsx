@@ -44,6 +44,8 @@ const OutletChip = ({source}) => {
           className="press-logo"
           src={cdnImage(logo, LOGO_WIDTH)}
           alt={source.name}
+          width={LOGO_WIDTH}
+          height={36}
           loading="lazy"
           decoding="async"
           onError={() => setLogoFailed(true)}
@@ -100,6 +102,8 @@ const PressSection = () => (
                 <img
                   src={cdnImage(article.image, CARD_IMAGE_WIDTH)}
                   alt=""
+                  width={CARD_IMAGE_WIDTH}
+                  height={Math.round(CARD_IMAGE_WIDTH * 0.75)}
                   loading="lazy"
                   decoding="async"
                   draggable="false"

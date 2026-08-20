@@ -47,6 +47,14 @@ const SiteNavbar = ({navItems}) => {
   const location = useLocation();
   const [isScrolled,setIsScrolled] = useState(false);
   const [activeHref,setActiveHref] = useState(location.pathname);
+  // Adjust state during render (the documented pattern for state that mirrors a
+  // prop/route) instead of an effect: setState in an effect body causes a
+  // cascading render, and this value is known before the first paint anyway.
+  const [pathForActive,setPathForActive] = useState(location.pathname);
+  if (pathForActive !== location.pathname) {
+    setPathForActive(location.pathname);
+    setActiveHref(location.pathname);
+  }
   const [isMenuOpen,setIsMenuOpen] = useState(false);
   const [isClosing,setIsClosing] = useState(false);
 
@@ -82,10 +90,6 @@ const SiteNavbar = ({navItems}) => {
     if (isMenuOpen) closeMenu();
     else openMenu();
   }, [isMenuOpen, closeMenu, openMenu]);
-
-  useEffect(() => {
-    setActiveHref(location.pathname);
-  }, [location.pathname]);
 
   // Open the drawer as a native modal <dialog>: the browser then owns the focus
   // trap and inerts the page behind it. Escape is handled by the dialog's own

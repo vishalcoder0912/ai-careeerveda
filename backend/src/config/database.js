@@ -55,7 +55,7 @@ export const connectDatabase = async (uri = env.MONGODB_URI) => {
     connecting = mongoose
       .connect(uri, options)
       .then((connection) => {
-        logger.info({db: dbName}, "MongoDB connected");
+        logger.info({db: dbName}, "Firestore connected");
         return connection;
       })
       .catch((error) => {

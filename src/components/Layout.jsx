@@ -1,4 +1,4 @@
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import SiteNavbar from "./SiteNavbar";
 import SocialLinks from "./SocialLinks";
@@ -7,7 +7,6 @@ import { navItems } from "../data/siteData";
 import { Link } from "react-router-dom";
 import BrandLockup from "./BrandLockup";
 import { externalLinks } from "../config/externalLinks";
-import { publishedPolicies } from "../data/policies";
 import { useContentList } from "../hooks/useContent";
 import { installRoutePrefetch } from "../lib/routeChunks";
 
@@ -20,10 +19,34 @@ const Layout = () => {
   // Only slug and title are needed here, but the same published list drives the
   // footer and PolicyPage — so a policy is linked exactly when its page will
   // render, with no second list to keep in step.
-  const { items: policyLinks } = useContentList("policies", {
-    fallback: publishedPolicies,
+  const { items: policyLinks, isLive: policiesLive } = useContentList("policies", {
     adapt: ({ slug, title }) => ({ slug, title }),
   });
+
+  // The static policy list is the offline floor for the footer, but the module
+  // carries every policy's full prose (~36 KB) for four titles' worth of links.
+  // It is fetched after first paint so it stays out of the entry chunk — the
+  // API answers before the footer is read, and this is only what renders when
+  // the backend is unreachable.
+  const [policyFallback, setPolicyFallback] = useState([]);
+  useEffect(() => {
+    let cancelled = false;
+    import("../data/policies").then((module) => {
+      if (!cancelled) setPolicyFallback(module.publishedPolicies);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // The API's answer is authoritative when it comes, including an empty one
+  // (every policy unpublished — then nothing is linked). The static list only
+  // stands in while the server has not answered.
+  const footerPolicies = policyLinks.length
+    ? policyLinks
+    : policiesLive
+      ? []
+      : policyFallback;
 
   return (
     <>
@@ -72,7 +95,7 @@ const Layout = () => {
               it is publishable. Hardcoding the four is how the footer came to link
               a Refund Policy that was still [PLACEHOLDER] text. Finish one in
               policies.js and its link appears here on its own. */}
-          {policyLinks.map(({slug, title}) => (
+          {footerPolicies.map(({slug, title}) => (
             <Link key={slug} to={`/${slug}`}>{title}</Link>
           ))}
         </div>

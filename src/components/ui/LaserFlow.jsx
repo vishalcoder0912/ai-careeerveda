@@ -279,7 +279,11 @@ export const LaserFlow = ({
   const currentDprRef = useRef(1);
   const lastSizeRef = useRef({ width: 0, height: 0, dpr: 0 });
   const fpsSamplesRef = useRef([]);
-  const lastFpsCheckRef = useRef(performance.now());
+  // 0, not performance.now(): a ref initializer runs during render, and render
+  // must be pure (the rule react-hooks/purity flags impure calls there). The
+  // first adjustDprIfNeeded check sees a huge elapsed, hits the empty-samples
+  // branch and seeds the real timestamp — one frame later, no behavior change.
+  const lastFpsCheckRef = useRef(0);
   const emaDtRef = useRef(16.7);
   const pausedRef = useRef(false);
   const inViewRef = useRef(true);

@@ -946,7 +946,6 @@ describe("display order is a position", () => {
   const seed = async (token) => {
     const made = [];
     for (const title of ["A", "B", "C", "D"]) {
-      // eslint-disable-next-line no-await-in-loop
       made.push((await makeProgram(token, {title})).body.data);
     }
     return made;

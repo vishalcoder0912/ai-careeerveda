@@ -19,6 +19,12 @@ export default defineConfig({
     environment: "jsdom",
     globals: false,
     setupFiles: ["./src/test-setup.js"],
+    // Same cap as the root config: the Jenkins box (Windows service, 12 cores)
+    // flaked out with "[vitest-pool]: Failed to start forks worker ... Timeout
+    // waiting for worker to respond" when the forks pool spawned a worker per
+    // core at once. Two at a time is plenty for this suite.
+    maxWorkers: 2,
+    minWorkers: 1,
     // The default 5s is measured against a warm module graph. The first case in
     // a file pays for transforming everything it imports — ResourceEditor pulls
     // in the whole field registry — and on a cold CI runner with the files

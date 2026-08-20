@@ -14,11 +14,11 @@ const labels = [
 // scene either way. A still of the same robot, from the same scene, in the same
 // place: 25 KB, and it keeps its alpha channel, so the hero's gradient and glow
 // read through it as they do through the iframe. It replaced a spinning gradient
-// ring captioned "CareerVeda Career Engine".
+// ring capped "CareerVeda Career Engine".
 const SplineFallback = () => {
   return (
     <div className="spline-poster" aria-hidden="true">
-      <img src="/images/hero-robot.webp" alt="" width="560" height="778" decoding="async" />
+      <img src="/images/hero-robot.webp" alt="" width="560" height="778" decoding="async" fetchPriority="high" />
     </div>
   );
 };

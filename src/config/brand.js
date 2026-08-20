@@ -1,4 +1,4 @@
-﻿// The CareerVeda mark, served from ImageKit. Kept in one place because the
+// The CareerVeda mark, served from ImageKit. Kept in one place because the
 // brand lockup appears in the navbar and in two footers, and a logo that is
 // only updated in two of the three is the classic way these drift apart.
 //
@@ -22,7 +22,7 @@ export const BRAND_LOGO_URL = "/brand/careerveda-logo.png";
 // than the generated PNG above. Left empty until the asset exists: an <img> with
 // a missing src paints a broken-image glyph in the navbar on every page, so the
 // components render it only when this is set.
-export const BRAND_ICON_URL = "https://ik.imagekit.io/q7ucn1rfni/careerveda/brand/logo.png";
+export const BRAND_ICON_URL = "https://ik.imagekit.io/q7ucn1rfni/careerveda/brand/logo.png?tr=w-90,f-auto,q-80";
 
 // Favicon stays on the existing cvfavicon mark; change this too if you want the
 // browser-tab icon to match the new logo.

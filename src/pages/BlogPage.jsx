@@ -63,7 +63,12 @@ const BlogPage = () => {
             ))}
           </div>
 
-          <StaggerGroup className="blog-grid" amount="some" stagger={0.06}>
+          {/* key={active} remounts the group when the filter changes. Without it,
+              cards re-added by a filter (e.g. back to "All") mount after the
+              group's whileInView reveal has already fired and stay frozen at
+              opacity 0 — the grid looks empty. A fresh mount replays the stagger
+              for exactly the cards on screen. */}
+          <StaggerGroup key={active} className="blog-grid" amount="some" stagger={0.06}>
             {filtered.map((post, i) => (
               <StaggerItem as="article" interactive className="blog-card is-readable" key={post.id || post.slug}>
                 <Link
@@ -76,6 +81,8 @@ const BlogPage = () => {
                       <img
                         src={post.image}
                         alt=""
+                        width={400}
+                        height={200}
                         // The top rows are on screen before anyone scrolls, so
                         // deferring them just means watching them pop in. The
                         // rest stay lazy — eagerly fetching all 38 covers would

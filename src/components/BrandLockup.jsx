@@ -10,7 +10,7 @@ export default function BrandLockup() {
     <>
       {/* alt is empty on purpose: the wordmark beside it is real text, and the
           link carries an aria-label, so naming the icon too repeats it. */}
-      {BRAND_ICON_URL && <img className="brand-icon" src={BRAND_ICON_URL} alt="" />}
+      {BRAND_ICON_URL && <img className="brand-icon" src={BRAND_ICON_URL} alt="" width={44} height={45} decoding="async" />}
       <div className="brand-lockup">
         <div className="brand-name">
           <b className="cv-career">Career</b><b className="cv-veda">Veda</b>

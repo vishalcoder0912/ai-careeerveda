@@ -552,7 +552,6 @@ export const bulkSetStatus = async (Model, ids, status, {actor}) => {
       }
     }
 
-    // eslint-disable-next-line no-param-reassign
     ids = ready;
   }
 
