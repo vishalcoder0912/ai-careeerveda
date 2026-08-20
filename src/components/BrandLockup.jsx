@@ -8,8 +8,8 @@ import {BRAND_ICON_URL} from "../config/brand";
 export default function BrandLockup() {
   return (
     <>
-      {/* alt is empty on purpose: the wordmark beside it is real text, and the
-          link carries an aria-label, so naming the icon too repeats it. */}
+      {/* alt is empty on purpose: the wordmark and tagline beside it are real
+          text, so naming the icon too would repeat it. */}
       {BRAND_ICON_URL && <img className="brand-icon" src={BRAND_ICON_URL} alt="" width={44} height={45} decoding="async" />}
       <div className="brand-lockup">
         <div className="brand-name">

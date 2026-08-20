@@ -159,7 +159,7 @@ const SiteNavbar = ({navItems}) => {
           />
         </div>
 
-        <Link className="brand site-nav-brand" to="/" aria-label="CareerVeda home">
+        <Link className="brand site-nav-brand" to="/">
           <BrandLockup />
         </Link>
 
@@ -213,15 +213,11 @@ const SiteNavbar = ({navItems}) => {
         >
           <div className="mobile-menu-panel" ref={panelRef}>
             <div className="mobile-menu-head">
-              {/* aria-label added when the wordmark below was commented out: the
-                  text was this link's only accessible name, and an image with
-                  alt="" left it announced as just "link". */}
-              <Link
-                className="brand mobile-menu-brand"
-                to="/"
-                onClick={handleLinkClick}
-                aria-label="CareerVeda home"
-              >
+              {/* No aria-label: the lockup's wordmark and tagline are real
+                  text inside the link, and an aria-label that does not contain
+                  them fails WCAG 2.5.3 (label-in-name), which axe flags as
+                  label-content-name-mismatch. */}
+              <Link className="brand mobile-menu-brand" to="/" onClick={handleLinkClick}>
                 <BrandLockup />
               </Link>
               <button

@@ -1614,15 +1614,15 @@ const blogPosts = [
     date: "January 2024",
     readTime: "6 min read",
     excerpt:
-      "Choosing how to store your data is one of the most consequential decisions a backend engineer makes        and it is hard to change later. SQL or NoSQL? The answer depends on your data and your access patterns. Here is how to decide.",
+      "Choosing how to store your data is one of the most consequential decisions a backend engineer makes and it is hard to change later. SQL or NoSQL? The answer depends on your data and your access patterns. Here is how to decide.",
     image:
-      "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Business_analytics_images-4145ed42.jpg",
+      "https://ik.imagekit.io/q7ucn1rfni/careerveda/Data_analytics-19c78fb9.png?tr=w-840,f-auto,q-80",
     lead: "Behind every backend is a decision that shapes everything else: how to store the data. Get it right and the system stays fast and flexible as it grows; get it wrong and you fight your database for years. The first fork in that decision is usually SQL versus NoSQL        and, as with most engineering choices, the right answer depends on the problem, not on fashion.",
     sections: [
       {
         heading: "When SQL shines",
         body: [
-          "SQL (relational) databases excel when data is structured and relationships matter        orders linked to customers linked to products        and when you need strong consistency and complex queries. Decades of maturity mean they are reliable, well-understood, and powerful.",
+          "SQL (relational) databases excel when data is structured and relationships matter orders linked to customers linked to products        and when you need strong consistency and complex queries. Decades of maturity mean they are reliable, well-understood, and powerful.",
           "For most business applications with clear, related entities, a relational database is the safe and sensible default.",
         ],
       },
@@ -1636,7 +1636,7 @@ const blogPosts = [
       {
         heading: "Design around access patterns",
         body: [
-          "The key to choosing well is understanding how your data will be read and written        your access patterns. Many real systems use both: a relational database for core transactional data and a NoSQL store for caching or high-volume events.",
+          "The key to choosing well is understanding how your data will be read and written your access patterns. Many real systems use both: a relational database for core transactional data and a NoSQL store for caching or high-volume events.",
           "Because this choice is hard to change later, thinking it through up front pays off for years.",
         ],
       },
@@ -1669,27 +1669,27 @@ const blogPosts = [
     readTime: "6 min read",
     excerpt:
       "A certificate says you took a course; a portfolio proves you can do the work. For aspiring data analysts, a few strong projects are worth more than any credential. Here is how to build a portfolio that actually gets you interviews.",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/data-c3b60741.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/Data_analytics-19c78fb9.png?tr=w-840,f-auto,q-80",
     lead: "When hiring managers screen entry-level analysts, they are looking for one thing above all: evidence that you can actually do the job. A certificate tells them you attended; a portfolio shows them you can take messy data, ask a sharp question, and produce an answer someone can act on. For breaking into data analytics, a handful of strong projects beats a wall of credentials.",
     sections: [
       {
         heading: "Why a portfolio beats a certificate",
         body: [
-          "Certificates prove attendance; portfolios prove capability. A hiring manager cannot tell from a certificate whether you can clean a dataset or frame a question        but a project shows exactly that. It is the closest thing to watching you work.",
+          "Certificates prove attendance; portfolios prove capability. A hiring manager cannot tell from a certificate whether you can clean a dataset or frame a question but a project shows exactly that. It is the closest thing to watching you work.",
           "For newcomers without job experience, this is the single most persuasive asset you can build.",
         ],
       },
       {
         heading: "Curate, do not accumulate",
         body: [
-          "A good portfolio is curated, not exhaustive. Three or four projects that each tell a complete story        the business question, the data, your process, and the insight        are far more persuasive than a dozen half-finished notebooks.",
+          "A good portfolio is curated, not exhaustive. Three or four projects that each tell a complete story the business question, the data, your process, and the insight are far more persuasive than a dozen half-finished notebooks.",
           "Quality and completeness beat quantity every time. One polished project says more than ten abandoned ones.",
         ],
       },
       {
         heading: "Tell the whole story",
         body: [
-          "Each project should walk through the full arc: the question you asked, the real data you used, your SQL and visualisations, and        crucially        the 'so what', the decision your analysis would inform. Presentation matters as much as technique.",
+          "Each project should walk through the full arc: the question you asked, the real data you used, your SQL and visualisations, and crucially the 'so what', the decision your analysis would inform. Presentation matters as much as technique.",
           "Analysts who explain their thinking clearly stand out, because that is exactly what the job requires.",
         ],
       },
@@ -1697,7 +1697,7 @@ const blogPosts = [
         heading: "Building portfolio pieces with CareerVeda",
         body: [
           "CareerVeda's Data Analytics program is designed to produce exactly this. The four-phase learning path culminates in capstone projects guided by an industry mentor, built on real data and framed as portfolio pieces from the start.",
-          "The placement cell then helps you present it        resume building, mock interviews, and referrals to 900+ hiring partners. Alumni have used these portfolios to land roles at Genpact, Wipro, TCS, and fast-growing startups.",
+          "The placement cell then helps you present it resume building, mock interviews, and referrals to 900+ hiring partners. Alumni have used these portfolios to land roles at Genpact, Wipro, TCS, and fast-growing startups.",
         ],
       },
     ],
@@ -1721,10 +1721,10 @@ const blogPosts = [
     date: "November 2023",
     readTime: "6 min read",
     excerpt:
-      "Downloads look great in a deck and mean almost nothing. The best product managers ignore vanity metrics and obsess over the numbers that reflect real value. Here is how to tell the difference        and what to measure instead.",
+      "Downloads look great in a deck and mean almost nothing. The best product managers ignore vanity metrics and obsess over the numbers that reflect real value. Here is how to tell the difference and what to measure instead.",
     image:
-      "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Business_analytics_images-4145ed42.jpg",
-    lead: "Every product manager learns, sometimes painfully, that not all metrics are created equal. Total downloads, page views, and registered users look impressive on a slide but can rise while the product quietly fails. These are vanity metrics        big numbers that flatter without informing. The PMs who drive real growth learn to see past them.",
+      "https://ik.imagekit.io/q7ucn1rfni/careerveda/product-management-ede8ba4a.png?tr=w-840,f-auto,q-80",
+    lead: "Every product manager learns, sometimes painfully, that not all metrics are created equal. Total downloads, page views, and registered users look impressive on a slide but can rise while the product quietly fails. These are vanity metrics  big numbers that flatter without informing. The PMs who drive real growth learn to see past them.",
     sections: [
       {
         heading: "The trap of vanity metrics",
@@ -1776,7 +1776,7 @@ const blogPosts = [
     readTime: "6 min read",
     excerpt:
       "It is a truism among practitioners: better features beat fancier algorithms. The quiet craft of turning raw data into signals a model can learn from often decides whether a project succeeds. Here is why feature engineering matters so much.",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/data-c3b60741.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/data-5283dc81.png?tr=w-840,f-auto,q-80",
     lead: "Newcomers to data science often obsess over which algorithm to use, but experienced practitioners know a quieter truth: the quality of your features usually matters more than the sophistication of your model. Feature engineering        the craft of transforming raw data into inputs that expose the underlying signal        is where much of the real work, and much of the winning, happens.",
     sections: [
       {
@@ -1830,7 +1830,7 @@ const blogPosts = [
     excerpt:
       "You don't need a fancy finance pedigree to become an investment banking analyst        you need to prove you can do the work. Plenty of successful bankers came from other backgrounds. Here is the realistic path in for non-finance graduates.",
     image:
-      "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/investing-banking-images-59ab0040.jpg",
+      "https://ik.imagekit.io/q7ucn1rfni/careerveda/investing-banking-images-d0cb7a99.png?tr=w-840,f-auto,q-80",
     lead: "One of the most persistent myths about investment banking is that it is closed to anyone without an elite finance degree. It is competitive, certainly        but the thing desks actually screen for is capability, not pedigree. Engineers, economists, commerce graduates, and career-changers break in every year by demonstrating the one thing that matters: that they can build the models and do the analysis.",
     sections: [
       {
@@ -1883,7 +1883,7 @@ const blogPosts = [
     readTime: "5 min read",
     excerpt:
       "Getting the first analytics job is one milestone; building a career that keeps climbing is another. The analysts who rise are the ones who move from answering questions to shaping them. Here is how to grow beyond the entry-level role.",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Data_analytics-ba31dcb9.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/Data_analytics-19c78fb9.png?tr=w-840,f-auto,q-80",
     lead: "Landing a business analyst role is a real achievement        but it is the start of the journey, not the summit. Early on, the job is largely reactive: someone asks a question and you answer it with data. The analysts who build standout careers gradually flip that dynamic, moving from answering questions to helping decide which questions are worth asking.",
     sections: [
       {
@@ -1936,7 +1936,7 @@ const blogPosts = [
     readTime: "6 min read",
     excerpt:
       "As companies move everything to the cloud, securing it has become one of the most in-demand skills in the field. But cloud security starts with fundamentals every defender can learn. Here is what protecting data in AWS and Azure really involves.",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Data_analytics-ba31dcb9.jpg",
+    image: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/CyberSecurity-7e85cd39.png?tr=w-840,f-auto,q-80",
     lead: "The shift to the cloud has been one of the biggest changes in how organisations run        and it has moved the security frontier with it. Data that once lived in a company's own building now sits in AWS, Azure, and other platforms, and protecting it has become a core defensive skill. The good news is that cloud security, at its foundation, rests on principles any aspiring defender can grasp.",
     sections: [
       {
@@ -1990,7 +1990,7 @@ const blogPosts = [
     excerpt:
       "A data warehouse is where an organisation's data comes together to be analysed  and cloud warehouses like Snowflake have made this dramatically easier. Here is what a warehouse is, why it matters, and how it fits a data engineer's work.",
     image:
-      "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/ChatGPT-Image-Jul-13-2026-04_53_32-PM-fbacfde5.jpg",
+      "https://ik.imagekit.io/q7ucn1rfni/careerveda/data-5283dc81.png?tr=w-840,f-auto,q-80",
     lead: "Companies generate data everywhere  apps, sales systems, marketing tools, sensors  but scattered data answers no questions. A data warehouse is the central place where it all comes together, cleaned and structured for analysis. Modern cloud warehouses like Snowflake have transformed this once-heavy undertaking into something teams can stand up quickly and scale on demand.",
     sections: [
       {

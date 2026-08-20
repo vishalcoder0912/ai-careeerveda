@@ -138,7 +138,10 @@ const ProgramExplorer = () => {
               <div className="program-detail-head">
                 <div className="program-head-text">
                   <p className="section-label">CareerVeda Program Studio</p>
-                  <h3>{activeProgram.title}</h3>
+                  {/* h2, not h3: the explorer sits directly under the page's
+                      h1 with no intermediate section heading, so a h3 skipped
+                      a level and Lighthouse failed /programs on heading-order. */}
+                  <h2>{activeProgram.title}</h2>
                   <strong className="program-subtitle">{activeProgram.subtitle}</strong>
                   {/* The description belongs beside the artwork, not beneath it:
                       as a sibling of the head it spanned the full card width and

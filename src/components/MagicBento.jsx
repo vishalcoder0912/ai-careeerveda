@@ -475,7 +475,7 @@ const MagicBento = ({
                 <span className="magic-bento-card__label">{card.label}</span>
               </div>
               <div className="magic-bento-card__content">
-                <h3 className="magic-bento-card__title">{card.title}</h3>
+                <h2 className="magic-bento-card__title">{card.title}</h2>
                 <p className="magic-bento-card__description">{card.description}</p>
               </div>
             </>

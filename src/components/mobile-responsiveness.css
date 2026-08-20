@@ -444,7 +444,7 @@
         var(--cv-slate-deep, #1f2b3a) 100%
       ) !important;
     border-left: 1px solid var(--cv-dark-border, rgba(255, 255, 255, 0.12));
-    border-radius: 24px 0 0 24px;
+    border-radius: 14px 0 0 14px;
     box-shadow: -24px 0 70px rgba(2, 6, 23, 0.46);
   }
 
@@ -466,6 +466,9 @@
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--cv-dark-border, rgba(255, 255, 255, 0.12));
+    /* Follow the panel's side curve: with square corners the sticky head poked
+       out of the rounded edge as a notch at the top of the drawer. */
+    border-radius: 14px 0 0 0;
   }
 
   body .mobile-menu-brand {
@@ -732,7 +735,7 @@
     width: min(100% - 16px, 1180px) !important;
   }
 
-  .program-detail-head h3 {
+  .program-detail-head :is(h3, h2) {
     font-size: clamp(1.3rem, 5.5vw, 1.7rem) !important;
   }
 
@@ -1251,7 +1254,7 @@
     padding: 18px !important;
   }
 
-  .program-detail-head h3 {
+  .program-detail-head :is(h3, h2) {
     font-size: clamp(1.1rem, 5vw, 1.4rem) !important;
   }
 

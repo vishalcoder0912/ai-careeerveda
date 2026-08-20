@@ -81,8 +81,11 @@ const BlogPage = () => {
                       <img
                         src={post.image}
                         alt=""
+                        // 400x225 reserves the 16:9 box the stylesheet gives
+                        // .blog-card-media, so the grid does not reflow when
+                        // the cover arrives.
                         width={400}
-                        height={200}
+                        height={225}
                         // The top rows are on screen before anyone scrolls, so
                         // deferring them just means watching them pop in. The
                         // rest stay lazy — eagerly fetching all 38 covers would

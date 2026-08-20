@@ -15,7 +15,7 @@
 .spline-page .brand,
 .spline-page .hero-copy h1,
 .spline-page .section-heading :is(h1, h2),
-.spline-page .program-detail-head h3,
+.spline-page .program-detail-head :is(h3, h2),
 .spline-page .program-detail-head strong,
 .spline-page .program-track-item strong,
 .spline-page .difference-grid article h3,
@@ -161,7 +161,7 @@
 
 .program-sidebar-head strong,
 .program-track-item strong,
-.program-detail-head h3,
+.program-detail-head :is(h3, h2),
 .program-detail-head strong {
   font-family: "Manrope", "Inter", system-ui, sans-serif !important;
 }
@@ -188,7 +188,7 @@
   min-width: 0;
 }
 
-.program-detail-head h3 {
+.program-detail-head :is(h3, h2) {
   line-height: 0.99 !important;
   letter-spacing: -0.045em !important;
   text-wrap: balance;
@@ -443,7 +443,7 @@
   .hero-copy h1,
   .section-heading :is(h1, h2),
   .strategy-section .section-heading :is(h1, h2),
-  .program-detail-head h3 {
+  .program-detail-head :is(h3, h2) {
     letter-spacing: -0.032em !important;
   }
 
@@ -473,7 +473,7 @@
     letter-spacing: -0.028em !important;
   }
 
-  .program-detail-head h3 {
+  .program-detail-head :is(h3, h2) {
     font-size: clamp(2rem, 12vw, 3.25rem) !important;
     line-height: 1 !important;
     letter-spacing: -0.035em !important;

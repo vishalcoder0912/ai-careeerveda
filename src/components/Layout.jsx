@@ -60,7 +60,7 @@ const Layout = () => {
       </Suspense>
       <footer className="site-footer">
         <div>
-          <Link className="brand" to="/" aria-label="CareerVeda home">
+          <Link className="brand" to="/">
             <BrandLockup />
           </Link>
           <p>Empowering learners worldwide to achieve career excellence</p>
