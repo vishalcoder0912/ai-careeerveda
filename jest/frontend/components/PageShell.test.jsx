@@ -1,34 +1,12 @@
 // PageShell — the hero band and section-heading primitives for standalone routes.
 //
-// framer-motion is mocked as a pass-through so the assertions run against the
-// real DOM structure (a real <h1>, a real <h2>) rather than against the library's
-// animation machinery. The contract under test is the accessible one: the hero
-// exposes its title as a heading and its eyebrow/lead only when they exist, and
-// the section heading labels the section it belongs to.
+// The animations these used to get from framer-motion are now CSS (see
+// motionPrimitives), so the assertions run against the real DOM structure: the
+// hero exposes its title as a heading and its eyebrow/lead only when they exist,
+// and the section heading labels the section it belongs to.
 
-import {describe, it, expect, jest} from "@jest/globals";
+import {describe, it, expect} from "@jest/globals";
 import {render, screen} from "@testing-library/react";
-
-jest.mock("framer-motion", () => {
-  const React = jest.requireActual("react");
-  const MOTION_PROPS = new Set([
-    "variants", "initial", "animate", "whileInView", "viewport",
-    "whileHover", "whileTap", "transition", "exit", "layout",
-  ]);
-  const asDom = (tag) =>
-    React.forwardRef((props, ref) => {
-      const rest = {};
-      for (const [key, value] of Object.entries(props)) {
-        if (!MOTION_PROPS.has(key)) rest[key] = value;
-      }
-      return React.createElement(tag, {...rest, ref}, props.children);
-    });
-  return {
-    motion: new Proxy({}, {get: (_target, tag) => asDom(tag)}),
-    useReducedMotion: () => false,
-    useInView: () => true,
-  };
-});
 
 import {PageHero, SectionHeading} from "../../../src/components/PageShell";
 

@@ -3,24 +3,42 @@
 // The point of the component is that the expensive children are *not* mounted
 // until the reader scrolls near: React.lazy() alone splits the code but still
 // resolves the import on mount, which is how three.js ended up on the home page.
-// The suite pins that the children stay unmounted until the (mocked) intersection
-// check turns true, and that the placeholder holds the section's height so the
-// page does not jump when the real component arrives.
+// The suite pins that the children stay unmounted until the intersection check
+// turns true, and that the placeholder holds the section's height so the page
+// does not jump when the real component arrives.
+//
+// IntersectionObserver is replaced by hand here rather than trusting the global
+// stub (which reports everything visible immediately) — "not near" is the state
+// this component exists to enforce, so the test drives the observer explicitly.
 
-import {describe, it, expect, jest, beforeEach} from "@jest/globals";
+import {describe, it, expect, beforeEach} from "@jest/globals";
 import {render} from "@testing-library/react";
 
-jest.mock("framer-motion", () => ({
-  useInView: jest.fn(() => false),
-}));
-
-import {useInView} from "framer-motion";
 import DeferUntilVisible from "../../../src/components/DeferUntilVisible";
+
+let isIntersecting = false;
+
+class ObserverMock {
+  constructor(callback) {
+    this.callback = callback;
+  }
+
+  observe(target) {
+    if (isIntersecting) this.callback([{target, isIntersecting: true}], this);
+  }
+
+  unobserve() {}
+  disconnect() {}
+  takeRecords() {
+    return [];
+  }
+}
 
 const Heavy = () => <p>heavy content</p>;
 
 beforeEach(() => {
-  useInView.mockReturnValue(false);
+  isIntersecting = false;
+  globalThis.IntersectionObserver = ObserverMock;
 });
 
 describe("DeferUntilVisible", () => {
@@ -31,12 +49,11 @@ describe("DeferUntilVisible", () => {
       </DeferUntilVisible>,
     );
 
-    expect(useInView).toHaveBeenCalled();
     expect(container.querySelector("p")).toBeNull();
   });
 
   it("renders the children once the intersection check says the fold is near", () => {
-    useInView.mockReturnValue(true);
+    isIntersecting = true;
     const {container} = render(
       <DeferUntilVisible>
         <Heavy />

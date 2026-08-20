@@ -143,7 +143,12 @@
          without another document load. RouteMeta in App.jsx sends the page_view
          on every location change, first one included        so GA sees every route,
          and the landing page is not counted twice. -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1P67KR40MJ"></script>
+    <!-- GA4. The inline queue and config are synchronous so every route change
+         still reports (seoTags.js calls gtag()), but the ~17 KB gtag.js download
+         is deferred until after the page has finished loading: it is third-party
+         script competing for the same connection as the app itself, and nothing
+         it reports is needed to paint. The queue keeps accepting pushes while
+         the script is absent, and gtag.js flushes them when it finally loads. -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag() {
@@ -151,6 +156,20 @@
       }
       gtag("js", new Date());
       gtag("config", "G-1P67KR40MJ", {send_page_view: false});
+
+      (function () {
+        var onIdle = window.requestIdleCallback || function (cb) { window.setTimeout(cb, 1); };
+        function load() {
+          onIdle(function () {
+            var script = document.createElement("script");
+            script.src = "https://www.googletagmanager.com/gtag/js?id=G-1P67KR40MJ";
+            script.async = true;
+            document.head.appendChild(script);
+          }, {timeout: 2000});
+        }
+        if (document.readyState === "complete") load();
+        else window.addEventListener("load", load, {once: true});
+      })();
     </script>
 
     <!-- The app is client-rendered, so until React boots there is nothing in the

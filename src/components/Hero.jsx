@@ -1,5 +1,4 @@
 import {useEffect,useRef} from "react";
-import {motion} from "framer-motion";
 import {Link} from "react-router-dom";
 import {SPLINE_SCENE_URL} from "../config/spline";
 import SplineHeroScene from "./SplineHeroScene";
@@ -105,12 +104,7 @@ const Hero = ({stats}) => {
       <div className="hero-vignette" />
 
       <div className="hero-layout">
-        <motion.div
-          className="hero-copy"
-          initial={{opacity: 0,y: 24}}
-          animate={{opacity: 1,y: 0}}
-          transition={{duration: 0.7,ease: "easeOut"}}
-        >
+        <div className="hero-copy cv-hero-enter">
           <p className="eyebrow">From Learning to Placement — We Guide Every Step</p>
           <h1>Launch Your Career with Industry-Led Programs</h1>
           <p>
@@ -129,7 +123,7 @@ const Hero = ({stats}) => {
               Explore Programs
             </Link>
           </div>
-        </motion.div>
+        </div>
 
         <SplineHeroScene sceneUrl={SPLINE_SCENE_URL} />
       </div>

@@ -44,6 +44,10 @@ pipeline {
     E2E_FRONTEND_PORT = '5293'
     E2E_ADMIN_PORT    = '5294'
 
+    // The live site, hit by the post-publish smoke stage. The API is served
+    // from the apex domain (nginx proxies /api/v1), so the smoke spec derives
+    // the API base from this.
+    
     // Local development URLs - no external domains
     VITE_PUBLIC_API_BASE_URL = 'http://localhost:8091/api/v1'
     VITE_ADMIN_API_BASE_URL  = 'http://localhost:8091/api/v1'
@@ -72,6 +76,18 @@ pipeline {
         bat 'npm ci'
         bat 'npm ci --prefix backend'
         bat 'npm ci --prefix admin'
+      }
+    }
+
+    stage('Dependency audit') {
+      // npm audit is the cheap supply-chain gate: it needs no servers, no
+      // credentials, just the registry. Run inside each package because
+      // `npm audit --prefix` is broken with this npm version ("loadVirtual
+      // requires existing shrinkwrap file") while the in-directory form works.
+      steps {
+        bat 'npm audit --audit-level=high'
+        bat 'cd backend && npm audit --audit-level=high'
+        bat 'cd admin && npm audit --audit-level=high'
       }
     }
 
@@ -116,8 +132,33 @@ pipeline {
       steps {
         // --with-deps is Linux-only and fails on Windows. --yes avoids interactive prompts.
         bat 'npx --yes playwright install chromium'
-        bat 'npm run test:e2e'
+        // scripts/run-e2e-ci.mjs is the watchdog: it runs the same suite, streams
+        // the output straight through, and if the runner has not exited within
+        // the cap (E2E_WATCHDOG_MINUTES, default 40) it force-kills the whole
+        // process tree plus anything still listening on the e2e ports, then
+        // fails the stage fast. A run that finishes normally passes through
+        // untouched. This exists because playwright on Windows has occasionally
+        // stopped exiting after the last test (webServers/vite/mongod children
+        // left alive), which hung the old `npm run test:e2e` step until the
+        // stage timeout.
+        bat 'node scripts/run-e2e-ci.mjs'
       }
+    }
+
+    stage('Performance budgets') {
+      // Real-browser Core Web Vitals on the key pages (see e2e/performance.spec.js).
+      // Tagged @performance so the E2E stage above skips it; it has its own
+      // budget because a Vite dev server is slower than the built site.
+      options { timeout(time: 10, unit: 'MINUTES') }
+      steps { bat 'npm run test:performance' }
+    }
+
+    stage('Load test') {
+      // Hammers the throwaway E2E API and asserts p95/error-rate budgets
+      // (scripts/load-test.mjs). Boots its own server on the E2E port, which
+      // the post-action cleanup frees afterwards.
+      options { timeout(time: 10, unit: 'MINUTES') }
+      steps { bat 'npm run test:load' }
     }
 
     stage('Build') {
@@ -156,6 +197,19 @@ pipeline {
           '''
         }
       }
+    }
+
+    // The deployment is external to this pipeline (Cloud Run / nginx), so this
+    // can only check the site that is live, not the one this build just made.
+    // It is a smoke test of the published main: if the site is down, blank, or
+    // its API is not answering, someone should be told now rather than when a
+    // visitor lands on it.
+    stage('Live smoke') {
+      when {
+        expression { (env.BRANCH_NAME ?: env.GIT_BRANCH ?: '') ==~ /(.*\/)?dev/ }
+      }
+      options { timeout(time: 10, unit: 'MINUTES') }
+      steps { bat 'npm run test:smoke' }
     }
   }
 
