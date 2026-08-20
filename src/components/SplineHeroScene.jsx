@@ -14,11 +14,11 @@ const labels = [
 // scene either way. A still of the same robot, from the same scene, in the same
 // place: 25 KB, and it keeps its alpha channel, so the hero's gradient and glow
 // read through it as they do through the iframe. It replaced a spinning gradient
-// ring captioned "CareerVeda Career Engine".
+// ring capped "CareerVeda Career Engine".
 const SplineFallback = () => {
   return (
     <div className="spline-poster" aria-hidden="true">
-      <img src="/images/hero-robot.webp" alt="" width="560" height="778" decoding="async" />
+      <img src="/images/hero-robot.webp" alt="" width="560" height="778" decoding="async" fetchPriority="high" />
     </div>
   );
 };
@@ -51,8 +51,13 @@ const SplineHeroScene = ({sceneUrl}) => {
   const shellRef = useRef(null);
   const [isLoaded,setIsLoaded] = useState(false);
   const [hasFailed,setHasFailed] = useState(false);
+  // Both initializers run during the first render, not in a mount effect —
+  // setting these from the effect painted a loader frame that was never shown
+  // (the still replaced it) and forced a second render for values that were
+  // known before the first paint. matchMedia is idempotent, so reading it in
+  // the initializer and again in the effect below costs nothing.
   const [shouldRender,setShouldRender] = useState(false);
-  const [useFallback,setUseFallback] = useState(false);
+  const [useFallback] = useState(() => shouldSkipScene());
   // A finger has no hover, so over the iframe a phone must choose: either the
   // robot takes every gesture — including the vertical swipe meant to scroll the
   // page, which turns the hero into a trap you have to scroll around — or it takes
@@ -62,31 +67,29 @@ const SplineHeroScene = ({sceneUrl}) => {
   // visitor scrolls or taps away again. We cannot arbitrate this from outside —
   // the embed is cross-origin, so touch-action does not reach its listeners and
   // pointer-events is the only lever we have.
-  const [isTouch,setIsTouch] = useState(false);
+  const [isTouch] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(hover: none)").matches,
+  );
   const [isActive,setIsActive] = useState(false);
   // On a phone the still poster is the resting hero until the scene is asked for.
   // Kept separate from useFallback (which is the permanent still for
   // reduced-motion / save-data / 2g): here the poster is only a stand-in that the
   // first gesture upgrades to the live robot.
-  const [phoneResting,setPhoneResting] = useState(false);
+  const [phoneResting] = useState(() => isPhone());
 
   useEffect(() => {
     if (shouldSkipScene()) {
-      setUseFallback(true);
       return undefined;
     }
 
-    setIsTouch(window.matchMedia("(hover: none)").matches);
-
     let cancelled = false;
-    const phone = isPhone();
     const idle = window.requestIdleCallback ?? ((cb) => window.setTimeout(cb,300));
 
     const start = () => {
       if (cancelled) return;
       idle(() => {
         if (!cancelled) setShouldRender(true);
-      },{timeout: phone ? 3000 : 2000});
+      },{timeout: phoneResting ? 3000 : 2000});
     };
 
     // Phones: the live scene is a ~1 MB WebGL app on its own thread, and booting
@@ -97,8 +100,7 @@ const SplineHeroScene = ({sceneUrl}) => {
     // and only then does the identical live robot boot, into a page that is
     // already up. Nothing is withheld: every phone visitor still gets the scene,
     // just after the page rather than racing it.
-    if (phone) {
-      setPhoneResting(true);
+    if (phoneResting) {
       const events = ["pointerdown","touchstart","wheel","scroll","keydown"];
       const onFirst = () => {
         events.forEach((e) => window.removeEventListener(e,onFirst));
@@ -137,7 +139,7 @@ const SplineHeroScene = ({sceneUrl}) => {
       cancelled = true;
       observer.disconnect();
     };
-  },[]);
+  },[phoneResting]);
 
   // Hand the gestures back. While the robot is active it eats every swipe that
   // starts on it, so a scroll event can only mean the visitor swiped somewhere

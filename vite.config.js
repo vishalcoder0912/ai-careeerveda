@@ -101,20 +101,42 @@ export default defineConfig(({mode}) => {
       globals: false,
       include: ["src/**/*.test.{js,jsx}"],
       setupFiles: ["./src/test-setup.js"],
+      // The Jenkins box runs this suite as a Windows service and the forks pool
+      // default (cores - 1 = 11 worker processes) repeatedly failed to boot:
+      // "[vitest-pool]: Failed to start forks worker ... Timeout waiting for
+      // worker to respond" → exit 1, on a machine where the same 216 tests pass
+      // in under a minute. Two workers cap the concurrent node processes so a
+      // loaded box stays green; the suite is small enough that the slower
+      // serialisation is invisible in the wall clock.
+      maxWorkers: 2,
+      minWorkers: 1,
     },
 
     build: {
-      // Everything used to land in one ~540 KB entry chunk, so shipping a copy
-      // fix invalidated React and the animation libraries along with it. Split by
-      // how often each part changes: the vendors are stable and stay cached
-      // across deploys, and the browser downloads them in parallel rather than
-      // parsing one long file.
       rollupOptions: {
         output: {
-          manualChunks: {
-            "vendor-react": ["react", "react-dom", "react-router-dom"],
-            "vendor-motion": ["framer-motion"],
-            "vendor-gsap": ["gsap", "gsap/ScrollTrigger"],
+          manualChunks(id) {
+            if (id.includes("node_modules/react/") || id.includes("node_modules/react-dom/") || id.includes("node_modules/react-router-dom/")) {
+              return "vendor-react";
+            }
+            if (id.includes("node_modules/framer-motion/")) {
+              return "vendor-motion";
+            }
+            if (id.includes("node_modules/gsap/")) {
+              return "vendor-gsap";
+            }
+            if (id.includes("src/data/blogPosts.js")) {
+              return "data-blog";
+            }
+            if (id.includes("src/data/programCatalog.js")) {
+              return "data-programs";
+            }
+            if (id.includes("src/data/jobsData.js")) {
+              return "data-jobs";
+            }
+            if (id.includes("src/data/policies.js")) {
+              return "data-policies";
+            }
           },
         },
       },

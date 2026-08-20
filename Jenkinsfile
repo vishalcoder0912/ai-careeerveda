@@ -11,6 +11,17 @@
 // from the machine PATH — no NodeJS tool is configured in this Jenkins, and
 // adding one would only pin a version the machine already has.
 //
+// History of the failures this file has been hardened against:
+//   - builds #21-#24 aborted at the 60-min overall cap: the E2E stage alone
+//     measured ~35-45 min. The cap is 90 min and the stage 60 min.
+//   - the accessibility suite hung in beforeAll on `networkidle` (Spline iframe
+//     never idles). It now waits on content, not network.
+//   - vitest's forks pool spawned 11 workers on this 12-core box and hit
+//     "Timeout waiting for worker to respond". vite.config.js and
+//     admin/vite.config.js now cap maxWorkers at 2.
+//   - frontend/admin Jest suites were added as a coverage gap. Backend Jest
+//     already runs inside `npm run test:all` (backend `test` = jest + vitest).
+//
 // Why this cannot touch the live site:
 //   - backend tests overwrite MONGODB_URI with mongodb-memory-server
 //     (backend/tests/setup.js), so no suite can reach Atlas.
@@ -33,6 +44,10 @@ pipeline {
     E2E_FRONTEND_PORT = '5293'
     E2E_ADMIN_PORT    = '5294'
 
+    // The live site, hit by the post-publish smoke stage. The API is served
+    // from the apex domain (nginx proxies /api/v1), so the smoke spec derives
+    // the API base from this.
+    
     // Local development URLs - no external domains
     VITE_PUBLIC_API_BASE_URL = 'http://localhost:8091/api/v1'
     VITE_ADMIN_API_BASE_URL  = 'http://localhost:8091/api/v1'
@@ -41,7 +56,9 @@ pipeline {
 
   options {
     timestamps()
-    timeout(time: 60, unit: 'MINUTES')
+    // 90 min overall: the E2E stage alone runs ~40-50 min on this controller.
+    // The old 60-min cap was aborting builds that were one stage from green.
+    timeout(time: 90, unit: 'MINUTES')
     disableConcurrentBuilds()
   }
 
@@ -62,6 +79,18 @@ pipeline {
       }
     }
 
+    stage('Dependency audit') {
+      // npm audit is the cheap supply-chain gate: it needs no servers, no
+      // credentials, just the registry. Run inside each package because
+      // `npm audit --prefix` is broken with this npm version ("loadVirtual
+      // requires existing shrinkwrap file") while the in-directory form works.
+      steps {
+        bat 'npm audit --audit-level=high'
+        bat 'cd backend && npm audit --audit-level=high'
+        bat 'cd admin && npm audit --audit-level=high'
+      }
+    }
+
     stage('Lint') {
       steps { bat 'npm run lint' }
     }
@@ -70,17 +99,66 @@ pipeline {
       steps { bat 'npm run test:all' }
     }
 
+    // Backend Jest runs inside test:all above (backend `test` runs Jest first).
+    // These two cover the frontend and admin repos, which test:all does not.
+    stage('Jest unit tests (frontend & admin)') {
+      steps { bat 'npm run test:jest:frontend && npm run test:jest:admin' }
+    }
+
+    stage('Free E2E ports') {
+      // Playwright with CI=true refuses to reuse an occupied port, so a stale
+      // process left by an interrupted run fails the whole build. Kill
+      // whatever still listens on the e2e ports (8091/5293/5294) before booting.
+      // Full exe paths: the service PATH on this machine lacks System32.
+      steps {
+        bat '''
+          @echo off
+          for /f "tokens=5" %%p in ('C:\\Windows\\System32\\netstat.exe -ano ^| C:\\Windows\\System32\\findstr.exe ":8091" ^| C:\\Windows\\System32\\findstr.exe "LISTENING"') do C:\\Windows\\System32\\taskkill.exe /F /PID %%p 2>nul
+          for /f "tokens=5" %%p in ('C:\\Windows\\System32\\netstat.exe -ano ^| C:\\Windows\\System32\\findstr.exe ":5293" ^| C:\\Windows\\System32\\findstr.exe "LISTENING"') do C:\\Windows\\System32\\taskkill.exe /F /PID %%p 2>nul
+          for /f "tokens=5" %%p in ('C:\\Windows\\System32\\netstat.exe -ano ^| C:\\Windows\\System32\\findstr.exe ":5294" ^| C:\\Windows\\System32\\findstr.exe "LISTENING"') do C:\\Windows\\System32\\taskkill.exe /F /PID %%p 2>nul
+          exit /b 0
+        '''
+      }
+    }
+
     stage('E2E tests') {
       options {
-        // The suite alone runs ~10 min on this machine; give it headroom
-        // so a slow first-run of playwright's browser install never aborts it.
-        timeout(time: 25, unit: 'MINUTES')
+        // The full suite (chromium + mobile-chromium) measured ~35 min on this
+        // machine, and the accessibility spec only started running fully after
+        // the networkidle fix. 45 min was aborting it; 60 min covers the run
+        // plus a slow first-run of playwright's browser install.
+        timeout(time: 60, unit: 'MINUTES')
       }
       steps {
         // --with-deps is Linux-only and fails on Windows. --yes avoids interactive prompts.
         bat 'npx --yes playwright install chromium'
-        bat 'npm run test:e2e'
+        // scripts/run-e2e-ci.mjs is the watchdog: it runs the same suite, streams
+        // the output straight through, and if the runner has not exited within
+        // the cap (E2E_WATCHDOG_MINUTES, default 40) it force-kills the whole
+        // process tree plus anything still listening on the e2e ports, then
+        // fails the stage fast. A run that finishes normally passes through
+        // untouched. This exists because playwright on Windows has occasionally
+        // stopped exiting after the last test (webServers/vite/mongod children
+        // left alive), which hung the old `npm run test:e2e` step until the
+        // stage timeout.
+        bat 'node scripts/run-e2e-ci.mjs'
       }
+    }
+
+    stage('Performance budgets') {
+      // Real-browser Core Web Vitals on the key pages (see e2e/performance.spec.js).
+      // Tagged @performance so the E2E stage above skips it; it has its own
+      // budget because a Vite dev server is slower than the built site.
+      options { timeout(time: 10, unit: 'MINUTES') }
+      steps { bat 'npm run test:performance' }
+    }
+
+    stage('Load test') {
+      // Hammers the throwaway E2E API and asserts p95/error-rate budgets
+      // (scripts/load-test.mjs). Boots its own server on the E2E port, which
+      // the post-action cleanup frees afterwards.
+      options { timeout(time: 10, unit: 'MINUTES') }
+      steps { bat 'npm run test:load' }
     }
 
     stage('Build') {
@@ -119,6 +197,19 @@ pipeline {
           '''
         }
       }
+    }
+
+    // The deployment is external to this pipeline (Cloud Run / nginx), so this
+    // can only check the site that is live, not the one this build just made.
+    // It is a smoke test of the published main: if the site is down, blank, or
+    // its API is not answering, someone should be told now rather than when a
+    // visitor lands on it.
+    stage('Live smoke') {
+      when {
+        expression { (env.BRANCH_NAME ?: env.GIT_BRANCH ?: '') ==~ /(.*\/)?dev/ }
+      }
+      options { timeout(time: 10, unit: 'MINUTES') }
+      steps { bat 'npm run test:smoke' }
     }
   }
 

@@ -1,10 +1,4 @@
-// seoTags writes straight into document.head, which means nothing about it is
-// visible from a component test and a broken social preview ships silently.
-//
-// The two failure modes worth protecting against are both invisible in a
-// browser: writing og:* as `name` instead of `property` (the tag renders,
-// validators ignore it), and appending rather than upserting (navigate five
-// times, ship five og:title tags, crawlers pick an arbitrary one).
+
 
 import {describe, it, expect, beforeEach, vi} from "vitest";
 

@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import {useSearchParams} from "react-router-dom";
 
 import {leadsApi} from "../services/api";
@@ -9,6 +9,12 @@ import {Modal} from "../components/Modal";
 import {Skeleton, EmptyState, ErrorState} from "../components/States";
 
 const STATUSES = ["new", "contacted", "qualified", "converted", "closed", "spam"];
+
+// How often the inbox re-checks the API in the background. Ten seconds keeps the
+// list feeling live without turning an admin page into a poll source. Every
+// background refresh is silent: only the rows and counts that actually changed
+// are touched, and nothing ever re-flashes the skeleton over rows being read.
+const POLL_INTERVAL_MS = 10_000;
 
 // createdAt is a full timestamp, so the time a lead was submitted is already
 // there — the list just needs to show it. Kept in the browser's own locale and
@@ -39,6 +45,98 @@ const Leads = () => {
   const [confirm, setConfirm] = useState(null);
   const [busy, setBusy] = useState(false);
 
+  // ── Background refresh ─────────────────────────────────────────────────────
+  // The inbox updates itself: a submission on the public site shows up here
+  // without a reload. State is mirrored into `snapshot` each render so the poll
+  // loop reads fresh values without being torn down by a changing dependency,
+  // and `inFlight` stops two ticks from ever overlapping.
+  const snapshot = useRef({page, search, status, type, open, loading, items, meta});
+  const inFlight = useRef(false);
+  // Total seen on the last load/poll. A submission anywhere in the inbox raises
+  // it, so a raise is how a "new leads" toast is detected — and it is reset on
+  // every load, so a filter change never counts as a new arrival.
+  const lastTotalRef = useRef(null);
+
+  useEffect(() => {
+    snapshot.current = {page, search, status, type, open, loading, items, meta};
+  });
+
+  const poll = useCallback(async () => {
+    if (inFlight.current) return;
+    if (document.visibilityState !== "visible") return;
+
+    const {page, search, status, type, open, loading, items} = snapshot.current;
+    // Never swap rows underneath something the admin is doing: a manual load, a
+    // modal being read, or a search in progress (a live tick mid-typing would
+    // replace results the admin has not finished narrowing down).
+    if (loading || open || search) return;
+
+    inFlight.current = true;
+    try {
+      const [listResponse, statsResponse] = await Promise.all([
+        leadsApi.list({
+          page,
+          limit: 25,
+          status: status || undefined,
+          type: type || undefined,
+        }),
+        leadsApi.stats(),
+      ]);
+      setStats(statsResponse.data);
+
+      const before = lastTotalRef.current;
+      const after = listResponse.meta.total;
+      lastTotalRef.current = after;
+
+      // First tick has no baseline, and a steady inbox has nothing to do but
+      // keep the stat cards fresh — which the stats call above already did.
+      if (before === null || after === before) return;
+
+      if (after > before) {
+        // New submissions exist. On the first page the response IS the newest
+        // matching rows, so it can be swapped in whole — merging would keep a
+        // row that has since fallen onto page two. On a later page, replacing
+        // the view would jump the admin to a different set of rows, so only the
+        // running total and cards move.
+        const firstPage = page === 1;
+        if (firstPage) setItems(listResponse.data);
+        setMeta(listResponse.meta);
+
+        const count = after - before;
+        const newest = listResponse.data[0];
+        if (newest && firstPage && newest._id !== items[0]?._id) {
+          toast.success(`New ${newest.type} lead from ${newest.name}.`);
+        } else {
+          toast.success(`${count} new ${count === 1 ? "lead" : "leads"} in the inbox.`);
+        }
+      } else {
+        // Fewer than the last tick — a lead was deleted from another session.
+        // The first page follows suit; later pages keep what is on screen.
+        setMeta(listResponse.meta);
+        if (page === 1) setItems(listResponse.data);
+      }
+    } catch {
+      // A background refresh must never take the page down with it; the next
+      // tick simply tries again.
+    } finally {
+      inFlight.current = false;
+    }
+  }, [toast]);
+
+  useEffect(() => {
+    const id = setInterval(poll, POLL_INTERVAL_MS);
+    const onVisibility = () => {
+      // Returning to the tab gets an immediate tick instead of waiting for the
+      // next interval — an admin who switches back wants the freshest inbox.
+      if (document.visibilityState === "visible") poll();
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [poll]);
+
   // A background refresh of the stat cards only — never the list, which would
   // flash the skeleton over rows the user is looking at.
   const refreshStats = useCallback(() => {
@@ -61,6 +159,7 @@ const Leads = () => {
       });
       setItems(response.data);
       setMeta(response.meta);
+      lastTotalRef.current = response.meta.total;
 
       // Deliberately unfiltered: these are the totals for the whole inbox, not
       // for the current page of results. A failed summary must not take the
@@ -161,7 +260,13 @@ const Leads = () => {
       <div className="page-head">
         <div>
           <h1>Leads</h1>
-          <p className="page-sub">{meta.total} records</p>
+          <p className="page-sub">
+            {meta.total} records
+            <span className="live-indicator" title="New submissions appear automatically">
+              <span className="live-dot" aria-hidden="true" />
+              Live
+            </span>
+          </p>
         </div>
         {can("forms.export") ? (
           <button type="button" className="btn btn--primary" onClick={exportCsv}>

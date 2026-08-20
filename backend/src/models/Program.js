@@ -81,6 +81,9 @@ const programSchema = new mongoose.Schema(
     guarantee: {type: String, default: "", maxlength: 300},
 
     nextBatch: {type: String, default: "", maxlength: 120},
+    // auto: jobs/updateBatchDates.js keeps nextBatch pointed at the next
+    // Saturday. custom: an editor-typed value, left untouched by the job.
+    nextBatchMode: {type: String, enum: ["auto", "custom"], default: "auto"},
     seats: {type: String, default: "", maxlength: 120},
 
     faqs: {type: [faqEntrySchema], default: []},

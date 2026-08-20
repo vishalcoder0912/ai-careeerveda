@@ -1,4 +1,4 @@
-﻿// One constant because two screens show the mark â€” the sidebar and the sign-in
+﻿// One constant because two screens show the mark        the sidebar and the sign-in
 // card. A logo swap that updates only one of them is the failure mode this
 // exists to prevent.
 //

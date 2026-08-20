@@ -28,7 +28,7 @@ import {
 // Fields the public may never see, whatever the endpoint. Applied as a
 // projection so they are excluded by the database rather than deleted in JS —
 // a field that is never loaded cannot be leaked by a later refactor.
-const PUBLIC_EXCLUDE = "-createdBy -updatedBy -deletedBy -deletedAt -revision -__v";
+const PUBLIC_EXCLUDE = "-createdBy -updatedBy -deletedBy -deletedAt -revision -__v -nextBatchMode";
 
 export const RESOURCES = {
   programs: {

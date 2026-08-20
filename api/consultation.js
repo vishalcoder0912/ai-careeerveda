@@ -54,7 +54,7 @@ export default async function handler(request, response) {
   // for a lead that was never stored — a silently dropped lead is worse than a
   // visible failure.
   if (!collection) {
-    console.error("MONGODB_URI is not set; consultation lead was not stored.");
+    console.error("Firestore is not set; consultation lead was not stored.");
     return response.status(503).json({error: "Submissions aren't configured yet. Please try again later."});
   }
 

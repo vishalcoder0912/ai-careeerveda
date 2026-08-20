@@ -65,6 +65,8 @@ const BlogArticle = ({post}) => {
             <img
               src={post.image}
               alt=""
+              width={1200}
+              height={675}
               loading="eager"
               fetchPriority="high"
               decoding="async"

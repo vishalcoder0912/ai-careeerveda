@@ -1,5 +1,4 @@
-import {Suspense, lazy, useRef} from "react";
-import {useReducedMotion, useInView} from "framer-motion";
+import {Suspense, lazy, useEffect, useRef, useState} from "react";
 import {useViewportTier} from "../hooks/useViewportTier";
 
 // Antigravity pulls in three.js (~733 KB), so it is code-split and only mounted
@@ -18,11 +17,36 @@ const Antigravity = lazy(() => import("./ui/Antigravity"));
 // magnet focal point lines up with the pointer.
 const ConsultationAtmosphere = ({eventSource}) => {
   const hostRef = useRef(null);
-  const reduceMotion = useReducedMotion();
+  const [inView, setInView] = useState(false);
+  // Same two gates the three.js field always had, read directly instead of
+  // through framer-motion: reduced motion is a media query, and "near the
+  // viewport" is an IntersectionObserver.
+  const [reduceMotion] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
   const tier = useViewportTier();
+
   // Start ~250px early so the field is already running by the time the section
   // scrolls in, and keep it mounted only while it's roughly on screen.
-  const inView = useInView(hostRef, {amount: 0.05, margin: "250px 0px"});
+  useEffect(() => {
+    const el = hostRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setInView(true);
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.disconnect();
+        }
+      },
+      {threshold: 0.05, rootMargin: "250px 0px"},
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   // A dense, fast particle field on a phone reads as noise, and a visitor who
   // asked for less motion should not be handed a simulation. Either way, no

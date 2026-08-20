@@ -2,7 +2,7 @@
 //
 // This used to be a PROGRAMS const inside ProgramExplorer.jsx. It moved here so
 // the explorer card, the /programs/:slug detail page, and the enrol form's
-// program picker all read the same data â€” a program can't exist in one place and
+// program picker all read the same data        a program can't exist in one place and
 // not the others, and its price can't drift between the card and the page.
 //
 // `id` is the URL slug: /programs/investment-banking.
@@ -10,10 +10,10 @@
 // Fields the detail page treats as optional, and simply omits the section when
 // they're missing: modules, gains, internship, softSkills, nextBatch, seats,
 // projects, eligibility. Fill them in for a program and its page grows the
-// section automatically â€” no component change needed.
+// section automatically        no component change needed.
 
 export const programCatalog = [
-  /* Product Management leads the list â€” see ProgramExplorer, which numbers the rail
+  /* Product Management leads the list  see ProgramExplorer, which numbers the rail
      off this order rather than off the records.
 
      Everything below comes from the program's own brochure. The one thing the
@@ -21,7 +21,7 @@ export const programCatalog = [
      absent rather than guessed: the card drops its price block and the page drops
      its fee panel when they are missing, which is the honest state for a program
      that has not been priced. Add the three fields and both reappear. Same for
-     `nextBatch` and `seats` â€” no batch date has been announced. */
+     `nextBatch` and `seats`  no batch date has been announced. */
   {
     id: "product-management",
     title: "PG Program in Product Management",
@@ -53,21 +53,21 @@ export const programCatalog = [
     fullTitle: "PG Program in Product Management",
     badges: ["Industry-Aligned", "AI-Powered PM", "Lifetime Placement Assistance"],
     lead:
-      "Manage products from ideation to launch and scale. Master product strategy, customer discovery, market research, UX fundamentals, agile methodologies, roadmapping and stakeholder management â€” and learn to drive decisions with product metrics, pricing strategy and go-to-market planning, through real-world case studies and a capstone project.",
+      "Manage products from ideation to launch and scale. Master product strategy, customer discovery, market research, UX fundamentals, agile methodologies, roadmapping and stakeholder management  and learn to drive decisions with product metrics, pricing strategy and go-to-market planning, through real-world case studies and a capstone project.",
     learners: "10,000+",
     projects: "30+",
     eligibility: "Freshers, Graduates, Experienced",
-    startingPrice: "â‚¹1,45,000",
+    startingPrice: "1,45,000",
     // The price card. Without these the detail page renders no fee, no batch date
-    // and no "Reserve your seat" panel at all â€” the sections are optional and were
+    // and no "Reserve your seat" panel at all  the sections are optional and were
     // simply being skipped. Figures taken from the live careerveda.in page.
     //
     // nextBatch is stored WITHOUT the quote marks the live site currently shows
     // around it ('July 11, 2026'). Those quotes are inside the string there, so
     // they print on the page; every other program here stores the bare date.
-    fee: {label: "Program Investment", amount: "â‚¹1,45,000", note: "Including GST"},
-    emi: "3, 6, 9 & 12 months (No Cost EMIs) Â· Zero hidden charges",
-    nextBatch: "July 18, 2026",
+    fee: {label: "Program Investment", amount: "1,45,000", note: "Including GST"},
+    emi: "3, 6, 9 & 12 months (No Cost EMIs)· Zero hidden charges",
+    nextBatch: "August 22, 2026",
     seats: "Few seats left",
     internship: [
       "Real-world Product Management Projects",
@@ -78,7 +78,7 @@ export const programCatalog = [
       "Industry Mentorship by Senior PMs",
     ],
     gainsIntro:
-      "Six months of 100% live, instructor-led learning from expert trainers at top technology companies, with daily doubt-solving, real industry projects and lifetime placement assistance. No coding background needed â€” product management is taught from the fundamentals.",
+      "Six months of 100% live, instructor-led learning from expert trainers at top technology companies, with daily doubt-solving, real industry projects and lifetime placement assistance. No coding background needed  product management is taught from the fundamentals.",
     gains: [
       "100% Live Instructor-Led Classes",
       "Expert Trainers from Top Technology Companies",
@@ -86,7 +86,7 @@ export const programCatalog = [
       "Real Industry Projects",
       "25+ Assignments & Industry Case Studies",
       "Three Globally Recognised Certifications",
-      "Dedicated Profile Building â€” Portfolio, Resume & LinkedIn",
+      "Dedicated Profile Building  Portfolio, Resume & LinkedIn",
       "Lifetime Placement Assistance",
       "LMS Access for 2 Years",
       "Full Access to Recordings & Notes",
@@ -102,7 +102,7 @@ export const programCatalog = [
       "Hiring Preparation Support",
     ],
     curriculumIntro:
-      "A structured roadmap from aspiring product manager to product leader. Twelve modules take you from product thinking and customer obsession through research, strategy, roadmaps, UX, agile delivery, analytics and AI, to growth, leadership and a full capstone â€” each one leaving you a portfolio deliverable you keep.",
+      "A structured roadmap from aspiring product manager to product leader. Twelve modules take you from product thinking and customer obsession through research, strategy, roadmaps, UX, agile delivery, analytics and AI, to growth, leadership and a full capstone each one leaving you a portfolio deliverable you keep.",
     modules: [
       {
         n: 1,
@@ -323,11 +323,11 @@ export const programCatalog = [
     fullTitle: "PG Program in Business Analytics with Generative AI",
     badges: ["Industry-Aligned", "Enrolling Now", "100% Placement Assurance"],
     lead:
-      "Master business analytics end to end â€” Excel, SQL, Power BI, Tableau, Python and applied AI â€” and learn to turn business questions into dashboards and decisions that stakeholders act on.",
+      "Master business analytics end to end  Excel, SQL, Power BI, Tableau, Python and applied AI  and learn to turn business questions into dashboards and decisions that stakeholders act on.",
     learners: "10,000+",
-    fee: {label: "Program Investment", amount: "â‚¹1,25,000", note: "Including GST"},
+    fee: {label: "Program Investment", amount: "1,25,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
-    nextBatch: "July 18, 2026",
+    nextBatch: "August 22, 2026",
     seats: "Few seats left",
     projects: "30+",
     eligibility: "Freshers, Graduates, Experienced",
@@ -665,7 +665,7 @@ export const programCatalog = [
     learners: "10,000+",
     fee: {label: "Program Investment", amount: "â‚¹1,35,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
-    nextBatch: "July 18, 2026",
+    nextBatch: "August 22, 2026",
     seats: "Few seats left",
     projects: "30+",
     eligibility: "Freshers, Graduates, Experienced",
@@ -1003,7 +1003,7 @@ export const programCatalog = [
     learners: "10,000+",
     fee: {label: "Program Investment", amount: "â‚¹1,55,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
-    nextBatch: "July 18, 2026",
+    nextBatch: "August 22, 2026",
     seats: "Few seats left",
     projects: "30+",
     eligibility: "Freshers, Graduates, Experienced",
@@ -1341,7 +1341,7 @@ export const programCatalog = [
     learners: "10,000+",
     fee: {label: "Program Investment", amount: "â‚¹1,55,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
-    nextBatch: "July 18, 2026",
+    nextBatch: "August 22, 2026",
     seats: "Few seats left",
     projects: "30+",
     eligibility: "Freshers, Graduates, Experienced",
@@ -1679,7 +1679,7 @@ export const programCatalog = [
     learners: "10,000+",
     fee: {label: "Program Investment", amount: "â‚¹1,40,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
-    nextBatch: "July 11, 2026",
+    nextBatch: "August 22, 2026",
     seats: "Few seats left",
     projects: "30+",
     eligibility: "Freshers, Graduates, Experienced",
@@ -1960,7 +1960,7 @@ export const programCatalog = [
     learners: "10,000+",
     fee: {label: "Program Investment", amount: "â‚¹1,55,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
-    nextBatch: "July 18, 2026",
+    nextBatch: "August 22, 2026",
     seats: "Few seats left",
     projects: "30+",
     eligibility: "Freshers, Graduates, Experienced",
@@ -2294,11 +2294,11 @@ export const programCatalog = [
     fullTitle: "PG Program in Backend Development Engineering",
     badges: ["Industry-Aligned", "Enrolling Now", "100% Placement Assurance"],
     lead:
-      "Master server-side engineering â€” REST APIs, databases, authentication, deployment and scalable architecture â€” on production-style projects that stand up in a developer portfolio.",
+      "Master server-side engineering  REST APIs, databases, authentication, deployment and scalable architecture  on production-style projects that stand up in a developer portfolio.",
     learners: "10,000+",
-    fee: {label: "Program Investment", amount: "â‚¹1,70,000", note: "Including GST"},
+    fee: {label: "Program Investment", amount: "1,70,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
-    nextBatch: "July 18, 2026",
+    nextBatch: "August 22, 2026",
     seats: "Few seats left",
     projects: "30+",
     eligibility: "Freshers, Graduates, Experienced",
@@ -2610,7 +2610,7 @@ export const programCatalog = [
     duration: "6 Months",
     mentorship: "Security Mentor",
     format: "Live Online",
-    startingPrice: "â‚¹1,65,000",
+    startingPrice: "1,65,000",
     image: "",
     overview: [
       "Network safety, secure systems thinking and web security fundamentals",
@@ -2632,11 +2632,11 @@ export const programCatalog = [
     fullTitle: "PG Program in CyberSecurity",
     badges: ["Industry-Aligned", "Enrolling Now", "100% Placement Assurance"],
     lead:
-      "Learn defensive security from the ground up â€” networks, Linux, web fundamentals, monitoring and incident response â€” through hands-on labs built around awareness, reporting and response.",
+      "Learn defensive security from the ground up  networks, Linux, web fundamentals, monitoring and incident response  through hands-on labs built around awareness, reporting and response.",
     learners: "10,000+",
-    fee: {label: "Program Investment", amount: "â‚¹1,65,000", note: "Including GST"},
+    fee: {label: "Program Investment", amount: "1,65,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
-    nextBatch: "July 18, 2026",
+    nextBatch: "August 22, 2026",
     seats: "Few seats left",
     projects: "30+",
     eligibility: "Freshers, Graduates, Experienced",

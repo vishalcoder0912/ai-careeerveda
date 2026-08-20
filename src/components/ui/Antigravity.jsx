@@ -2,6 +2,16 @@ import {Canvas, useFrame, useThree} from "@react-three/fiber";
 import {useMemo, useRef} from "react";
 import * as THREE from "three";
 
+// Deterministic "random" from an index. Math.random in a useMemo runs during
+// render, which must be pure (react-hooks/purity) — and it was worse than just
+// impure: every recompute of the memo (a viewport resize) reshuffled every
+// particle. A hash of the index gives the same random-looking field on every
+// render, so the particles are stable for the life of the component.
+const hash01 = (n) => {
+  const s = Math.sin(n * 127.1 + 311.7) * 43758.5453;
+  return s - Math.floor(s);
+};
+
 const AntigravityInner = ({
   count = 300,
   magnetRadius = 10,
@@ -33,12 +43,12 @@ const AntigravityInner = ({
     const height = viewport.height || 100;
 
     for (let i = 0; i < count; i += 1) {
-      const t = Math.random() * 100;
-      const speed = 0.01 + Math.random() / 200;
+      const t = hash01(i) * 100;
+      const speed = 0.01 + hash01(i + 1.3) / 200;
 
-      const x = (Math.random() - 0.5) * width;
-      const y = (Math.random() - 0.5) * height;
-      const z = (Math.random() - 0.5) * 20;
+      const x = (hash01(i + 2.7) - 0.5) * width;
+      const y = (hash01(i + 3.9) - 0.5) * height;
+      const z = (hash01(i + 5.1) - 0.5) * 20;
 
       temp.push({
         t,
@@ -49,7 +59,7 @@ const AntigravityInner = ({
         cx: x,
         cy: y,
         cz: z,
-        randomRadiusOffset: (Math.random() - 0.5) * 2
+        randomRadiusOffset: (hash01(i + 7.3) - 0.5) * 2
       });
     }
 

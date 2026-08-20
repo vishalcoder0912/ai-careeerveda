@@ -293,7 +293,7 @@
   letter-spacing: 0.12em;
 }
 
-.program-detail-head h3 {
+.program-detail-head :is(h3, h2) {
   max-width: 700px;
   margin: 6px 0 10px;
   color: #071a18;
@@ -655,7 +655,7 @@
     min-height: 700px;
   }
 
-  .program-detail-head h3 {
+  .program-detail-head :is(h3, h2) {
     font-size: clamp(1.4rem, 3.2vw, 2rem);
   }
 }
@@ -714,7 +714,7 @@
     min-height: auto;
   }
 
-  .program-detail-head h3 {
+  .program-detail-head :is(h3, h2) {
     font-size: clamp(1.3rem, 4.5vw, 1.8rem);
   }
 
@@ -810,7 +810,7 @@
     flex: 0 0 auto;
   }
 
-  .program-detail-head h3 {
+  .program-detail-head :is(h3, h2) {
     letter-spacing: -0.02em;
   }
 }

@@ -139,10 +139,10 @@ const SectionsField = ({value, onChange, disabled}) => {
             onChange={(body) => update(index, {body})}
           />
           <div className="repeater-actions">
-            <button type="button" className="btn btn--small" disabled={disabled || index === 0} onClick={() => move(index, -1)}>
+            <button type="button" className="btn btn--small" aria-label={`Move section ${index + 1} up`} disabled={disabled || index === 0} onClick={() => move(index, -1)}>
               ↑
             </button>
-            <button type="button" className="btn btn--small" disabled={disabled || index === rows.length - 1} onClick={() => move(index, 1)}>
+            <button type="button" className="btn btn--small" aria-label={`Move section ${index + 1} down`} disabled={disabled || index === rows.length - 1} onClick={() => move(index, 1)}>
               ↓
             </button>
             <button
@@ -157,6 +157,136 @@ const SectionsField = ({value, onChange, disabled}) => {
         </div>
       ))}
       <button type="button" className="btn btn--small" disabled={disabled} onClick={() => onChange([...rows, {heading: "", body: []}])}>
+        Add section
+      </button>
+    </div>
+  );
+};
+
+// Policy sections are richer than article sections: besides heading and body
+// paragraphs a policy clause carries a callout, a bullet list, numbered
+// sub-groups (2.1/2.2 in the live copy) and a closing line. The generic
+// SectionsField only knows heading + body, so policies use this one, which
+// matches policySectionSchema in backend/src/models/shared/schemas.js.
+const PolicySectionsField = ({value, onChange, disabled}) => {
+  const rows = value || [];
+
+  const update = (index, patch) =>
+    onChange(rows.map((row, position) => (position === index ? {...row, ...patch} : row)));
+
+  const updateGroup = (index, groupIndex, patch) =>
+    update(index, {
+      groups: (rows[index].groups || []).map((group, position) =>
+        position === groupIndex ? {...group, ...patch} : group,
+      ),
+    });
+
+  const move = (index, delta) => {
+    const target = index + delta;
+    if (target < 0 || target >= rows.length) return;
+    const next = [...rows];
+    [next[index], next[target]] = [next[target], next[index]];
+    onChange(next);
+  };
+
+  return (
+    <div className="repeater">
+      {rows.map((row, index) => (
+        <div className="repeater-row repeater-row--block" key={index}>
+          <input
+            aria-label={`Section ${index + 1} heading`}
+            placeholder="Heading, e.g. 2. Refund eligibility"
+            value={row.heading || ""}
+            disabled={disabled}
+            onChange={(event) => update(index, {heading: event.target.value})}
+          />
+          <LinesTextarea
+            label={`Section ${index + 1} paragraphs`}
+            placeholder="One paragraph per line"
+            rows={3}
+            value={row.body}
+            disabled={disabled}
+            onChange={(body) => update(index, {body})}
+          />
+          <input
+            aria-label={`Section ${index + 1} callout`}
+            placeholder="Callout (optional) — a clause that changes how the section reads"
+            value={row.callout || ""}
+            disabled={disabled}
+            onChange={(event) => update(index, {callout: event.target.value})}
+          />
+          <LinesTextarea
+            label={`Section ${index + 1} list`}
+            placeholder="One bullet per line (optional)"
+            rows={3}
+            value={row.list}
+            disabled={disabled}
+            onChange={(list) => update(index, {list})}
+          />
+          <div className="repeater">
+            {(row.groups || []).map((group, groupIndex) => (
+              <div className="repeater-row repeater-row--block" key={groupIndex}>
+                <input
+                  aria-label={`Section ${index + 1} sub-point ${groupIndex + 1} heading`}
+                  placeholder="Sub-point heading, e.g. 2.1 Full refund (100%)"
+                  value={group.title || ""}
+                  disabled={disabled}
+                  onChange={(event) => updateGroup(index, groupIndex, {title: event.target.value})}
+                />
+                <LinesTextarea
+                  label={`Section ${index + 1} sub-point ${groupIndex + 1} list`}
+                  placeholder="One bullet per line"
+                  rows={3}
+                  value={group.list}
+                  disabled={disabled}
+                  onChange={(list) => updateGroup(index, groupIndex, {list})}
+                />
+                <button
+                  type="button"
+                  className="btn btn--small btn--danger"
+                  disabled={disabled}
+                  onClick={() => update(index, {groups: (row.groups || []).filter((unused, position) => position !== groupIndex)})}
+                >
+                  Remove sub-point
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              className="btn btn--small"
+              disabled={disabled}
+              onClick={() => update(index, {groups: [...(row.groups || []), {title: "", list: []}]})}
+            >
+              Add sub-point
+            </button>
+          </div>
+          <textarea
+            aria-label={`Section ${index + 1} closing`}
+            placeholder="Closing line (optional)"
+            rows={2}
+            value={row.closing || ""}
+            disabled={disabled}
+            onChange={(event) => update(index, {closing: event.target.value})}
+          />
+          <div className="repeater-actions">
+            <button type="button" className="btn btn--small" aria-label={`Move section ${index + 1} up`} disabled={disabled || index === 0} onClick={() => move(index, -1)}>
+              ↑
+            </button>
+            <button type="button" className="btn btn--small" aria-label={`Move section ${index + 1} down`} disabled={disabled || index === rows.length - 1} onClick={() => move(index, 1)}>
+              ↓
+            </button>
+            <button
+              type="button"
+              className="btn btn--small btn--danger"
+              disabled={disabled}
+              onClick={() => onChange(rows.filter((unused, position) => position !== index))}
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+      ))}
+      <button type="button" className="btn btn--small" disabled={disabled} onClick={() => onChange([...rows, {heading: "", body: [], callout: "", list: [], groups: [], closing: ""}])}>
         Add section
       </button>
     </div>
@@ -410,12 +540,30 @@ export const Field = ({field, value, onChange, disabled, error, needed = false, 
             onChange={(event) => onChange(event.target.checked)}
           />
         );
+      case "select":
+        return (
+          <select
+            id={id}
+            value={value || ""}
+            disabled={disabled}
+            aria-describedby={describedBy || undefined}
+            onChange={(event) => onChange(event.target.value)}
+          >
+            {(field.options || []).map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        );
       case "list":
         return <ListField id={id} value={value} onChange={onChange} disabled={disabled} />;
       case "kv":
         return <KeyValueField value={value} onChange={onChange} disabled={disabled} />;
       case "sections":
         return <SectionsField value={value} onChange={onChange} disabled={disabled} />;
+      case "policySections":
+        return <PolicySectionsField value={value} onChange={onChange} disabled={disabled} />;
       case "modules":
         return <ModulesField value={value} onChange={onChange} disabled={disabled} />;
       case "media":

@@ -12,6 +12,9 @@ export default {
   testEnvironment: "node",
   roots: ["<rootDir>/tests/unit"],
   transform: {},
+  // Seeds throwaway env vars before any import (see tests/jest.setup.js) so the
+  // unit suites run on a machine without backend/.env — i.e. CI.
+  setupFiles: ["<rootDir>/tests/jest.setup.js"],
   clearMocks: true,
   restoreMocks: true,
 };

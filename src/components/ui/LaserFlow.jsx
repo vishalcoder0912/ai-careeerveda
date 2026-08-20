@@ -2,16 +2,6 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import './LaserFlow.css';
 
-// React Bits LaserFlow, taken as published. It already tears itself down (rAF,
-// observers, listeners, GPU resources) on unmount, pauses when the tab is hidden
-// or the canvas scrolls out of view, and adapts its own pixel ratio to hold
-// frame rate — so it needs no changes to be a good citizen here.
-//
-// It renders an OPAQUE black canvas (alpha: false, clear colour #000). The page
-// behind it is a gradient, not flat black, so the mount point composites it with
-// `mix-blend-mode: screen` — black contributes nothing and only the beam's light
-// is added. See .pd-hero__laser in program-detail.css.
-
 const VERT = `
 precision highp float;
 attribute vec3 position;
@@ -279,7 +269,11 @@ export const LaserFlow = ({
   const currentDprRef = useRef(1);
   const lastSizeRef = useRef({ width: 0, height: 0, dpr: 0 });
   const fpsSamplesRef = useRef([]);
-  const lastFpsCheckRef = useRef(performance.now());
+  // 0, not performance.now(): a ref initializer runs during render, and render
+  // must be pure (the rule react-hooks/purity flags impure calls there). The
+  // first adjustDprIfNeeded check sees a huge elapsed, hits the empty-samples
+  // branch and seeds the real timestamp — one frame later, no behavior change.
+  const lastFpsCheckRef = useRef(0);
   const emaDtRef = useRef(16.7);
   const pausedRef = useRef(false);
   const inViewRef = useRef(true);

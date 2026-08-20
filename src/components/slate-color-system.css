@@ -409,7 +409,7 @@ body .program-explorer .section-label {
   color: #10b981 !important;
 }
 
-body .program-explorer .program-detail-head h3,
+body .program-explorer .program-detail-head :is(h3, h2),
 body .program-explorer .program-pricing strong {
   color: #071a18 !important;
 }

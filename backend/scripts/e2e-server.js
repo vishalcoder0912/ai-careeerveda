@@ -101,8 +101,19 @@ const start = async () => {
   const finish = async () => {
     if (finalizing) return;
     finalizing = true;
-    await disconnectDatabase().catch(() => {});
-    await mongo.stop().catch(() => {});
+    // mongod and mongoose both hang occasionally on Windows when a client kept
+    // sockets open. Race the whole teardown against a hard timer: this process
+    // owns only the disposable in-memory database, so even a forced exit cannot
+    // lose anything real, and a stuck mongod must never keep Playwright waiting.
+    await Promise.race([
+      (async () => {
+        await disconnectDatabase().catch(() => {});
+        await mongo.stop().catch(() => {});
+      })(),
+      new Promise((resolve) => {
+        setTimeout(resolve, 8_000);
+      }),
+    ]);
     process.exit(0);
   };
 

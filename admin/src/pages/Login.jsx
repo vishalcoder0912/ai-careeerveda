@@ -36,7 +36,7 @@ const Login = () => {
   };
 
   return (
-    <div className="auth-screen">
+    <main className="auth-screen">
       <form className="auth-card" onSubmit={onSubmit} noValidate>
         <div className="auth-brand">
           {/* Decorative — the h1 beside it already names the panel. */}
@@ -78,7 +78,7 @@ const Login = () => {
           {busy ? "Signing in…" : "Sign in"}
         </button>
       </form>
-    </div>
+    </main>
   );
 };
 

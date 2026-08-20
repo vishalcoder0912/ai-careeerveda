@@ -5,7 +5,7 @@
 // were removed tomorrow they would still pass right up until a database hiccup
 // locked everyone out of the panel.
 
-import {describe, it, expect, vi, beforeEach, afterEach} from "vitest";
+import {describe, it, expect, vi, afterEach} from "vitest";
 import mongoose from "mongoose";
 
 import {recordAudit} from "../src/services/audit.service.js";

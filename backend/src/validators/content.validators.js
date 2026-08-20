@@ -110,6 +110,9 @@ export const programBody = z.object({
   emi: optionalText(300),
   guarantee: optionalText(300),
   nextBatch: optionalText(120),
+  // Not defaulted: a PATCH that never mentions it must not reset a program an
+  // editor set to custom. The model defaults it to "auto" on create.
+  nextBatchMode: z.enum(["auto", "custom"]).optional(),
   seats: optionalText(120),
   faqs: z
     .array(z.object({question: text(500), answer: text(4000)}))

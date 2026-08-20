@@ -170,12 +170,18 @@ const ResourceList = () => {
 
   // Cards or table. The choice is remembered per resource — someone who prefers
   // the dense table for Jobs but cards for Programs gets both back on return.
-  const [view, setView] = useState("table");
-
-  useEffect(() => {
-    const saved = typeof localStorage !== "undefined" && localStorage.getItem(VIEW_KEY(resourceName));
-    setView(saved || resource?.defaultView || "table");
-  }, [resourceName, resource?.defaultView]);
+  // Seeded lazily and re-seeded when the route's resource changes, during
+  // render, instead of from an effect that would cascade a render.
+  const savedViewFor = (name, fallback) => {
+    if (typeof localStorage === "undefined") return fallback || "table";
+    return localStorage.getItem(VIEW_KEY(name)) || fallback || "table";
+  };
+  const [view, setView] = useState(() => savedViewFor(resourceName, resource?.defaultView));
+  const [viewFor, setViewFor] = useState(resourceName);
+  if (viewFor !== resourceName) {
+    setViewFor(resourceName);
+    setView(savedViewFor(resourceName, resource?.defaultView));
+  }
 
   const chooseView = (next) => {
     setView(next);
@@ -219,18 +225,26 @@ const ResourceList = () => {
 
   // Reset to page 1 whenever a filter changes: staying on page 4 of a result
   // set that now has one page shows an empty table and looks like a failure.
-  useEffect(() => {
+  // A filter change is known during render, so the reset happens there rather
+  // than in an effect (which would cascade a render — and fired *after* the
+  // debounced load below had already started with the stale page).
+  const [filtersFor, setFiltersFor] = useState("");
+  const filterKey = `${search}\u0000${status}\u0000${sort}\u0000${order}\u0000${resourceName}`;
+  if (filterKey !== filtersFor) {
+    setFiltersFor(filterKey);
     setPage(1);
     setSelected([]);
-  }, [search, status, sort, order, resourceName]);
+  }
 
   // A sort is a choice about one resource's columns; carrying it to another
   // resource (whose columns differ) would silently apply a stale or invalid
   // field. Reset to the server default when the section changes.
-  useEffect(() => {
+  const [sortFor, setSortFor] = useState(resourceName);
+  if (sortFor !== resourceName) {
+    setSortFor(resourceName);
     setSort("");
     setOrder("desc");
-  }, [resourceName]);
+  }
 
   // Click a header: sort by it, or flip direction if it is already the sort.
   const toggleSort = (column) => {

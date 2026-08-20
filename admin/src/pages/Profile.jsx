@@ -19,9 +19,9 @@ const Profile = () => {
   const [sessionsError, setSessionsError] = useState(null);
 
   const loadSessions = async () => {
-    setSessionsError(null);
     try {
       const response = await listSessions();
+      setSessionsError(null);
       setSessions(response.data);
     } catch (failure) {
       setSessionsError(failure);
@@ -29,7 +29,21 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    loadSessions();
+    let cancelled = false;
+    (async () => {
+      try {
+        const response = await listSessions();
+        if (cancelled) return;
+        setSessionsError(null);
+        setSessions(response.data);
+      } catch (failure) {
+        if (cancelled) return;
+        setSessionsError(failure);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const submit = async (event) => {

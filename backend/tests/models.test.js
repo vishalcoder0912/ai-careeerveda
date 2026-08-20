@@ -51,10 +51,6 @@ beforeAll(async () => {
 
 const indexNames = (Model) => Model.schema.indexes().map(([keys]) => Object.keys(keys).join(","));
 
-const hasIndexOn = (Model, ...fields) =>
-  Model.schema.indexes().some(([keys]) => fields.every((field) => field in keys)) ||
-  fields.every((field) => Model.schema.path(field)?.options?.index === true);
-
 // ── The shared content lifecycle ────────────────────────────────────────────
 
 describe.each(CONTENT_MODELS)("%s (content plugin)", (name, Model, minimal, slugSource) => {
