@@ -1611,3 +1611,319 @@ tbody tr:hover td {
     transition: none;
   }
 }
+
+/* ── Mobile UX ─────────────────────────────────────────────────────────────
+   Phones get a purpose-built layout, not a shrunken desktop. The generic
+   stacked-table fallback in admin.css keeps every cell at equal weight; the
+   rules below rebuild each lead row as a scannable card and give every
+   control a comfortable touch target. */
+
+@media (max-width: 860px) {
+  /* The scroll container steps aside: rows are cards now, so nothing needs to
+     pan sideways and the wrap's own border would double with the cards'. */
+  .table-wrap {
+    overflow-x: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  table {
+    display: block;
+    width: 100%;
+  }
+
+  tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  tbody tr {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+    padding: 14px 14px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  }
+
+  /* Zebra striping and hover tint are desktop scanning aids; inside a card
+     they just paint stripes across the rounded corners. */
+  td,
+  tbody tr:nth-child(even) td,
+  tbody tr:hover td {
+    background: transparent;
+  }
+
+  td {
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 0;
+    border: none;
+  }
+
+  td::before {
+    font-size: 10.5px;
+  }
+
+  /* ── Lead card: identity → details → controls ──────────────────────────
+     A grid with named areas, so every card reads in the same order no matter
+     what order the cells arrive in from the table markup:
+
+       Name                [TYPE]
+       email@example.com
+       8/21/2026 · 10:24 AM
+       ───────────────────────────
+       PROGRAM
+       PG Program in …
+       ───────────────────────────
+       STATUS
+       [ new              ▾ ]
+       [ View ]  [ Delete ]                                             */
+  .leads-table tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "name     type"
+      "email    email"
+      "received received"
+      "program  program"
+      "status   status"
+      "actions  actions";
+    align-items: center;
+    row-gap: 3px;
+  }
+
+  .leads-table td {
+    padding: 2px 0;
+  }
+
+  /* Identity: name is the card title, type rides beside it as a pill. */
+  .leads-table td[data-label="Name"] {
+    grid-area: name;
+    min-width: 0;
+    padding-top: 2px;
+    color: #0f172a;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+  .leads-table td[data-label="Name"]::before {
+    display: none;
+  }
+
+  .leads-table td[data-label="Type"] {
+    grid-area: type;
+    justify-self: end;
+    margin-left: 10px;
+    display: inline-flex;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: #4f46e5;
+    font-size: 10.5px;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+  .leads-table td[data-label="Type"]::before {
+    display: none;
+  }
+
+  /* Email reads as the subtitle; long addresses must wrap, not stretch. */
+  .leads-table td[data-label="Email"] {
+    grid-area: email;
+    color: #64748b;
+    font-size: 13px;
+    word-break: break-all;
+  }
+  .leads-table td[data-label="Email"]::before {
+    display: none;
+  }
+
+  /* Received demotes to a quiet meta line under the contact details, date
+     and time inline again. */
+  .leads-table td[data-label="Received"] {
+    grid-area: received;
+    justify-content: flex-start;
+    margin-top: 2px;
+    color: #94a3b8;
+    font-size: 12px;
+  }
+  .leads-table td[data-label="Received"]::before {
+    display: none;
+  }
+  .leads-table .cell-date,
+  .leads-table .cell-time {
+    display: inline;
+  }
+  .leads-table .cell-time {
+    margin-left: 6px;
+  }
+
+  /* Details: the program gets its own labelled band under a hairline. */
+  .leads-table td[data-label="Program"] {
+    grid-area: program;
+    display: block;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eef1f6;
+  }
+  .leads-table td[data-label="Program"]::before {
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Controls: status select full width, then the action pair. */
+  .leads-table td[data-label="Status"] {
+    grid-area: status;
+    display: block;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eef1f6;
+  }
+  .leads-table td[data-label="Status"]::before {
+    display: block;
+    margin-bottom: 6px;
+  }
+  .leads-table td[data-label="Status"] select {
+    width: 100%;
+    min-height: 42px;
+  }
+
+  .leads-table td[data-label="Actions"] {
+    grid-area: actions;
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .leads-table td[data-label="Actions"] .btn {
+    flex: 1;
+    min-height: 42px;
+  }
+}
+
+@media (max-width: 720px) {
+  .page-head {
+    gap: 12px;
+  }
+
+  /* Stat cards pair up; five cards read as a tidy 2×3 grid instead of
+     auto-fit guessing at 140px columns on a ~360px screen. */
+  .lead-stats-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .enrollment-stat-card {
+    padding: 12px;
+  }
+  .enrollment-stat-card strong {
+    font-size: 22px;
+  }
+  .enrollment-stat-card span {
+    font-size: 9.5px;
+    letter-spacing: 0.03em;
+  }
+
+  /* Search spans the top, the two filters share the row below — three
+     stacked controls become two tidy rows. :has() keeps this scoped to
+     toolbars that actually have a search field; older browsers simply keep
+     the stacked layout. */
+  .toolbar:has(input[type="search"]) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .toolbar:has(input[type="search"]) input[type="search"] {
+    grid-column: 1 / -1;
+  }
+
+  /* Full-width controls with real touch height; min-width:0 beats the
+     desktop minimums that would otherwise force horizontal overflow. */
+  .toolbar input[type="search"],
+  .toolbar select {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+  }
+
+  /* The wide lead-detail dialog becomes a bottom sheet: thumb-reachable
+     close button, native swipe-up mental model, safe-area aware. */
+  .dialog {
+    width: 100%;
+    max-width: 100%;
+    max-height: 92vh;
+    max-height: 92dvh;
+    margin: auto auto 0;
+    padding: 18px 16px calc(16px + env(safe-area-inset-bottom));
+    border-radius: 18px 18px 0 0;
+    border-bottom: 0;
+  }
+  .dialog--wide {
+    width: 100%;
+  }
+
+  /* The sheet's header stays visible while the details scroll under it. */
+  .dialog-head {
+    position: sticky;
+    top: -18px;
+    z-index: 1;
+    margin: -18px -16px 12px;
+    padding: 14px 16px 10px;
+    background: #ffffff;
+    border-bottom: 1px solid #eef1f6;
+  }
+  .dialog-head h2 {
+    font-size: 16px;
+  }
+
+  .note-compose textarea {
+    width: 100%;
+  }
+  .note-compose .btn {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  /* Prev / Next split the row; the page label sits between without pushing
+     buttons off-screen. */
+  .pagination {
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .pagination .btn {
+    flex: 1;
+    min-width: 0;
+    min-height: 44px;
+  }
+  .pagination span {
+    white-space: nowrap;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-head h1 {
+    font-size: 22px;
+  }
+
+  .topbar-eyebrow {
+    display: none;
+  }
+
+  /* Toasts span the viewport minus margins — a 380px cap overflows small
+     screens and pushes text under the rounded corner. */
+  .toast-stack {
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    left: 12px;
+    max-width: none;
+  }
+}

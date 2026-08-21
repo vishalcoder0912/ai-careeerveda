@@ -340,7 +340,7 @@ const Leads = () => {
 
       {!loading && !error && items.length > 0 ? (
         <div className="table-wrap">
-          <table>
+          <table className="leads-table">
             <caption className="visually-hidden">Leads</caption>
             <thead>
               <tr>

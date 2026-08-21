@@ -1,24 +1,41 @@
 // CI watchdog for the end-to-end suite.
 //
-// On the Jenkins box the Playwright runner has occasionally stopped exiting
-// after the last test (no summary, workers never torn down, webServers left
-// alive), and a hung `bat` step then stalls the whole pipeline until the stage
-// timeout — while the node/vite/mongod children survive even an abort and hold
-// the e2e ports for the next build.
+// On the Jenkins box the Playwright runner has repeatedly finished every test
+// and then never exited (no summary, workers never torn down, webServer
+// children holding the console pipes). A hung `bat` step stalls the pipeline
+// until the stage timeout — which Jenkins reports as ABORTED, skipping every
+// later stage — while the node/vite/mongod children survive even an abort and
+// hold the e2e ports for the next build.
 //
-// This wrapper is the safety valve: it runs the same suite `npm run test:e2e`
-// runs, streams the output straight through, and if the runner has not exited
-// within the cap it force-kills the entire process tree plus anything still
-// listening on the e2e ports, then fails the stage fast so the post-action can
-// archive the artifacts. A run that finishes normally passes its exit code
-// through untouched.
+// This wrapper is the safety valve: it runs the Playwright CLI with whatever
+// selection arguments it is given, streams the output straight through, and if
+// the runner has not exited within the cap it force-kills the entire process
+// tree plus anything still listening on the e2e ports, then EXITS NON-ZERO so
+// the stage fails fast instead of burning the Jenkins timeout. A run that
+// finishes normally passes its exit code through untouched.
 //
-// Run from the repository root:  node scripts/run-e2e-ci.mjs
+// Usage:
+//   node scripts/run-e2e-ci.mjs                                   # default suite, 40 min cap
+//   node scripts/run-e2e-ci.mjs --grep-invert "@visual|@smoke"    # custom test selection
+//   node scripts/run-e2e-ci.mjs --cap=8 --grep @performance       # short cap for budget stages
+//
+// Everything after an optional `--cap=<minutes>` is passed to
+// `playwright test` verbatim.
 
 import {spawn} from "node:child_process";
 import {fileURLToPath} from "node:url";
 
-const CAP_MINUTES = Number(process.env.E2E_WATCHDOG_MINUTES || 40);
+const rawArgs = process.argv.slice(2);
+
+let capMinutes = Number(process.env.E2E_WATCHDOG_MINUTES || 40);
+let passthrough = rawArgs;
+if (rawArgs[0]?.startsWith("--cap=")) {
+  const value = Number(rawArgs[0].slice("--cap=".length));
+  if (Number.isInteger(value) && value > 0) capMinutes = value;
+  passthrough = rawArgs.slice(1);
+}
+
+const CAP_MINUTES = capMinutes;
 
 // Same defaults and overrides as playwright.config.js. In CI these come from
 // the Jenkinsfile, so the kill list always matches the ports in use.
@@ -73,7 +90,7 @@ const killPortOwners = () => {
 
 const cli = fileURLToPath(new URL("../node_modules/@playwright/test/cli.js", import.meta.url));
 
-const child = spawn(process.execPath, [cli, "test", "--grep-invert", "@visual"], {
+const child = spawn(process.execPath, [cli, "test", ...passthrough], {
   stdio: "inherit",
   windowsHide: true,
   detached: process.platform !== "win32",
@@ -91,15 +108,24 @@ const watchdog = setTimeout(() => {
   console.error(`\n[watchdog] E2E run exceeded ${CAP_MINUTES} minutes - force killing the process tree.`);
   killTree(child.pid);
   killPortOwners();
+  // The normal exit path below only runs when the child's 'exit' event
+  // arrives. If taskkill somehow cannot kill it, that event never fires and
+  // this wrapper would hang exactly like the runner it guards against — so
+  // schedule a hard exit that does not depend on the child dying. Kept ref'd:
+  // an unref'd timer cannot keep the loop alive, and with nothing else
+  // pending node would exit code 0 before this ever ran (the exact bug that
+  // once reported a force-killed run as green).
+  setTimeout(() => process.exit(1), 15_000);
 }, CAP_MINUTES * 60_000);
 watchdog.unref();
 
 child.on("exit", (code) => {
   clearTimeout(watchdog);
   if (timedOut) {
-    // Give taskkill a moment, then fail regardless of what survived.
+    // Give taskkill/netstat a moment to finish freeing the ports, then fail
+    // regardless of what survived. Ref'd on purpose — see the watchdog above.
     killPortOwners();
-    setTimeout(() => process.exit(1), 3000).unref();
+    setTimeout(() => process.exit(1), 3000);
   } else {
     process.exit(code ?? 1);
   }

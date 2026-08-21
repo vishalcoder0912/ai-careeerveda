@@ -132,16 +132,21 @@ pipeline {
       steps {
         // --with-deps is Linux-only and fails on Windows. --yes avoids interactive prompts.
         bat 'npx --yes playwright install chromium'
-        // scripts/run-e2e-ci.mjs is the watchdog: it runs the same suite, streams
-        // the output straight through, and if the runner has not exited within
-        // the cap (E2E_WATCHDOG_MINUTES, default 40) it force-kills the whole
-        // process tree plus anything still listening on the e2e ports, then
-        // fails the stage fast. A run that finishes normally passes through
-        // untouched. This exists because playwright on Windows has occasionally
-        // stopped exiting after the last test (webServers/vite/mongod children
-        // left alive), which hung the old `npm run test:e2e` step until the
-        // stage timeout.
-        bat 'node scripts/run-e2e-ci.mjs'
+        // scripts/run-e2e-ci.mjs is the watchdog: it runs the Playwright CLI with
+        // the arguments it is given, streams the output straight through, and if
+        // the runner has not exited within the cap (E2E_WATCHDOG_MINUTES, default
+        // 40) it force-kills the whole process tree plus anything still listening
+        // on the e2e ports, then exits non-zero so the stage fails fast and the
+        // post-action can archive the artifacts. A run that finishes normally
+        // passes through untouched. This exists because playwright on Windows has
+        // repeatedly finished every test and then stopped exiting (webServers/
+        // vite/mongod children left alive), which hung the old `npm run test:e2e`
+        // step until the stage timeout and aborted the whole build.
+        //
+        // Same selection as `npm run test:e2e`: @performance is owned by the next
+        // stage (running it here too just duplicated the work) and @smoke needs a
+        // live site this stage must never touch.
+        bat 'node scripts/run-e2e-ci.mjs --grep-invert "@visual|@performance|@smoke"'
       }
     }
 
@@ -149,8 +154,14 @@ pipeline {
       // Real-browser Core Web Vitals on the key pages (see e2e/performance.spec.js).
       // Tagged @performance so the E2E stage above skips it; it has its own
       // budget because a Vite dev server is slower than the built site.
+      //
+      // Wrapped in the same watchdog with an 8-minute cap: build #5 proved the
+      // runner can hang here exactly as it does in the E2E stage, and without
+      // the wrapper the only safety net is the 10-minute Jenkins timeout —
+      // which reports ABORTED and skips Load test/Build/Publish. The watchdog
+      // fires first and fails the stage honestly instead.
       options { timeout(time: 10, unit: 'MINUTES') }
-      steps { bat 'npm run test:performance' }
+      steps { bat 'node scripts/run-e2e-ci.mjs --cap=8 --grep @performance --project=chromium' }
     }
 
     stage('Load test') {
