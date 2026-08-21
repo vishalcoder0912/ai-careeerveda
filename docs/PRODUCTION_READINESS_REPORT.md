@@ -7,11 +7,11 @@
 could not run is listed in [Not Run](#not-run) with the reason and the command to
 enable it — it is not counted as a pass.
 
-> **Superseded on CI.** This report predates the move to Jenkins. Anything below
+> **Superseded on CI.** This report predates the current pipeline. Anything below
 > that defers a check to GitHub Actions ("runs free in GitHub Actions") no longer
-> has a home — the gate is `Jenkinsfile`, which runs lint, unit, e2e and build,
-> then promotes `dev` to `main`, and runs no scanners. See the CI / CD section of
-> the README. The measurements stand.
+> has a home — the gate is `.github/workflows/ci-cd.yml`, which runs audit, lint,
+> unit, e2e and build, then promotes `dev` to `main`, and runs no scanners. See
+> the CI / CD section of the README. The measurements stand.
 
 ---
 

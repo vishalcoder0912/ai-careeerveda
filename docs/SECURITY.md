@@ -35,7 +35,8 @@ In scope:
 - the Express API under `backend/`
 - the admin panel under `admin/`
 - the public site at the repository root
-- the deployment configuration (`Dockerfile`, `cloudbuild.yaml`, `Jenkinsfile`)
+- the deployment configuration (`Dockerfile`, `cloudbuild.yaml`,
+  `.github/workflows/`)
 
 Out of scope:
 
@@ -48,8 +49,9 @@ Out of scope:
 ## Automated scanning
 
 CodeQL, Semgrep, Trivy, OSV and Scorecard all ran from GitHub Actions, which was
-removed, so **none of them run now**. The Jenkins pipeline (`Jenkinsfile`) is a
-test-and-build gate on what reaches `main` and runs no scanners.
+removed, so **none of them run now**. The pipeline
+(`.github/workflows/ci-cd.yml`) is a test-and-build gate on what reaches `main`
+and runs no scanners.
 
 Dependabot's *grouped version updates* were driven by `.github/dependabot.yml`,
 which went with the same removal — the ~19 open `dependabot/*` PRs predate it and

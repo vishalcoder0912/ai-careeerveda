@@ -38,7 +38,7 @@ if (rawArgs[0]?.startsWith("--cap=")) {
 const CAP_MINUTES = capMinutes;
 
 // Same defaults and overrides as playwright.config.js. In CI these come from
-// the Jenkinsfile, so the kill list always matches the ports in use.
+// .github/workflows/ci-cd.yml, so the kill list always matches the ports in use.
 const ports = [
   process.env.E2E_API_PORT || "8081",
   process.env.E2E_FRONTEND_PORT || "5273",
