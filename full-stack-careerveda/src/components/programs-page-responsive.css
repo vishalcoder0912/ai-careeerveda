@@ -1,0 +1,310 @@
+/*
+  Programs route responsive corrections.
+  This file is loaded only by ProgramsPage and deliberately overrides the older
+  component breakpoints without changing desktop behaviour or content logic.
+*/
+
+@media (max-width: 980px) {
+  .program-showcase-section {
+    padding-top: 88px !important;
+  }
+
+  .program-showcase-section > .section-heading {
+    width: min(100% - 36px, 760px);
+    margin-inline: auto;
+  }
+
+  .program-explorer {
+    margin-top: 28px;
+  }
+
+  /* A one-item rail is navigation theatre. Let the actual program card use the
+     space until more published records exist. */
+  .program-explorer:has(.program-track-item:only-child) {
+    grid-template-columns: 1fr;
+  }
+
+  .program-explorer:has(.program-track-item:only-child) .program-sidebar {
+    display: none;
+  }
+
+  /* The recommended strip's tablet layout is the two-column bento in
+     RecommendedCourses1.css, at the same 980px breakpoint. It used to be
+     overridden from here, which meant the section laid itself out differently
+     depending on which page imported which stylesheet last. */
+
+  /* The section is a bordered panel now, like the courses strip above it — its
+     own clamped padding is the panel inset, so it is left alone here. */
+
+  .outcome-stories-heading {
+    gap: 20px;
+  }
+
+  .outcome-stories-heading h2 {
+    font-size: clamp(2.2rem, 6vw, 3rem);
+  }
+
+  /* Keep the three headline numbers readable in one glance instead of turning
+     them into three full-width rows. */
+  .outcome-stories-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 0 0 16px;
+  }
+
+  .outcome-stories-metrics div {
+    min-height: 96px;
+    align-items: flex-start;
+    justify-content: center;
+    flex-direction: column-reverse;
+    gap: 8px;
+    padding: 18px;
+  }
+
+  .outcome-stories-metrics dt {
+    max-width: none;
+  }
+
+  .outcome-stories-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .outcome-story-card,
+  .outcome-story-card:first-child,
+  .outcome-story-card:nth-child(2) {
+    grid-column: auto;
+    min-height: 0;
+    gap: 22px;
+    padding: 24px;
+  }
+
+  .outcome-story-card blockquote p {
+    font-size: 1rem;
+  }
+
+  /* Leave a safe landing area for the floating contact control. */
+  .site-footer {
+    padding-bottom: 96px;
+  }
+}
+
+@media (max-width: 680px) {
+  .program-showcase-section {
+    padding-top: 78px !important;
+  }
+
+  .program-showcase-section > .section-heading {
+    width: min(100% - 28px, 620px);
+    text-align: left;
+  }
+
+  .program-showcase-section > .section-heading :is(h1, h2) {
+    font-size: clamp(2rem, 10vw, 3rem);
+    line-height: 1.02;
+  }
+
+  .program-explorer {
+    width: calc(100% - 20px);
+    margin-top: 22px;
+    padding: 8px;
+    border-radius: 20px;
+  }
+
+  .program-sidebar {
+    padding: 10px;
+    border-radius: 18px;
+  }
+
+  .program-sidebar-head {
+    display: none;
+  }
+
+  .program-track-list {
+    gap: 7px;
+    padding: 2px 2px 7px;
+  }
+
+  .program-track-item {
+    min-width: min(78vw, 260px);
+    padding: 9px;
+    border-radius: 14px;
+  }
+
+  .program-track-item.is-active,
+  .program-track-item.is-previewed {
+    transform: none;
+  }
+
+  .program-detail-card {
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  .program-card-topline {
+    margin-bottom: 16px;
+  }
+
+  .category-badge,
+  .admissions-badge {
+    padding: 6px 10px;
+    font-size: 0.62rem;
+  }
+
+  .program-detail-head {
+    margin-bottom: 16px;
+  }
+
+  .program-detail-head :is(h3, h2) {
+    font-size: clamp(1.52rem, 8vw, 2.05rem);
+  }
+
+  .program-description {
+    margin-top: 10px;
+    font-size: 0.92rem;
+    line-height: 1.58;
+  }
+
+  .program-head-media {
+    border-radius: 16px;
+  }
+
+  /* Three compact facts are easier to scan than three tall rows. Very narrow
+     devices fall back to one column below. */
+  .program-meta-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  .meta-card {
+    min-width: 0;
+    padding: 10px 8px;
+    border-radius: 12px;
+  }
+
+  .meta-value {
+    font-size: 0.76rem;
+    overflow-wrap: anywhere;
+  }
+
+  .meta-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.04em;
+  }
+
+  .program-detail-list {
+    gap: 7px;
+  }
+
+  .program-detail-list li {
+    padding: 10px 12px 10px 34px;
+    font-size: 0.84rem;
+  }
+
+  .skill-chip {
+    padding: 6px 9px;
+    font-size: 0.68rem;
+  }
+
+  /* Only the top margin: the strip's own phone layout — panel inset, single
+     column, type scale — is in RecommendedCourses1.css, and duplicating it here
+     is what made the section render differently on /programs than on the home
+     page. */
+  .recommended-courses-section {
+    margin-top: 40px;
+  }
+
+  .outcome-stories-heading {
+    gap: 18px;
+  }
+
+  .outcome-stories-heading h2 {
+    font-size: clamp(2rem, 9vw, 2.55rem);
+  }
+
+  .outcome-stories-heading p:last-child {
+    margin-top: 14px;
+    line-height: 1.55;
+  }
+
+  .outcome-stories-link {
+    min-height: 42px;
+  }
+
+  .outcome-stories-metrics {
+    gap: 10px;
+    margin: 0 0 14px;
+  }
+
+  .outcome-stories-metrics div {
+    min-height: 86px;
+    padding: 14px !important;
+    border-radius: 18px;
+  }
+
+  .outcome-stories-metrics dt {
+    font-size: 0.62rem;
+    line-height: 1.25;
+  }
+
+  .outcome-stories-metrics dd {
+    font-size: 1.38rem;
+  }
+
+  /* Testimonials become a swipeable strip on phones instead of an endless stack.
+     Every card remains fully readable and keyboard-scrollable. */
+  .outcome-stories-grid {
+    display: flex;
+    gap: 12px;
+    margin-inline: -14px;
+    padding: 2px 14px 14px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .outcome-story-card,
+  .outcome-story-card:first-child,
+  .outcome-story-card:nth-child(2) {
+    flex: 0 0 min(86vw, 360px);
+    scroll-snap-align: start;
+    gap: 18px;
+    padding: 20px;
+    /* Matches the course cards' phone radius, not the old 12px square-ish card. */
+    border-radius: 22px;
+  }
+
+  .outcome-story-card blockquote p {
+    font-size: 0.94rem;
+    line-height: 1.48;
+  }
+
+  .outcome-story-card::after {
+    top: 12px;
+    right: 16px;
+    font-size: 4.5rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .program-meta-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .meta-card {
+    padding: 10px 12px;
+  }
+
+  .outcome-stories-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .outcome-stories-metrics div {
+    min-height: 66px;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 14px 16px !important;
+  }
+}

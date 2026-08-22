@@ -1,0 +1,34 @@
+node_modules/
+dist/
+.vite/
+
+*.local
+.env
+.env.*
+!.env.example
+
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+cinematic-scroll-dropin/
+cinematic-scroll-dropin.zip
+ezgif-*-jpg.zip
+public/frames/
+public/frames-manifest.json
+
+# Backend / admin build + local env
+backend/node_modules/
+admin/node_modules/
+
+# Generated output. These were committed once by accident; a test run or a
+# graph rebuild rewrites them wholesale, so tracking them means every branch
+# carries a conflict in files nobody reads.
+test-results/
+playwright-report/
+graphify-out/
+
+# Local agent/tool scratch
+.codex/

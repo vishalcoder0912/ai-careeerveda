@@ -1,0 +1,173 @@
+body .hero-visual-shell {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: visible !important;
+  transform-origin: center center !important;
+}
+
+body .spline-scene,
+body .spline-scene.is-loaded,
+body .hero-visual-shell iframe {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  transform: none !important;
+  opacity: 1 !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+}
+
+body .spline-frame {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 2 !important;
+  overflow: hidden !important;
+  border-radius: inherit;
+}
+
+body .spline-frame .spline-scene,
+body .spline-frame .spline-scene.is-loaded,
+body .hero-visual-shell .spline-frame iframe {
+  top: 0 !important;
+  right: 0 !important;
+  bottom: -72px !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: calc(100% + 72px) !important;
+  opacity: 1 !important;
+}
+
+/* Centre the robot in the desktop hero.
+   Same bias mobile-responsiveness.css already corrects for the stacked band, and
+   for the same reason: Spline reframes its camera to the box it is handed, and in
+   this box it lands the robot left of centre rather than in the middle. The note
+   on that rule says the desktop case was hidden because "the floating labels
+   filled that space" — they do not hide it, they frame it, and once you read the
+   labels as a ring the robot is visibly off its centre.
+
+   Measured in Chromium at 1440x900, from the rendered pixels rather than by eye:
+   the shell is 664px wide (centre 332), and the robot's head-and-torso mass spans
+   170-384 for a centre of 277. That is 55px left, 8.3% of the box. 8% puts it
+   within ~2px of centre, which is closer than the eye resolves at this size.
+
+   The label ring is already centred on the shell (its rows pair to a midpoint of
+   ~1024 against the shell's 1028), so nothing there needs to move — this is the
+   robot catching up to the labels, not the reverse.
+
+   Scoped to >=981px so it cannot double up with the band's own translateX(10%),
+   which lives in a max-width: 980px query. iframe only: .spline-poster img is
+   object-fit: contain on a still and is already centred, so shifting it would
+   break the one case that is currently right.
+
+   The number belongs to this Spline scene at this aspect ratio. Re-measure if the
+   scene is replaced or the shell's proportions change. */
+@media (min-width: 981px) {
+  body .hero-visual-shell .spline-frame iframe {
+    transform: translateX(8%) !important;
+  }
+}
+
+body .spline-glow {
+  inset: 10% 8% 8% !important;
+  transform: none !important;
+}
+
+body .hero-dashboard-card {
+  right: 3% !important;
+  bottom: 4% !important;
+}
+
+body .floating-labels,
+body .ai-label {
+  pointer-events: none !important;
+}
+
+body .light-section::after,
+body .support-section::after,
+body .review-section::after,
+body #faculty.dark-section::after,
+body .strategy-section::after {
+  z-index: 0 !important;
+  opacity: 0.2 !important;
+  width: clamp(220px, 24vw, 380px) !important;
+  height: clamp(170px, 18vw, 280px) !important;
+  border-radius: 30px !important;
+  background-position: center center !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  box-shadow: 0 28px 80px rgba(16, 24, 40, 0.12) !important;
+  pointer-events: none !important;
+}
+
+body .light-section::after,
+body .review-section::after,
+body #faculty.dark-section::after,
+body .strategy-section::after {
+  top: clamp(64px, 8vw, 110px) !important;
+  right: max(28px, calc((100vw - 1280px) / 2)) !important;
+  left: auto !important;
+}
+
+body .support-section::after {
+  top: clamp(64px, 8vw, 110px) !important;
+  left: max(28px, calc((100vw - 1280px) / 2)) !important;
+  right: auto !important;
+}
+
+body .section-block > *,
+body .partner-band > *,
+body .faq-section > *,
+body .consultation-section > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 1180px) {
+  body .light-section .section-heading,
+  body .review-section .section-heading,
+  body #faculty .section-heading,
+  body .strategy-section .section-heading {
+    max-width: 760px !important;
+  }
+
+  body .support-section .section-heading {
+    margin-left: auto;
+    max-width: 760px !important;
+  }
+}
+
+@media (max-width: 980px) {
+  body .hero-visual-shell {
+    overflow: hidden !important;
+  }
+
+  body .light-section::after,
+  body .support-section::after,
+  body .review-section::after,
+  body #faculty.dark-section::after,
+  body .strategy-section::after {
+    top: 42px !important;
+    right: 22px !important;
+    left: auto !important;
+    width: 190px !important;
+    height: 140px !important;
+    opacity: 0.08 !important;
+  }
+}
+
+@media (max-width: 640px) {
+  body .hero-dashboard-card {
+    right: 8px !important;
+    bottom: 8px !important;
+  }
+
+  body .light-section::after,
+  body .support-section::after,
+  body .review-section::after,
+  body #faculty.dark-section::after,
+  body .strategy-section::after {
+    display: none !important;
+  }
+}

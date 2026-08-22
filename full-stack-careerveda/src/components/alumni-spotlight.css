@@ -1,0 +1,239 @@
+.alumni-spotlight {
+  position: relative;
+}
+
+.alumni-spotlight__intro {
+  max-width: 62ch;
+  margin-bottom: clamp(24px, 4vw, 42px);
+}
+
+.alumni-spotlight__label,
+.alumni-spotlight__profile-label {
+  display: inline-block;
+  margin: 0;
+  color: var(--ps-teal);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.alumni-spotlight__intro h2 {
+  margin: 12px 0 0;
+  color: var(--ps-ink);
+  font-size: clamp(28px, 3.7vw, 46px);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1.06;
+}
+
+.alumni-spotlight__intro > p {
+  max-width: 56ch;
+  margin: 14px 0 0;
+  color: var(--ps-muted);
+  font-size: clamp(15px, 1.3vw, 17px);
+  line-height: 1.7;
+}
+
+.alumni-spotlight__experience {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.7fr);
+  gap: clamp(20px, 3vw, 34px);
+  align-items: stretch;
+}
+
+.alumni-spotlight__gallery-wrap {
+  position: relative;
+  min-height: clamp(430px, 52vw, 660px);
+  overflow: hidden;
+  border: 1px solid var(--ps-border-strong);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 50% 46%, rgba(45, 212, 191, 0.17), transparent 37%),
+    radial-gradient(circle at 70% 78%, rgba(59, 130, 246, 0.18), transparent 42%),
+    rgba(15, 23, 42, 0.74);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 26px 70px rgba(2, 6, 23, 0.34);
+}
+
+.alumni-spotlight__gallery-wrap::before {
+  position: absolute;
+  z-index: 1;
+  top: 18px;
+  left: 18px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  content: "";
+  background: var(--ps-teal);
+  box-shadow: 0 0 0 5px rgba(45, 212, 191, 0.12), 0 0 20px rgba(45, 212, 191, 0.7);
+  pointer-events: none;
+}
+
+.alumni-spotlight__hint {
+  position: absolute;
+  z-index: 6;
+  right: 18px;
+  bottom: 16px;
+  max-width: calc(100% - 40px);
+  margin: 0;
+  padding: 8px 11px;
+  border: 1px solid rgba(226, 232, 240, 0.14);
+  border-radius: 999px;
+  color: rgba(241, 245, 249, 0.8);
+  background: rgba(15, 23, 42, 0.68);
+  backdrop-filter: blur(10px);
+  font-size: 0.76rem;
+  line-height: 1.3;
+}
+
+.alumni-spotlight__caption {
+  position: absolute;
+  z-index: 6;
+  bottom: 16px;
+  left: 18px;
+  max-width: calc(100% - 36px);
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid rgba(226, 232, 240, 0.14);
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(10px);
+  pointer-events: none;
+}
+
+.alumni-spotlight__caption strong {
+  display: block;
+  color: var(--ps-ink);
+  font-size: 0.95rem;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+}
+
+.alumni-spotlight__caption span {
+  display: block;
+  margin-top: 3px;
+  color: var(--ps-teal);
+  font-size: 0.76rem;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.alumni-spotlight__profile {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  padding: clamp(22px, 2.6vw, 34px);
+  border: 1px solid var(--ps-border-strong);
+  border-radius: 28px;
+  color: var(--ps-ink);
+  background:
+    radial-gradient(420px 280px at 100% 0%, rgba(59, 130, 246, 0.16), transparent 70%),
+    linear-gradient(145deg, rgba(30, 41, 59, 0.82), rgba(15, 23, 42, 0.94));
+  box-shadow: 0 26px 70px rgba(2, 6, 23, 0.28);
+}
+
+.alumni-spotlight__photo-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.15;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 20px;
+  background: rgba(148, 163, 184, 0.12);
+}
+
+.alumni-spotlight__photo-wrap::after {
+  position: absolute;
+  inset: auto 0 0;
+  height: 44%;
+  content: "";
+  background: linear-gradient(transparent, rgba(2, 6, 23, 0.34));
+}
+
+.alumni-spotlight__photo-wrap img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.alumni-spotlight__profile-copy {
+  margin-top: clamp(20px, 2.4vw, 28px);
+}
+
+.alumni-spotlight__profile h3 {
+  margin: 8px 0 0;
+  color: var(--ps-ink);
+  font-size: clamp(24px, 2.5vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+}
+
+.alumni-spotlight__role {
+  margin: 10px 0 0;
+  color: var(--ps-teal);
+  font-size: 0.9rem;
+  font-weight: 750;
+  line-height: 1.55;
+}
+
+.alumni-spotlight__story {
+  margin: 15px 0 0;
+  color: var(--ps-muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+@media (max-width: 900px) {
+  .alumni-spotlight__experience {
+    grid-template-columns: 1fr;
+  }
+
+  .alumni-spotlight__gallery-wrap {
+    min-height: clamp(390px, 85vw, 560px);
+  }
+
+  .alumni-spotlight__profile {
+    display: grid;
+    grid-template-columns: minmax(150px, 0.55fr) minmax(0, 1fr);
+    column-gap: 24px;
+  }
+
+  .alumni-spotlight__profile-copy {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 580px) {
+  .alumni-spotlight__gallery-wrap {
+    min-height: 390px;
+    border-radius: 22px;
+  }
+
+  .alumni-spotlight__profile {
+    display: flex;
+    border-radius: 22px;
+  }
+
+  .alumni-spotlight__photo-wrap {
+    aspect-ratio: 1.35;
+  }
+
+  /* The caption owns the bottom edge on a phone, so the hint moves to the top
+     rather than stacking two overlays on the same corner. */
+  .alumni-spotlight__hint {
+    top: 14px;
+    right: 12px;
+    bottom: auto;
+    font-size: 0.7rem;
+  }
+
+  .alumni-spotlight__caption {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    max-width: none;
+  }
+}

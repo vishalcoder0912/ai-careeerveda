@@ -1,0 +1,136 @@
+/* fonts.css is linked from index.html, not imported here — an @import is a
+   blocking request the browser can only start after this file has arrived. */
+@import "tailwindcss";
+@import "./components/brand-alignment.css";
+@import "./components/brand-priority.css";
+@import "./components/original-site-content-fixes.css";
+@import "./components/site-theme.css";
+@import "./components/remove-hero-word.css";
+@import "./components/real-careerveda-palette.css";
+@import "./components/professional-hero-sizing.css";
+@import "./components/hero-alignment-fix.css";
+@import "./components/final-alignment-polish.css";
+@import "./components/difference-section-polish.css";
+@import "./components/strategy-section-polish.css";
+@import "./components/navbar-interaction-fix.css";
+@import "./components/strategy-final-polish.css";
+@import "./components/landing-visibility-fix.css";
+@import "./components/remove-hero-side-shadow.css";
+@import "./components/image-position-fix.css";
+@import "./components/career-advantage-section.css";
+@import "./components/stacked-services-section.css";
+@import "./components/strategy-outcome-exact.css";
+@import "./components/strategy-outcome-exact-fixes.css";
+@import "./components/typography-stability-fix.css";
+@import "./components/slate-color-system.css";
+@import "./components/brand-logo.css";
+@import "./components/brand-wordmark.css";
+/* partner-logos.css was imported here, last, so it could out-specify
+   strategy-outcome-exact.css. It styled <PartnerTrail>, which TrustedCompanies
+   replaced — nothing had rendered .partner-band or .partner-trail for a while, so
+   all 10.8 KiB of it was render-blocking CSS for markup that no longer existed.
+   Deleted along with PartnerTrail and the LogoLoop/ImageTrail it pulled in. */
+/* Very last: mobile-responsiveness.css touches only max-width media queries. */
+@import "./components/mobile-responsiveness.css";
+
+@theme {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-heading: "Manrope", "Inter", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Holds the viewport open while a lazy route resolves, so the footer doesn't
+   fly up to meet the navbar and then drop back down. */
+.route-fallback {
+  min-height: 100vh;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body,
+#root {
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  background: var(--cv-slate, #34445c);
+  color: #101828;
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+.nav-cta,
+.primary-action,
+.secondary-action,
+.program-action-row a,
+.consultation-form button {
+  font-family: "Inter", system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.site-nav,
+.site-nav nav a,
+.mobile-menu-nav a,
+.mobile-menu-cta {
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.eyebrow,
+.section-label {
+  font-family: "Inter", system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.program-studio-label {
+  font-family: "Manrope", "Inter", system-ui, sans-serif;
+}
+
+.hero-copy > p {
+  font-family: "Inter", system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1.72;
+  letter-spacing: -0.012em;
+}
+
+.hero-copy .trust-line,
+.trust-line {
+  font-family: "Inter", system-ui, sans-serif;
+  font-weight: 600;
+  line-height: 1.55;
+  letter-spacing: -0.01em;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  color: #ffffff;
+  background: #f97316;
+}

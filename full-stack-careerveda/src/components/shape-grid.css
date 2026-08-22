@@ -1,0 +1,181 @@
+/* The home page's ShapeGrid backdrop.
+ *
+ * One fixed layer for the whole page rather than one per section: the grid
+ * scrolls under the content instead of restarting at every band, and there is a
+ * single animation frame loop for the page rather than six.
+ *
+ * z-index: -1 puts it behind the page's own content but in front of the page
+ * background — so it is only visible where a section is not painting an opaque
+ * fill over it, which is what the rest of this file is for. pointer-events: none
+ * because it must never intercept a click; ShapeGrid tracks the pointer on
+ * window for exactly that reason.
+ */
+/* z-index 0, NOT -1.
+ *
+ * -1 is the obvious choice and it is wrong here. A negative-z-index element
+ * paints in step 2 of its stacking context, before block-level backgrounds in
+ * step 3 — and `body` carries an opaque background (rgb(52, 68, 92)), which is
+ * one of those. So the canvas painted perfectly and the page painted over it:
+ * measured 1440×900, every sampled pixel had alpha, none of it on screen. At
+ * z-index 0 it is a positioned element and paints after the block backgrounds
+ * instead of before them; the rule below then lifts the content over it. */
+.cv-grid-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── Side clouds ──────────────────────────────────────────────────────────── */
+
+/* Soft colour fields down the left and right edges, filling the empty margin
+   either side of the 1180px content column — the widest stretch of bare grid on
+   the page.
+ *
+ * Two pseudo-elements on the layer, not a component and not more canvas: this
+ * is a pair of blurred radial gradients, which CSS does natively and composites
+ * on the GPU. They are the layer's ::before and ::after, so they are painted as
+ * its first and last children — the left cloud sits under the grid canvas and
+ * the right one over it, which is what gives the two sides slightly different
+ * depth rather than a symmetrical pair of smudges.
+ *
+ * Animated on transform only, so the blur is rasterised once and the drift
+ * costs a composite rather than a re-blur every frame. */
+.cv-grid-layer::before,
+.cv-grid-layer::after {
+  content: "";
+  position: absolute;
+  top: -12vh;
+  width: min(46vw, 660px);
+  height: 124vh;
+  pointer-events: none;
+  /* 70px, not 90: at 90 the two gradients smear into one flat wash and the
+     cloud stops having a shape to read. */
+  filter: blur(70px);
+  will-change: transform;
+}
+
+.cv-grid-layer::before {
+  left: -14vw;
+  background:
+    radial-gradient(closest-side circle at 44% 24%, rgba(45, 212, 191, 0.38), transparent 72%),
+    radial-gradient(closest-side circle at 58% 66%, rgba(56, 189, 248, 0.28), transparent 72%);
+  animation: cv-cloud-drift-a 26s ease-in-out infinite alternate;
+}
+
+.cv-grid-layer::after {
+  right: -14vw;
+  background:
+    radial-gradient(closest-side circle at 56% 30%, rgba(16, 185, 129, 0.34), transparent 72%),
+    radial-gradient(closest-side circle at 42% 72%, rgba(99, 102, 241, 0.26), transparent 72%);
+  animation: cv-cloud-drift-b 34s ease-in-out infinite alternate;
+}
+
+@keyframes cv-cloud-drift-a {
+  to {
+    transform: translate3d(4vw, 6vh, 0) scale(1.12);
+  }
+}
+
+@keyframes cv-cloud-drift-b {
+  to {
+    transform: translate3d(-3vw, -7vh, 0) scale(1.09);
+  }
+}
+
+/* The clouds are still drawn — they are the colour, not the motion. Only the
+   drift stops. */
+@media (prefers-reduced-motion: reduce) {
+  .cv-grid-layer::before,
+  .cv-grid-layer::after {
+    animation: none;
+  }
+}
+
+/* Keeps the arrangement to this page, so the layer and the lifted children
+   below resolve against the home page rather than against whatever the site
+   nav and the floating WhatsApp button are doing at the document level. */
+.spline-page--grid {
+  isolation: isolate;
+}
+
+/* Everything except the layer sits above it. `position: relative` is a no-op on
+   the sections that already position themselves, and on the ones that do not it
+   is safe: they have no absolutely positioned descendants that were resolving
+   against an ancestor further up. */
+.spline-page--grid > *:not(.cv-grid-layer) {
+  position: relative;
+  z-index: 1;
+}
+
+/* The home page and its full-bleed light bands stop painting their own fill so
+   the grid behind them shows through.
+ *
+ * Both classes are named in each selector deliberately. `.spline-page` and
+ * `.faq-section` are re-declared with a background in five stylesheets that all
+ * lead with `body ` — site-theme, brand-alignment, brand-priority,
+ * slate-color-system and real-careerveda-palette. Matching their specificity
+ * and relying on import order would work until someone reordered an import;
+ * naming the page class as well outranks all of them outright.
+ *
+ * !important is not belt-and-braces here: slate-color-system.css declares
+ * `body .spline-page` with !important, and an important declaration wins over
+ * any weight of normal one. Without it the page band keeps its slate fill and
+ * the grid is only visible in the few sections that don't use !important.
+ *
+ * Only full-bleed bands are listed. The floating panels — the course explorer,
+ * the outcome strip, the press cards — keep their own surfaces, because those
+ * are what hold the text legible over a moving grid. */
+body .spline-page.spline-page--grid,
+body .spline-page--grid .faq-section,
+body .spline-page--grid .consultation-section,
+body .spline-page--grid .trusted-companies {
+  background: transparent !important;
+}
+
+/* The floating panels — the course explorer, the outcome strip, the press cards
+   — deliberately keep their own surfaces, and are not listed above.
+ *
+ * Replacing them with a translucent dark fill did let the grid through and cost
+ * the headings their contrast: "Recommended Courses" is dark ink chosen against
+ * a light panel, and on a 55%-slate one it was very nearly invisible. The grid
+ * is already unobstructed in the margins either side of these panels, which is
+ * the whole width of the page outside a 1180px column. */
+
+/* Clearing .trusted-companies' white band above leaves .tc-title — the only
+   text in it that isn't inside a logo card — as #0e1526 ink on the dark grid,
+   which measured 1.3:1. Fixed here rather than in TrustedCompanies.css because
+   that band still renders over a light host when embedded on the alumni page. */
+body .spline-page--grid .tc-title {
+  color: var(--cv-light-text, #f8fafc);
+}
+
+/* The hero is the one place the grid goes over the background rather than
+   under it: it keeps its dark gradient, because the 3D scene and the white hero
+   copy are both built against that field, and takes its own instance of the
+   grid on top of it. Above the gradient, below .hero-word (z-index 1) and
+   everything after it. See Hero.jsx. */
+.hero-grid-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* The navbar's own grid, same arrangement as the hero's: the bar paints an
+   opaque white fill, so the page layer can never reach it. The bar renders on
+   every route, which is why SiteNavbar.jsx imports this file rather than
+   relying on HomePage's import.
+ *
+ * z-index 0 and behind everything else in the header — brand, links, CTA and
+ * hamburger are all already positioned at z-index 1002+ by
+ * navbar-interaction-fix.css, so nothing needs lifting. overflow: hidden
+ * because the bar is only ~86px tall and a cell that pokes out sits over the
+ * hero below it. */
+.site-nav-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}

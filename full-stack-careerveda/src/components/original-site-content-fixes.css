@@ -1,0 +1,54 @@
+body .hero-copy .eyebrow {
+  max-width: 620px;
+  line-height: 1.5;
+}
+
+body .hero-copy h1 {
+  text-wrap: balance;
+}
+
+body .hero-copy > p {
+  text-wrap: pretty;
+}
+
+body .stat-strip strong {
+  letter-spacing: -0.05em;
+}
+
+body .program-card h3,
+body .section-heading :is(h1, h2),
+body .consultation-copy h2 {
+  text-wrap: balance;
+}
+
+body .achiever-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+body .achiever-grid article:nth-last-child(1):nth-child(odd) {
+  grid-column: span 1;
+}
+
+body .faq-list details {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+body .site-footer p {
+  line-height: 1.7;
+}
+
+@media (min-width: 981px) {
+  body .achiever-grid article:nth-child(7) {
+    grid-column: 2 / span 1;
+  }
+}
+
+@media (max-width: 980px) {
+  body .achiever-grid {
+    grid-template-columns: 1fr;
+  }
+
+  body .achiever-grid article:nth-child(7) {
+    grid-column: auto;
+  }
+}

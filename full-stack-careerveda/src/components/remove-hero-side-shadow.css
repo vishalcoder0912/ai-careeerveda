@@ -1,0 +1,47 @@
+body .hero-shell {
+  background:
+    radial-gradient(circle at 68% 44%, rgba(37, 99, 201, 0.2), transparent 34%),
+    radial-gradient(circle at 82% 30%, rgba(243, 112, 18, 0.1), transparent 22%),
+    linear-gradient(135deg, #26354d 0%, #44566e 48%, #26354d 100%) !important;
+}
+
+body .hero-vignette {
+  display: none !important;
+  opacity: 0 !important;
+  background: none !important;
+}
+
+body .hero-shell::before,
+body .hero-shell::after {
+  display: none !important;
+  opacity: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+body .spline-page::before,
+body .spline-page::after {
+  display: none !important;
+  opacity: 0 !important;
+}
+
+body .hero-copy h1,
+body .hero-copy > p,
+body .trust-line,
+body .eyebrow {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+body .hero-layout {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+@media (max-width: 980px) {
+  body .hero-shell {
+    background:
+      radial-gradient(circle at 62% 32%, rgba(37, 99, 201, 0.18), transparent 32%),
+      linear-gradient(135deg, #26354d 0%, #44566e 52%, #26354d 100%) !important;
+  }
+}

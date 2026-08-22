@@ -1,0 +1,302 @@
+/* "CareerVeda in the News" section + ScrollStack theming.
+   The base ScrollStack.css assumes an internal fixed-height scroller; these
+   overrides let it live in normal page flow driven by window scroll. */
+
+/* This is the first section on the blog route — an empty, fully commented-out
+   review block used to sit above it and incidentally provided the clearance.
+   With that gone, the top padding has to clear the 76px navbar itself, or the
+   "Media Coverage" label starts underneath it. */
+.press-section {
+  position: relative;
+  padding: clamp(116px, 13vw, 168px) max(24px, calc((100% - var(--site-measure)) / 2)) clamp(24px, 4vw, 48px);
+  color: #f1f5f9;
+}
+
+.press-section-heading {
+  max-width: 60ch;
+  margin: 0 auto clamp(8px, 2vw, 20px);
+  text-align: center;
+}
+
+.press-section-heading .label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #2dd4bf;
+}
+
+.press-section-heading h2 {
+  margin-top: 12px;
+  font-size: clamp(26px, 3.4vw, 40px);
+  line-height: 1.14;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+
+.press-section-heading p {
+  margin-top: 12px;
+  font-size: clamp(15px, 1.2vw, 17px);
+  line-height: 1.65;
+  color: rgba(226, 232, 240, 0.68);
+}
+
+/* ---- window-scroll overrides for the ScrollStack shell ---- */
+.press-stack.scroll-stack-scroller {
+  height: auto;
+  overflow: visible;
+  transform: none;
+  will-change: auto;
+}
+
+.press-stack .scroll-stack-inner {
+  width: min(900px, 100%);
+  margin-inline: auto;
+  padding: 4vh 0 34vh;
+  min-height: 0;
+}
+
+/* ---- press card ---- */
+.press-card.scroll-stack-card {
+  height: auto;
+  min-height: 14rem;
+  width: 100%;
+  margin: 0;
+  padding: clamp(26px, 4vw, 46px);
+  border-radius: 28px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background:
+    radial-gradient(640px 260px at 10% -20%, rgba(20, 184, 166, 0.16), transparent 62%),
+    radial-gradient(640px 260px at 100% 120%, rgba(59, 130, 246, 0.2), transparent 60%),
+    rgba(11, 18, 33, 0.94);
+  box-shadow: 0 34px 100px rgba(2, 6, 23, 0.6);
+  color: #f1f5f9;
+}
+
+/* Story on the left, artwork in the top-right. Only cards that carry an `image`
+   become two columns — `.has-media` — so a story without one keeps the full width
+   rather than leaving a gap where a picture would have been.
+
+   The image column is capped as a percentage rather than a fixed width: these
+   cards scale as the deck stacks, and a fixed 300px would grow relative to the
+   text as the card shrinks. */
+.press-card-head.has-media {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(160px, 26%, 300px);
+  gap: clamp(18px, 2.5vw, 32px);
+  align-items: start;
+}
+
+.press-card-media img {
+  display: block;
+  width: 100%;
+  /* A fixed frame, not the picture's own proportions: press art arrives at every
+     shape, and letting each set its own height would make the cards ragged. */
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+}
+
+/* Below ~720px there is no room for a side-by-side; the picture drops under the
+   story rather than squeezing the headline into a column two words wide. */
+@media (max-width: 720px) {
+  .press-card-head.has-media {
+    grid-template-columns: 1fr;
+  }
+
+  .press-card-media img {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+.press-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(226, 232, 240, 0.72);
+}
+
+.press-eyebrow .press-tag {
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(45, 212, 191, 0.4);
+  background: rgba(20, 184, 166, 0.12);
+  color: #5eead4;
+  letter-spacing: 0.02em;
+}
+
+.press-card h3 {
+  margin-top: 16px;
+  font-size: clamp(20px, 2.4vw, 28px);
+  line-height: 1.24;
+  letter-spacing: -0.025em;
+  font-weight: 700;
+}
+
+.press-excerpt {
+  margin-top: 12px;
+  font-size: clamp(14.5px, 1.2vw, 16px);
+  line-height: 1.7;
+  color: rgba(226, 232, 240, 0.78);
+}
+
+.press-stat-row {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  margin-top: 22px;
+}
+
+.press-stat {
+  padding: 14px 16px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.press-stat strong {
+  display: block;
+  font-size: clamp(20px, 2.2vw, 26px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  background: linear-gradient(120deg, #2dd4bf, #3b82f6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.press-stat span {
+  display: block;
+  margin-top: 4px;
+  font-size: 12.5px;
+  color: rgba(226, 232, 240, 0.66);
+}
+
+.press-highlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.press-highlights span {
+  padding: 7px 13px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 13px;
+  color: rgba(226, 232, 240, 0.82);
+}
+
+.press-sources {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.press-sources > small {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(226, 232, 240, 0.5);
+}
+
+.press-sources a,
+.press-wall-grid a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 13px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 13px;
+  font-weight: 500;
+  color: #e2e8f0;
+  text-decoration: none;
+  transition: border-color 200ms ease, background 200ms ease, transform 200ms ease;
+}
+
+.press-sources a:hover,
+.press-wall-grid a:hover {
+  border-color: rgba(45, 212, 191, 0.5);
+  background: rgba(20, 184, 166, 0.12);
+  transform: translateY(-2px);
+}
+
+.press-sources a::after,
+.press-wall-grid a::after {
+  content: "↗";
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* Outlet logo, when one is set in pressLogos. Optional by design — a chip
+   without one is just the name, and the flex gap closes up on its own.
+
+   Sized by HEIGHT with `width: auto`, because press logos arrive at every aspect
+   ratio there is: a square mark and a long wordmark both need to read as the same
+   weight in the row, and that is a matter of matching their cap height, not their
+   box. max-width stops a very wide wordmark from pushing the chip across the card.
+
+   The plate is load-bearing. Outlets ship their logo as dark artwork on a
+   transparent background — that is what a press kit is for, a white page — and on
+   this dark chip that artwork is very close to invisible. The near-white plate
+   gives it the background it was drawn for. If your logos are already light or
+   single-colour white, delete the background/padding here and they will sit
+   directly on the chip. */
+.press-logo {
+  height: 18px;
+  width: auto;
+  max-width: 76px;
+  /* Letterboxes rather than crops: a logo is the one image you must never cut. */
+  object-fit: contain;
+  padding: 2px 4px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+/* A chip with a logo shows the logo alone — no name beside it — so the logo is
+   the whole chip and can afford to be read at a glance rather than tucked in
+   next to a word. */
+.press-sources a.has-logo,
+.press-wall-grid a.has-logo {
+  padding: 8px 12px;
+}
+
+.has-logo .press-logo {
+  height: 28px;
+  max-width: 132px;
+}
+
+/* ---- closing media-wall card ---- */
+.press-card--wall {
+  text-align: center;
+}
+
+.press-card--wall .press-wall-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+@media (max-width: 640px) {
+  .press-stack .scroll-stack-inner {
+    padding: 3vh 0 30vh;
+  }
+
+  .press-card.scroll-stack-card {
+    border-radius: 22px;
+  }
+}

@@ -1,0 +1,82 @@
+/* The brand lockup as live text instead of public/brand/careerveda-logo.png.
+   Colours, weights and tracking are copied from scripts/make-logo.mjs so the
+   rendered text matches the PNG it replaces.
+
+   Nothing here uses a <span>. `.brand span` is a 38px gradient square — the old
+   "CV" tile — in ten stylesheets (brand-alignment, brand-priority, site-theme,
+   slate-color-system, navbar-interaction-fix, real-careerveda-palette,
+   final-alignment-polish, SplineLanding, mobile-responsiveness). Any span put
+   inside .brand inherits that tile and the text renders inside a coloured box.
+   Using <div> and <b> sidesteps all ten without unwinding any of them. */
+
+.brand-icon {
+  flex: none;
+  width: auto;
+  height: 44px;
+  /* contain, not cover: a logo must never be cropped to fill a box. */
+  object-fit: contain;
+}
+
+.brand-lockup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  line-height: 1;
+}
+
+.brand-name {
+  font-family: "Manrope", "Inter", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 26px;
+  /* Slightly tight: at ExtraBold the default fit reads loose at display size.
+     .brand sets -0.035em for the old tile lockup, which is too tight here. */
+  letter-spacing: -0.02em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.brand-name b {
+  font-weight: inherit;
+}
+
+.brand-name .cv-career {
+  color: #f1f3f5;
+}
+
+/* Vertical gradient across the glyphs themselves. background-clip: text is why
+   the fill has to be transparent — the text becomes a window onto the gradient. */
+.brand-name .cv-veda {
+  background-image: linear-gradient(180deg, #2fc8f5 0%, #178dd2 50%, #0b5daa 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.brand-tagline {
+  font-family: "Inter", system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 8px;
+  color: #f6a34b;
+  letter-spacing: 0.22em;
+  /* The wordmark's -0.02em tracking pulls its first glyph a hair left of the
+     text origin; nudging the tagline by the same amount lines the two left
+     edges up optically rather than only in the box model. */
+  margin-left: -0.02em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .brand-icon {
+    height: 36px;
+  }
+
+  .brand-name {
+    font-size: 21px;
+  }
+
+  .brand-tagline {
+    font-size: 7px;
+    letter-spacing: 0.18em;
+  }
+}

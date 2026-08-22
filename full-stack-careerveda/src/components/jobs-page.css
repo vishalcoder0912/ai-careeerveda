@@ -1,0 +1,527 @@
+/* Jobs page — scoped under .jobs-page */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* These tokens mirror page-shell.css, which is the design system every other
+   standalone route (About, Alumni, Contact, Enroll, policies) is built on.
+   The page previously defined its own purple/pink palette, which is why it
+   read as a different site. Same surface colours, same accents: teal primary,
+   blue secondary, orange for emphasis. */
+.jobs-page {
+  --jp-bg: #070b18;
+  --jp-panel: rgba(255, 255, 255, 0.04);
+  --jp-panel-hover: rgba(255, 255, 255, 0.07);
+  --jp-border: rgba(148, 163, 184, 0.16);
+  --jp-border-active: rgba(148, 163, 184, 0.28);
+  --jp-ink: #f1f5f9;
+  --jp-muted: rgba(226, 232, 240, 0.68);
+  --jp-primary: #14b8a6;
+  --jp-primary-dark: #0d9488;
+  --jp-pink: #f97316;
+  --jp-secondary: #3b82f6;
+  /* --jp-panel is 4% white, which only reads as a dark surface because the page
+     behind it is dark. A native <select> popup is painted by the OS on a white
+     base, so that same token there means near-white — and the near-white option
+     text vanished. Form controls get an opaque surface of their own. */
+  --jp-field: #131c30;
+  --jp-field-hover: #1b2740;
+  color-scheme: dark;
+  position: relative;
+  min-height: 100vh;
+  padding-bottom: clamp(60px, 8vw, 120px);
+  background:
+    radial-gradient(1200px 620px at 82% -6%, rgba(59, 130, 246, 0.18), transparent 60%),
+    radial-gradient(900px 520px at 6% 12%, rgba(20, 184, 166, 0.14), transparent 58%),
+    var(--jp-bg);
+  color: var(--jp-ink);
+}
+
+.jobs-page .jp-inner {
+  width: min(1200px, calc(100% - 48px));
+  margin-inline: auto;
+}
+
+/* ---------- Hero ---------- */
+.jobs-hero {
+  position: relative;
+  padding: clamp(100px, 12vw, 160px) 0 clamp(40px, 5vw, 60px);
+  overflow: hidden;
+}
+
+.jobs-hero::after {
+  content: "";
+  position: absolute;
+  inset: auto -10% -60% 40%;
+  height: 340px;
+  background: radial-gradient(circle at 50% 0%, rgba(249, 115, 22, 0.16), transparent 62%);
+  pointer-events: none;
+}
+
+.jobs-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 15px;
+  border: 1px solid var(--jp-border-active);
+  border-radius: 999px;
+  background: var(--jp-panel-hover);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--jp-muted);
+}
+
+.jobs-hero__eyebrow::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--jp-primary);
+  box-shadow: 0 0 12px var(--jp-primary);
+}
+
+.jobs-hero__title {
+  max-width: 20ch;
+  margin-top: 22px;
+  font-size: clamp(36px, 5.4vw, 64px);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  font-weight: 800;
+}
+
+/* Same stop order as .page-hero__title .accent in page-shell.css — teal, blue,
+   then orange. The page previously ran teal -> orange -> blue, which read as a
+   different gradient to every other hero on the site. */
+.jobs-hero__title .accent {
+  background: linear-gradient(120deg, var(--jp-primary), var(--jp-secondary) 55%, var(--jp-pink));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.jobs-hero__lead {
+  max-width: 62ch;
+  margin-top: 20px;
+  font-size: clamp(15px, 1.4vw, 18px);
+  line-height: 1.7;
+  color: var(--jp-muted);
+}
+
+.jobs-hero__stat {
+  margin-top: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--jp-secondary);
+}
+
+/* ---------- Third-party data note ---------- */
+/* Kept beneath the final job result, immediately before the site footer. The
+   full legal text lives in the element's title attribute (hover to read). */
+.jobs-thirdparty-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin: clamp(32px, 5vw, 52px) auto 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--jp-border);
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+  color: var(--jp-muted);
+  cursor: help;
+}
+
+.jobs-thirdparty-note span {
+  color: var(--jp-secondary);
+}
+
+/* ---------- Toolbar (search + filters) ---------- */
+.jobs-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 20px 0 28px;
+  border-bottom: 1px solid var(--jp-border);
+}
+
+.jobs-search {
+  position: relative;
+  flex: 1 1 280px;
+}
+
+.jobs-search__input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 16px 0 44px;
+  border: 1px solid var(--jp-border-active);
+  border-radius: 12px;
+  background: var(--jp-field);
+  color: var(--jp-ink);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 200ms ease;
+}
+
+.jobs-search__input::placeholder {
+  /* 0.68 alpha over the field surface lands under 4.5:1. Opaque and lighter. */
+  color: #96a3b8;
+  opacity: 1;
+}
+
+.jobs-search__input:focus {
+  border-color: var(--jp-primary);
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+}
+
+.jobs-search__icon {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  font-size: 18px;
+  line-height: 1;
+  color: var(--jp-muted);
+  pointer-events: none;
+}
+
+.jobs-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.jobs-filters__select {
+  min-height: 48px;
+  padding: 0 36px 0 14px;
+  border: 1px solid var(--jp-border-active);
+  border-radius: 12px;
+  background:
+    var(--jp-field)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")
+    no-repeat right 12px center;
+  color: var(--jp-ink);
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: border-color 200ms ease;
+}
+
+/* The popup is an OS surface, not part of the page, so it needs its own colours
+   rather than inheriting the select's. */
+.jobs-filters__select option {
+  background-color: var(--jp-field);
+  color: var(--jp-ink);
+}
+
+.jobs-filters__select option:checked {
+  background-color: var(--jp-field-hover);
+}
+
+.jobs-filters__select:hover {
+  background-color: var(--jp-field-hover);
+}
+
+.jobs-filters__select:focus {
+  border-color: var(--jp-primary);
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+}
+
+.jobs-filters__clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 48px;
+  padding: 0 18px;
+  border: 1px solid var(--jp-border);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--jp-muted);
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 200ms ease, border-color 200ms ease;
+}
+
+.jobs-filters__clear:hover {
+  color: var(--jp-ink);
+  border-color: var(--jp-border-active);
+}
+
+/* ---------- Results count ---------- */
+.jobs-count-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding: 18px 0 8px;
+}
+
+.jobs-count {
+  font-size: 14px;
+  color: var(--jp-muted);
+}
+
+.jobs-count strong {
+  color: var(--jp-ink);
+}
+
+/* ---------- Grid ---------- */
+.jobs-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+}
+
+/* ---------- Card ---------- */
+.job-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  border: 1px solid var(--jp-border);
+  border-radius: 20px;
+  background: var(--jp-panel);
+  transition: border-color 220ms ease, box-shadow 220ms ease, background 220ms ease;
+}
+
+.job-card:hover {
+  border-color: var(--jp-border-active);
+  background: var(--jp-panel-hover);
+  box-shadow: 0 30px 80px rgba(2, 6, 23, 0.5);
+}
+
+.job-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.job-card__title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.job-card__badge {
+  flex-shrink: 0;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  /* Orange is the site's emphasis colour, and "Featured" is the one thing on a
+     card that should pull the eye. */
+  background: rgba(249, 115, 22, 0.14);
+  color: var(--jp-pink);
+  border: 1px solid rgba(249, 115, 22, 0.32);
+}
+
+.job-card__company {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--jp-muted);
+}
+
+.job-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 13px;
+  color: var(--jp-muted);
+}
+
+.job-card__meta span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.job-card__salary {
+  font-weight: 700;
+  color: var(--jp-primary);
+}
+
+.job-card__description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--jp-muted);
+}
+
+.job-card__skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.job-card__skill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  /* Neutral, like the meta tags elsewhere on the site. There are three to five
+     of these per card, so colouring them would drown out the accents that
+     actually mean something. */
+  background: var(--jp-panel-hover);
+  color: var(--jp-ink);
+  border: 1px solid var(--jp-border);
+}
+
+.job-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid var(--jp-border);
+}
+
+.job-card__date {
+  font-size: 12px;
+  color: var(--jp-muted);
+  /* Take the free space so the apply button is always pinned to the right edge,
+     lining up across every card regardless of how long the date/source runs. */
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.job-card__source {
+  color: var(--jp-secondary);
+  font-weight: 600;
+}
+
+.job-card__apply {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 22px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-decoration: none;
+  /* Matches .page-btn--primary: teal -> blue on dark ink, which is the primary
+     button everywhere else on the site (Enroll, Get in Touch, Join network). */
+  color: #04121b;
+  background: linear-gradient(120deg, var(--jp-primary), var(--jp-secondary));
+  box-shadow: 0 14px 34px rgba(20, 184, 166, 0.3);
+  transition: transform 200ms ease, box-shadow 220ms ease;
+}
+
+.job-card__apply:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 22px 60px rgba(59, 130, 246, 0.4);
+}
+
+/* ---------- Empty state ---------- */
+.jobs-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.jobs-empty__icon {
+  font-size: 48px;
+  line-height: 1;
+  opacity: 0.3;
+}
+
+.jobs-empty__text {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--jp-muted);
+}
+
+.jobs-empty__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 24px;
+  border: 1px solid var(--jp-border-active);
+  border-radius: 12px;
+  background: var(--jp-panel-hover);
+  color: var(--jp-ink);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 200ms ease, background 200ms ease;
+}
+
+.jobs-empty__action:hover {
+  border-color: var(--jp-primary);
+  background: rgba(20, 184, 166, 0.1);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 860px) {
+  .jobs-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .jobs-toolbar {
+    flex-direction: column;
+  }
+
+  .jobs-search {
+    flex: 1 1 auto;
+  }
+
+  .jobs-filters {
+    width: 100%;
+  }
+
+  .jobs-filters__select {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .job-card__header {
+    flex-direction: column;
+  }
+
+  .job-card__footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .job-card__apply {
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .job-card,
+  .job-card__apply,
+  .jobs-filters__clear,
+  .jobs-empty__action {
+    transition: none;
+  }
+}
