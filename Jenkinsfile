@@ -1,298 +1,858 @@
 pipeline {
-  agent any
 
-  environment {
-    CI = 'true'
-    NODE_OPTIONS = '--max-old-space-size=4096'
+    agent any
 
-    VITE_PUBLIC_API_BASE_URL = 'http://localhost:8091/api/v1'
-    VITE_ADMIN_API_BASE_URL  = 'http://localhost:5574/api/v1'
-    VITE_PUBLIC_SITE_URL     = 'http://localhost:5573'
 
-    REGISTRY = 'ghcr.io'
-    IMAGE_NAME = 'vishalcoder0912/ai-careeerveda'
-  }
+    environment {
 
-  options {
-    timestamps()
-    timeout(time: 60, unit: 'MINUTES')
-    disableConcurrentBuilds()
-    buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '10'))
-  }
+        CI = 'true'
 
-  triggers {
-    pollSCM('H/5 * * * *')
-  }
+        NODE_OPTIONS = '--max-old-space-size=4096'
 
-  stages {
-    stage('Checkout') {
-      steps {
-        checkout scm
-      }
+        // Project location inside repository
+        PROJECT_DIR = 'full-stack-careerveda'
     }
 
-    stage('Setup') {
-      steps {
-        bat '''
-          node --version
-          npm --version
-          where docker
-          where docker-compose
-        '''
-      }
-    }
 
-    stage('Install Dependencies') {
-      parallel {
-        stage('Root') {
-          steps {
-            bat '''
-              cd full-stack-careerveda
-              npm ci
-            '''
-          }
-        }
-        stage('Backend') {
-          steps {
-            bat '''
-              cd full-stack-careerveda/backend
-              npm ci
-            '''
-          }
-        }
-        stage('Admin') {
-          steps {
-            bat '''
-              cd full-stack-careerveda/admin
-              npm ci
-            '''
-          }
-        }
-      }
-    }
+    options {
 
-    stage('Lint') {
-      steps {
-        bat '''
-          cd full-stack-careerveda
-          npm run lint 2>&1
-        '''
-      }
-      post {
-        always {
-          script {
-            bat '''
-              cd full-stack-careerveda
-              npx eslint . --format table --output-file lint-report.txt 2>&1 || true
-            '''
-          }
-        }
-      }
-    }
+        timestamps()
 
-    stage('Unit & Integration Tests') {
-      parallel {
-        stage('Frontend Tests') {
-          steps {
-            bat '''
-              cd full-stack-careerveda
-              npm run test:frontend -- --pool=forks --testTimeout=30000
-            '''
-          }
-        }
-        stage('Backend Tests') {
-          steps {
-            bat '''
-              cd full-stack-careerveda
-              npm run test:backend
-            '''
-          }
-        }
-        stage('Admin Tests') {
-          steps {
-            bat '''
-              cd full-stack-careerveda
-              npm run test:admin
-            '''
-          }
-        }
-      }
-    }
+        ansiColor('xterm')
 
-    stage('Build') {
-      parallel {
-        stage('Build Backend') {
-          steps {
-            bat '''
-              cd full-stack-careerveda
-              npm run build:backend
-            '''
-          }
-        }
-        stage('Build Frontend') {
-          steps {
-            bat '''
-              cd full-stack-careerveda
-              npm run build:frontend
-            '''
-          }
-        }
-        stage('Build Admin') {
-          steps {
-            bat '''
-              cd full-stack-careerveda
-              npm run build:admin
-            '''
-          }
-        }
-      }
-    }
+        disableConcurrentBuilds()
 
-    stage('E2E Tests') {
-      options {
-        timeout(time: 45, unit: 'MINUTES')
-      }
-      steps {
-        script {
-          // Start services for E2E
-          bat '''
-            cd full-stack-careerveda
-            docker compose -f compose.yaml up -d --build
-          '''
-          
-          bat '''
-            cd full-stack-careerveda
-            for /L %%i in (1,1,90) do (
-              curl -sf http://localhost:8081/health >nul 2>&1 && echo Backend healthy && goto :healthy
-              timeout /t 2 /nobreak >nul
+        skipDefaultCheckout(true)
+
+        timeout(
+            time: 90,
+            unit: 'MINUTES'
+        )
+
+        buildDiscarder(
+            logRotator(
+                numToKeepStr: '20',
+                artifactNumToKeepStr: '10'
             )
-            echo "Backend health check timed out"
-            exit 1
-            :healthy
-          '''
-          
-          bat 'npx --yes playwright install chromium'
-          bat 'npm run test:e2e'
-          
-          bat '''
-            cd full-stack-careerveda
-            docker compose -f compose.yaml down -v
-          '''
+        )
+    }
+
+
+    stages {
+
+
+        /*
+        =====================================================
+        CHECKOUT
+        =====================================================
+        */
+
+        stage('Checkout') {
+
+            steps {
+
+                cleanWs()
+
+                checkout scm
+
+                bat '''
+                    echo ========================================
+                    echo Repository Structure
+                    echo ========================================
+
+                    dir
+                '''
+            }
         }
-      }
-    }
 
-    stage('Security Scan') {
-      when {
-        expression { return isUnix() }
-      }
-      steps {
-        sh '''
-          docker run --rm -v $(pwd)/full-stack-careerveda:/app aquasec/trivy:latest fs --severity HIGH,CRITICAL /app
-        '''
-      }
-    }
 
-    stage('Build & Push Images') {
-      when {
-        anyOf {
-          branch 'main'
-          branch 'release/*'
-          tag 'v*'
+        /*
+        =====================================================
+        ENVIRONMENT
+        =====================================================
+        */
+
+        stage('Environment Check') {
+
+            steps {
+
+                bat '''
+                    echo ========================================
+                    echo Node Environment
+                    echo ========================================
+
+                    node --version
+                    npm --version
+
+                    echo.
+
+                    echo Workspace:
+                    cd
+
+                    echo.
+
+                    echo Project directory:
+                    dir full-stack-careerveda
+                '''
+            }
         }
-      }
-      environment {
-        REGISTRY_CREDS = credentials('ghcr-credentials')
-      }
-      steps {
-        script {
-          def tag = env.BUILD_NUMBER
-          def gitTag = env.GIT_TAG_NAME ?: ''
-          
-          dockerBuild('backend', 'backend', '', tag, true)
-          dockerBuild('frontend', '', "--build-arg VITE_PUBLIC_API_BASE_URL=https://api.careerveda.com/api/v1", tag, true)
-          dockerBuild('admin', '', "--build-arg VITE_ADMIN_API_BASE_URL=https://api.careerveda.com/api/v1 --build-arg VITE_PUBLIC_SITE_URL=https://careerveda.com", tag, true)
-          
-          if (gitTag) {
-            dockerBuild('backend', 'backend', '', gitTag, true)
-            dockerBuild('frontend', '', "--build-arg VITE_PUBLIC_API_BASE_URL=https://api.careerveda.com/api/v1", gitTag, true)
-            dockerBuild('admin', '', "--build-arg VITE_ADMIN_API_BASE_URL=https://api.careerveda.com/api/v1 --build-arg VITE_PUBLIC_SITE_URL=https://careerveda.com", gitTag, true)
-          }
+
+
+        /*
+        =====================================================
+        INSTALL DEPENDENCIES
+        =====================================================
+        */
+
+        stage('Install Dependencies') {
+
+            failFast true
+
+            parallel {
+
+
+                stage('Frontend Dependencies') {
+
+                    options {
+                        timeout(
+                            time: 15,
+                            unit: 'MINUTES'
+                        )
+                    }
+
+                    steps {
+
+                        dir('full-stack-careerveda') {
+
+                            bat '''
+                                echo Installing Frontend Dependencies...
+                                call npm ci
+                            '''
+                        }
+                    }
+                }
+
+
+                stage('Backend Dependencies') {
+
+                    options {
+                        timeout(
+                            time: 15,
+                            unit: 'MINUTES'
+                        )
+                    }
+
+                    steps {
+
+                        dir('full-stack-careerveda/backend') {
+
+                            bat '''
+                                echo Installing Backend Dependencies...
+                                call npm ci
+                            '''
+                        }
+                    }
+                }
+
+
+                stage('Admin Dependencies') {
+
+                    options {
+                        timeout(
+                            time: 15,
+                            unit: 'MINUTES'
+                        )
+                    }
+
+                    steps {
+
+                        dir('full-stack-careerveda/admin') {
+
+                            bat '''
+                                echo Installing Admin Dependencies...
+                                call npm ci
+                            '''
+                        }
+                    }
+                }
+            }
         }
-      }
-    }
 
-    stage('Deploy to Staging') {
-      when {
-        branch 'main'
-      }
-      steps {
-        script {
-          echo "Deploying to staging..."
+
+        /*
+        =====================================================
+        LINT
+        =====================================================
+        */
+
+        stage('Lint') {
+
+            options {
+                timeout(
+                    time: 10,
+                    unit: 'MINUTES'
+                )
+            }
+
+            steps {
+
+                dir('full-stack-careerveda') {
+
+                    bat '''
+                        echo ========================================
+                        echo Running ESLint
+                        echo ========================================
+
+                        call npm run lint
+                    '''
+                }
+            }
+
+            post {
+
+                always {
+
+                    dir('full-stack-careerveda') {
+
+                        bat '''
+                            npx eslint . --format stylish > lint-report.txt 2>&1 || exit /b 0
+                        '''
+
+                        archiveArtifacts(
+                            artifacts: 'lint-report.txt',
+                            allowEmptyArchive: true
+                        )
+                    }
+                }
+            }
         }
-      }
-    }
 
-    stage('Deploy to Production') {
-      when {
-        tag 'v*'
-      }
-      steps {
-        input message: 'Deploy to production?', ok: 'Deploy'
-        script {
-          echo "Deploying to production..."
+
+        /*
+        =====================================================
+        UNIT + INTEGRATION TESTS
+        =====================================================
+        */
+
+        stage('Unit & Integration Tests') {
+
+            failFast true
+
+            parallel {
+
+
+                /*
+                FRONTEND
+                */
+
+                stage('Frontend Tests') {
+
+                    options {
+                        timeout(
+                            time: 15,
+                            unit: 'MINUTES'
+                        )
+                    }
+
+                    steps {
+
+                        dir('full-stack-careerveda') {
+
+                            bat '''
+                                echo ========================================
+                                echo Running Frontend Tests
+                                echo ========================================
+
+                                call npm run test:frontend
+                            '''
+                        }
+                    }
+                }
+
+
+                /*
+                BACKEND
+                */
+
+                stage('Backend Tests') {
+
+                    options {
+
+                        /*
+                        MongoMemoryServer may need to download
+                        MongoDB binary on first CI run.
+                        */
+
+                        timeout(
+                            time: 30,
+                            unit: 'MINUTES'
+                        )
+                    }
+
+                    steps {
+
+                        dir('full-stack-careerveda') {
+
+                            bat '''
+                                echo ========================================
+                                echo Running Backend Tests
+                                echo Jest + Vitest + Supertest
+                                echo ========================================
+
+                                call npm run test:backend
+                            '''
+                        }
+                    }
+                }
+
+
+                /*
+                ADMIN
+                */
+
+                stage('Admin Tests') {
+
+                    options {
+                        timeout(
+                            time: 15,
+                            unit: 'MINUTES'
+                        )
+                    }
+
+                    steps {
+
+                        dir('full-stack-careerveda') {
+
+                            bat '''
+                                echo ========================================
+                                echo Running Admin Tests
+                                echo ========================================
+
+                                call npm run test:admin
+                            '''
+                        }
+                    }
+                }
+            }
         }
-      }
-    }
-  }
 
-  post {
-    always {
-      archiveArtifacts artifacts: 'full-stack-careerveda/test-results/**', allowEmptyArchive: true
-      archiveArtifacts artifacts: 'full-stack-careerveda/backend/test-results/**', allowEmptyArchive: true
-      archiveArtifacts artifacts: 'full-stack-careerveda/admin/test-results/**', allowEmptyArchive: true
-      archiveArtifacts artifacts: 'full-stack-careerveda/lint-report.txt', allowEmptyArchive: true
-      
-      script {
-        bat '''
-          cd full-stack-careerveda
-          docker compose -f compose.yaml down -v --remove-orphans 2>nul || exit 0
-        '''
-      }
-    }
-    success {
-      echo '✅ Pipeline succeeded'
-    }
-    failure {
-      echo '❌ Pipeline failed'
-    }
-    unstable {
-      echo '⚠️ Pipeline unstable'
-    }
-  }
-}
 
-def isUnix() {
-  return !System.getProperty('os.name').toLowerCase().contains('windows')
-}
+        /*
+        =====================================================
+        JEST TEST GATE
+        =====================================================
+        */
 
-def dockerBuild(imageName, context, buildArgs, tag = null, push = false) {
-  def fullTag = tag ? "${env.REGISTRY}/${env.IMAGE_NAME}-${imageName}:${tag}" : "${env.REGISTRY}/${env.IMAGE_NAME}-${imageName}:${env.BUILD_NUMBER}"
-  def latestTag = "${env.REGISTRY}/${env.IMAGE_NAME}-${imageName}:latest"
-  def dockerfile = imageName == 'backend' ? 'backend/Dockerfile' : (imageName == 'admin' ? 'admin/Dockerfile' : 'Dockerfile')
-  def buildContext = context ? "full-stack-careerveda/${context}" : 'full-stack-careerveda'
-  
-  bat """
-    cd ${buildContext}
-    docker build ^
-      --file ${dockerfile} ^
-      --tag ${fullTag} ^
-      --tag ${latestTag} ^
-      ${buildArgs} ^
-      .
-  """
-  if (push) {
-    bat "docker push ${fullTag}"
-    bat "docker push ${latestTag}"
-  }
+        stage('Jest Validation') {
+
+            failFast true
+
+            parallel {
+
+
+                stage('Frontend Jest') {
+
+                    options {
+                        timeout(time: 10, unit: 'MINUTES')
+                    }
+
+                    steps {
+
+                        dir('full-stack-careerveda') {
+
+                            bat '''
+                                call npm run test:jest:frontend
+                            '''
+                        }
+                    }
+                }
+
+
+                stage('Backend Jest') {
+
+                    options {
+                        timeout(time: 10, unit: 'MINUTES')
+                    }
+
+                    steps {
+
+                        dir('full-stack-careerveda') {
+
+                            bat '''
+                                call npm run test:jest:backend
+                            '''
+                        }
+                    }
+                }
+
+
+                stage('Admin Jest') {
+
+                    options {
+                        timeout(time: 10, unit: 'MINUTES')
+                    }
+
+                    steps {
+
+                        dir('full-stack-careerveda') {
+
+                            bat '''
+                                call npm run test:jest:admin
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+
+
+        /*
+        =====================================================
+        BUILD
+        =====================================================
+        */
+
+        stage('Build Applications') {
+
+            failFast true
+
+            parallel {
+
+
+                stage('Build Frontend') {
+
+                    options {
+                        timeout(time: 15, unit: 'MINUTES')
+                    }
+
+                    steps {
+
+                        dir('full-stack-careerveda') {
+
+                            bat '''
+                                echo ========================================
+                                echo Building Public Website
+                                echo ========================================
+
+                                call npm run build:frontend
+                            '''
+                        }
+                    }
+                }
+
+
+                stage('Build Backend') {
+
+                    options {
+                        timeout(time: 10, unit: 'MINUTES')
+                    }
+
+                    steps {
+
+                        dir('full-stack-careerveda') {
+
+                            bat '''
+                                echo ========================================
+                                echo Validating Backend Build
+                                echo ========================================
+
+                                call npm run build:backend
+                            '''
+                        }
+                    }
+                }
+
+
+                stage('Build Admin') {
+
+                    options {
+                        timeout(time: 15, unit: 'MINUTES')
+                    }
+
+                    steps {
+
+                        dir('full-stack-careerveda') {
+
+                            bat '''
+                                echo ========================================
+                                echo Building Admin Panel
+                                echo ========================================
+
+                                call npm run build:admin
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+
+
+        /*
+        =====================================================
+        PLAYWRIGHT INSTALL
+        =====================================================
+        */
+
+        stage('Install Playwright Browser') {
+
+            options {
+                timeout(
+                    time: 15,
+                    unit: 'MINUTES'
+                )
+            }
+
+            steps {
+
+                dir('full-stack-careerveda') {
+
+                    bat '''
+                        echo ========================================
+                        echo Installing Playwright Chromium
+                        echo ========================================
+
+                        call npx playwright install chromium
+                    '''
+                }
+            }
+        }
+
+
+        /*
+        =====================================================
+        E2E TESTS
+        =====================================================
+        */
+
+        stage('E2E Tests') {
+
+            options {
+
+                timeout(
+                    time: 45,
+                    unit: 'MINUTES'
+                )
+            }
+
+            steps {
+
+                dir('full-stack-careerveda') {
+
+                    bat '''
+                        echo ========================================
+                        echo Running End-to-End Tests
+                        echo ========================================
+
+                        call npm run test:e2e
+                    '''
+                }
+            }
+        }
+
+
+        /*
+        =====================================================
+        ACCESSIBILITY
+        =====================================================
+        */
+
+        stage('Accessibility Tests') {
+
+            options {
+                timeout(time: 30, unit: 'MINUTES')
+            }
+
+            steps {
+
+                dir('full-stack-careerveda') {
+
+                    bat '''
+                        echo ========================================
+                        echo Running Accessibility Tests
+                        echo ========================================
+
+                        call npm run test:a11y
+                    '''
+                }
+            }
+        }
+
+
+        /*
+        =====================================================
+        PERFORMANCE
+        =====================================================
+        */
+
+        stage('Performance Tests') {
+
+            options {
+                timeout(time: 30, unit: 'MINUTES')
+            }
+
+            steps {
+
+                dir('full-stack-careerveda') {
+
+                    bat '''
+                        echo ========================================
+                        echo Running Performance Tests
+                        echo ========================================
+
+                        call npm run test:performance
+                    '''
+                }
+            }
+        }
+
+
+        /*
+        =====================================================
+        LOAD TEST
+        =====================================================
+        */
+
+        stage('Load Test') {
+
+            options {
+                timeout(time: 20, unit: 'MINUTES')
+            }
+
+            steps {
+
+                dir('full-stack-careerveda') {
+
+                    bat '''
+                        echo ========================================
+                        echo Running Load Test
+                        echo ========================================
+
+                        call npm run test:load
+                    '''
+                }
+            }
+        }
+
+
+        /*
+        =====================================================
+        DEPENDENCY SECURITY
+        =====================================================
+        */
+
+        stage('Dependency Audit') {
+
+            failFast false
+
+            parallel {
+
+
+                stage('Root Audit') {
+
+                    steps {
+
+                        dir('full-stack-careerveda') {
+
+                            bat '''
+                                npm audit --audit-level=high
+                            '''
+                        }
+                    }
+                }
+
+
+                stage('Backend Audit') {
+
+                    steps {
+
+                        dir('full-stack-careerveda/backend') {
+
+                            bat '''
+                                npm audit --audit-level=high
+                            '''
+                        }
+                    }
+                }
+
+
+                stage('Admin Audit') {
+
+                    steps {
+
+                        dir('full-stack-careerveda/admin') {
+
+                            bat '''
+                                npm audit --audit-level=high
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+
+
+        /*
+        =====================================================
+        FINAL QUALITY GATE
+        =====================================================
+        */
+
+        stage('Quality Gate') {
+
+            steps {
+
+                script {
+
+                    if (
+                        currentBuild.currentResult == 'SUCCESS' ||
+                        currentBuild.currentResult == null
+                    ) {
+
+                        echo '''
+==================================================
+
+        ALL CI QUALITY CHECKS PASSED
+
+==================================================
+
+✓ Dependencies installed
+
+✓ ESLint passed
+
+✓ Frontend tests passed
+
+✓ Backend tests passed
+
+✓ Admin tests passed
+
+✓ Jest validation passed
+
+✓ Frontend build passed
+
+✓ Backend validation passed
+
+✓ Admin build passed
+
+✓ Playwright E2E passed
+
+✓ Accessibility tests passed
+
+✓ Performance tests passed
+
+✓ Load tests passed
+
+✓ Dependency audit passed
+
+==================================================
+
+READY FOR DEPLOYMENT
+
+==================================================
+'''
+                    }
+                }
+            }
+        }
+    }
+
+
+    /*
+    =====================================================
+    POST ACTIONS
+    =====================================================
+    */
+
+    post {
+
+
+        always {
+
+            echo '''
+========================================
+
+Pipeline execution finished.
+
+Collecting artifacts...
+
+========================================
+'''
+
+            archiveArtifacts(
+                artifacts: '''
+                    full-stack-careerveda/test-results/**,
+                    full-stack-careerveda/playwright-report/**,
+                    full-stack-careerveda/backend/test-results/**,
+                    full-stack-careerveda/admin/test-results/**,
+                    full-stack-careerveda/lint-report.txt
+                ''',
+                allowEmptyArchive: true
+            )
+        }
+
+
+        success {
+
+            echo '''
+========================================
+
+        CI PIPELINE SUCCESSFUL
+
+========================================
+
+All configured tests passed.
+
+The repository has passed:
+
+Lint
+Unit Tests
+Integration Tests
+Jest Tests
+Build Validation
+E2E Tests
+Accessibility Tests
+Performance Tests
+Load Tests
+Dependency Audit
+
+========================================
+'''
+        }
+
+
+        failure {
+
+            echo '''
+========================================
+
+        CI PIPELINE FAILED
+
+========================================
+
+A quality gate failed.
+
+Check the Jenkins stage that failed.
+
+The pipeline stopped before deployment.
+
+========================================
+'''
+        }
+
+
+        aborted {
+
+            echo '''
+Pipeline was aborted.
+'''
+        }
+
+
+        cleanup {
+
+            cleanWs(
+                deleteDirs: true,
+                disableDeferredWipeout: true
+            )
+        }
+    }
 }
