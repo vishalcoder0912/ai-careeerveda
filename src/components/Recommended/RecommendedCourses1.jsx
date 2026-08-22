@@ -1,8 +1,8 @@
 import React from "react";
 import {Link} from "react-router-dom";
-import {useReducedMotion} from "framer-motion";
+import {motion, useReducedMotion} from "framer-motion";
 import {Reveal} from "../motionPrimitives";
-import {makeItemVariants} from "../motionVariants";
+import {makeItemVariants, hoverLift} from "../motionVariants";
 import {useViewportTier} from "../../hooks/useViewportTier";
 import {useContentList} from "../../hooks/useContent";
 import {adaptProgram} from "../../lib/contentAdapters";
@@ -209,21 +209,19 @@ const courseFromProgram = (program) => ({
 const BentoCard = ({course, slot, variants, lift}) => {
   const stats = cardStats(course);
 
+  // Use Framer Motion for hover lift when not reduced motion
+  const CardElement = lift ? motion.article : "article";
+  const motionProps = lift ? {whileHover: lift, whileTap: hoverLift.whileTap} : {};
+
   return (
     <Reveal
-      as="article"
+      as={CardElement}
       variants={variants}
       className={`rc-card rc-card--${slot.name} rc-card--${slot.size}${
         course.slug ? " is-linked" : ""
       }`}
       style={{"--rc-cols": slot.cols, "--rc-rows": slot.rows}}
-      /* The lift is framer's, not CSS's. The reveal leaves an inline
-         `transform` on this element, and an inline transform beats a
-         stylesheet's :hover rule        a CSS translateY here would simply never
-         apply. Everything the hover does that is *not* a transform on the card
-         itself (the glow, the shadow, the image zoom, the arrow) stays in CSS,
-         where it belongs. */
-      whileHover={lift}
+      {...motionProps}
     >
       {/* A stretched link rather than an anchor wrapped around the card.
           Wrapping would put the artwork, the badge and the stats inside the

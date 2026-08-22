@@ -2,6 +2,9 @@ import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
+import { visualizer } from "rollup-plugin-visualizer";
+
+const isAnalyze = process.env.ANALYZE === "true";
 
 // In production Vercel runs everything in api/ as a serverless function. Vite's
 // dev server knows nothing about that, so `npm run dev` used to answer
@@ -79,7 +82,12 @@ export default defineConfig(({mode}) => {
   const env = loadEnv(mode, process.cwd(), "");
 
   return {
-    plugins: [react(), tailwindcss(), apiDevServer(env)],
+    plugins: [react(), tailwindcss(), apiDevServer(env), isAnalyze && visualizer({
+      open: true,
+      filename: "stats.html",
+      gzipSize: true,
+      brotliSize: true,
+    })].filter(Boolean),
     // strictPort, because the backend's CORS_ALLOWED_ORIGINS names 5173 and
     // 5174 exactly. Vite's default is to slide to the next free port on a
     // collision, and the site then loads on 5175 with every API call refused by
