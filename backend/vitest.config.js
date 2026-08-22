@@ -4,9 +4,6 @@ export default defineConfig({
   test: {
     environment: "node",
     globals: false,
-    // tests/unit is Jest's (see jest.config.js) and imports @jest/globals, which
-    // throws outside the Jest runtime. Each runner owns one directory and neither
-    // collects the other's files.
     exclude: ["**/node_modules/**", "tests/unit/**"],
     // Loads env vars and spins up the in-memory MongoDB before any suite runs,
     // so no test needs the real Atlas cluster.
