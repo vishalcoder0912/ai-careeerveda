@@ -43,28 +43,20 @@ pipeline {
     }
 
     stage('Install Dependencies') {
-      parallel {
-        stage('Root') {
-          steps {
-            bat 'npm ci'
-          }
-        }
-        stage('Backend') {
-          steps {
-            bat 'npm ci --prefix backend'
-          }
-        }
-        stage('Admin') {
-          steps {
-            bat 'npm ci --prefix admin'
-          }
-        }
+      steps {
+        bat '''
+          cd full-stack-careerveda
+          npm ci
+        '''
       }
     }
 
     stage('Lint') {
       steps {
-        bat 'npm run lint'
+        bat '''
+          cd full-stack-careerveda
+          npm run lint
+        '''
       }
     }
 
@@ -72,17 +64,26 @@ pipeline {
       parallel {
         stage('Frontend Tests') {
           steps {
-            bat 'npm run test:frontend -- --pool=forks --testTimeout=30000'
+            bat '''
+              cd full-stack-careerveda
+              npm run test:frontend -- --pool=forks --testTimeout=30000
+            '''
           }
         }
         stage('Backend Tests') {
           steps {
-            bat 'npm run test:backend'
+            bat '''
+              cd full-stack-careerveda
+              npm run test:backend
+            '''
           }
         }
         stage('Admin Tests') {
           steps {
-            bat 'npm run test:admin'
+            bat '''
+              cd full-stack-careerveda
+              npm run test:admin
+            '''
           }
         }
       }
@@ -92,17 +93,26 @@ pipeline {
       parallel {
         stage('Build Backend') {
           steps {
-            bat 'npm run build:backend'
+            bat '''
+              cd full-stack-careerveda
+              npm run build:backend
+            '''
           }
         }
         stage('Build Frontend') {
           steps {
-            bat 'npm run build:frontend'
+            bat '''
+              cd full-stack-careerveda
+              npm run build:frontend
+            '''
           }
         }
         stage('Build Admin') {
           steps {
-            bat 'npm run build:admin'
+            bat '''
+              cd full-stack-careerveda
+              npm run build:admin
+            '''
           }
         }
       }
