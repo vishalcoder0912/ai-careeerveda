@@ -17,11 +17,11 @@ pipeline {
         E2E_ADMIN_PORT = '5274'
 
         // Test database - uses MongoMemoryServer via backend/tests/setup.js
-        MONGODB_URI = 'mongodb://127.0.0.1:27017/careerveda_test'
-        MONGODB_DB_NAME = 'careerveda_test'
+        MONGODB_URI = 'mongodb://careerveda:JKY38xn3zcIeFs5y-adZYx5Hc8jnN222skegioFrF7zDIBH3@d6ab5bbb-224b-4a0c-bb94-ad3b8813d505.asia-south2.firestore.goog:443/careerveda-db?loadBalanced=true&tls=true&authMechanism=SCRAM-SHA-256&retryWrites=false'
+        MONGODB_DB_NAME = 'careerveda-db'
 
         // JWT secrets for CI (must be 32+ chars)
-        JWT_ACCESS_SECRET = 'ci-access-secret-not-for-any-real-use-0123456789'
+        JWT_ACCESS_SECRET = 'fjeknGMKf_2IRf6nNO8VzdLR0ztdAxT-IhfMMP98-oY4uwe4BEDrh-BSOTWx7T46'
         JWT_REFRESH_SECRET = 'ci-refresh-secret-not-for-any-real-use-0123456789'
 
         // Frontend/Admin URLs for E2E
@@ -508,39 +508,69 @@ stage('Install Dependencies') {
 
             steps {
 
-                bat '''
-                    echo ========================================
-                    echo Verifying Full Stack Health
-                    echo ========================================
+                powershell '''
+                    Write-Host "========================================"
+                    Write-Host "Verifying Full Stack Health"
+                    Write-Host "========================================"
 
-                    echo Waiting for backend...
-                    for /L %%i in (1,1,60) do (
-                        curl -sf http://localhost:8081/health >nul 2>&1 && echo Backend healthy && goto :frontend
-                        timeout /t 2 /nobreak >nul
-                    )
-                    echo Backend health check timed out
-                    exit 1
-                    :frontend
+                    $maxAttempts = 60
+                    $delaySeconds = 2
 
-                    echo Waiting for frontend...
-                    for /L %%i in (1,1,60) do (
-                        curl -sf http://localhost:5273 >nul 2>&1 && echo Frontend healthy && goto :admin
-                        timeout /t 2 /nobreak >nul
-                    )
-                    echo Frontend health check timed out
-                    exit 1
-                    :admin
+                    Write-Host "Waiting for backend..."
+                    for ($i = 1; $i -le $maxAttempts; $i++) {
+                        try {
+                            $response = Invoke-WebRequest -Uri "http://localhost:8081/health" -Method Head -TimeoutSec 5 -ErrorAction Stop
+                            if ($response.StatusCode -eq 200) {
+                                Write-Host "Backend healthy"
+                                break
+                            }
+                        } catch {
+                            # Not ready yet
+                        }
+                        if ($i -eq $maxAttempts) {
+                            Write-Error "Backend health check timed out"
+                            exit 1
+                        }
+                        Start-Sleep -Seconds $delaySeconds
+                    }
 
-                    echo Waiting for admin...
-                    for /L %%i in (1,1,60) do (
-                        curl -sf http://localhost:5274 >nul 2>&1 && echo Admin healthy && goto :done
-                        timeout /t 2 /nobreak >nul
-                    )
-                    echo Admin health check timed out
-                    exit 1
-                    :done
+                    Write-Host "Waiting for frontend..."
+                    for ($i = 1; $i -le $maxAttempts; $i++) {
+                        try {
+                            $response = Invoke-WebRequest -Uri "http://localhost:5273" -Method Head -TimeoutSec 5 -ErrorAction Stop
+                            if ($response.StatusCode -eq 200) {
+                                Write-Host "Frontend healthy"
+                                break
+                            }
+                        } catch {
+                            # Not ready yet
+                        }
+                        if ($i -eq $maxAttempts) {
+                            Write-Error "Frontend health check timed out"
+                            exit 1
+                        }
+                        Start-Sleep -Seconds $delaySeconds
+                    }
 
-                    echo All services healthy!
+                    Write-Host "Waiting for admin..."
+                    for ($i = 1; $i -le $maxAttempts; $i++) {
+                        try {
+                            $response = Invoke-WebRequest -Uri "http://localhost:5274" -Method Head -TimeoutSec 5 -ErrorAction Stop
+                            if ($response.StatusCode -eq 200) {
+                                Write-Host "Admin healthy"
+                                break
+                            }
+                        } catch {
+                            # Not ready yet
+                        }
+                        if ($i -eq $maxAttempts) {
+                            Write-Error "Admin health check timed out"
+                            exit 1
+                        }
+                        Start-Sleep -Seconds $delaySeconds
+                    }
+
+                    Write-Host "All services healthy!"
                 '''
             }
         }
