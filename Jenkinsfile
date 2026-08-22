@@ -43,11 +43,31 @@ pipeline {
     }
 
     stage('Install Dependencies') {
-      steps {
-        bat '''
-          cd full-stack-careerveda
-          npm ci
-        '''
+      parallel {
+        stage('Root') {
+          steps {
+            bat '''
+              cd full-stack-careerveda
+              npm ci
+            '''
+          }
+        }
+        stage('Backend') {
+          steps {
+            bat '''
+              cd full-stack-careerveda/backend
+              npm ci
+            '''
+          }
+        }
+        stage('Admin') {
+          steps {
+            bat '''
+              cd full-stack-careerveda/admin
+              npm ci
+            '''
+          }
+        }
       }
     }
 
