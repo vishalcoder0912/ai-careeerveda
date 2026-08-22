@@ -124,18 +124,20 @@ pipeline {
       }
       steps {
         script {
-          // Start services in background for E2E
+          // Start services for E2E
           bat '''
             cd full-stack-careerveda
-            start /b docker compose -f compose.yaml up -d --build
+            docker compose -f compose.yaml up -d --build
           '''
           
           bat '''
             cd full-stack-careerveda
-            for /L %%i in (1,1,60) do (
+            for /L %%i in (1,1,90) do (
               curl -sf http://localhost:8081/health >nul 2>&1 && echo Backend healthy && goto :healthy
               timeout /t 2 /nobreak >nul
             )
+            echo "Backend health check timed out"
+            exit 1
             :healthy
           '''
           
