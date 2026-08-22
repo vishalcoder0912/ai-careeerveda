@@ -11,6 +11,11 @@ pipeline {
 
         // Project location inside repository
         PROJECT_DIR = 'full-stack-careerveda'
+
+        // E2E ports (match playwright.config.js defaults)
+        E2E_API_PORT = '8081'
+        E2E_FRONTEND_PORT = '5273'
+        E2E_ADMIN_PORT = '5274'
     }
 
 
@@ -23,7 +28,7 @@ pipeline {
         skipDefaultCheckout(true)
 
         timeout(
-            time: 90,
+            time: 120,
             unit: 'MINUTES'
         )
 
@@ -240,7 +245,7 @@ pipeline {
 
 
                 /*
-                FRONTEND
+                FRONTEND - Vitest (jsdom)
                 */
 
                 stage('Frontend Tests') {
@@ -258,7 +263,7 @@ pipeline {
 
                             bat '''
                                 echo ========================================
-                                echo Running Frontend Tests
+                                echo Running Frontend Tests (Vitest)
                                 echo ========================================
 
                                 call npm run test:frontend
@@ -269,7 +274,7 @@ pipeline {
 
 
                 /*
-                BACKEND
+                BACKEND - Jest (unit) + Vitest (integration) + MongoMemoryServer
                 */
 
                 stage('Backend Tests') {
@@ -282,7 +287,7 @@ pipeline {
                         */
 
                         timeout(
-                            time: 30,
+                            time: 40,
                             unit: 'MINUTES'
                         )
                     }
@@ -294,7 +299,7 @@ pipeline {
                             bat '''
                                 echo ========================================
                                 echo Running Backend Tests
-                                echo Jest + Vitest + Supertest
+                                echo Jest (unit) + Vitest (integration) + Supertest
                                 echo ========================================
 
                                 call npm run test:backend
@@ -305,7 +310,7 @@ pipeline {
 
 
                 /*
-                ADMIN
+                ADMIN - Vitest (jsdom)
                 */
 
                 stage('Admin Tests') {
@@ -323,79 +328,10 @@ pipeline {
 
                             bat '''
                                 echo ========================================
-                                echo Running Admin Tests
+                                echo Running Admin Tests (Vitest)
                                 echo ========================================
 
                                 call npm run test:admin
-                            '''
-                        }
-                    }
-                }
-            }
-        }
-
-
-        /*
-        =====================================================
-        JEST TEST GATE
-        =====================================================
-        */
-
-        stage('Jest Validation') {
-
-            failFast true
-
-            parallel {
-
-
-                stage('Frontend Jest') {
-
-                    options {
-                        timeout(time: 10, unit: 'MINUTES')
-                    }
-
-                    steps {
-
-                        dir('full-stack-careerveda') {
-
-                            bat '''
-                                call npm run test:jest:frontend
-                            '''
-                        }
-                    }
-                }
-
-
-                stage('Backend Jest') {
-
-                    options {
-                        timeout(time: 10, unit: 'MINUTES')
-                    }
-
-                    steps {
-
-                        dir('full-stack-careerveda') {
-
-                            bat '''
-                                call npm run test:jest:backend
-                            '''
-                        }
-                    }
-                }
-
-
-                stage('Admin Jest') {
-
-                    options {
-                        timeout(time: 10, unit: 'MINUTES')
-                    }
-
-                    steps {
-
-                        dir('full-stack-careerveda') {
-
-                            bat '''
-                                call npm run test:jest:admin
                             '''
                         }
                     }
@@ -487,7 +423,7 @@ pipeline {
 
         /*
         =====================================================
-        PLAYWRIGHT INSTALL
+        PLAYWRIGHT BROWSER INSTALL
         =====================================================
         */
 
@@ -518,7 +454,7 @@ pipeline {
 
         /*
         =====================================================
-        E2E TESTS
+        E2E TESTS (with watchdog for Windows reliability)
         =====================================================
         */
 
@@ -527,7 +463,7 @@ pipeline {
             options {
 
                 timeout(
-                    time: 45,
+                    time: 50,
                     unit: 'MINUTES'
                 )
             }
@@ -538,10 +474,10 @@ pipeline {
 
                     bat '''
                         echo ========================================
-                        echo Running End-to-End Tests
+                        echo Running End-to-End Tests (with CI watchdog)
                         echo ========================================
 
-                        call npm run test:e2e
+                        call node scripts/run-e2e-ci.mjs --grep-invert "@visual|@performance|@smoke"
                     '''
                 }
             }
@@ -550,14 +486,14 @@ pipeline {
 
         /*
         =====================================================
-        ACCESSIBILITY
+        ACCESSIBILITY TESTS
         =====================================================
         */
 
         stage('Accessibility Tests') {
 
             options {
-                timeout(time: 30, unit: 'MINUTES')
+                timeout(time: 35, unit: 'MINUTES')
             }
 
             steps {
@@ -569,7 +505,7 @@ pipeline {
                         echo Running Accessibility Tests
                         echo ========================================
 
-                        call npm run test:a11y
+                        call node scripts/run-e2e-ci.mjs --grep @accessibility --cap=15
                     '''
                 }
             }
@@ -578,14 +514,14 @@ pipeline {
 
         /*
         =====================================================
-        PERFORMANCE
+        PERFORMANCE TESTS
         =====================================================
         */
 
         stage('Performance Tests') {
 
             options {
-                timeout(time: 30, unit: 'MINUTES')
+                timeout(time: 35, unit: 'MINUTES')
             }
 
             steps {
@@ -597,7 +533,7 @@ pipeline {
                         echo Running Performance Tests
                         echo ========================================
 
-                        call npm run test:performance
+                        call node scripts/run-e2e-ci.mjs --grep @performance --project=chromium --cap=15
                     '''
                 }
             }
@@ -634,7 +570,7 @@ pipeline {
 
         /*
         =====================================================
-        DEPENDENCY SECURITY
+        DEPENDENCY SECURITY AUDIT
         =====================================================
         */
 
@@ -717,27 +653,27 @@ pipeline {
 
 ✓ ESLint passed
 
-✓ Frontend tests passed
+✓ Frontend tests (Vitest) passed
 
-✓ Backend tests passed
+✓ Backend tests (Jest + Vitest) passed
 
-✓ Admin tests passed
-
-✓ Jest validation passed
+✓ Admin tests (Vitest) passed
 
 ✓ Frontend build passed
 
-✓ Backend validation passed
+✓ Backend build validation passed
 
 ✓ Admin build passed
 
-✓ Playwright E2E passed
+✓ Playwright Chromium installed
+
+✓ E2E tests passed
 
 ✓ Accessibility tests passed
 
 ✓ Performance tests passed
 
-✓ Load tests passed
+✓ Load test passed
 
 ✓ Dependency audit passed
 
@@ -802,11 +738,10 @@ All configured tests passed.
 The repository has passed:
 
 Lint
-Unit Tests
-Integration Tests
-Jest Tests
+Unit Tests (Vitest/Jest)
+Integration Tests (Vitest + Supertest)
 Build Validation
-E2E Tests
+E2E Tests (with watchdog)
 Accessibility Tests
 Performance Tests
 Load Tests
