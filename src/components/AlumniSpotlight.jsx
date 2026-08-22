@@ -9,7 +9,7 @@ import "./alumni-spotlight.css";
 // A dome tile is at most ~200px across, and the portrait panel beside it tops out
 // around 320px. The source photos are full-size — one is 163 KB — and the dome
 // renders every one of them at once, so untransformed they were the heaviest
-// thing on the page by a wide margin.
+// thing on the page by a wide margin. now checking the testing of ci cd
 const DOME_TILE_WIDTH = 400;
 const PROFILE_PHOTO_WIDTH = 640;
 
