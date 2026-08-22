@@ -75,8 +75,18 @@ pipeline {
       steps {
         bat '''
           cd full-stack-careerveda
-          npm run lint
+          npm run lint 2>&1
         '''
+      }
+      post {
+        always {
+          script {
+            bat '''
+              cd full-stack-careerveda
+              npx eslint . --format table --output-file lint-report.txt 2>&1 || true
+            '''
+          }
+        }
       }
     }
 
@@ -241,6 +251,7 @@ pipeline {
       archiveArtifacts artifacts: 'full-stack-careerveda/test-results/**', allowEmptyArchive: true
       archiveArtifacts artifacts: 'full-stack-careerveda/backend/test-results/**', allowEmptyArchive: true
       archiveArtifacts artifacts: 'full-stack-careerveda/admin/test-results/**', allowEmptyArchive: true
+      archiveArtifacts artifacts: 'full-stack-careerveda/lint-report.txt', allowEmptyArchive: true
       
       script {
         bat '''
