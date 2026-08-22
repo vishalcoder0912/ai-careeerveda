@@ -1,0 +1,1188 @@
+[{
+  "_id": {
+    "$oid": "6a6061e97bfcf05ac32c3e3e"
+  },
+  "name": "Antriksh Kumar",
+  "discipline": "Analytics",
+  "role": "Sr. Data Analyst at Capgemini",
+  "designation": "",
+  "company": "",
+  "description": "Antriksh Kumar is a Senior Data Analyst with over 15 years of experience in data engineering and analytics. He specializes in SQL, AWS, ETL pipelines, and data modeling, helping organizations build scalable data solutions and derive actionable business insights.",
+  "bio": "Data Analyst with 15+ years of experience in data engineering and analytics at Capgemini.",
+  "shortBio": "",
+  "photo": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/faculty/faculty2-93539455.jpg?updatedAt=1784010443180",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Antriksh Kumar",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "education": "B.Tech",
+  "experience": "15+ Years",
+  "specialization": "Data Analytics  Data Engineering SQL AWS ETL Pipelines Data Modeling",
+  "achievements": [
+    "15+ years of experience in data engineering and analytics",
+    "Senior Data Analyst at Capgemini",
+    "Expertise in designing and managing ETL pipelines",
+    "Strong background in cloud-based data solutions using AWS",
+    "Experienced in data modeling and database optimization"
+  ],
+  "expertise": [
+    "SQL",
+    "AWS",
+    "ETL Pipeline Development",
+    "Data Modeling",
+    "Data Analytics",
+    "Database Management",
+    "Data Warehousing",
+    "Business Intelligence & Reporting"
+  ],
+  "associatedPrograms": [],
+  "slug": "antriksh-kumar",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:37.627Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 1,
+  "seo": {
+    "title": "Antriksh Kumar",
+    "description": "Sr. Data Analyst at Capgemini",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": {
+    "$oid": "6a708ec07c0778d2b1fdc62a"
+  },
+  "revision": 13,
+  "coverImage": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "socialLinks": {
+    "linkedin": "",
+    "twitter": "",
+    "github": "",
+    "website": ""
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:37.629Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-05T08:03:21.751Z"
+  },
+  "__v": 4,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a60624c75957d87c43cc47a"
+  },
+  "name": "Aditya Sharma",
+  "discipline": "Product Management",
+  "role": "Sr. Product Manager",
+  "designation": "",
+  "company": "",
+  "description": "senior developer",
+  "bio": "Aditya Sharma is a seasoned Product Management professional with extensive experience in building scalable digital products and driving business growth across technology-driven organizations. He specializes in product strategy, user experience, stakeholder management, and data-driven decision-making, helping learners bridge the gap between industry expectations and practical execution.",
+  "shortBio": "",
+  "photo": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/faculty/faculty1-de594e86.jpg?updatedAt=1784010443438",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Aditya Sharma",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "education": "MBA in Product Management & Business Strategy",
+  "experience": "10+ Years",
+  "specialization": "Product Strategy, Growth Product Management, User Research, Agile Methodologies, Roadmap Planning, Data Analytics",
+  "achievements": [
+    "Mentored 500+ aspiring product professionals",
+    "Worked with cross-functional global teams"
+  ],
+  "expertise": [
+    "Product Strategy & Roadmapping",
+    "Agile & Scrum Methodologies",
+    "User Research & Analytics",
+    "SQL & Data Interpretation",
+    "Jira, Confluence & Figma",
+    "Growth & KPI Optimization"
+  ],
+  "associatedPrograms": [],
+  "slug": "aditya-sharma",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:25:16.525Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 0,
+  "seo": {
+    "title": "Aditya Sharma",
+    "description": "Sr. Product Manager",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 4,
+  "coverImage": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "socialLinks": {
+    "linkedin": "",
+    "twitter": "",
+    "github": "",
+    "website": ""
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:25:16.543Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:36.731Z"
+  },
+  "__v": 0,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a60624c75957d87c43cc480"
+  },
+  "name": "Prateek Singh",
+  "discipline": "Product Management",
+  "role": "Product Manager at Deloitte",
+  "designation": "",
+  "company": "",
+  "description": "",
+  "bio": "Product Manager with 12+ years of experience specializing in business analytics at Deloitte. He brings deep expertise in data visualization and statistical analysis, guiding learners to turn complex data into clear, decision-ready insights and translate business questions into analytical outcomes.",
+  "shortBio": "",
+  "photo": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/faculty/faculty3-1fbba623.jpg?updatedAt=1784010442857",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Prateek Singh",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "education": "M.Tech in Data Science",
+  "experience": "12+ Years",
+  "specialization": "Business Analytics, Data Visualization, Statistical Analysis",
+  "achievements": [
+    "Led major data transformation projects",
+    "Expert in business intelligence",
+    "Certified analytics professional",
+    "Trained 1800+ professionals"
+  ],
+  "expertise": [
+    "Tableau",
+    "R & R Shiny",
+    "Python",
+    "SQL",
+    "Excel",
+    "Advance Excel"
+  ],
+  "associatedPrograms": [],
+  "slug": "prateek-singh",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:25:16.716Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 2,
+  "seo": {
+    "title": "Prateek Singh",
+    "description": "Product Manager at Deloitte",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 4,
+  "coverImage": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "socialLinks": {
+    "linkedin": "",
+    "twitter": "",
+    "github": "",
+    "website": ""
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:25:16.722Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:36.857Z"
+  },
+  "__v": 0,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a60624c75957d87c43cc483"
+  },
+  "name": "Gagan Chaudhary",
+  "discipline": "Data Science",
+  "role": "Sr. Data Scientist & GEN AI Expert at Accenture",
+  "designation": "",
+  "company": "",
+  "description": "",
+  "bio": "Sr. Data Scientist & GEN AI Expert with 10+ years of experience in machine learning and AI at Accenture.",
+  "shortBio": "",
+  "photo": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/faculty/faculty4-856a91e8.jpg?updatedAt=1784010443568",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Gagan Chaudhary",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "education": "M.Sc in Artificial Intelligence",
+  "experience": "10+ Years",
+  "specialization": "Machine Learning, AI, Deep Learning, Predictive Analytics",
+  "achievements": [
+    "Published research in AI",
+    "Built ML models for Fortune 500 companies",
+    "Expert in neural networks",
+    "Mentored 2000+ students"
+  ],
+  "expertise": [
+    "Python",
+    "TensorFlow",
+    "PyTorch",
+    "Scikit-learn",
+    "Keras",
+    "Machine Learning",
+    "NLP"
+  ],
+  "associatedPrograms": [],
+  "slug": "gagan-chaudhary",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:25:16.797Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 3,
+  "seo": {
+    "title": "Gagan Chaudhary",
+    "description": "Sr. Data Scientist & GEN AI Expert at Accenture",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 4,
+  "coverImage": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "socialLinks": {
+    "linkedin": "",
+    "twitter": "",
+    "github": "",
+    "website": ""
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:25:16.811Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:36.914Z"
+  },
+  "__v": 0,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a60624c75957d87c43cc486"
+  },
+  "name": "Surya Deepta Mazumdaar",
+  "discipline": "Data Science",
+  "role": "Decision Scientist at Mu Sigma Inc.",
+  "designation": "",
+  "company": "",
+  "description": "",
+  "bio": "Decision Scientist with 14+ years of experience in analytics and decision science.",
+  "shortBio": "",
+  "photo": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/faculty/faculty5-2429702b.jpg?updatedAt=1784010442770",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Surya Deepta Mazumdaar",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "education": "MBA in Business Analytics",
+  "experience": "14+ Years",
+  "specialization": "Decision Science, Predictive Modeling, Business Strategy",
+  "achievements": [
+    "Expert in decision analytics",
+    "Helped clients optimize business decisions",
+    "Published case studies"
+  ],
+  "expertise": [
+    "R",
+    "SAS",
+    "Python",
+    "Advanced Statistics",
+    "Optimization"
+  ],
+  "associatedPrograms": [],
+  "slug": "surya-deepta-mazumdaar",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:25:16.888Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 4,
+  "seo": {
+    "title": "Surya Deepta Mazumdaar",
+    "description": "Decision Scientist at Mu Sigma Inc.",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 4,
+  "coverImage": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "socialLinks": {
+    "linkedin": "",
+    "twitter": "",
+    "github": "",
+    "website": ""
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:25:16.895Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:36.975Z"
+  },
+  "__v": 0,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a60624c75957d87c43cc489"
+  },
+  "name": "Ashwani Jain",
+  "discipline": "Product Management",
+  "role": "Senior Product Manager",
+  "designation": "",
+  "company": "",
+  "description": "",
+  "bio": "Senior Product Manager with 13+ years of experience leading data-driven products across multiple tech companies. He specializes in product strategy, data strategy, and agile development, helping learners build products that are grounded in analytics and shipped through disciplined, iterative delivery.",
+  "shortBio": "",
+  "photo": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/faculty/faculty6-d366f6dd.jpg?updatedAt=1784010442986",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Ashwani Jain",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "education": "B.Tech + MBA",
+  "experience": "13+ Years",
+  "specialization": "Product Management, Data Strategy, Agile Development",
+  "achievements": [
+    "Launched 10+ successful products",
+    "Expert in product analytics",
+    "Certified Scrum Master",
+    "Mentored 1200+ product enthusiasts"
+  ],
+  "expertise": [
+    "Product Analytics",
+    "A/B Testing",
+    "SQL",
+    "Mixpanel",
+    "Google Analytics"
+  ],
+  "associatedPrograms": [],
+  "slug": "ashwani-jain",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:25:16.996Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 5,
+  "seo": {
+    "title": "Ashwani Jain",
+    "description": "Senior Product Manager",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 4,
+  "coverImage": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "socialLinks": {
+    "linkedin": "",
+    "twitter": "",
+    "github": "",
+    "website": ""
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:25:17.001Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:37.034Z"
+  },
+  "__v": 0,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a60624d75957d87c43cc48c"
+  },
+  "name": "Geetanjali Adhikari",
+  "discipline": "Product Management",
+  "role": "Deputy Manager at Tata AIG",
+  "designation": "",
+  "company": "",
+  "description": "",
+  "bio": "Deputy Manager with 11+ years of experience in insurance analytics and risk management at Tata AIG. She specializes in risk modeling, actuarial science, and process optimization, helping learners apply analytics to real-world risk and insurance decisions.",
+  "shortBio": "",
+  "photo": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/faculty/faculty7-0548a4b9.jpg?updatedAt=1784010443376",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Geetanjali Adhikari",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "education": "B.Tech + Executive MBA",
+  "experience": "11+ Years",
+  "specialization": "Insurance Analytics, Risk Management, Actuarial Science",
+  "achievements": [
+    "Expert in insurance analytics",
+    "Risk modeling specialist",
+    "Process optimization leader",
+    "Trained 1000+ professionals"
+  ],
+  "expertise": [
+    "SAS",
+    "R",
+    "SQL",
+    "Excel",
+    "Risk Analytics"
+  ],
+  "associatedPrograms": [],
+  "slug": "geetanjali-adhikari",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:25:17.085Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 6,
+  "seo": {
+    "title": "Geetanjali Adhikari",
+    "description": "Deputy Manager at Tata AIG",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 4,
+  "coverImage": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "socialLinks": {
+    "linkedin": "",
+    "twitter": "",
+    "github": "",
+    "website": ""
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:25:17.088Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:37.092Z"
+  },
+  "__v": 0,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a60624d75957d87c43cc48f"
+  },
+  "name": "Pankaj Kumar",
+  "discipline": "Product Management",
+  "role": "Senior Product Manager",
+  "designation": "",
+  "company": "",
+  "description": "",
+  "bio": "Senior Product Manager with 13+ years of experience leading data-driven products across multiple tech companies. He specializes in product strategy, data strategy, and agile development, helping learners build products that are grounded in analytics and shipped through disciplined, iterative delivery.",
+  "shortBio": "",
+  "photo": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/faculty/faculty8-65907da2.jpg",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Pankaj Kumar",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "education": "B.Tech + MBA",
+  "experience": "10+ Years",
+  "specialization": "Product Management, Data Strategy, Agile Development",
+  "achievements": [
+    "Launched 15+ successful products",
+    "Expert in product analytics",
+    "Certified Scrum Master",
+    "Mentored 1200+ product enthusiasts"
+  ],
+  "expertise": [
+    "Product Analytics",
+    "A/B Testing",
+    "SQL",
+    "Mixpanel",
+    "Google Analytics"
+  ],
+  "associatedPrograms": [],
+  "slug": "pankaj-kumar",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:25:17.164Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 7,
+  "seo": {
+    "title": "Pankaj Kumar",
+    "description": "Senior Product Manager",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 4,
+  "coverImage": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "socialLinks": {
+    "linkedin": "",
+    "twitter": "",
+    "github": "",
+    "website": ""
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:25:17.168Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:37.151Z"
+  },
+  "__v": 0,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a60624d75957d87c43cc492"
+  },
+  "name": "Awantika Sinha",
+  "discipline": "Business Analytics",
+  "role": "Senior Business Analyst",
+  "designation": "",
+  "company": "",
+  "description": "",
+  "bio": "Senior Business Analyst with 15+ years of experience bridging business needs with technology solutions across multiple domains. She specializes in requirements elicitation, stakeholder management, process optimization, and data-driven decision-making, equipping learners to translate complex business problems into clear, actionable solutions.",
+  "shortBio": "",
+  "photo": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/faculty/Screenshot-2026-07-16-171225-596ad29f.jpg",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Awantika Sinha",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "education": "BBA + MBA",
+  "experience": "15+ Years",
+  "specialization": "Business Analysis, Requirements Gathering, Stakeholder Management, Process Optimization, Data-Driven Decision Making",
+  "achievements": [
+    "Led requirement analysis for 20+ enterprise-scale projects",
+    "Expert in business process modeling and optimization",
+    "Certified Scrum Master",
+    "Mentored 1200+ aspiring business analysts"
+  ],
+  "expertise": [
+    "Requirements Analysis",
+    "Stakeholder Management",
+    "SQL",
+    "Data Visualization",
+    "Business Process Modeling",
+    "BRD & FRD Documentation",
+    "Agile & Scrum"
+  ],
+  "associatedPrograms": [],
+  "slug": "awantika-sinha",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:25:17.242Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 8,
+  "seo": {
+    "title": "Awantika Sinha",
+    "description": "Senior Business Analyst",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 4,
+  "coverImage": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "socialLinks": {
+    "linkedin": "",
+    "twitter": "",
+    "github": "",
+    "website": ""
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:25:17.252Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:37.209Z"
+  },
+  "__v": 0,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a60a66ed5bd876677e43351"
+  },
+  "name": "hello",
+  "discipline": "",
+  "role": "junior cyber cell",
+  "designation": "",
+  "company": "",
+  "description": "ihosdofsd",
+  "bio": "uiosidfosd",
+  "shortBio": "",
+  "photo": {
+    "media": {
+      "$oid": "6a606a1fee5ababd488de279"
+    },
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever8-1a1454dd.jpg",
+    "fileId": "6a606a1f5c7cd75eb8b7a842",
+    "thumbnailUrl": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/tr:n-ik_ml_thumbnail/careerveda/alumni/Achiever8-1a1454dd.jpg",
+    "alt": "",
+    "caption": "",
+    "width": 1024,
+    "height": 1536
+  },
+  "education": "bed",
+  "experience": "",
+  "specialization": "",
+  "achievements": [],
+  "expertise": [],
+  "associatedPrograms": [],
+  "slug": "hello",
+  "status": "archived",
+  "publishedAt": {
+    "$date": "2026-07-22T11:15:58.419Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 10,
+  "deletedAt": {
+    "$date": "2026-07-22T12:26:49.680Z"
+  },
+  "deletedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "createdBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "updatedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "revision": 1,
+  "coverImage": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "socialLinks": {
+    "linkedin": "",
+    "twitter": "",
+    "github": "",
+    "website": ""
+  },
+  "seo": {
+    "title": "",
+    "description": "",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "createdAt": {
+    "$date": "2026-07-22T11:15:58.247Z"
+  },
+  "updatedAt": {
+    "$date": "2026-07-22T12:26:49.683Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a61cc3ef61896cd231ed330"
+  },
+  "name": "agewfasdg",
+  "discipline": "adsgawedewer",
+  "role": "sadgwerwe",
+  "designation": "",
+  "company": "",
+  "description": "",
+  "bio": "",
+  "shortBio": "",
+  "photo": {
+    "media": {
+      "$oid": "6a61cc33f61896cd231ed323"
+    },
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/bg_image-af8203c4.png",
+    "fileId": "6a61cc345c7cd75eb8a69222",
+    "thumbnailUrl": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/tr:n-ik_ml_thumbnail/careerveda/bg_image-af8203c4.png",
+    "alt": "",
+    "caption": "",
+    "width": 397,
+    "height": 223
+  },
+  "education": "",
+  "experience": "",
+  "specialization": "",
+  "achievements": [],
+  "expertise": [],
+  "associatedPrograms": [],
+  "slug": "agewfasdg",
+  "status": "archived",
+  "publishedAt": {
+    "$date": "2026-07-23T08:09:34.302Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 0,
+  "deletedAt": {
+    "$date": "2026-07-24T06:28:29.665Z"
+  },
+  "deletedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "createdBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "updatedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "revision": 1,
+  "coverImage": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "socialLinks": {
+    "linkedin": "",
+    "twitter": "",
+    "github": "",
+    "website": ""
+  },
+  "seo": {
+    "title": "",
+    "description": "",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "createdAt": {
+    "$date": "2026-07-23T08:09:34.112Z"
+  },
+  "updatedAt": {
+    "$date": "2026-07-24T06:28:29.671Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a620e76e23806237e2e886a"
+  },
+  "name": "jhfnjsadnkfksdaf",
+  "discipline": "kjnsakjdfnnsad",
+  "role": "jnsddkajnfnsda",
+  "designation": "",
+  "company": "",
+  "description": "",
+  "bio": "",
+  "shortBio": "",
+  "education": "",
+  "experience": "",
+  "specialization": "",
+  "achievements": [],
+  "expertise": [],
+  "associatedPrograms": [],
+  "slug": "jhfnjsadnkfksdaf",
+  "status": "archived",
+  "publishedAt": {
+    "$date": "2026-07-23T12:52:09.340Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 0,
+  "deletedAt": {
+    "$date": "2026-07-24T06:28:25.870Z"
+  },
+  "deletedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "createdBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "updatedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "revision": 3,
+  "photo": {
+    "media": {
+      "$oid": "6a61aa14cbd14cd9faf96897"
+    },
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/Screenshot-2025-04-27-090414-7604684f.png",
+    "fileId": "6a61aa145c7cd75eb8c73e38",
+    "thumbnailUrl": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/tr:n-ik_ml_thumbnail/careerveda/Screenshot-2025-04-27-090414-7604684f.png",
+    "alt": "",
+    "caption": "",
+    "width": 1919,
+    "height": 1079
+  },
+  "coverImage": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "socialLinks": {
+    "linkedin": "",
+    "twitter": "",
+    "github": "",
+    "website": ""
+  },
+  "seo": {
+    "title": "Best mentor for hello world",
+    "description": "kjnsajfnasdnkfnaksndfknasdf",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "createdAt": {
+    "$date": "2026-07-23T12:52:06.509Z"
+  },
+  "updatedAt": {
+    "$date": "2026-07-24T06:28:25.878Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a6317975332cd030ee18a5b"
+  },
+  "name": "ksnfkjnskdnfsda",
+  "discipline": "onsjdnfsdn",
+  "role": "kjsankjdfnsa",
+  "designation": "",
+  "company": "",
+  "description": "",
+  "bio": "",
+  "shortBio": "",
+  "education": "",
+  "experience": "",
+  "specialization": "",
+  "achievements": [],
+  "expertise": [],
+  "associatedPrograms": [],
+  "slug": "ksnfkjnskdnfsda",
+  "status": "archived",
+  "publishedAt": {
+    "$date": "2026-07-24T07:43:19.734Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 0,
+  "deletedAt": {
+    "$date": "2026-07-24T08:12:53.460Z"
+  },
+  "deletedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "createdBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "updatedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "revision": 1,
+  "photo": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "coverImage": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "socialLinks": {
+    "linkedin": "",
+    "twitter": "",
+    "github": "",
+    "website": ""
+  },
+  "seo": {
+    "title": "",
+    "description": "",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "createdAt": {
+    "$date": "2026-07-24T07:43:19.542Z"
+  },
+  "updatedAt": {
+    "$date": "2026-07-24T08:12:53.463Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a631e995332cd030ee18bcc"
+  },
+  "name": "oisjfsdnfs",
+  "discipline": "sndfnnsdj",
+  "role": "fjjsdjfljsdlkf",
+  "designation": "",
+  "company": "",
+  "description": "",
+  "bio": "",
+  "shortBio": "",
+  "photo": {
+    "media": {
+      "$oid": "6a61cc33f61896cd231ed323"
+    },
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/bg_image-af8203c4.png",
+    "fileId": "6a61cc345c7cd75eb8a69222",
+    "thumbnailUrl": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/tr:n-ik_ml_thumbnail/careerveda/bg_image-af8203c4.png",
+    "alt": "",
+    "caption": "",
+    "width": 397,
+    "height": 223
+  },
+  "education": "",
+  "experience": "",
+  "specialization": "",
+  "achievements": [],
+  "expertise": [],
+  "associatedPrograms": [],
+  "slug": "oisjfsdnfs",
+  "status": "archived",
+  "publishedAt": {
+    "$date": "2026-07-24T08:13:13.413Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 0,
+  "deletedAt": {
+    "$date": "2026-07-24T11:24:18.072Z"
+  },
+  "deletedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "createdBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "updatedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "revision": 1,
+  "coverImage": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "socialLinks": {
+    "linkedin": "",
+    "twitter": "",
+    "github": "",
+    "website": ""
+  },
+  "seo": {
+    "title": "",
+    "description": "",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "createdAt": {
+    "$date": "2026-07-24T08:13:13.265Z"
+  },
+  "updatedAt": {
+    "$date": "2026-07-24T11:24:18.077Z"
+  },
+  "__v": 0,
+  "rejectedReason": ""
+}]

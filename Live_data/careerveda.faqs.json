@@ -1,0 +1,524 @@
+[{
+  "_id": {
+    "$oid": "6a6061ee7bfcf05ac32c3f40"
+  },
+  "question": "What programs does CareerVeda offer?",
+  "answer": "Programs span Investment Banking, Business Analytics, Data Analytics, Data Science with AI/ML and Agentic AI, CyberSecurity, Backend Development Engineering, and Data Engineering with Agentic & Gen AI. Each one is built around the tools and workflows employers are hiring for right now.",
+  "category": "General",
+  "relatedEntityType": null,
+  "relatedEntityId": null,
+  "slug": "what-programs-does-careerveda-offer",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:42.818Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 0,
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": {
+    "$oid": "6a706e412188a497eefd8214"
+  },
+  "revision": 10,
+  "seo": {
+    "title": "",
+    "description": "",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:42.819Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:45.200Z"
+  },
+  "__v": 0,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a6061ee7bfcf05ac32c3f43"
+  },
+  "question": "What is the duration of these programs?",
+  "answer": "Duration varies by program and by the batch you join, since each track is scoped to the depth its role demands. Our admissions team can walk you through the exact schedule for the program you're considering.",
+  "category": "General",
+  "relatedEntityType": null,
+  "relatedEntityId": null,
+  "slug": "what-is-the-duration-of-these-programs",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:42.883Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 1,
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 7,
+  "seo": {
+    "title": "",
+    "description": "",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:42.883Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:45.265Z"
+  },
+  "__v": 0,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a6061ee7bfcf05ac32c3f46"
+  },
+  "question": "Do I get certifications after completing the program?",
+  "answer": "Yes. You earn an industry-aligned, globally recognized certification that validates your expertise, adds credibility to your resume, and helps you stand out with employers.",
+  "category": "General",
+  "relatedEntityType": null,
+  "relatedEntityId": null,
+  "slug": "do-i-get-certifications-after-completing-the-program",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:42.944Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 2,
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 7,
+  "seo": {
+    "title": "",
+    "description": "",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:42.944Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:45.325Z"
+  },
+  "__v": 0,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a6061ee7bfcf05ac32c3f49"
+  },
+  "question": "Is there placement assistance provided?",
+  "answer": "Yes — placement support runs alongside the course rather than after it: resume support, LinkedIn optimization, mock interviews, soft skills training, referrals, and direct access to our 900+ hiring partners.",
+  "category": "General",
+  "relatedEntityType": null,
+  "relatedEntityId": null,
+  "slug": "is-there-placement-assistance-provided",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:42.999Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 3,
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 7,
+  "seo": {
+    "title": "",
+    "description": "",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:43.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:45.384Z"
+  },
+  "__v": 0,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a6061ef7bfcf05ac32c3f4c"
+  },
+  "question": "What are the eligibility criteria to enroll?",
+  "answer": "Criteria depend on the program and on your background — some tracks assume prior experience, others are built for career changers starting fresh. Talk to our admissions team and they'll tell you which programs you're eligible for.",
+  "category": "General",
+  "relatedEntityType": null,
+  "relatedEntityId": null,
+  "slug": "what-are-the-eligibility-criteria-to-enroll",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:43.057Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 4,
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 7,
+  "seo": {
+    "title": "",
+    "description": "",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:43.058Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:45.441Z"
+  },
+  "__v": 0,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a6061ef7bfcf05ac32c3f4f"
+  },
+  "question": "Is this live online program or recorded lectures?",
+  "answer": "Classes are live and interactive, taught by expert instructors with time set aside for doubt clearing. Sessions are recorded too, so you can revisit anything you need to review.",
+  "category": "General",
+  "relatedEntityType": null,
+  "relatedEntityId": null,
+  "slug": "is-this-live-online-program-or-recorded-lectures",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:43.115Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 5,
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 7,
+  "seo": {
+    "title": "",
+    "description": "",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:43.115Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:45.503Z"
+  },
+  "__v": 0,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a6061ef7bfcf05ac32c3f52"
+  },
+  "question": "Can I pursue this program while working full time?",
+  "answer": "Yes — the schedule is designed for working professionals. Choose weekday or weekend batches, catch up through recordings, and continue at a pace that fits around your job.",
+  "category": "General",
+  "relatedEntityType": null,
+  "relatedEntityId": null,
+  "slug": "can-i-pursue-this-program-while-working-full-time",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:43.172Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 6,
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 7,
+  "seo": {
+    "title": "",
+    "description": "",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:43.173Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:45.567Z"
+  },
+  "__v": 0,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a6061ef7bfcf05ac32c3f55"
+  },
+  "question": "What kind of projects will I work on?",
+  "answer": "You build portfolio-ready projects and work through case studies drawn from real business challenges at leading companies — the kind of problems you'd face in the role, not textbook exercises.",
+  "category": "General",
+  "relatedEntityType": null,
+  "relatedEntityId": null,
+  "slug": "what-kind-of-projects-will-i-work-on",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:43.229Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 7,
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 7,
+  "seo": {
+    "title": "",
+    "description": "",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:43.229Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:45.640Z"
+  },
+  "__v": 0,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a6061ef7bfcf05ac32c3f58"
+  },
+  "question": "What is the average salary hike after completing the program?",
+  "answer": "Learners report an average salary growth of 86%. Your own outcome depends on your experience, target role, and the market you're hiring into, so treat that as a benchmark rather than a promise.",
+  "category": "General",
+  "relatedEntityType": null,
+  "relatedEntityId": null,
+  "slug": "what-is-the-average-salary-hike-after-completing-the-program",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:43.287Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 8,
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 7,
+  "seo": {
+    "title": "",
+    "description": "",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:43.287Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:45.705Z"
+  },
+  "__v": 0,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a6061ef7bfcf05ac32c3f5b"
+  },
+  "question": "What support is available during the program?",
+  "answer": "You're assigned a personal mentor matched to your goals, with weekly guidance sessions, a career roadmap, and progress tracking. Live classes, doubt clearing, and skill workshops run throughout, and career support continues after you graduate.",
+  "category": "General",
+  "relatedEntityType": null,
+  "relatedEntityId": null,
+  "slug": "what-support-is-available-during-the-program",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:43.346Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 9,
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 7,
+  "seo": {
+    "title": "",
+    "description": "",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:43.347Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:45.766Z"
+  },
+  "__v": 0,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a61c4da45ff7f5a1ade2c7a"
+  },
+  "question": "what is java",
+  "answer": "java is a tool",
+  "category": "General",
+  "relatedEntityType": null,
+  "relatedEntityId": null,
+  "slug": "what-is-java",
+  "status": "archived",
+  "publishedAt": {
+    "$date": "2026-07-23T07:38:23.509Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 9,
+  "deletedAt": {
+    "$date": "2026-07-23T08:07:35.901Z"
+  },
+  "deletedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "createdBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "updatedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "revision": 2,
+  "seo": {
+    "title": "",
+    "description": "",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "createdAt": {
+    "$date": "2026-07-23T07:38:03.002Z"
+  },
+  "updatedAt": {
+    "$date": "2026-07-23T08:07:35.902Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a6348d9a9150085085d8155"
+  },
+  "question": "Will AI Replace Humans?",
+  "answer": "No, AI will not completely replace humans. AI may automate certain tasks, but it is unlikely to replace every job. Many roles will evolve rather than disappear. Industries are increasingly looking for professionals who can combine technical knowledge with human problem-solving, communication, and leadership skills..",
+  "category": "General",
+  "relatedEntityType": null,
+  "relatedEntityId": null,
+  "slug": "will-ai-replace-the-humans",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-24T11:13:29.436Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 7,
+  "rejectedReason": "",
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "updatedBy": {
+    "$oid": "6a706e412188a497eefd8214"
+  },
+  "revision": 2,
+  "seo": {
+    "title": "",
+    "description": "",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "createdAt": {
+    "$date": "2026-07-24T11:13:29.147Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-03T10:44:31.673Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a67563a67bf0c0885b6e7ef"
+  },
+  "question": "Will i get the 100 % Placement Through CareerVeda?",
+  "answer": "CareerVeda provides comprehensive placement including resume building, mock interviews, career counseling, and job referrals to help learners secure employment. CareerVeda equips students with the skills, certifications, and interview preparation needed to improve their chances of getting hired.",
+  "category": "General",
+  "relatedEntityType": null,
+  "relatedEntityId": null,
+  "slug": "will-i-get-the-100-placement",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-27T12:59:41.440Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 10,
+  "rejectedReason": "",
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "updatedBy": {
+    "$oid": "6a706e412188a497eefd8214"
+  },
+  "revision": 3,
+  "seo": {
+    "title": "",
+    "description": "",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "createdAt": {
+    "$date": "2026-07-27T12:59:38.916Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-03T10:41:21.463Z"
+  },
+  "__v": 0
+}]

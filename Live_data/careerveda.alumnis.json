@@ -1,0 +1,1645 @@
+[{
+  "_id": {
+    "$oid": "6a6061e97bfcf05ac32c3e4f"
+  },
+  "name": "Anant Shiva",
+  "image": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever1-4e81fee0.jpg",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Anant Shiva",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "previousRole": "",
+  "currentRole": "Product Development",
+  "previousCompany": "",
+  "currentCompany": "HighRadius",
+  "program": null,
+  "programTitle": "",
+  "graduationYear": "",
+  "salaryBefore": "",
+  "salaryAfter": "",
+  "percentageHike": "86% Hike",
+  "quote": "This program was exactly what I needed to transition into Product Management—the industry-relevant curriculum and strong placement support helped me secure a role at HighRadius. Grateful to Team CareerVeda for the exceptional support throughout my journey!",
+  "story": "This program was exactly what I needed to transition into Product Management—the industry-relevant curriculum and strong placement support helped me secure a role at HighRadius. Grateful to Team CareerVeda for the exceptional support throughout my journey!",
+  "skills": [],
+  "testimonialVideo": "",
+  "accent": "#0f766e",
+  "accentEnd": "#164e63",
+  "slug": "anant-shiva",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:37.894Z"
+  },
+  "scheduledAt": null,
+  "featured": true,
+  "displayOrder": 0,
+  "seo": {
+    "title": "Anant Shiva",
+    "description": "This program was exactly what I needed to transition into Product Management—the industry-relevant curriculum and strong placement support helped me…",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "revision": 14,
+  "companyLogo": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:37.896Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:37.268Z"
+  },
+  "__v": 0,
+  "showOnAlumniPage": true,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a6061e97bfcf05ac32c3e52"
+  },
+  "name": "Syed Arif",
+  "image": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/SYED-ARIF-b2eea077.jpg",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Syed Arif",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "previousRole": "",
+  "currentRole": "Associate Product Manager at Razorpay",
+  "previousCompany": "",
+  "currentCompany": "",
+  "program": null,
+  "programTitle": "",
+  "graduationYear": "",
+  "salaryBefore": "",
+  "salaryAfter": "",
+  "percentageHike": "118% Hike",
+  "quote": "Built strategic product thinking and secured a high-growth fintech product role.",
+  "story": "My journey into Product Management started with a simple curiosity—how are products built, and what makes them valuable to users? As I explored the field, I became passionate about understanding customer problems and building meaningful solutions. The Product Management Program at CareerVeda helped me strengthen my skills in product strategy, customer-centric thinking, and practical problem-solving.",
+  "skills": [],
+  "testimonialVideo": "",
+  "accent": "#2563eb",
+  "accentEnd": "#4338ca",
+  "slug": "syed-arif",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:37.953Z"
+  },
+  "scheduledAt": null,
+  "featured": true,
+  "displayOrder": 1,
+  "seo": {
+    "title": "Syed Arif",
+    "description": "Built strategic product thinking and secured a high-growth fintech product role.",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "revision": 15,
+  "companyLogo": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:37.954Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T13:08:17.958Z"
+  },
+  "__v": 0,
+  "showOnAlumniPage": true,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a6061ea7bfcf05ac32c3e55"
+  },
+  "name": "Anjali Singh",
+  "image": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever5-09021396.jpg",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Anjali Singh",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "previousRole": "",
+  "currentRole": "Associate Product Manager at Amazon",
+  "previousCompany": "",
+  "currentCompany": "",
+  "program": null,
+  "programTitle": "",
+  "graduationYear": "",
+  "salaryBefore": "",
+  "salaryAfter": "",
+  "percentageHike": "220% Hike",
+  "quote": "Achieved rapid professional growth from 5 LPA to 16 LPA through product leadership and execution skills.",
+  "story": "My journey into Product Management began with a growing interest in understanding customer needs, solving business problems, and building products that create real value. My experience as a Business Analyst at GoKwik gave me valuable exposure to data, business strategy, and customer-focused decision-making. As I explored Product Management further, the Product Management Program at CareerVeda helped me strengthen my understanding of product development, market research, Agile practices, and product strategy. Today, I’m working as an Associate Product Manager at Amazon, where I continue to learn, take on new challenges, and grow every day.",
+  "skills": [],
+  "testimonialVideo": "",
+  "accent": "#c2410c",
+  "accentEnd": "#b45309",
+  "slug": "anjali-singh",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:38.013Z"
+  },
+  "scheduledAt": null,
+  "featured": true,
+  "displayOrder": 2,
+  "seo": {
+    "title": "Anjali Singh",
+    "description": "Achieved rapid professional growth from 5 LPA to 16 LPA through product leadership and execution skills.",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "revision": 13,
+  "companyLogo": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:38.014Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T13:08:50.178Z"
+  },
+  "__v": 0,
+  "showOnAlumniPage": true,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a6061ea7bfcf05ac32c3e58"
+  },
+  "name": "Garima Singh",
+  "image": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever4-9d672823.jpg",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Garima Singh",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "previousRole": "",
+  "currentRole": "Product Manager at Obtam",
+  "previousCompany": "",
+  "currentCompany": "",
+  "program": null,
+  "programTitle": "",
+  "graduationYear": "",
+  "salaryBefore": "",
+  "salaryAfter": "",
+  "percentageHike": "200% Hike",
+  "quote": "Transitioned into a global FMCG product role with strong leadership and product management capability.",
+  "story": "Transitioned into a global FMCG product role with strong leadership and product management capability.",
+  "skills": [],
+  "testimonialVideo": "",
+  "accent": "#be185d",
+  "accentEnd": "#7e22ce",
+  "slug": "garima-singh",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:38.072Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 3,
+  "seo": {
+    "title": "Garima Singh",
+    "description": "Transitioned into a global FMCG product role with strong leadership and product management capability.",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": {
+    "$oid": "6a708ec07c0778d2b1fdc62a"
+  },
+  "revision": 10,
+  "companyLogo": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:38.072Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-06T08:14:44.450Z"
+  },
+  "__v": 0,
+  "showOnAlumniPage": false,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a6061ea7bfcf05ac32c3e5b"
+  },
+  "name": "Shalini Kumari",
+  "image": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever2-3a2e0a3b.jpg",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Shalini Kumari",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "previousRole": "",
+  "currentRole": "Associate Product Manager at Abbott",
+  "previousCompany": "",
+  "currentCompany": "",
+  "program": null,
+  "programTitle": "",
+  "graduationYear": "",
+  "salaryBefore": "",
+  "salaryAfter": "",
+  "percentageHike": "58.33% Hike",
+  "quote": "Grew from 12 LPA to 19 LPA while strengthening product strategy and hands-on problem solving.",
+  "story": "Grew from 12 LPA to 19 LPA while strengthening product strategy and hands-on problem solving.",
+  "skills": [],
+  "testimonialVideo": "",
+  "accent": "#0369a1",
+  "accentEnd": "#0f766e",
+  "slug": "shalini-kumari",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:38.138Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 4,
+  "seo": {
+    "title": "Shalini Kumari",
+    "description": "Grew from 12 LPA to 19 LPA while strengthening product strategy and hands-on problem solving.",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "revision": 10,
+  "companyLogo": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:38.140Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:37.503Z"
+  },
+  "__v": 0,
+  "showOnAlumniPage": false,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a6061ea7bfcf05ac32c3e5e"
+  },
+  "name": "Aditya Ahlawat",
+  "image": {
+    "media": {
+      "$oid": "6a7462e62402e4ed9dae9111"
+    },
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/2853126_22458-61c05f4f.jpg",
+    "fileId": "6a7462e15c7cd75eb8d3de8e",
+    "thumbnailUrl": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/tr:n-ik_ml_thumbnail/careerveda/2853126_22458-61c05f4f.jpg",
+    "alt": "",
+    "caption": "",
+    "width": 3744,
+    "height": 3744
+  },
+  "previousRole": "",
+  "currentRole": "Associate Product Manager",
+  "previousCompany": "",
+  "currentCompany": "BlackRock",
+  "program": null,
+  "programTitle": "",
+  "graduationYear": "",
+  "salaryBefore": "",
+  "salaryAfter": "",
+  "percentageHike": "66% Hike",
+  "quote": "Strengthened product strategy and problem-solving capabilities for a finance leadership role.",
+  "story": "Strengthened product strategy and problem-solving capabilities for a finance leadership role.",
+  "skills": [],
+  "testimonialVideo": "",
+  "accent": "#312e81",
+  "accentEnd": "#1e3a8a",
+  "slug": "aditya-ahlawat",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:38.197Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 5,
+  "seo": {
+    "title": "Aditya Ahlawat",
+    "description": "Strengthened product strategy and problem-solving capabilities for a finance leadership role.",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": {
+    "$oid": "6a708ec07c0778d2b1fdc62a"
+  },
+  "revision": 10,
+  "companyLogo": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:38.199Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-06T10:33:15.374Z"
+  },
+  "__v": 0,
+  "showOnAlumniPage": false,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a6061ea7bfcf05ac32c3e63"
+  },
+  "name": "Vikram Singh",
+  "image": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever8-1a1454dd.jpg",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Vikram Singh",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "previousRole": "",
+  "currentRole": "Product Manager at Interactly.ai",
+  "previousCompany": "",
+  "currentCompany": "",
+  "program": null,
+  "programTitle": "",
+  "graduationYear": "",
+  "salaryBefore": "",
+  "salaryAfter": "",
+  "percentageHike": "300% Hike",
+  "quote": "Vikram Singh successfully transitioned into a Product Manager role at Interactly.ai with a remarkable 300% salary hike, demonstrating his ability to drive product strategy and lead cross-functional teams. His journey reflects a strong commitment to continuous learning and professional development.",
+  "story": "Vikram Singh successfully transitioned into a Product Manager role at Interactly.ai with a remarkable 300% salary hike, demonstrating his ability to drive product strategy and lead cross-functional teams. His journey reflects a strong commitment to continuous learning and professional development.",
+  "skills": [],
+  "testimonialVideo": "",
+  "accent": "#312e81",
+  "accentEnd": "#1e3a8a",
+  "slug": "vikram-singh",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:38.290Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 7,
+  "seo": {
+    "title": "Vikram Singh",
+    "description": "Vikram Singh successfully transitioned into a Product Manager role at Interactly.ai with a remarkable 300% salary hike, demonstrating his ability to drive…",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "revision": 8,
+  "companyLogo": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:38.291Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:37.685Z"
+  },
+  "__v": 0,
+  "showOnAlumniPage": false,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a6061ea7bfcf05ac32c3e66"
+  },
+  "name": "Anjali Desai",
+  "image": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever9-ac333547.jpg",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Anjali Desai",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "previousRole": "",
+  "currentRole": "Product Manager at Zomato",
+  "previousCompany": "",
+  "currentCompany": "",
+  "program": null,
+  "programTitle": "",
+  "graduationYear": "",
+  "salaryBefore": "",
+  "salaryAfter": "",
+  "percentageHike": "170% Hike",
+  "quote": "CareerVeda helped me move into Product Management. The product strategy and user research modules were true game-changers for my career.",
+  "story": "CareerVeda helped me move into Product Management. The product strategy and user research modules were true game-changers for my career.",
+  "skills": [],
+  "testimonialVideo": "",
+  "accent": "#312e81",
+  "accentEnd": "#1e3a8a",
+  "slug": "anjali-desai",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:38.351Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 8,
+  "seo": {
+    "title": "Anjali Desai",
+    "description": "CareerVeda helped me move into Product Management. The product strategy and user research modules were true game-changers for my career.",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "revision": 8,
+  "companyLogo": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:38.352Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:37.744Z"
+  },
+  "__v": 0,
+  "showOnAlumniPage": false,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a6061ea7bfcf05ac32c3e6b"
+  },
+  "name": "Sneha Agarwal",
+  "image": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever11jpeg-79c014b5.jpg?updatedAt=1784010443321",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Sneha Agarwal",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "previousRole": "",
+  "currentRole": "Product Executive at PW",
+  "previousCompany": "",
+  "currentCompany": "",
+  "program": null,
+  "programTitle": "",
+  "graduationYear": "",
+  "salaryBefore": "",
+  "salaryAfter": "",
+  "percentageHike": "150% Hike",
+  "quote": "Contributed to product development, feature execution, and stakeholder coordination while driving business impact and improving user experience. Achieved rapid professional growth with a 150% increase in salary.",
+  "story": "Contributed to product development, feature execution, and stakeholder coordination while driving business impact and improving user experience. Achieved rapid professional growth with a 150% increase in salary.",
+  "skills": [],
+  "testimonialVideo": "",
+  "accent": "#9d174d",
+  "accentEnd": "#7c2d12",
+  "slug": "sneha-agarwal",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:38.442Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 10,
+  "seo": {
+    "title": "Sneha Agarwal",
+    "description": "Contributed to product development, feature execution, and stakeholder coordination while driving business impact and improving user experience. Achieved…",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 7,
+  "companyLogo": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:38.444Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:37.859Z"
+  },
+  "__v": 0,
+  "showOnAlumniPage": false,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a6061ea7bfcf05ac32c3e6e"
+  },
+  "name": "Himani Tamta",
+  "image": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever12jpeg-295bcdbc.jpg",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Himani Tamta",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "previousRole": "",
+  "currentRole": "Associate Product Manager at Wipro",
+  "previousCompany": "",
+  "currentCompany": "",
+  "program": null,
+  "programTitle": "",
+  "graduationYear": "",
+  "salaryBefore": "",
+  "salaryAfter": "",
+  "percentageHike": "150% Hike",
+  "quote": "CareerVeda helped me build a strong foundation in problem-solving, feature prioritization, and product planning through practical projects. It equipped me with the data-driven frameworks needed to bridge customer psychology with business growth, ultimately helping me secure my role at Wipro.",
+  "story": "CareerVeda helped me build a strong foundation in problem-solving, feature prioritization, and product planning through practical projects. It equipped me with the data-driven frameworks needed to bridge customer psychology with business growth, ultimately helping me secure my role at Wipro.",
+  "skills": [],
+  "testimonialVideo": "",
+  "accent": "#9d174d",
+  "accentEnd": "#7c2d12",
+  "slug": "himani-tamta",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:38.503Z"
+  },
+  "scheduledAt": null,
+  "featured": true,
+  "displayOrder": 11,
+  "seo": {
+    "title": "Himani Tamta",
+    "description": "CareerVeda helped me build a strong foundation in problem-solving, feature prioritization, and product planning through practical projects. It equipped me…",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 7,
+  "companyLogo": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:38.504Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:37.921Z"
+  },
+  "__v": 0,
+  "showOnAlumniPage": true,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a6061ea7bfcf05ac32c3e71"
+  },
+  "name": "Riya Malhotra",
+  "image": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Riya-Malhotra-877ecf3a.jpg?updatedAt=1784206969785",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Riya Malhotra",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "previousRole": "",
+  "currentRole": "Senior Business Analyst at Incedo Inc.",
+  "previousCompany": "",
+  "currentCompany": "",
+  "program": null,
+  "programTitle": "",
+  "graduationYear": "",
+  "salaryBefore": "",
+  "salaryAfter": "",
+  "percentageHike": "140% Hike",
+  "quote": "Contributed to product development, feature execution, and stakeholder coordination while driving business impact and improving user experience. Achieved rapid professional growth with a 140% increase in salary.",
+  "story": "Contributed to product development, feature execution, and stakeholder coordination while driving business impact and improving user experience. Achieved rapid professional growth with a 140% increase in salary.",
+  "skills": [],
+  "testimonialVideo": "",
+  "accent": "#9d174d",
+  "accentEnd": "#7c2d12",
+  "slug": "riya-malhotra",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:38.564Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 12,
+  "seo": {
+    "title": "Riya Malhotra",
+    "description": "Contributed to product development, feature execution, and stakeholder coordination while driving business impact and improving user experience. Achieved…",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 7,
+  "companyLogo": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:38.565Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:37.984Z"
+  },
+  "__v": 0,
+  "showOnAlumniPage": false,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a6061ea7bfcf05ac32c3e74"
+  },
+  "name": "Niharika Verma",
+  "image": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Niharika-Verma-1a611215.jpg?updatedAt=1784206793089",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Niharika Verma",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "previousRole": "",
+  "currentRole": "Product Analyst at Cognizant Softvision",
+  "previousCompany": "",
+  "currentCompany": "",
+  "program": null,
+  "programTitle": "",
+  "graduationYear": "",
+  "salaryBefore": "",
+  "salaryAfter": "",
+  "percentageHike": "120% Hike",
+  "quote": "Contributed to product development, feature execution, and stakeholder coordination while driving business impact and improving user experience. Achieved rapid professional growth with a 120% increase in salary.",
+  "story": "Contributed to product development, feature execution, and stakeholder coordination while driving business impact and improving user experience. Achieved rapid professional growth with a 120% increase in salary.",
+  "skills": [],
+  "testimonialVideo": "",
+  "accent": "#9d174d",
+  "accentEnd": "#7c2d12",
+  "slug": "niharika-verma",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:38.623Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 13,
+  "seo": {
+    "title": "Niharika Verma",
+    "description": "Contributed to product development, feature execution, and stakeholder coordination while driving business impact and improving user experience. Achieved…",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 7,
+  "companyLogo": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:38.625Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:38.041Z"
+  },
+  "__v": 0,
+  "showOnAlumniPage": false,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a6061ea7bfcf05ac32c3e77"
+  },
+  "name": "Sanya Kapoor",
+  "image": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Sanya-Kapoor-964e07e6.jpg?updatedAt=1784206653269",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Sanya Kapoor",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "previousRole": "",
+  "currentRole": "Data Analytics Consultant at Brillio",
+  "previousCompany": "",
+  "currentCompany": "",
+  "program": null,
+  "programTitle": "",
+  "graduationYear": "",
+  "salaryBefore": "",
+  "salaryAfter": "",
+  "percentageHike": "165% Hike",
+  "quote": "Contributed to product development, feature execution, and stakeholder coordination while driving business impact and improving user experience. Achieved rapid professional growth with a 165% increase in salary.",
+  "story": "Contributed to product development, feature execution, and stakeholder coordination while driving business impact and improving user experience. Achieved rapid professional growth with a 165% increase in salary.",
+  "skills": [],
+  "testimonialVideo": "",
+  "accent": "#9d174d",
+  "accentEnd": "#7c2d12",
+  "slug": "sanya-kapoor",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:38.684Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 14,
+  "seo": {
+    "title": "Sanya Kapoor",
+    "description": "Contributed to product development, feature execution, and stakeholder coordination while driving business impact and improving user experience. Achieved…",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 7,
+  "companyLogo": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:38.686Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:38.098Z"
+  },
+  "__v": 0,
+  "showOnAlumniPage": false,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a6061ea7bfcf05ac32c3e7a"
+  },
+  "name": "Arjun Mehta",
+  "image": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Arjun-Mehta-743badce.jpg?updatedAt=1784206469468",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Arjun Mehta",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "previousRole": "",
+  "currentRole": "Business Intelligence Specialist at Tredence ",
+  "previousCompany": "",
+  "currentCompany": "",
+  "program": null,
+  "programTitle": "",
+  "graduationYear": "",
+  "salaryBefore": "",
+  "salaryAfter": "",
+  "percentageHike": "120% Hike",
+  "quote": "Contributed to product development, feature execution, and stakeholder coordination while driving business impact and improving user experience. Achieved rapid professional growth with a 120% increase in salary.",
+  "story": "Contributed to product development, feature execution, and stakeholder coordination while driving business impact and improving user experience. Achieved rapid professional growth with a 120% increase in salary.",
+  "skills": [],
+  "testimonialVideo": "",
+  "accent": "#9d174d",
+  "accentEnd": "#7c2d12",
+  "slug": "arjun-mehta",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:38.743Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 15,
+  "seo": {
+    "title": "Arjun Mehta",
+    "description": "Contributed to product development, feature execution, and stakeholder coordination while driving business impact and improving user experience. Achieved…",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 7,
+  "companyLogo": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:38.744Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:38.157Z"
+  },
+  "__v": 0,
+  "showOnAlumniPage": false,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a6061ea7bfcf05ac32c3e7d"
+  },
+  "name": "Karan Sharma",
+  "image": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever13-13af87cb.jpg?updatedAt=1784206303783",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Karan Sharma",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "previousRole": "",
+  "currentRole": "Senior Data Analyst at LatentView Analytics",
+  "previousCompany": "",
+  "currentCompany": "",
+  "program": null,
+  "programTitle": "",
+  "graduationYear": "",
+  "salaryBefore": "",
+  "salaryAfter": "",
+  "percentageHike": "100% Hike",
+  "quote": "Contributed to product development, feature execution, and stakeholder coordination while driving business impact and improving user experience. Achieved rapid professional growth with a 100% increase in salary.",
+  "story": "Contributed to product development, feature execution, and stakeholder coordination while driving business impact and improving user experience. Achieved rapid professional growth with a 100% increase in salary.",
+  "skills": [],
+  "testimonialVideo": "",
+  "accent": "#9d174d",
+  "accentEnd": "#7c2d12",
+  "slug": "karan-sharma",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:23:38.801Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 16,
+  "seo": {
+    "title": "Karan Sharma",
+    "description": "Contributed to product development, feature execution, and stakeholder coordination while driving business impact and improving user experience. Achieved…",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 7,
+  "companyLogo": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:23:38.802Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:38.213Z"
+  },
+  "__v": 0,
+  "showOnAlumniPage": false,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a60624d75957d87c43cc4a1"
+  },
+  "name": "Ipsita Sen",
+  "image": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever7-4f504cd7.jpg",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Ipsita Sen",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "previousRole": "",
+  "currentRole": "Business Analyst at Concentrix",
+  "previousCompany": "",
+  "currentCompany": "",
+  "program": null,
+  "programTitle": "",
+  "graduationYear": "",
+  "salaryBefore": "",
+  "salaryAfter": "",
+  "percentageHike": "220% Hike",
+  "quote": "Ipsita Sen successfully secured a Business Analyst role at Concentrix with an exceptional 220% salary hike, showcasing remarkable career growth and professional transformation. Through consistent upskilling, analytical thinking, and dedication towards learning business and product strategies, she strengthened her expertise and unlocked new career opportunities. Her journey reflects determination, continuous improvement, and the ability to achieve significant career advancement in a highly competitive industry",
+  "story": "Ipsita Sen successfully secured a Business Analyst role at Concentrix with an exceptional 220% salary hike, showcasing remarkable career growth and professional transformation. Through consistent upskilling, analytical thinking, and dedication towards learning business and product strategies, she strengthened her expertise and unlocked new career opportunities. Her journey reflects determination, continuous improvement, and the ability to achieve significant career advancement in a highly competitive industry",
+  "skills": [],
+  "testimonialVideo": "",
+  "accent": "#312e81",
+  "accentEnd": "#1e3a8a",
+  "slug": "ipsita-sen",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:25:17.812Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 6,
+  "seo": {
+    "title": "Ipsita Sen",
+    "description": "Ipsita Sen successfully secured a Business Analyst role at Concentrix with an exceptional 220% salary hike, showcasing remarkable career growth and…",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "revision": 5,
+  "companyLogo": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:25:17.816Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:37.628Z"
+  },
+  "__v": 0,
+  "showOnAlumniPage": false,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a60624e75957d87c43cc4a8"
+  },
+  "name": "Aarohi Khurana",
+  "image": {
+    "media": null,
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever10-4a35da07.jpg",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "Aarohi Khurana",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "previousRole": "",
+  "currentRole": "Growth Product Manager at Airbnb",
+  "previousCompany": "",
+  "currentCompany": "",
+  "program": null,
+  "programTitle": "",
+  "graduationYear": "",
+  "salaryBefore": "",
+  "salaryAfter": "",
+  "percentageHike": "90% Hike",
+  "quote": "Successfully transitioned into a Growth Product Manager role at Airbnb with an outstanding 90% salary hike, increasing from 10 LPA to 19 LPA. Demonstrated exceptional expertise in product growth strategies, user engagement, and data-driven decision-making throughout the transition journey. Secured a high-impact opportunity with one of the world’s leading technology and hospitality platforms, marking significant professional and career growth.",
+  "story": "Successfully transitioned into a Growth Product Manager role at Airbnb with an outstanding 90% salary hike, increasing from 10 LPA to 19 LPA. Demonstrated exceptional expertise in product growth strategies, user engagement, and data-driven decision-making throughout the transition journey. Secured a high-impact opportunity with one of the world’s leading technology and hospitality platforms, marking significant professional and career growth.",
+  "skills": [],
+  "testimonialVideo": "",
+  "accent": "#9d174d",
+  "accentEnd": "#7c2d12",
+  "slug": "aarohi-khurana",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-22T06:25:18.029Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 9,
+  "seo": {
+    "title": "Aarohi Khurana",
+    "description": "Successfully transitioned into a Growth Product Manager role at Airbnb with an outstanding 90% salary hike, increasing from 10 LPA to 19 LPA. Demonstrated…",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": null,
+  "updatedBy": null,
+  "revision": 4,
+  "companyLogo": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "createdAt": {
+    "$date": "2026-07-22T06:25:18.032Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T08:18:37.800Z"
+  },
+  "__v": 0,
+  "showOnAlumniPage": false,
+  "rejectedReason": ""
+},
+{
+  "_id": {
+    "$oid": "6a60a5a1d5bd876677e432f8"
+  },
+  "name": "hello",
+  "previousRole": "",
+  "currentRole": "",
+  "previousCompany": "",
+  "currentCompany": "",
+  "program": null,
+  "programTitle": "",
+  "graduationYear": "",
+  "salaryBefore": "",
+  "salaryAfter": "",
+  "percentageHike": "",
+  "quote": "",
+  "story": "",
+  "skills": [],
+  "testimonialVideo": "",
+  "accent": "",
+  "accentEnd": "",
+  "slug": "hello",
+  "status": "archived",
+  "publishedAt": {
+    "$date": "2026-07-22T11:12:33.298Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 0,
+  "deletedAt": {
+    "$date": "2026-07-22T11:49:58.605Z"
+  },
+  "deletedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "createdBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "updatedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "revision": 2,
+  "image": {
+    "media": {
+      "$oid": "6a606f7f9d2ffd32c2f5294f"
+    },
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/press/insta_story-523a01e0.png",
+    "fileId": "6a606f7f5c7cd75eb8f9db34",
+    "thumbnailUrl": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/tr:n-ik_ml_thumbnail/careerveda/press/insta_story-523a01e0.png",
+    "alt": "",
+    "caption": "",
+    "width": 300,
+    "height": 150
+  },
+  "companyLogo": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "seo": {
+    "title": "",
+    "description": "",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "createdAt": {
+    "$date": "2026-07-22T11:12:33.132Z"
+  },
+  "updatedAt": {
+    "$date": "2026-07-22T11:49:58.609Z"
+  },
+  "__v": 0,
+  "showOnAlumniPage": false
+},
+{
+  "_id": {
+    "$oid": "6a61a97fcbd14cd9faf9681e"
+  },
+  "name": "kartik",
+  "previousRole": "",
+  "currentRole": "data anlytics",
+  "previousCompany": "",
+  "currentCompany": "",
+  "program": null,
+  "programTitle": "",
+  "graduationYear": "",
+  "salaryBefore": "",
+  "salaryAfter": "",
+  "percentageHike": "440%",
+  "quote": "",
+  "story": "hsodfosadofosad",
+  "skills": [],
+  "testimonialVideo": "",
+  "accent": "",
+  "accentEnd": "",
+  "showOnAlumniPage": false,
+  "slug": "kartik",
+  "status": "archived",
+  "publishedAt": {
+    "$date": "2026-07-23T05:41:19.374Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 2,
+  "deletedAt": {
+    "$date": "2026-07-23T05:42:33.591Z"
+  },
+  "deletedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "createdBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "updatedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "revision": 1,
+  "image": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "companyLogo": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "seo": {
+    "title": "",
+    "description": "",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "createdAt": {
+    "$date": "2026-07-23T05:41:19.220Z"
+  },
+  "updatedAt": {
+    "$date": "2026-07-23T05:42:33.593Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a61ce48f61896cd231ed3cd"
+  },
+  "name": "rhjrtefhhggsd",
+  "image": {
+    "media": {
+      "$oid": "6a606f729d2ffd32c2f52937"
+    },
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/press/the_viral_Bytes-474676ab.png",
+    "fileId": "6a606f725c7cd75eb8f930b6",
+    "thumbnailUrl": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/tr:n-ik_ml_thumbnail/careerveda/press/the_viral_Bytes-474676ab.png",
+    "alt": "",
+    "caption": "",
+    "width": 2583,
+    "height": 685
+  },
+  "previousRole": "",
+  "currentRole": "dsfdjhasfgbvsdg",
+  "previousCompany": "",
+  "currentCompany": "",
+  "program": null,
+  "programTitle": "",
+  "graduationYear": "",
+  "salaryBefore": "",
+  "salaryAfter": "",
+  "percentageHike": "sfgffgf",
+  "quote": "",
+  "story": "gfdaSDSFGHGHFBVDCGGHFGDFSDSAHGHFGD",
+  "skills": [],
+  "testimonialVideo": "",
+  "accent": "",
+  "accentEnd": "",
+  "showOnAlumniPage": false,
+  "slug": "rhjrtefhhggsd",
+  "status": "archived",
+  "publishedAt": {
+    "$date": "2026-07-23T08:18:16.948Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 0,
+  "deletedAt": {
+    "$date": "2026-07-23T08:18:41.413Z"
+  },
+  "deletedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "createdBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "updatedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "revision": 1,
+  "companyLogo": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "seo": {
+    "title": "",
+    "description": "",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "createdAt": {
+    "$date": "2026-07-23T08:18:16.798Z"
+  },
+  "updatedAt": {
+    "$date": "2026-07-23T08:18:41.414Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a6330e11086448c954a5426"
+  },
+  "name": "jnakfdnkjnsadf",
+  "image": {
+    "media": {
+      "$oid": "6a606a2eee5ababd488de2a1"
+    },
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni/Achiever13-13af87cb.jpg",
+    "fileId": "6a606a2e5c7cd75eb8b7f042",
+    "thumbnailUrl": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/tr:n-ik_ml_thumbnail/careerveda/alumni/Achiever13-13af87cb.jpg",
+    "alt": "",
+    "caption": "",
+    "width": 470,
+    "height": 794
+  },
+  "previousRole": "",
+  "currentRole": "ldsnflknsadf",
+  "previousCompany": "",
+  "currentCompany": "",
+  "program": null,
+  "programTitle": "",
+  "graduationYear": "",
+  "salaryBefore": "",
+  "salaryAfter": "",
+  "percentageHike": "ksnfkjsdnalfsa",
+  "quote": "",
+  "story": "kosamndkjfnlsdanlfmlasdmflsdaf",
+  "skills": [],
+  "testimonialVideo": "",
+  "accent": "",
+  "accentEnd": "",
+  "showOnAlumniPage": false,
+  "slug": "jnakfdnkjnsadf",
+  "status": "archived",
+  "publishedAt": {
+    "$date": "2026-07-24T09:31:14.064Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": 0,
+  "rejectedReason": "",
+  "deletedAt": {
+    "$date": "2026-07-24T11:16:24.791Z"
+  },
+  "deletedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "createdBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "updatedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "revision": 3,
+  "companyLogo": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "seo": {
+    "title": "",
+    "description": "",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "createdAt": {
+    "$date": "2026-07-24T09:31:13.901Z"
+  },
+  "updatedAt": {
+    "$date": "2026-07-24T11:16:24.794Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a69d40bed57d59ed2c43526"
+  },
+  "name": "Shrey Aggarwal",
+  "image": {
+    "media": {
+      "$oid": "6a69d3dfed57d59ed2c43519"
+    },
+    "url": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/alumni-1779557643236-857649931-fd09c846.jpg",
+    "fileId": "6a69d3df5c7cd75eb885f5cc",
+    "thumbnailUrl": "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/tr:n-ik_ml_thumbnail/careerveda/alumni-1779557643236-857649931-fd09c846.jpg",
+    "alt": "",
+    "caption": "",
+    "width": 738,
+    "height": 1123
+  },
+  "previousRole": "",
+  "currentRole": "Business Analyst",
+  "previousCompany": "",
+  "currentCompany": "phonepe",
+  "program": null,
+  "programTitle": "BA",
+  "graduationYear": "",
+  "salaryBefore": "",
+  "salaryAfter": "",
+  "percentageHike": "200%",
+  "quote": "",
+  "story": "Demonstrated exceptional performance in business analysis, stakeholder coordination, and data interpretation, leading to a successful transition from 3.5 LPA to 10.5 LPA with a 200% salary hike",
+  "skills": [],
+  "testimonialVideo": "",
+  "accent": "",
+  "accentEnd": "",
+  "showOnAlumniPage": false,
+  "slug": "shrey-aggarwal",
+  "status": "published",
+  "publishedAt": {
+    "$date": "2026-07-29T10:21:13.073Z"
+  },
+  "scheduledAt": null,
+  "featured": false,
+  "displayOrder": -1,
+  "rejectedReason": "",
+  "deletedAt": null,
+  "deletedBy": null,
+  "createdBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "updatedBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "revision": 1,
+  "companyLogo": {
+    "media": null,
+    "url": "",
+    "fileId": "",
+    "thumbnailUrl": "",
+    "alt": "",
+    "caption": "",
+    "width": null,
+    "height": null
+  },
+  "seo": {
+    "title": "",
+    "description": "",
+    "keywords": [],
+    "ogImage": "",
+    "canonicalUrl": "",
+    "noIndex": false
+  },
+  "createdAt": {
+    "$date": "2026-07-29T10:20:59.146Z"
+  },
+  "updatedAt": {
+    "$date": "2026-07-29T10:21:13.076Z"
+  },
+  "__v": 0
+}]

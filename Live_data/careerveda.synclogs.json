@@ -1,0 +1,218 @@
+[{
+  "_id": {
+    "$oid": "6a6328ea9b0d2ccff106603c"
+  },
+  "status": "failed",
+  "trigger": "manual",
+  "triggeredBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "startedAt": {
+    "$date": "2026-07-24T08:57:14.374Z"
+  },
+  "finishedAt": {
+    "$date": "2026-07-24T08:57:14.457Z"
+  },
+  "durationMs": 83,
+  "fetched": 0,
+  "inserted": 0,
+  "duplicates": 0,
+  "failed": 0,
+  "error": "No job providers are configured.",
+  "providers": [],
+  "createdAt": {
+    "$date": "2026-07-24T08:57:14.379Z"
+  },
+  "updatedAt": {
+    "$date": "2026-07-24T08:57:14.459Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a632a1f9b0d2ccff1066075"
+  },
+  "status": "failed",
+  "trigger": "manual",
+  "triggeredBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "startedAt": {
+    "$date": "2026-07-24T09:02:23.531Z"
+  },
+  "finishedAt": {
+    "$date": "2026-07-24T09:02:23.594Z"
+  },
+  "durationMs": 63,
+  "fetched": 0,
+  "inserted": 0,
+  "duplicates": 0,
+  "failed": 0,
+  "error": "No job providers are configured.",
+  "providers": [],
+  "createdAt": {
+    "$date": "2026-07-24T09:02:23.532Z"
+  },
+  "updatedAt": {
+    "$date": "2026-07-24T09:02:23.596Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a632a5d9b0d2ccff1066094"
+  },
+  "status": "failed",
+  "trigger": "manual",
+  "triggeredBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "startedAt": {
+    "$date": "2026-07-24T09:03:25.512Z"
+  },
+  "finishedAt": {
+    "$date": "2026-07-24T09:03:25.583Z"
+  },
+  "durationMs": 71,
+  "fetched": 0,
+  "inserted": 0,
+  "duplicates": 0,
+  "failed": 0,
+  "error": "No job providers are configured.",
+  "providers": [],
+  "createdAt": {
+    "$date": "2026-07-24T09:03:25.513Z"
+  },
+  "updatedAt": {
+    "$date": "2026-07-24T09:03:25.584Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a632a879b0d2ccff10660a3"
+  },
+  "status": "failed",
+  "trigger": "manual",
+  "triggeredBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "startedAt": {
+    "$date": "2026-07-24T09:04:07.972Z"
+  },
+  "finishedAt": {
+    "$date": "2026-07-24T09:04:08.037Z"
+  },
+  "durationMs": 65,
+  "fetched": 0,
+  "inserted": 0,
+  "duplicates": 0,
+  "failed": 0,
+  "error": "No job providers are configured.",
+  "providers": [],
+  "createdAt": {
+    "$date": "2026-07-24T09:04:07.973Z"
+  },
+  "updatedAt": {
+    "$date": "2026-07-24T09:04:08.039Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a632dd71086448c954a509f"
+  },
+  "status": "success",
+  "trigger": "manual",
+  "triggeredBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "startedAt": {
+    "$date": "2026-07-24T09:18:15.024Z"
+  },
+  "finishedAt": {
+    "$date": "2026-07-24T09:18:40.987Z"
+  },
+  "durationMs": 25963,
+  "fetched": 75,
+  "inserted": 73,
+  "duplicates": 2,
+  "failed": 0,
+  "error": "",
+  "providers": [
+    {
+      "provider": "adzuna",
+      "query": "data analyst",
+      "fetched": 25,
+      "error": ""
+    },
+    {
+      "provider": "adzuna",
+      "query": "business analyst",
+      "fetched": 25,
+      "error": ""
+    },
+    {
+      "provider": "adzuna",
+      "query": "product manager",
+      "fetched": 25,
+      "error": ""
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-07-24T09:18:15.029Z"
+  },
+  "updatedAt": {
+    "$date": "2026-07-24T09:18:40.993Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "6a6330671086448c954a53b0"
+  },
+  "status": "success",
+  "trigger": "manual",
+  "triggeredBy": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "startedAt": {
+    "$date": "2026-07-24T09:29:11.621Z"
+  },
+  "finishedAt": {
+    "$date": "2026-07-24T09:29:18.370Z"
+  },
+  "durationMs": 6749,
+  "fetched": 75,
+  "inserted": 0,
+  "duplicates": 75,
+  "failed": 0,
+  "error": "",
+  "providers": [
+    {
+      "provider": "adzuna",
+      "query": "data analyst",
+      "fetched": 25,
+      "error": ""
+    },
+    {
+      "provider": "adzuna",
+      "query": "business analyst",
+      "fetched": 25,
+      "error": ""
+    },
+    {
+      "provider": "adzuna",
+      "query": "product manager",
+      "fetched": 25,
+      "error": ""
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-07-24T09:29:11.623Z"
+  },
+  "updatedAt": {
+    "$date": "2026-07-24T09:29:18.397Z"
+  },
+  "__v": 1
+}]

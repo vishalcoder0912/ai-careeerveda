@@ -1,0 +1,184 @@
+[{
+  "_id": {
+    "$oid": "6a60580dc96e79d1ca43d058"
+  },
+  "name": "Vishal",
+  "email": "vishal@careerveda.in",
+  "passwordHash": "$argon2id$v=19$m=19456,t=2,p=1$RgMJfX1QG2RLNU91gzlntQ$AXpTpck5ymAJrOje8R4is1jolRh0T/x2oDg1o5gDLsE",
+  "role": "super-admin",
+  "status": "active",
+  "tokenVersion": 0,
+  "passwordHistory": [],
+  "failedLoginAttempts": 0,
+  "lockedUntil": null,
+  "lastLoginAt": {
+    "$date": "2026-07-22T06:49:11.688Z"
+  },
+  "resetTokenHash": null,
+  "resetTokenExpiresAt": null,
+  "totpSecret": null,
+  "totpEnabled": false,
+  "createdBy": null,
+  "passwordChangedAt": {
+    "$date": "2026-07-22T05:41:33.713Z"
+  },
+  "createdAt": {
+    "$date": "2026-07-22T05:41:33.715Z"
+  },
+  "updatedAt": {
+    "$date": "2026-07-22T06:49:11.689Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a60a17c20a2dec57e15dec5"
+  },
+  "name": "Super Admin",
+  "email": "admin@careerveda.com",
+  "passwordHash": "$argon2id$v=19$m=19456,t=2,p=1$NEsvd1YQU1D8sj3iQKEyww$Mrrw2FSVgz6KI0Pwzgb/++SeL0Tv6rHpOuE99XKoht0",
+  "role": "super-admin",
+  "status": "active",
+  "tokenVersion": 0,
+  "passwordHistory": [],
+  "failedLoginAttempts": 0,
+  "lockedUntil": null,
+  "lastLoginAt": {
+    "$date": "2026-07-31T23:50:43.087Z"
+  },
+  "resetTokenHash": null,
+  "resetTokenExpiresAt": null,
+  "totpSecret": null,
+  "totpEnabled": false,
+  "createdBy": null,
+  "passwordChangedAt": {
+    "$date": "2026-07-22T10:54:52.542Z"
+  },
+  "createdAt": {
+    "$date": "2026-07-22T10:54:52.545Z"
+  },
+  "updatedAt": {
+    "$date": "2026-07-31T23:50:43.090Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a685dfa8bd6ecb8e61a9d35"
+  },
+  "name": "Admin",
+  "email": "admin@careerveda.in",
+  "passwordHash": "$argon2id$v=19$m=19456,t=2,p=1$dr+66zW/amqgutYrxgszSQ$EPvP43zvCi51Lzra/27yvjWTB12fIQed9jGO86y7JMs",
+  "role": "super-admin",
+  "status": "active",
+  "tokenVersion": 0,
+  "passwordHistory": [],
+  "failedLoginAttempts": 5,
+  "lockedUntil": {
+    "$date": "2026-07-31T09:31:49.616Z"
+  },
+  "lastLoginAt": null,
+  "resetTokenHash": null,
+  "resetTokenExpiresAt": null,
+  "totpSecret": null,
+  "totpEnabled": false,
+  "createdBy": null,
+  "passwordChangedAt": {
+    "$date": "2026-07-28T07:44:58.424Z"
+  },
+  "createdAt": {
+    "$date": "2026-07-28T07:44:58.433Z"
+  },
+  "updatedAt": {
+    "$date": "2026-07-31T09:30:49.616Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a706e412188a497eefd8214"
+  },
+  "name": "CareerVeda Admin",
+  "email": "careervedatools@gmail.com",
+  "passwordHash": "$argon2id$v=19$m=19456,t=2,p=1$PVi5mKTjUMeljbAb+z62zg$X04frmRYYHNoMZiIj7qETQ33PqT0zdFGQYaJ0oOJs8k",
+  "role": "super-admin",
+  "status": "active",
+  "tokenVersion": 0,
+  "passwordHistory": [],
+  "failedLoginAttempts": 4,
+  "lockedUntil": null,
+  "lastLoginAt": {
+    "$date": "2026-08-03T11:17:20.363Z"
+  },
+  "totpSecret": null,
+  "totpEnabled": false,
+  "createdBy": null,
+  "passwordChangedAt": {
+    "$date": "2026-08-03T10:32:33.349Z"
+  },
+  "createdAt": {
+    "$date": "2026-08-03T10:32:33.353Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-04T05:17:40.654Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a707f7bfeaf40332ec644f3"
+  },
+  "name": "super admin",
+  "email": "careervedatools@gmail.com,",
+  "passwordHash": "$argon2id$v=19$m=19456,t=2,p=1$CxCS0rjht4fcpl3CdXOG1w$n5543fvS/bzHKI7DsP3acqmWJRKs7dc2uOnEFt2rLn8",
+  "role": "super-admin",
+  "status": "active",
+  "tokenVersion": 0,
+  "passwordHistory": [],
+  "failedLoginAttempts": 0,
+  "lockedUntil": null,
+  "lastLoginAt": null,
+  "totpSecret": null,
+  "totpEnabled": false,
+  "createdBy": null,
+  "passwordChangedAt": {
+    "$date": "2026-08-03T11:46:03.651Z"
+  },
+  "createdAt": {
+    "$date": "2026-08-03T11:46:03.655Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-03T11:46:03.655Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a708ec07c0778d2b1fdc62a"
+  },
+  "name": "CareerVeda Admin",
+  "email": "careerveda@tools.com",
+  "passwordHash": "$argon2id$v=19$m=19456,t=2,p=1$f1CobHzzrO8qrcAqJQD2YA$Me2XcaM0R/MSH7MRhhEiJeVuIdP1JjKb/euZg/vPWeQ",
+  "role": "super-admin",
+  "status": "active",
+  "tokenVersion": 0,
+  "passwordHistory": [],
+  "failedLoginAttempts": 0,
+  "lockedUntil": null,
+  "lastLoginAt": {
+    "$date": "2026-08-07T11:07:51.165Z"
+  },
+  "totpSecret": null,
+  "totpEnabled": false,
+  "createdBy": null,
+  "passwordChangedAt": {
+    "$date": "2026-08-03T12:51:12.637Z"
+  },
+  "createdAt": {
+    "$date": "2026-08-03T12:51:12.641Z"
+  },
+  "updatedAt": {
+    "$date": "2026-08-07T11:07:51.165Z"
+  },
+  "__v": 0
+}]
