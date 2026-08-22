@@ -508,69 +508,52 @@ stage('Install Dependencies') {
 
             steps {
 
-                powershell '''
-                    Write-Host "========================================"
-                    Write-Host "Verifying Full Stack Health"
-                    Write-Host "========================================"
+                bat '''
+                    @echo off
+                    echo ========================================
+                    echo Verifying Full Stack Health
+                    echo ========================================
 
-                    $maxAttempts = 60
-                    $delaySeconds = 2
+                    echo Waiting for backend...
+                    for /L %%i in (1,1,60) do (
+                        curl -sf http://localhost:8081/health >nul 2>&1
+                        if not errorlevel 1 (
+                            echo Backend healthy
+                            goto :frontend
+                        )
+                        ping -n 3 127.0.0.1 >nul
+                    )
+                    echo Backend health check timed out
+                    exit 1
 
-                    Write-Host "Waiting for backend..."
-                    for ($i = 1; $i -le $maxAttempts; $i++) {
-                        try {
-                            $response = Invoke-WebRequest -Uri "http://localhost:8081/health" -Method Head -TimeoutSec 5 -ErrorAction Stop
-                            if ($response.StatusCode -eq 200) {
-                                Write-Host "Backend healthy"
-                                break
-                            }
-                        } catch {
-                            # Not ready yet
-                        }
-                        if ($i -eq $maxAttempts) {
-                            Write-Error "Backend health check timed out"
-                            exit 1
-                        }
-                        Start-Sleep -Seconds $delaySeconds
-                    }
+                    :frontend
+                    echo Waiting for frontend...
+                    for /L %%i in (1,1,60) do (
+                        curl -sf http://localhost:5273 >nul 2>&1
+                        if not errorlevel 1 (
+                            echo Frontend healthy
+                            goto :admin
+                        )
+                        ping -n 3 127.0.0.1 >nul
+                    )
+                    echo Frontend health check timed out
+                    exit 1
 
-                    Write-Host "Waiting for frontend..."
-                    for ($i = 1; $i -le $maxAttempts; $i++) {
-                        try {
-                            $response = Invoke-WebRequest -Uri "http://localhost:5273" -Method Head -TimeoutSec 5 -ErrorAction Stop
-                            if ($response.StatusCode -eq 200) {
-                                Write-Host "Frontend healthy"
-                                break
-                            }
-                        } catch {
-                            # Not ready yet
-                        }
-                        if ($i -eq $maxAttempts) {
-                            Write-Error "Frontend health check timed out"
-                            exit 1
-                        }
-                        Start-Sleep -Seconds $delaySeconds
-                    }
+                    :admin
+                    echo Waiting for admin...
+                    for /L %%i in (1,1,60) do (
+                        curl -sf http://localhost:5274 >nul 2>&1
+                        if not errorlevel 1 (
+                            echo Admin healthy
+                            goto :done
+                        )
+                        ping -n 3 127.0.0.1 >nul
+                    )
+                    echo Admin health check timed out
+                    exit 1
 
-                    Write-Host "Waiting for admin..."
-                    for ($i = 1; $i -le $maxAttempts; $i++) {
-                        try {
-                            $response = Invoke-WebRequest -Uri "http://localhost:5274" -Method Head -TimeoutSec 5 -ErrorAction Stop
-                            if ($response.StatusCode -eq 200) {
-                                Write-Host "Admin healthy"
-                                break
-                            }
-                        } catch {
-                            # Not ready yet
-                        }
-                        if ($i -eq $maxAttempts) {
-                            Write-Error "Admin health check timed out"
-                            exit 1
-                        }
-                        Start-Sleep -Seconds $delaySeconds
-                    }
-
-                    Write-Host "All services healthy!"
+                    :done
+                    echo All services healthy!
                 '''
             }
         }
