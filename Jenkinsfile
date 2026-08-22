@@ -129,7 +129,7 @@ pipeline {
         =====================================================
         */
 
-        stage('Install Dependencies') {
+stage('Install Dependencies') {
 
             failFast true
 
@@ -149,7 +149,7 @@ pipeline {
 
                         bat '''
                             echo Installing Frontend Dependencies...
-                            call npm ci
+                            call npm install
                         '''
                     }
                 }
@@ -170,7 +170,7 @@ pipeline {
 
                             bat '''
                                 echo Installing Backend Dependencies...
-                                call npm ci
+                                call npm install
                             '''
                         }
                     }
@@ -192,13 +192,13 @@ pipeline {
 
                             bat '''
                                 echo Installing Admin Dependencies...
-                                call npm ci
+                                call npm install
                             '''
                         }
                     }
-}
+                }
+            }
         }
-    }
 
 
     /*
