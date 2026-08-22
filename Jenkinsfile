@@ -6,6 +6,8 @@ pipeline {
     environment {
 
         CI = 'true'
+        NODE_ENV = 'test'
+        APP_ENV = 'ci'
 
         NODE_OPTIONS = '--max-old-space-size=4096'
 
@@ -13,6 +15,29 @@ pipeline {
         E2E_API_PORT = '8081'
         E2E_FRONTEND_PORT = '5273'
         E2E_ADMIN_PORT = '5274'
+
+        // Test database - uses MongoMemoryServer via backend/tests/setup.js
+        MONGODB_URI = 'mongodb://127.0.0.1:27017/careerveda_test'
+        MONGODB_DB_NAME = 'careerveda_test'
+
+        // JWT secrets for CI (must be 32+ chars)
+        JWT_ACCESS_SECRET = 'ci-access-secret-not-for-any-real-use-0123456789'
+        JWT_REFRESH_SECRET = 'ci-refresh-secret-not-for-any-real-use-0123456789'
+
+        // Frontend/Admin URLs for E2E
+        VITE_PUBLIC_API_BASE_URL = 'http://localhost:8081/api/v1'
+        VITE_ADMIN_API_BASE_URL = 'http://localhost:8081/api/v1'
+        VITE_PUBLIC_SITE_URL = 'http://localhost:5273'
+
+        // Disable ImageKit in CI
+        IMAGEKIT_PUBLIC_KEY = ''
+        IMAGEKIT_PRIVATE_KEY = ''
+        IMAGEKIT_URL_ENDPOINT = ''
+
+        // Cookie settings for CI
+        COOKIE_SECURE = 'false'
+        COOKIE_DOMAIN = 'localhost'
+        LOG_LEVEL = 'silent'
     }
 
 
@@ -171,16 +196,66 @@ pipeline {
                             '''
                         }
                     }
-                }
-            }
+}
+        }
+    }
+
+
+    /*
+    =====================================================
+    ENVIRONMENT VALIDATION
+    =====================================================
+    */
+
+    stage('Validate Environment') {
+
+        options {
+            timeout(time: 5, unit: 'MINUTES')
         }
 
+        steps {
 
-        /*
-        =====================================================
-        LINT
-        =====================================================
-        */
+            bat '''
+                echo ========================================
+                echo Validating CI Environment
+                echo ========================================
+
+                call node scripts/validate-environment.js
+            '''
+        }
+    }
+
+
+    /*
+    =====================================================
+    DATABASE CONNECTIVITY CHECK
+    =====================================================
+    */
+
+    stage('Database Check') {
+
+        options {
+            timeout(time: 5, unit: 'MINUTES')
+        }
+
+        steps {
+
+            bat '''
+                echo ========================================
+                echo Checking Database Connectivity
+                echo ========================================
+
+                call node scripts/check-db-ci.js
+            '''
+        }
+    }
+
+
+    /*
+    =====================================================
+    LINT
+    =====================================================
+    */
 
         stage('Lint') {
 
@@ -421,6 +496,58 @@ pipeline {
 
         /*
         =====================================================
+        STACK HEALTH CHECK (verify full stack is responding)
+        =====================================================
+        */
+
+        stage('Stack Health Check') {
+
+            options {
+                timeout(time: 10, unit: 'MINUTES')
+            }
+
+            steps {
+
+                bat '''
+                    echo ========================================
+                    echo Verifying Full Stack Health
+                    echo ========================================
+
+                    echo Waiting for backend...
+                    for /L %%i in (1,1,60) do (
+                        curl -sf http://localhost:8081/health >nul 2>&1 && echo Backend healthy && goto :frontend
+                        timeout /t 2 /nobreak >nul
+                    )
+                    echo Backend health check timed out
+                    exit 1
+                    :frontend
+
+                    echo Waiting for frontend...
+                    for /L %%i in (1,1,60) do (
+                        curl -sf http://localhost:5273 >nul 2>&1 && echo Frontend healthy && goto :admin
+                        timeout /t 2 /nobreak >nul
+                    )
+                    echo Frontend health check timed out
+                    exit 1
+                    :admin
+
+                    echo Waiting for admin...
+                    for /L %%i in (1,1,60) do (
+                        curl -sf http://localhost:5274 >nul 2>&1 && echo Admin healthy && goto :done
+                        timeout /t 2 /nobreak >nul
+                    )
+                    echo Admin health check timed out
+                    exit 1
+                    :done
+
+                    echo All services healthy!
+                '''
+            }
+        }
+
+
+        /*
+        =====================================================
         E2E TESTS (with watchdog for Windows reliability)
         =====================================================
         */
@@ -603,6 +730,10 @@ pipeline {
 
 ✓ Dependencies installed
 
+✓ Environment validation passed
+
+✓ Database connectivity verified
+
 ✓ ESLint passed
 
 ✓ Frontend tests (Vitest) passed
@@ -618,6 +749,8 @@ pipeline {
 ✓ Admin build passed
 
 ✓ Playwright Chromium installed
+
+✓ Stack health check passed
 
 ✓ E2E tests passed
 
