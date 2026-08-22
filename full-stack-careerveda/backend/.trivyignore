@@ -1,4 +1,0 @@
-# CVE-2026-31789: libssl3 overflow on 32-bit only.
-# Runtime is amd64 (Cloud Run / x86_64). Fixed in 3.0.19.
-# Tracked at https://github.com/GoogleContainerTools/distroless/issues
-CVE-2026-31789

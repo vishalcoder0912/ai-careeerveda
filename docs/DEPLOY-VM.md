@@ -174,8 +174,8 @@ Then:
 
 ```bash
 cd ~
-git clone git@github.com:vishalcoder0912/full-stack-careerveda.git
-cd full-stack-careerveda
+git clone git@github.com:vishalcoder0912/ai-careeerveda.git
+cd ai-careeerveda
 ```
 
 ## Step 7 — Install dependencies
@@ -320,7 +320,7 @@ left behind is never overwritten and never requested — it just sits there.
 The entry point is `backend/src/server.js` (`npm start` runs exactly that):
 
 ```bash
-cd ~/full-stack-careerveda/backend
+cd ~/ai-careeerveda/backend
 pm2 start src/server.js --name careerveda-api
 pm2 logs careerveda-api --lines 50
 ```
@@ -347,7 +347,7 @@ pm2 startup
 Otherwise there is no account to log into the admin panel with:
 
 ```bash
-cd ~/full-stack-careerveda
+cd ~/ai-careeerveda
 npm --prefix backend run seed:admin
 ```
 
@@ -449,7 +449,7 @@ old TTL. That is what makes a rollback take minutes rather than hours.
 them logs everyone out):
 
 ```bash
-cd ~/full-stack-careerveda
+cd ~/ai-careeerveda
 sed -i 's|^FRONTEND_URL=.*|FRONTEND_URL=https://careerveda.in|' backend/.env
 sed -i 's|^ADMIN_URL=.*|ADMIN_URL=https://admin.careerveda.in|' backend/.env
 sed -i 's|^CORS_ALLOWED_ORIGINS=.*|CORS_ALLOWED_ORIGINS=https://careerveda.in,https://www.careerveda.in,https://admin.careerveda.in|' backend/.env
@@ -540,7 +540,7 @@ Re-export the three hostnames first — a fresh shell does not have them, and
 building without them is the silent failure in Step 9.
 
 ```bash
-cd ~/full-stack-careerveda
+cd ~/ai-careeerveda
 git pull
 
 npm ci && npm ci --prefix backend && npm ci --prefix admin

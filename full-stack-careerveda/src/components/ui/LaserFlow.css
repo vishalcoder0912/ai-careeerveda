@@ -1,8 +1,0 @@
-.laser-flow-container {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  /* The canvas must never intercept the pointer — it sits over the hero, and the
-     page's links and buttons are underneath it. */
-  pointer-events: none;
-}

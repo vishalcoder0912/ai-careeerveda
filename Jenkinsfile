@@ -9,9 +9,6 @@ pipeline {
 
         NODE_OPTIONS = '--max-old-space-size=4096'
 
-        // Project location inside repository
-        PROJECT_DIR = 'full-stack-careerveda'
-
         // E2E ports (match playwright.config.js defaults)
         E2E_API_PORT = '8081'
         E2E_FRONTEND_PORT = '5273'
@@ -95,7 +92,7 @@ pipeline {
                     echo.
 
                     echo Project directory:
-                    dir full-stack-careerveda
+                    dir
                 '''
             }
         }
@@ -125,13 +122,10 @@ pipeline {
 
                     steps {
 
-                        dir('full-stack-careerveda') {
-
-                            bat '''
-                                echo Installing Frontend Dependencies...
-                                call npm ci
-                            '''
-                        }
+                        bat '''
+                            echo Installing Frontend Dependencies...
+                            call npm ci
+                        '''
                     }
                 }
 
@@ -147,7 +141,7 @@ pipeline {
 
                     steps {
 
-                        dir('full-stack-careerveda/backend') {
+                        dir('backend') {
 
                             bat '''
                                 echo Installing Backend Dependencies...
@@ -169,7 +163,7 @@ pipeline {
 
                     steps {
 
-                        dir('full-stack-careerveda/admin') {
+                        dir('admin') {
 
                             bat '''
                                 echo Installing Admin Dependencies...
@@ -199,33 +193,27 @@ pipeline {
 
             steps {
 
-                dir('full-stack-careerveda') {
+                bat '''
+                    echo ========================================
+                    echo Running ESLint
+                    echo ========================================
 
-                    bat '''
-                        echo ========================================
-                        echo Running ESLint
-                        echo ========================================
-
-                        call npm run lint
-                    '''
-                }
+                    call npm run lint
+                '''
             }
 
             post {
 
                 always {
 
-                    dir('full-stack-careerveda') {
+                    bat '''
+                        npx eslint . --format stylish > lint-report.txt 2>&1 || exit /b 0
+                    '''
 
-                        bat '''
-                            npx eslint . --format stylish > lint-report.txt 2>&1 || exit /b 0
-                        '''
-
-                        archiveArtifacts(
-                            artifacts: 'lint-report.txt',
-                            allowEmptyArchive: true
-                        )
-                    }
+                    archiveArtifacts(
+                        artifacts: 'lint-report.txt',
+                        allowEmptyArchive: true
+                    )
                 }
             }
         }
@@ -259,16 +247,13 @@ pipeline {
 
                     steps {
 
-                        dir('full-stack-careerveda') {
+                        bat '''
+                            echo ========================================
+                            echo Running Frontend Tests (Vitest)
+                            echo ========================================
 
-                            bat '''
-                                echo ========================================
-                                echo Running Frontend Tests (Vitest)
-                                echo ========================================
-
-                                call npm run test:frontend
-                            '''
-                        }
+                            call npm run test:frontend
+                        '''
                     }
                 }
 
@@ -294,17 +279,14 @@ pipeline {
 
                     steps {
 
-                        dir('full-stack-careerveda') {
+                        bat '''
+                            echo ========================================
+                            echo Running Backend Tests
+                            echo Jest (unit) + Vitest (integration) + Supertest
+                            echo ========================================
 
-                            bat '''
-                                echo ========================================
-                                echo Running Backend Tests
-                                echo Jest (unit) + Vitest (integration) + Supertest
-                                echo ========================================
-
-                                call npm run test:backend
-                            '''
-                        }
+                            call npm run test:backend
+                        '''
                     }
                 }
 
@@ -324,16 +306,13 @@ pipeline {
 
                     steps {
 
-                        dir('full-stack-careerveda') {
+                        bat '''
+                            echo ========================================
+                            echo Running Admin Tests (Vitest)
+                            echo ========================================
 
-                            bat '''
-                                echo ========================================
-                                echo Running Admin Tests (Vitest)
-                                echo ========================================
-
-                                call npm run test:admin
-                            '''
-                        }
+                            call npm run test:admin
+                        '''
                     }
                 }
             }
@@ -361,16 +340,13 @@ pipeline {
 
                     steps {
 
-                        dir('full-stack-careerveda') {
+                        bat '''
+                            echo ========================================
+                            echo Building Public Website
+                            echo ========================================
 
-                            bat '''
-                                echo ========================================
-                                echo Building Public Website
-                                echo ========================================
-
-                                call npm run build:frontend
-                            '''
-                        }
+                            call npm run build:frontend
+                        '''
                     }
                 }
 
@@ -383,16 +359,13 @@ pipeline {
 
                     steps {
 
-                        dir('full-stack-careerveda') {
+                        bat '''
+                            echo ========================================
+                            echo Validating Backend Build
+                            echo ========================================
 
-                            bat '''
-                                echo ========================================
-                                echo Validating Backend Build
-                                echo ========================================
-
-                                call npm run build:backend
-                            '''
-                        }
+                            call npm run build:backend
+                        '''
                     }
                 }
 
@@ -405,16 +378,13 @@ pipeline {
 
                     steps {
 
-                        dir('full-stack-careerveda') {
+                        bat '''
+                            echo ========================================
+                            echo Building Admin Panel
+                            echo ========================================
 
-                            bat '''
-                                echo ========================================
-                                echo Building Admin Panel
-                                echo ========================================
-
-                                call npm run build:admin
-                            '''
-                        }
+                            call npm run build:admin
+                        '''
                     }
                 }
             }
@@ -438,16 +408,13 @@ pipeline {
 
             steps {
 
-                dir('full-stack-careerveda') {
+                bat '''
+                    echo ========================================
+                    echo Installing Playwright Chromium
+                    echo ========================================
 
-                    bat '''
-                        echo ========================================
-                        echo Installing Playwright Chromium
-                        echo ========================================
-
-                        call npx playwright install chromium
-                    '''
-                }
+                    call npx playwright install chromium
+                '''
             }
         }
 
@@ -470,16 +437,13 @@ pipeline {
 
             steps {
 
-                dir('full-stack-careerveda') {
+                bat '''
+                    echo ========================================
+                    echo Running End-to-End Tests (with CI watchdog)
+                    echo ========================================
 
-                    bat '''
-                        echo ========================================
-                        echo Running End-to-End Tests (with CI watchdog)
-                        echo ========================================
-
-                        call node scripts/run-e2e-ci.mjs --grep-invert "@visual|@performance|@smoke"
-                    '''
-                }
+                    call node scripts/run-e2e-ci.mjs --grep-invert "@visual|@performance|@smoke"
+                '''
             }
         }
 
@@ -498,16 +462,13 @@ pipeline {
 
             steps {
 
-                dir('full-stack-careerveda') {
+                bat '''
+                    echo ========================================
+                    echo Running Accessibility Tests
+                    echo ========================================
 
-                    bat '''
-                        echo ========================================
-                        echo Running Accessibility Tests
-                        echo ========================================
-
-                        call node scripts/run-e2e-ci.mjs --grep @accessibility --cap=15
-                    '''
-                }
+                    call node scripts/run-e2e-ci.mjs --grep @accessibility --cap=15
+                '''
             }
         }
 
@@ -526,16 +487,13 @@ pipeline {
 
             steps {
 
-                dir('full-stack-careerveda') {
+                bat '''
+                    echo ========================================
+                    echo Running Performance Tests
+                    echo ========================================
 
-                    bat '''
-                        echo ========================================
-                        echo Running Performance Tests
-                        echo ========================================
-
-                        call node scripts/run-e2e-ci.mjs --grep @performance --project=chromium --cap=15
-                    '''
-                }
+                    call node scripts/run-e2e-ci.mjs --grep @performance --project=chromium --cap=15
+                '''
             }
         }
 
@@ -554,16 +512,13 @@ pipeline {
 
             steps {
 
-                dir('full-stack-careerveda') {
+                bat '''
+                    echo ========================================
+                    echo Running Load Test
+                    echo ========================================
 
-                    bat '''
-                        echo ========================================
-                        echo Running Load Test
-                        echo ========================================
-
-                        call npm run test:load
-                    '''
-                }
+                    call npm run test:load
+                '''
             }
         }
 
@@ -585,12 +540,9 @@ pipeline {
 
                     steps {
 
-                        dir('full-stack-careerveda') {
-
-                            bat '''
-                                npm audit --audit-level=high
-                            '''
-                        }
+                        bat '''
+                            npm audit --audit-level=high
+                        '''
                     }
                 }
 
@@ -599,7 +551,7 @@ pipeline {
 
                     steps {
 
-                        dir('full-stack-careerveda/backend') {
+                        dir('backend') {
 
                             bat '''
                                 npm audit --audit-level=high
@@ -613,7 +565,7 @@ pipeline {
 
                     steps {
 
-                        dir('full-stack-careerveda/admin') {
+                        dir('admin') {
 
                             bat '''
                                 npm audit --audit-level=high
@@ -713,11 +665,11 @@ Collecting artifacts...
 
             archiveArtifacts(
                 artifacts: '''
-                    full-stack-careerveda/test-results/**,
-                    full-stack-careerveda/playwright-report/**,
-                    full-stack-careerveda/backend/test-results/**,
-                    full-stack-careerveda/admin/test-results/**,
-                    full-stack-careerveda/lint-report.txt
+                    test-results/**,
+                    playwright-report/**,
+                    backend/test-results/**,
+                    admin/test-results/**,
+                    lint-report.txt
                 ''',
                 allowEmptyArchive: true
             )

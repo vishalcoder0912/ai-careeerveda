@@ -1,34 +1,59 @@
+# Dependencies
 node_modules/
-dist/
-.vite/
+backend/node_modules/
+admin/node_modules/
 
+# Build outputs
+dist/
+build/
+.vite/
 *.local
+
+# Environment files
 .env
 .env.*
 !.env.example
 
+# Logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+vite*.log
 
-cinematic-scroll-dropin/
-cinematic-scroll-dropin.zip
-ezgif-*-jpg.zip
+# Test artifacts
+test-results/
+playwright-report/
+coverage/
+.nyc_output/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Generated data / Large files
+Live_data/
 public/frames/
 public/frames-manifest.json
 
-# Backend / admin build + local env
-backend/node_modules/
-admin/node_modules/
-
-# Generated output. These were committed once by accident; a test run or a
-# graph rebuild rewrites them wholesale, so tracking them means every branch
-# carries a conflict in files nobody reads.
-test-results/
-playwright-report/
-graphify-out/
+# Cinematic scroll dropin
+cinematic-scroll-dropin/
+cinematic-scroll-dropin.zip
+ezgif-*-jpg.zip
 
 # Local agent/tool scratch
 .codex/
+.claude/
+
+# Graphify
+graphify-out/
+
+# Docker
+docker-compose.override.yml

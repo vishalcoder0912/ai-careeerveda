@@ -32,9 +32,9 @@ const only = new Set(
     : [],
 );
 
-// backend/ -> full-stack-careerveda/ -> repo root, where Live_data lives.
+// backend/ -> repo root, where Live_data lives.
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const DATA_DIR = path.resolve(REPO_ROOT, "../Live_data");
+const DATA_DIR = path.resolve(REPO_ROOT, "Live_data");
 
 const BATCH_SIZE = 250;
 
