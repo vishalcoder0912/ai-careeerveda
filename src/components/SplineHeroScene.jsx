@@ -203,14 +203,14 @@ const SplineHeroScene = ({sceneUrl}) => {
               title="CareerVeda career growth visual"
               frameBorder="0"
               loading="lazy"
-              // allow-scripts alone: the runtime boots, the scene renders and still
-              // tracks the cursor, verified against the live embed. allow-same-origin
-              // used to be here on the assumption Spline needed it for worker/storage
-              // access — it doesn't (the scene data is inlined in the embed page, and
-              // its localStorage paths are desktop-app-only). Granting it back would
-              // hand the frame its real spline.design origin for nothing.
-              sandbox="allow-scripts"
-              allow="autoplay; fullscreen; xr-spatial-tracking"
+              // allow-scripts + allow-pointer-lock: the runtime boots, the scene renders
+              // and tracks the cursor/pointer. pointer-lock is required for the 3D scene
+              // to capture mouse movement for orbit/rotation controls.
+              // allow-same-origin is NOT granted — the scene data is inlined in the embed
+              // page, and its localStorage paths are desktop-app-only. Granting it back
+              // would hand the frame its real spline.design origin for nothing.
+              sandbox="allow-scripts allow-pointer-lock"
+              allow="autoplay; fullscreen; xr-spatial-tracking; pointer-lock"
               onLoad={() => setIsLoaded(true)}
               onError={() => setHasFailed(true)}
             />
