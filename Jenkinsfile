@@ -72,7 +72,7 @@ pipeline {
       parallel {
         stage('Frontend Tests') {
           steps {
-            bat 'npm run test:frontend'
+            bat 'npm run test:frontend -- --pool=forks --poolOptions.forks.singleFork --testTimeout=30000'
           }
         }
         stage('Backend Tests') {
