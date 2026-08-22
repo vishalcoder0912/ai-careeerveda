@@ -128,40 +128,43 @@ React Doctor is available locally as `npm run doctor`.
 
 ## CI / CD
 
-`Jenkinsfile` verifies `dev`. GitHub blocks the merge until it is green.
+`.github/workflows/ci-cd.yml` verifies every push and pull request. A push to
+`dev` that passes every job is promoted to `main` by the workflow itself.
 
 ```
-git push origin dev  ──►  Jenkins  ──►  PR dev → main
-                            │              (merge button disabled until green)
-                            └─ lint · unit + integration · e2e · build
+git push origin dev  ──►  GitHub Actions  ──►  origin/main   (green only)
+                             │
+                             └─ audit · lint · unit + integration · jest ·
+                                e2e · performance · load · build
 ```
 
-| Stage                     | Does                                                    |
-| ------------------------- | ------------------------------------------------------- |
-| Install                   | `npm ci` × 3 packages                                    |
-| Lint                      | `npm run lint`                                           |
-| Unit & integration tests  | `npm run test:all`                                       |
-| E2E tests                 | Playwright against the full stack, in-memory DB          |
-| Build                     | `npm run build` × 3 packages                             |
+| Job      | Does                                                                     |
+| -------- | ------------------------------------------------------------------------ |
+| quality  | `npm ci` × 3 packages · dependency audit · lint · unit & integration · Jest |
+| e2e      | Playwright against the full stack, in-memory DB · performance budgets · load test |
+| build    | `npm run build` × 3 packages                                             |
+| publish  | fast-forwards `main` to the tested `dev` commit (pushes to `dev` only)   |
+| smoke    | live-site smoke after publish (opt-in, see below)                        |
 
-The pipeline itself writes nothing — it reports a status, and the branch
-protection rule is what refuses the merge. That split is deliberate. A publish
-stage that pushed to `main` itself would need a write-scoped token to rotate,
-would race anyone else merging at the same moment, and would put "what may reach
-main" in two places at once. GitHub already has the checkbox.
+`quality` and `e2e` run in parallel; `build` needs both green; `publish` needs
+`build` and only runs for pushes to `dev`. It moves `main` with a plain
+(non-forced) push of the exact commit that was tested, so if `main` has moved
+on the promotion fails and gets looked at instead of overwriting anything. The
+built-in `GITHUB_TOKEN` does the pushing — no credential to rotate — and a
+token-authenticated push triggers no further workflows, so the promotion cannot
+loop.
 
 ### Setting it up
 
-1. **New Item → Pipeline**, Pipeline script from SCM, this repo, branch `dev`,
-   script path `Jenkinsfile`. Polls every 5 minutes. The existing read-only
-   credential is enough — the job only clones.
-2. Report the result to GitHub so a PR can see it: install the
-   **GitHub plugin** in Jenkins and tick *GitHub hook trigger* / commit status,
-   or run Jenkins behind the **GitHub Checks** plugin.
-3. **GitHub → Settings → Branches → Add rule** on `main`:
-   *Require a pull request*, *Require status checks to pass*, then select the
-   Jenkins check. Without step 3 the gate is a convention — anyone can still
-   merge or push straight to `main`.
+1. Nothing to install or poll: the workflow runs on GitHub's own runners on
+   every push and PR.
+2. **Settings → Branches → Add rule** on `main`: *Require a pull request*,
+   *Require status checks to pass*, then select the **Build** check (which
+   already requires quality and e2e). Without step 2 the gate is a convention —
+   anyone can still merge or push straight to `main`.
+3. Optional live smoke: add repository variables `SMOKE_BASE_URL` (plus
+   optional `SMOKE_ADMIN_URL` / `SMOKE_API_URL`) under *Settings → Secrets and
+   variables → Actions → Variables*. Without them the smoke job is skipped.
 
 There is no deploy stage. A green `main` is tested code, not shipped code — see
 *Deploying* below, which stays a deliberate manual step.

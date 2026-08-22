@@ -101,8 +101,8 @@ export default defineConfig(({mode}) => {
       globals: false,
       include: ["src/**/*.test.{js,jsx}"],
       setupFiles: ["./src/test-setup.js"],
-      // The Jenkins box runs this suite as a Windows service and the forks pool
-      // default (cores - 1 = 11 worker processes) repeatedly failed to boot:
+      // CI runs this suite on shared runners where the forks pool default
+      // (cores - 1 = 11 worker processes) repeatedly failed to boot:
       // "[vitest-pool]: Failed to start forks worker ... Timeout waiting for
       // worker to respond" → exit 1, on a machine where the same 216 tests pass
       // in under a minute. Two workers cap the concurrent node processes so a

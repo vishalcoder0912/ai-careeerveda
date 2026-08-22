@@ -117,7 +117,7 @@ test.describe("accessibility", () => {
 // invisible to the Linux runner, which then reports "a snapshot doesn't exist"
 // and fails — on a correct page, for a reason nobody on Windows can fix.
 // Font hinting and GPU compositing differ enough between machines that this is
-// not worth fighting. So the Jenkins gate runs `npm run test:e2e`, which is
+// not worth fighting. So the CI gate runs `npm run test:e2e`, which is
 // --grep-invert @visual: this suite is a local check (`npm run test:visual`),
 // where a diff is information rather than a blocked push.
 test.describe("visual regression @visual", () => {
