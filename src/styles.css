@@ -32,6 +32,12 @@
    Deleted along with PartnerTrail and the LogoLoop/ImageTrail it pulled in. */
 /* Very last: mobile-responsiveness.css touches only max-width media queries. */
 @import "./components/mobile-responsiveness.css";
+/* And after even that: navbar-hero-merge.css coordinates the navbar's height
+   (declared in slate-color-system.css and mobile-responsiveness.css) with the
+   hero's padding (final-alignment-polish.css, slate-color-system.css), pulling
+   the hero up behind a chrome-less navbar so one grid runs through both. See
+   the header comment in that file. */
+@import "./components/navbar-hero-merge.css";
 
 @theme {
   --font-sans: "Inter", system-ui, sans-serif;

@@ -2,8 +2,6 @@ import {useEffect,useRef,useState,useCallback} from "react";
 import {Link, useLocation} from "react-router-dom";
 import BrandLockup from "./BrandLockup";
 import {externalLinks} from "../config/externalLinks";
-import ShapeGrid from "./ShapeGrid";
-import "./shape-grid.css";
 
 // The drawer's slide, fade and row stagger are CSS animations now — see the
 // mobile-menu keyframes in mobile-responsiveness.css.
@@ -137,28 +135,12 @@ const SiteNavbar = ({navItems}) => {
         className={`site-nav ${isScrolled ? "is-scrolled" : ""}`}
         role="banner"
       >
-        {/* Same grid as the hero and the page backdrop, sized for a band this
-            short: 34px cells so several rows read inside 86px, and drifting
-            sideways rather than diagonally because vertical travel has nowhere
-            to go here. Ink on white — the bar is the one light surface the grid
-            appears on, so the strokes are the text colour at low alpha and the
-            hover fill is the brand orange, not the teal used on the dark
-            sections. No vignette, for the same reason as the hero: it closes as
-            an opaque ring at half the canvas diagonal, which on a bar this wide
-            and short is the whole thing. */}
-        <div className="site-nav-grid" aria-hidden="true">
-          <ShapeGrid
-            shape="square"
-            direction="right"
-            speed={0.12}
-            squareSize={34}
-            hoverTrailAmount={4}
-            borderColor="rgba(31, 45, 61, 0.08)"
-            hoverFillColor="rgba(243, 112, 18, 0.16)"
-            vignetteColor="rgba(255, 255, 255, 0)"
-          />
-        </div>
-
+        {/* No grid canvas in here, and no bar chrome either — see
+            navbar-hero-merge.css. The hero is pulled up underneath the bar, so
+            its own ShapeGrid (the 90px one in Hero.jsx) runs unbroken from the
+            top edge of the viewport through the hero copy. A second canvas at a
+            different cell size is exactly what made the nav read as a separate
+            block before; the grid behind these links is the hero's grid. */}
         <Link className="brand site-nav-brand" to="/">
           <BrandLockup />
         </Link>

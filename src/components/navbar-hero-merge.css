@@ -1,0 +1,140 @@
+/* ── Navbar ⇆ hero merge ────────────────────────────────────────────────────
+ *
+ * One background, one grid, no navbar chrome.
+ *
+ * The hero's own ShapeGrid canvas (the 90px one in Hero.jsx) is now the single
+ * grid for the top of the page. The navbar contributes nothing of its own: its
+ * old private 34px canvas is deleted from SiteNavbar.jsx, its bar chrome is
+ * stripped down to a whisper of tint, and the hero is pulled up underneath it —
+ * so the same canvas, at the same square size, with the same drift and the
+ * same hover trail, runs unbroken from the top edge of the viewport down
+ * through the hero copy. The nav links float on the grid; they no longer sit
+ * in a box on top of it.
+ *
+ * This file is imported after mobile-responsiveness.css on purpose. It has to
+ * coordinate geometry across two components whose sizes are declared in three
+ * other files — the navbar's heights live in slate-color-system.css and
+ * mobile-responsiveness.css, the hero's padding lives in final-alignment-
+ * polish.css and slate-color-system.css — so for exactly those properties it
+ * needs the final word in the cascade.
+ */
+
+/* The hero slides up behind the transparent navbar. The negative margins match
+ * the navbar heights already declared elsewhere (84px desktop in
+ * slate-color-system.css; 64px ≤980px and 58px ≤480px in
+ * mobile-responsiveness.css), and each rule hands that height straight back to
+ * the hero as padding-top, so the eyebrow, headline and robot keep exactly the
+ * distance from the nav that they had when the bar sat above the hero in flow:
+ *
+ *   >980px : bar 84px  → hero padding-top = old clamp(46px,5vw,72px) + 84px
+ *   ≤980px : bar 64px  → hero padding-top = slate's 72px + 64px
+ *   ≤480px : bar 58px  → hero padding-top = slate's 72px + 58px
+ *
+ * Scoped to .spline-page because only the home page has a hero; every other
+ * route keeps its normal flow under an unchanged (if quieter) navbar. */
+body .spline-page .hero-shell {
+  margin-top: -84px !important;
+  padding-top: calc(clamp(46px, 5vw, 72px) + 84px) !important;
+}
+
+@media (max-width: 980px) {
+  body .spline-page .hero-shell {
+    margin-top: -64px !important;
+    /* slate-color-system.css owns the 72px base at this breakpoint. */
+    padding-top: calc(72px + 64px) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  body .spline-page .hero-shell {
+    margin-top: -58px !important;
+    padding-top: calc(72px + 58px) !important;
+  }
+}
+
+/* No card, no line, no shadow. What remains is the tint the design calls for —
+   barely a breath of navy over the grid. backdrop-filter stays off at rest
+   because any blur would frost the grid inside the bar's rectangle and read as
+   a panel again; the whole point is that nothing distinguishes the strip the
+   links occupy from the strip the headline occupies. */
+body .site-nav,
+body .site-nav.is-scrolled {
+  border-bottom: 0 !important;
+  background: rgba(8, 24, 43, 0.08) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Links: text floating over the grid. Glass exists only under the cursor — a
+   translucent teal chip with a soft cyan edge and a local blur, per the
+   interaction spec. Everything else about the chip is invisible until hover,
+   so the declared border/transition here cost nothing visually at rest. */
+body .site-nav nav a,
+body .site-nav.is-scrolled nav a {
+  min-height: 40px !important;
+  padding: 0 14px !important;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: rgba(228, 240, 250, 0.85) !important;
+  font-weight: 600;
+  transition:
+    color 200ms ease,
+    background-color 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease,
+    backdrop-filter 200ms ease,
+    min-height 480ms var(--cv-navbar-ease) !important;
+}
+
+body .site-nav.is-scrolled nav a {
+  min-height: 38px !important;
+}
+
+/* The underline belonged to the boxed bar; over an open grid the hover chip is
+   the affordance, so the pseudo-element goes entirely. */
+body .site-nav nav a::after {
+  content: none !important;
+  display: none !important;
+}
+
+body .site-nav nav a:hover,
+body .site-nav nav a:focus-visible,
+body .site-nav nav a.is-active {
+  color: #ffffff !important;
+  background: rgba(20, 180, 190, 0.1);
+  border-color: rgba(45, 212, 191, 0.18);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 0 18px -6px rgba(45, 212, 191, 0.35);
+}
+
+/* Keyboard focus keeps a visible ring even where the chip alone would do. */
+body .site-nav nav a:focus-visible {
+  outline: 1px solid rgba(94, 234, 212, 0.55);
+  outline-offset: 2px;
+}
+
+/* Enroll Now: same size and gradient as slate-color-system.css gives it — only
+   the finish changes. An inset highlight along the top reads as glass catching
+   light; the outer glow stays soft enough to belong to the room rather than to
+   the button. */
+body .nav-cta,
+body .site-nav.is-scrolled .nav-cta {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    inset 0 0 0 1px rgba(110, 231, 183, 0.12),
+    0 10px 26px -12px rgba(16, 185, 129, 0.55),
+    0 0 24px -8px rgba(45, 212, 191, 0.35) !important;
+}
+
+body .nav-cta:hover,
+body .nav-cta:focus-visible {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 0 0 1px rgba(110, 231, 183, 0.16),
+    0 14px 30px -12px rgba(16, 185, 129, 0.6),
+    0 0 28px -8px rgba(45, 212, 191, 0.45) !important;
+}
