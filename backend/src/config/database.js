@@ -26,7 +26,7 @@ const databaseNameFrom = (uri = "") => {
   }
 };
 
-const isFirestore = (uri = "") => uri.includes(".firestore.goog");
+const isFirestore = (uri = "") => uri.includes(".firestore.goog") || uri.startsWith("firestore://");
 
 export const connectDatabase = async (uri = env.MONGODB_URI) => {
   if (mongoose.connection.readyState === 1) return mongoose.connection;
@@ -40,6 +40,12 @@ export const connectDatabase = async (uri = env.MONGODB_URI) => {
   const options = {maxPoolSize: 10, serverSelectionTimeoutMS: 8000};
   const dbName = databaseNameFrom(uri);
   if (dbName) options.dbName = dbName;
+
+  // For Firestore emulator (local development)
+  if (env.firestoreEmulatorHost) {
+    process.env.FIRESTORE_EMULATOR_HOST = env.firestoreEmulatorHost;
+    logger.info({host: env.firestoreEmulatorHost}, "Using Firestore emulator");
+  }
 
   // On Firestore an index build is a long-running operation — every createIndex
   // waits minutes or longer and only one runs at a time, so Mongoose's
@@ -55,7 +61,7 @@ export const connectDatabase = async (uri = env.MONGODB_URI) => {
     connecting = mongoose
       .connect(uri, options)
       .then((connection) => {
-        logger.info({db: dbName}, "Firestore connected");
+        logger.info({db: dbName, firestore: isFirestore(uri)}, "Database connected");
         return connection;
       })
       .catch((error) => {

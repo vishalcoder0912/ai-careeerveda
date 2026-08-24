@@ -1,0 +1,55 @@
+# CD — push to main → live on the Compute Engine VM.
+#
+# The deployment model is pull-based: the VM itself polls origin/main every
+# 2 minutes (careerveda-autodeploy.timer) and runs deploy/deploy.sh when the
+# branch moved. That works with zero GitHub configuration and is the mechanism
+# that always runs.
+#
+# This workflow is the optional "instant" trigger: instead of waiting up to 2
+# minutes for the next poll, it SSHes into the VM right after a push and runs
+# the same deploy script. It stays skipped until you add the repository
+# variable CD_SSH_HOST (Settings → Secrets and variables → Actions → Variables):
+#
+#   Variables:  CD_SSH_HOST   VM external IP (or DNS name)
+#               CD_SSH_USER   SSH user on the VM (e.g. deploy)
+#   Secret:     CD_SSH_KEY    private key whose public half is in that user's
+#                             authorized_keys (generate: ssh-keygen -t ed25519)
+#
+# One-time VM provisioning lives in deploy/setup-server.sh — see DEPLOYMENT.md.
+
+name: CD (Compute Engine)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cd-compute-engine
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Trigger deploy on VM
+    # Skipped silently while CD_SSH_HOST is unset — during testing the 2-minute
+    # autodeploy timer on the VM handles everything on its own.
+    if: vars.CD_SSH_HOST != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ vars.CD_SSH_HOST }}
+          username: ${{ vars.CD_SSH_USER || 'deploy' }}
+          key: ${{ secrets.CD_SSH_KEY }}
+          script: sudo /opt/careerveda/deploy/deploy.sh
+
+      - name: Smoke check
+        run: |
+          sleep 5
+          curl -fsS --max-time 30 "http://${{ vars.CD_SSH_HOST }}/health" \
+            && echo "Site is live at http://${{ vars.CD_SSH_HOST }}/"

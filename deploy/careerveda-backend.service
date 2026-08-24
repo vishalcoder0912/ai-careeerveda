@@ -1,0 +1,23 @@
+[Unit]
+Description=CareerVeda API (Node backend)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/careerveda/backend
+# backend/src/config/env.js also loads backend/.env via dotenv (override:false),
+# so secrets live in the file and never in this unit. The two variables here are
+# just the boot defaults; .env wins if it sets them.
+Environment=NODE_ENV=production
+Environment=PORT=8080
+ExecStart=/usr/bin/node src/server.js
+Restart=always
+RestartSec=5
+TimeoutStopSec=15
+KillSignal=SIGTERM
+
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

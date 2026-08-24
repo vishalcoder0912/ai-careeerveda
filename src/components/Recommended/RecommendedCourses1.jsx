@@ -109,7 +109,7 @@ const recommendedCourses= [
   {
     id: "product-management",
     slug: "product-management",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/product-management-6b8b2802.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/product-management-ede8ba4a.png?tr=w-840,f-auto,q-80",
     label: "Most Popular",
     title: "PG Program in Product Management",
     subtitle: "Become a High-Impact Product Manager",
@@ -120,7 +120,7 @@ const recommendedCourses= [
   {
     id: "data-analytics",
     slug: "data-analytics",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Data_analytics-ba31dcb9.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/Data_analytics-19c78fb9.png?tr=w-840,f-auto,q-80",
     label: "Career Starter",
     title: "PG Program in Data Analytics with Generative AI",
     subtitle: "Become a Data Analyst with AI Workflows",
@@ -131,7 +131,7 @@ const recommendedCourses= [
   {
     id: "business-analytics",
     slug: "business-analytics",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Business_analytics_images-4145ed42.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/Business_analytics_images-141e26d2.png?tr=w-840,f-auto,q-80",
     label: "In-Demand Skills",
     title: "Post Graduate Program in Business Analytics with Generative AI",
     subtitle: "Become a Business Analyst with AI Skills",
@@ -142,7 +142,7 @@ const recommendedCourses= [
    {
     id: "investment-banking",
     slug: "investment-banking",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/investing-banking-images-59ab0040.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/investing-banking-images-d0cb7a99.png?tr=w-840,f-auto,q-80",
     label: "High Finance",
     title: "PG Program in Investment Banking",
     subtitle: "Master Financial Modeling & Valuation",
@@ -153,7 +153,7 @@ const recommendedCourses= [
   {
     id: "data-science-ai",
     slug: "data-science-ai",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/data-c3b60741.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/data-5283dc81.webp?tr=w-840,f-auto,q-80",
     label: "Advanced Track",
     title: "PG Program in Data Science with Generative AI",
     subtitle: "Build AI, ML and Agentic AI Skills",
@@ -164,7 +164,7 @@ const recommendedCourses= [
   {
     id: "gen-ai",
     slug: "gen-ai",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/ChatGPT-Image-Jul-13-2026-04_53_32-PM-fbacfde5.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/PG-WITH-GENAI-803ad9e9.webp?tr=w-840,f-auto,q-80",
     label: "In-Demand Skills",
     title: "PG Program in GEN AI",
     subtitle: "Become a Generative AI Engineer",

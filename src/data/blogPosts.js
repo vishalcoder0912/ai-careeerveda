@@ -812,7 +812,7 @@ const blogPosts = [
     date: "April 2025",
     readTime: "6 min read",
     excerpt:
-      "SQL is the one skill that appears in almost every data analyst job description        and the good news is that a small set of patterns covers most real work. Here are the queries you will actually reach for on the job.",
+      "SQL is the one skill that appears in almost every data analyst job description  and the good news is that a small set of patterns covers most real work. Here are the queries you will actually reach for on the job.",
     image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/Data_analytics-19c78fb9.png?tr=w-840,f-auto,q-80",
     lead: "If there is a single non-negotiable skill for a data analyst, it is SQL. It is how you pull data out of the databases where companies actually keep it, and it appears in nearly every job description in the field. The encouraging truth is that you do not need to memorise a thousand functions        a compact set of patterns covers the vast majority of day-to-day analysis.",
     sections: [
@@ -1079,9 +1079,9 @@ const blogPosts = [
     date: "November 2024",
     readTime: "6 min read",
     excerpt:
-      "Cybersecurity has two broad camps: the attackers who find weaknesses and the defenders who close them. Both are vital, but they suit very different people        and the entry paths differ too. Here is how to choose the right one for you.",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Cybersecurity-6b8c8c8c.png?tr=w-840,f-auto,q-80",
-    lead: "Cybersecurity careers tend to split along a simple line. Offensive security        ethical hacking and penetration testing        is about thinking like an attacker to find weaknesses before criminals do. Defensive security is about building and running the protections that keep systems safe day to day. Both matter enormously, but they reward different temperaments.",
+      "Cybersecurity has two broad camps: the attackers who find weaknesses and the defenders who close them. Both are vital, but they suit very different people  and the entry paths differ too. Here is how to choose the right one for you.",
+    image: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/CyberSecurity-7e85cd39.png?tr=w-840,f-auto,q-80",
+    lead: "Cybersecurity careers tend to split along a simple line. Offensive security ethical hacking and penetration testing  is about thinking like an attacker to find weaknesses before criminals do. Defensive security is about building and running the protections that keep systems safe day to day. Both matter enormously, but they reward different temperaments.",
     sections: [
       {
         heading: "The offensive path",
@@ -1401,7 +1401,7 @@ const blogPosts = [
     readTime: "6 min read",
     excerpt:
       "Should the button be green or blue? Which headline converts better? Opinions are cheap        experiments are how good teams find out. A/B testing is the analyst's tool for turning guesses into evidence. Here is how it works.",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Data_analytics-ba31dcb9.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/Data_analytics-19c78fb9.png?tr=w-840,f-auto,q-80",
     lead: "Every team has opinions about what will work        a new headline, a redesigned checkout, a different price. A/B testing replaces the loudest opinion with evidence. You show version A to one group and version B to another, measure how each performs, and let the data decide. It is one of the most powerful tools an analyst can bring to a business, because it turns argument into experiment.",
     sections: [
       {
@@ -1415,7 +1415,7 @@ const blogPosts = [
         heading: "Running a test properly",
         body: [
           "The execution is more subtle than it looks. You need a clear hypothesis and a single primary metric, a large enough sample to trust the result, and an understanding of statistical significance so you do not celebrate random noise as a win.",
-          "Without these, an A/B test can mislead you into confident wrong conclusions        worse than no test at all.",
+          "Without these, an A/B test can mislead you into confident wrong conclusions worse than no test at all.",
         ],
       },
       {
@@ -1429,7 +1429,7 @@ const blogPosts = [
         heading: "Building the mindset with CareerVeda",
         body: [
           "CareerVeda's Business Analytics program builds this experimental mindset alongside the technical toolkit of Excel, SQL, Power BI, Tableau, and Python. You learn to design, analyse, and communicate experiments using real business scenarios.",
-          "That ability        to measure impact rather than assert it        is exactly what makes an analyst indispensable to product, marketing, and growth teams, and the program turns it into a career advantage.",
+          "That ability  to measure impact rather than assert it        is exactly what makes an analyst indispensable to product, marketing, and growth teams, and the program turns it into a career advantage.",
         ],
       },
     ],
@@ -1455,7 +1455,7 @@ const blogPosts = [
     excerpt:
       "Mergers and acquisitions move billions and reshape entire industries        and investment banking analysts sit at the centre of them. Here is how a deal actually comes together, from first pitch to final close, and the analyst's role in each stage.",
     image:
-      "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/investing-banking-images-59ab0040.jpg",
+      "https://ik.imagekit.io/q7ucn1rfni/careerveda/investing-banking-images-d0cb7a99.png?tr=w-840,f-auto,q-80",
     lead: "When one company buys another, it rarely happens by accident. Behind every merger or acquisition is months of analysis, negotiation, and modelling        much of it done by investment banking analysts. Understanding how these deals flow is one of the best ways to grasp what an analyst actually does, and why the role sits at the heart of high finance.",
     sections: [
       {
@@ -1508,7 +1508,7 @@ const blogPosts = [
     readTime: "5 min read",
     excerpt:
       "Most breaches don't start with sophisticated hacking        they start with a convincing email. Phishing remains the single most common way attackers get in. Understanding it is the first thing every defender learns, and every employee should know.",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Data_analytics-ba31dcb9.jpg",
+    image: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/CyberSecurity-7e85cd39.png?tr=w-840,f-auto,q-80",
     lead: "For all the talk of sophisticated cyberattacks, the majority of breaches begin with something mundane: a person clicking a link in a convincing email. Phishing        tricking someone into revealing credentials, transferring money, or installing malware        remains the most common and effective attack technique in the world. Which is why understanding it is where every defender's education begins.",
     sections: [
       {
@@ -1562,7 +1562,7 @@ const blogPosts = [
     excerpt:
       "The way companies build data platforms has changed fast. The 'modern data stack' is a loose set of cloud-native tools that fit together to move, store, and transform data. Here is the landscape, and what actually matters to learn.",
     image:
-      "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/ChatGPT-Image-Jul-13-2026-04_53_32-PM-fbacfde5.jpg",
+      "https://ik.imagekit.io/q7ucn1rfni/careerveda/PG-WITH-GENAI-803ad9e9.webp?tr=w-840,f-auto,q-80",
     lead: "A decade ago, building a data platform meant heavy, monolithic systems and long projects. Today, teams assemble a 'modern data stack' from cloud-native tools that each do one thing well and connect cleanly. The result is faster, cheaper, and more flexible        and it is where the jobs are.",
     sections: [
       {

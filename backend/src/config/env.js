@@ -31,8 +31,18 @@ const schema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   PORT: z.coerce.number().int().positive().default(8080),
 
+  // Database: MongoDB (Atlas) or Firestore (Native mode)
+  // For Firestore: use format "firestore://projects/<project-id>/databases/(default)"
+  // For MongoDB: standard mongodb:// or mongodb+srv:// URI
   MONGODB_URI: z.string().min(1),
   MONGODB_DB_NAME: z.string().default("careerveda"),
+  
+  // Firestore-specific (optional, inferred from MONGODB_URI if it contains firestore.goog)
+  FIRESTORE_PROJECT_ID: z.string().optional(),
+  FIRESTORE_DATABASE: z.string().default("(default)"),
+  
+  // Emulator for local development
+  FIRESTORE_EMULATOR_HOST: z.string().optional(),
 
   FRONTEND_URL: z.string().url().default("http://localhost:5173"),
   ADMIN_URL: z.string().url().default("http://localhost:5174"),
@@ -82,6 +92,11 @@ export const env = {
   allowedOrigins,
   isProduction: raw.NODE_ENV === "production",
   isTest: raw.NODE_ENV === "test",
+  // Firestore detection and config
+  isFirestore: raw.MONGODB_URI.includes(".firestore.goog") || raw.MONGODB_URI.startsWith("firestore://"),
+  firestoreProjectId: raw.FIRESTORE_PROJECT_ID,
+  firestoreDatabase: raw.FIRESTORE_DATABASE,
+  firestoreEmulatorHost: raw.FIRESTORE_EMULATOR_HOST,
   // Media endpoints are registered only when all three keys are present, so a
   // partially-configured deploy fails loudly at the route level instead of
   // throwing inside the ImageKit SDK on first upload.

@@ -50,11 +50,7 @@ const parse = async (response) => {
   return body;
 };
 
-// One refresh at a time. Several requests expiring together would otherwise
-// each POST /auth/refresh — and because refresh tokens rotate, the second one
-// would present a token the first had already consumed, which the server
-// correctly treats as reuse and answers by killing the whole session. So the
-// first refresh is shared by everyone waiting on it.
+
 let refreshing = null;
 
 const refreshSession = async () => {
@@ -101,13 +97,6 @@ const request = async (path, {method = "GET", body, query, retry = true, raw = f
     payload = JSON.stringify(body);
   }
 
-  // fetch rejects with a bare `TypeError: Failed to fetch` for every reason the
-  // request never reached the server — the API is not running, the machine is
-  // offline, a proxy refused it, CORS blocked the response. That string is what
-  // reached the toast, and it says nothing about what to check. The one thing
-  // that is certain here is that the API did not answer, so say that, and name
-  // the address it was asked for: with three services on three ports, a panel
-  // pointed at the wrong one looks identical to a panel whose backend is down.
   let response;
   try {
     response = await fetch(url, {method, headers, body: payload, credentials: "include"});
@@ -241,8 +230,6 @@ export const mediaApi = {
   references: (id) => api.get(`/admin/media/${id}/references`),
   remove: (id) => api.delete(`/admin/media/${id}`),
 };
-
-// ── Leads ───────────────────────────────────────────────────────────────────
 
 export const leadsApi = {
   list: (query) => api.get("/admin/leads", query),

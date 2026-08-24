@@ -1,0 +1,10 @@
+[Unit]
+Description=CareerVeda auto-deploy (pull origin/main)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/careerveda/deploy/deploy.sh
+# A cold build (npm ci + two vite bundles) can take a few minutes on e2-small.
+TimeoutStartSec=900
