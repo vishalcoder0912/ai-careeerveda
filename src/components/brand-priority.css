@@ -28,35 +28,22 @@ body .hero-vignette {
     radial-gradient(circle at 68% 44%, transparent 0%, rgba(9, 10, 31, 0.22) 50%, rgba(9, 10, 31, 0.86) 100%);
 }
 
-body .site-nav,
 body .hero-layout,
 body .stat-strip {
   width: min(1240px, calc(100% - 36px));
 }
 
-body .site-nav {
-  min-height: 82px;
-}
+/* Navbar visuals live solely in navbar-area.css. */
 
 body .brand {
   letter-spacing: -0.035em;
 }
 
-body .brand span,
 body .avatar {
   background: linear-gradient(135deg, #6d5dfc, #d946ef);
   box-shadow: 0 18px 42px rgba(109, 93, 252, 0.34);
 }
 
-body .site-nav nav {
-  gap: 2px;
-  padding: 7px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.09);
-}
-
-body .site-nav nav a,
-body .nav-cta,
 body .primary-action,
 body .secondary-action,
 body .program-card a,
@@ -65,7 +52,6 @@ body .consultation-form button {
   font-weight: 900;
 }
 
-body .nav-cta,
 body .primary-action,
 body .program-card a,
 body .consultation-form button {
