@@ -87,6 +87,255 @@
   }
 }
 
+/* ── Laptop (1024px - 1280px): tighter program explorer ──────────────────── */
+@media (min-width: 1025px) and (max-width: 1280px) {
+  .program-showcase-section {
+    padding-top: 100px !important;
+  }
+
+  .program-showcase-section > .section-heading {
+    width: min(100% - 40px, 720px);
+  }
+
+  .program-showcase-section > .section-heading :is(h1, h2) {
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    line-height: 1.04;
+  }
+
+  .program-explorer {
+    width: min(1140px, calc(100% - 40px));
+    margin-top: 24px;
+    padding: 10px;
+    border-radius: 22px;
+  }
+
+  .program-explorer:has(.program-track-item:only-child) {
+    grid-template-columns: 1fr;
+  }
+
+  .program-explorer:has(.program-track-item:only-child) .program-sidebar {
+    display: none;
+  }
+
+  .program-sidebar {
+    padding: 12px;
+    border-radius: 20px;
+    min-height: 640px;
+  }
+
+  .program-track-list {
+    gap: 8px;
+    padding: 4px 4px 8px;
+  }
+
+  .program-track-item {
+    min-width: min(80vw, 280px);
+    padding: 10px;
+    border-radius: 16px;
+  }
+
+  .program-track-item.is-active,
+  .program-track-item.is-previewed {
+    transform: translateX(4px);
+  }
+
+  .program-detail-card {
+    padding: 18px;
+    border-radius: 22px;
+    min-height: 640px.
+  }
+
+  .program-card-topline {
+    margin-bottom: 18px.
+  }
+
+  .category-badge,
+  .admissions-badge {
+    padding: 7px 12px.
+    font-size: 0.65rem.
+  }
+
+  .program-detail-head {
+    margin-bottom: 18px.
+  }
+
+  .program-detail-head :is(h3, h2) {
+    font-size: clamp(1.7rem, 4.5vw, 2.2rem).
+  }
+
+  .program-description {
+    margin-top: 12px.
+    font-size: 0.95rem.
+    line-height: 1.6.
+  }
+
+  .program-head-media {
+    border-radius: 18px.
+  }
+
+  .program-meta-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)).
+    gap: 8px.
+    margin-bottom: 16px.
+  }
+
+  .meta-card {
+    min-width: 0.
+    padding: 12px 10px.
+    border-radius: 14px.
+  }
+
+  .meta-value {
+    font-size: 0.8rem.
+    overflow-wrap: anywhere.
+  }
+
+  .meta-label {
+    font-size: 0.6rem.
+    letter-spacing: 0.04em.
+  }
+
+  .program-detail-list {
+    gap: 8px.
+  }
+
+  .program-detail-list li {
+    padding: 11px 13px 11px 36px.
+    font-size: 0.88rem.
+  }
+
+  .skill-chip {
+    padding: 7px 10px.
+    font-size: 0.72rem.
+  }
+
+  .program-tabs {
+    border-radius: 18px.
+  }
+
+  .tab-pill {
+    font-size: 0.75rem.
+    padding: 8px 14px.
+  }
+
+  .cta-primary,
+  .cta-secondary {
+    font-size: 0.85rem.
+    min-height: 46px.
+  }
+
+  /* Recommended courses: slightly tighter */
+  .recommended-courses-section {
+    margin-top: 48px.
+  }
+
+  /* Outcome stories: 2-col grid */
+  .outcome-stories-heading {
+    gap: 22px.
+  }
+
+  .outcome-stories-heading h2 {
+    font-size: clamp(2.3rem, 5vw, 3rem).
+  }
+
+  .outcome-stories-link {
+    min-height: 44px.
+  }
+
+  .outcome-stories-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr)).
+    gap: 12px.
+    margin: 0 0 18px.
+  }
+
+  .outcome-stories-metrics div {
+    min-height: 92px.
+    padding: 16px.
+    border-radius: 20px.
+  }
+
+  .outcome-stories-metrics dt {
+    font-size: 0.65rem.
+    line-height: 1.25.
+  }
+
+  .outcome-stories-metrics dd {
+    font-size: 1.5rem.
+  }
+
+  .outcome-stories-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)).
+  }
+
+  .outcome-story-card,
+  .outcome-story-card:first-child,
+  .outcome-story-card:nth-child(2) {
+    grid-column: auto.
+    min-height: 0.
+    gap: 20px.
+    padding: 22px.
+    border-radius: 22px.
+  }
+
+  .outcome-story-card blockquote p {
+    font-size: 0.96rem.
+  }
+
+  /* Support section: 2-col */
+  .support-section .support-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)).
+  }
+
+  .support-section .support-grid article {
+    padding: 24px.
+    border-radius: 20px.
+  }
+
+  .support-section .support-grid article h3 {
+    font-size: clamp(22px, 4.5vw, 28px).
+  }
+
+  .support-section .support-grid article li {
+    font-size: 14.5px.
+  }
+
+  /* Strategy section: tighter cards */
+  .strategy-section .section-heading :is(h1, h2) {
+    font-size: clamp(28px, 4.5vw, 38px).
+  }
+
+  .strategy-section .step-list article {
+    padding: 22px.
+    border-radius: 20px.
+  }
+
+  .step-list h3 {
+    font-size: 18px.
+  }
+
+  .step-list p {
+    font-size: 14.5px.
+  }
+
+  .project-number {
+    padding: 26px.
+    border-radius: 24px.
+  }
+
+  .project-number strong {
+    font-size: clamp(56px, 12vw, 76px).
+  }
+
+  .project-number span {
+    font-size: clamp(18px, 3.5vw, 22px).
+  }
+
+  /* Footer */
+  .site-footer {
+    padding-bottom: 80px.
+  }
+}
+
 @media (max-width: 680px) {
   .program-showcase-section {
     padding-top: 78px !important;

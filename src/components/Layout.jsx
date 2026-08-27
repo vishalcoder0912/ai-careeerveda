@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import SiteNavbar from "./SiteNavbar";
 import SocialLinks from "./SocialLinks";
 import WhatsAppButton from "./WhatsAppButton";
+import CareerVedaBackground from "./background/CareerVedaBackground";
 import { navItems } from "../data/siteData";
 import { Link } from "react-router-dom";
 import BrandLockup from "./BrandLockup";
@@ -25,17 +26,23 @@ const Layout = () => {
 
   // The static policy list is the offline floor for the footer, but the module
   // carries every policy's full prose (~36 KB) for four titles' worth of links.
-  // It is fetched after first paint so it stays out of the entry chunk — the
-  // API answers before the footer is read, and this is only what renders when
-  // the backend is unreachable.
+  // It is fetched on a timer rather than at mount: requestIdleCallback fired
+  // almost immediately (the thread looks idle between boot tasks), which put
+  // this ~26 KB chunk's download and evaluation back inside the load window.
+  // The API answers before the footer is read anyway, and this is only what
+  // renders when the backend is unreachable — two and a half seconds late is
+  // free here.
   const [policyFallback, setPolicyFallback] = useState([]);
   useEffect(() => {
     let cancelled = false;
-    import("../data/policies").then((module) => {
-      if (!cancelled) setPolicyFallback(module.publishedPolicies);
-    });
+    const timer = window.setTimeout(() => {
+      import("../data/policies").then((module) => {
+        if (!cancelled) setPolicyFallback(module.publishedPolicies);
+      });
+    }, 2500);
     return () => {
       cancelled = true;
+      window.clearTimeout(timer);
     };
   }, []);
 
@@ -49,8 +56,15 @@ const Layout = () => {
       : policyFallback;
 
   return (
-    <>
-      <SiteNavbar navItems={navItems} />
+    <CareerVedaBackground>
+      {/* The shell owns the layout space; the navbar inside owns the visuals.
+          It always reserves the full top height (--navbar-height), so when the
+          fixed bar compresses into its scrolled state the document does not
+          move — the freed strip simply shows more of the shared background
+          instead of letting the bar cover content. See navbar-hero-merge.css. */}
+      <div className="navbar-shell">
+        <SiteNavbar navItems={navItems} />
+      </div>
       {/* Every route but the home page is a lazy chunk (see App.jsx), so the
           Outlet needs a boundary to render into while one loads. The nav and
           footer stay put across the swap, which is why it lives here and not
@@ -116,7 +130,7 @@ const Layout = () => {
           and must stay tappable while a route chunk loads. It reads the route
           itself to decide which message to prefill — see config/whatsapp.js. */}
       <WhatsAppButton />
-    </>
+    </CareerVedaBackground>
   );
 };
 

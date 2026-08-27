@@ -92,9 +92,9 @@ const {
 
 const latest = () => instances[instances.length - 1];
 
-// The provider wires itself to GSAP through a dynamic import, so the wiring
-// lands a microtask after mount. Waiting for it is what makes the ticker
-// assertions deterministic rather than racy.
+// The provider pumps Lenis from its own requestAnimationFrame loop, so frames
+// land on jsdom's frame schedule; the assertions below wait for real frames
+// rather than assuming one has already run.
 const wrapper = ({children}) => <SmoothScrollProvider>{children}</SmoothScrollProvider>;
 
 const reducedMotion = (matches) => {
@@ -207,30 +207,31 @@ describe("SmoothScrollProvider", () => {
     expect(latest().options.infinite).toBe(false);
   });
 
-  describe("sharing one clock with GSAP", () => {
-    it("drives Lenis from gsap.ticker rather than a second rAF loop", async () => {
+  describe("one clock of its own", () => {
+    it("pumps Lenis from its own requestAnimationFrame loop, in the milliseconds Lenis expects", async () => {
       renderHook(() => useLenis(), {wrapper});
 
-      await waitFor(() => expect(ticker.added).toHaveLength(1));
-
-      // gsap.ticker reports seconds; Lenis expects milliseconds.
-      ticker.added[0](2);
-      expect(latest().rafCalls).toEqual([2000]);
+      await waitFor(() => expect(instances).toHaveLength(1));
+      // jsdom fires rAF callbacks on its frame schedule; Lenis receiving raf()
+      // calls at all is the proof the loop is live.
+      await waitFor(() => expect(latest().rafCalls.length).toBeGreaterThan(0));
     });
 
-    it("updates ScrollTrigger on every Lenis scroll, so pinned elements do not jitter a frame behind", async () => {
+    it("pulls no animation library at startup — gsap waits until a page animates with it", async () => {
       renderHook(() => useLenis(), {wrapper});
 
-      await waitFor(() => expect(latest().countFor("scroll")).toBe(1));
-
-      latest().emit("scroll", {scroll: 100});
-      expect(scrollTriggerUpdate).toHaveBeenCalledTimes(1);
-    });
-
-    it("disables lag smoothing, which would otherwise skip Lenis frames", async () => {
-      renderHook(() => useLenis(), {wrapper});
-
-      await waitFor(() => expect(ticker.lagSmoothing).toHaveBeenCalledWith(0));
+      await waitFor(() => expect(latest().rafCalls.length).toBeGreaterThan(0));
+      // A few frames in, nothing has subscribed to gsap.ticker and
+      // ScrollTrigger.update was never wired: the ~113 KB library stays out of
+      // the critical boot path until a component with real animation work
+      // imports it itself.
+      await act(async () => {
+        await new Promise((resolve) => {
+          setTimeout(resolve, 50);
+        });
+      });
+      expect(ticker.added).toHaveLength(0);
+      expect(scrollTriggerUpdate).not.toHaveBeenCalled();
     });
   });
 
@@ -245,23 +246,22 @@ describe("SmoothScrollProvider", () => {
       expect(instance.destroyed).toBe(true);
     });
 
-    it("detaches its ScrollTrigger listener, so a stale one cannot keep firing", async () => {
+    it("stops pumping Lenis once unmounted — the rAF loop does not outlive the provider", async () => {
       const {unmount} = renderHook(() => useLenis(), {wrapper});
 
-      await waitFor(() => expect(latest().countFor("scroll")).toBe(1));
+      await waitFor(() => expect(latest().rafCalls.length).toBeGreaterThan(0));
       const instance = latest();
+      const callsAtUnmount = instance.rafCalls.length;
 
       unmount();
-      expect(instance.countFor("scroll")).toBe(0);
-    });
-
-    it("removes its ticker callback, which is the leak that grows across route changes", async () => {
-      const {unmount} = renderHook(() => useLenis(), {wrapper});
-
-      await waitFor(() => expect(ticker.added).toHaveLength(1));
-
-      unmount();
-      await waitFor(() => expect(ticker.removed).toEqual(ticker.added));
+      // Long enough for jsdom to have fired more frame callbacks if any had
+      // been scheduled before teardown.
+      await act(async () => {
+        await new Promise((resolve) => {
+          setTimeout(resolve, 60);
+        });
+      });
+      expect(instance.rafCalls.length).toBe(callsAtUnmount);
     });
 
     it("tears the old instance down before building a new one when enabled flips", async () => {

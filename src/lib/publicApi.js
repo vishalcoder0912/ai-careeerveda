@@ -110,53 +110,38 @@ export const fetchOne = async (resource, slug, {signal} = {}) => {
 };
 
 // ── Leads ───────────────────────────────────────────────────────────────────
-
+ 
 // The consultation and enrol forms both post here. The backend's Lead model
-// replaces the `consultations` and `enrollments` collections the serverless
-// functions in api/ used to write, so the admin panel's Leads inbox sees every
-// submission instead of only some of them.
+// replaces the `consultations` and `enrollments` collections, so the admin
+// panel's Leads inbox sees every submission instead of only some of them.
 //
-// With no backend configured the submission goes to the Vercel serverless
-// function it always went to (api/consultation.js, api/enroll.js), which writes
-// to MongoDB directly. That path predates the backend and stays as the floor,
-// so a deploy that has not been pointed at the API yet still captures leads
-// rather than dropping them — a silently lost lead is the worst outcome here.
-//
-// Returns {ok, errors, message} either way, so the two endpoints are
-// interchangeable at the call site.
-export const submitLead = async (payload, {legacyEndpoint} = {}) => {
-  const url = isApiConfigured ? `${API_BASE}/public/leads` : legacyEndpoint;
-
-  if (!url) {
+// Returns {ok, errors, message}.
+export const submitLead = async (payload) => {
+  if (!isApiConfigured) {
     return {ok: false, message: "Submissions aren't configured yet. Please try again later.", errors: {}};
   }
-
-  const response = await fetch(url, {
+ 
+  const response = await fetch(`${API_BASE}/public/leads`, {
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify(payload),
   });
-
+ 
   if (response.status === 204) return {ok: true};
-
+ 
   const body = await response.json().catch(() => null);
-
+ 
   if (response.ok && body?.success !== false) return {ok: true};
-
+ 
   const error = body?.error || {};
-
+ 
   return {
     ok: false,
     status: response.status,
-    // `error.message` is the backend's envelope; `body.error` as a bare string
-    // is the serverless function's. Both are read so either endpoint's message
-    // reaches the visitor.
     message:
       error.message ||
       (typeof body?.error === "string" ? body.error : "") ||
       "We couldn't save your details. Please try again.",
-    // The API reports per-field problems as {fields: {email: "..."}}; the
-    // serverless function as {errors: {...}}. The forms expect `errors`.
     errors: error.fields || body?.errors || {},
   };
 };

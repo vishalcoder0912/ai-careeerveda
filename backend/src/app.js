@@ -26,10 +26,7 @@ import {forbidden} from "./utils/apiError.js";
 export const createApp = ({extraRouters = []} = {}) => {
   const app = express();
 
-  // Cloud Run terminates TLS at its front end and forwards one X-Forwarded-For
-  // hop. Trusting exactly 1 proxy means req.ip is the real client (so rate
-  // limiting works) without trusting a spoofed header from a direct caller —
-  // `trust proxy: true` would let anyone forge their IP past the limiter.
+ 
   app.set("trust proxy", 1);
 
   // Advertising Express and its version is free reconnaissance.

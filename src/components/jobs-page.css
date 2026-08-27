@@ -478,6 +478,111 @@
   background: rgba(20, 184, 166, 0.1);
 }
 
+/* ── Laptop (1024px - 1280px): 2-col job grid, tighter toolbar ────────────── */
+@media (min-width: 1025px) and (max-width: 1280px) {
+  .jobs-page .jp-inner {
+    width: min(1140px, calc(100% - 48px));
+  }
+
+  .jobs-hero {
+    padding: clamp(88px, 10vw, 120px) 0 clamp(36px, 4.5vw, 52px);
+  }
+
+  .jobs-hero__title {
+    font-size: clamp(40px, 5vw, 56px);
+  }
+
+  .jobs-hero__lead {
+    font-size: clamp(16px, 1.5vw, 18px);
+  }
+
+  .jobs-toolbar {
+    gap: 12px;
+    padding: 18px 0 24px;
+  }
+
+  .jobs-search__input {
+    min-height: 46px;
+    padding: 0 14px 0 42px;
+    font-size: 14px;
+  }
+
+  .jobs-filters {
+    gap: 8px;
+  }
+
+  .jobs-filters__select {
+    min-height: 46px;
+    padding: 0 34px 0 13px;
+    font-size: 13.5px;
+  }
+
+  .jobs-filters__clear {
+    min-height: 46px;
+    padding: 0 16px;
+    font-size: 13.5px;
+  }
+
+  .jobs-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .job-card {
+    padding: 22px;
+    gap: 10px;
+  }
+
+  .job-card__title {
+    font-size: 17px;
+  }
+
+  .job-card__company {
+    font-size: 13.5px;
+  }
+
+  .job-card__meta {
+    font-size: 12.5px;
+    gap: 5px 12px;
+  }
+
+  .job-card__description {
+    font-size: 13.5px;
+  }
+
+  .job-card__skill {
+    padding: 3px 9px;
+    font-size: 11.5px;
+  }
+
+  .job-card__footer {
+    padding-top: 6px;
+  }
+
+  .job-card__date {
+    font-size: 11.5px;
+  }
+
+  .job-card__apply {
+    min-height: 38px;
+    padding: 0 20px;
+    font-size: 13.5px;
+  }
+
+  .jobs-count-row {
+    padding: 16px 0 6px;
+  }
+
+  .jobs-count {
+    font-size: 13.5px;
+  }
+
+  .jobs-thirdparty-note {
+    font-size: 11.5px;
+    margin: clamp(28px, 4vw, 44px) auto 0;
+  }
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 860px) {
   .jobs-grid {

@@ -41,11 +41,7 @@ git reset --hard "origin/$BRANCH"
 log "Installing backend dependencies"
 npm ci --prefix backend --omit=dev --no-audit --no-fund
 
-# ── Frontend ──────────────────────────────────────────────────────────────────
-# `npx vite build` directly rather than `npm run build`: the package.json wraps
-# the real build in prebuild/postbuild hooks whose snapshot/prerender steps need
-# a Playwright Chromium install. Fine in CI, dead weight on a small test VM —
-# and the site falls back to its static data files either way.
+
 log "Building frontend"
 npm ci --no-audit --no-fund
 NODE_OPTIONS="--max-old-space-size=1536" npx vite build

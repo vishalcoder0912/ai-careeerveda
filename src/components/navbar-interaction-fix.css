@@ -1,10 +1,7 @@
-body .site-nav {
-  position: relative;
-  z-index: 1000 !important;
-  min-height: 68px !important;
-  padding-inline: clamp(20px, 4vw, 74px) !important;
-  pointer-events: auto !important;
-}
+/* ── Interaction fixes: pointer-events + z-index for clickable elements ──────
+ * Layout, sizing, and visual properties are managed by navbar-area.css and
+ * navbar-hero-merge.css. This file ONLY ensures interactive elements receive
+ * pointer events and sit above decorative layers. */
 
 body .brand {
   position: relative;
@@ -12,29 +9,15 @@ body .brand {
   pointer-events: auto !important;
 }
 
-body .brand span {
-  width: 36px !important;
-  height: 36px !important;
-  border-radius: 9px !important;
-  font-size: 16px !important;
-}
-
 body .site-nav nav {
   position: relative;
   z-index: 1002;
-  gap: clamp(18px, 2.5vw, 38px) !important;
   pointer-events: auto !important;
 }
 
 body .site-nav nav a {
   position: relative;
   z-index: 1003;
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px !important;
-  padding: 0 2px !important;
-  cursor: pointer;
   pointer-events: auto !important;
 }
 
@@ -49,14 +32,6 @@ body .partner-marquee span {
   z-index: 1003;
   cursor: pointer;
   pointer-events: auto !important;
-}
-
-body .nav-cta {
-  min-height: 44px !important;
-  padding: 0 24px !important;
-  border-radius: 999px !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
 }
 
 body .hero-vignette,
@@ -114,24 +89,8 @@ body .consultation-form button[type="button"] {
 }
 
 @media (max-width: 980px) {
-  body .site-nav {
-    grid-template-columns: 1fr auto auto !important;
-    min-height: 64px !important;
-    padding-inline: 18px !important;
-  }
-
-  body .site-nav nav {
-    display: none !important;
-  }
-
   body .brand {
     font-size: 17px !important;
-  }
-
-  body .nav-cta {
-    min-height: 40px !important;
-    padding: 0 16px !important;
-    font-size: 13px !important;
   }
 }
 
@@ -144,9 +103,5 @@ body .consultation-form button[type="button"] {
     width: 32px !important;
     height: 32px !important;
     font-size: 14px !important;
-  }
-
-  body .nav-cta {
-    padding: 0 12px !important;
   }
 }

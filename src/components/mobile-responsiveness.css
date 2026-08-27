@@ -238,19 +238,7 @@
    only. Matching the two breakpoints closes that gap and extends the same tested
    phone treatment across the tablet range. */
 @media (max-width: 980px) {
-  body .site-nav {
-    gap: 10px;
-    /* 24px, the gutter .ps-inner and the footer already use on a phone. At 16px
-       the logo sat 8px outside the content it heads, which reads as a wonky
-       page rather than as a deliberately wider bar. */
-    padding-inline: 24px !important;
-  }
-
-  body .site-nav,
-  body .site-nav.is-scrolled {
-    height: 64px !important;
-    min-height: 64px !important;
-  }
+  /* Bar geometry (heights, padding, grid) lives solely in navbar-area.css. */
 
   body .brand {
     font-size: 16px !important;
@@ -265,30 +253,6 @@
     width: auto !important;
     height: 42px !important;
     max-width: 165px !important;
-  }
-
-  /* Enroll Now and the menu button sit side by side on the right, as one matched
-     pair. This file is imported last, so its `display: none` on the CTA was what
-     actually removed it from the phone header — leaving a lone hamburger and an
-     empty grid track where the button should have been. */
-  body .site-nav,
-  body .site-nav.is-scrolled {
-    grid-template-columns: 1fr auto auto !important;
-    gap: 10px !important;
-  }
-
-  body .nav-cta {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    /* Same 44px box as the menu button beside it. */
-    height: 44px !important;
-    min-height: 44px !important;
-    padding: 0 15px !important;
-    border-radius: 10px !important;
-    font-size: 13px !important;
-    line-height: 1 !important;
-    white-space: nowrap !important;
   }
 
   /* Glass on the slate bar, matching the close button inside the drawer it
@@ -1179,14 +1143,6 @@
 
 /* ── Small mobile (< 480px) refinements ── */
 @media (max-width: 480px) {
-  body .site-nav,
-  body .site-nav.is-scrolled {
-    height: 58px !important;
-    min-height: 58px !important;
-    /* Same 24px as every other block on the page — see the 980px rule above. */
-    padding-inline: 24px !important;
-  }
-
   body .brand {
     font-size: 15px !important;
   }
@@ -1207,11 +1163,6 @@
 
   .hamburger-btn span {
     width: 16px;
-  }
-
-  body .nav-cta {
-    padding: 0 12px !important;
-    font-size: 12.5px !important;
   }
 
   body .hero-layout {
@@ -1309,6 +1260,307 @@
 
   .jobs-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── Laptop (1024px - 1280px) refinements ──
+   Targets common laptop screens: 13" MacBook (1280), 14" Windows (1366), 
+   and 1024px tablets in landscape. Ensures smooth transition from tablet
+   to desktop layouts without awkward in-between states. */
+@media (min-width: 1025px) and (max-width: 1280px) {
+  /* Hero: slightly tighter grid gap and type scale for 1024-1280px */
+  .hero-layout {
+    gap: clamp(32px, 4vw, 56px) !important;
+    width: min(1080px, calc(100% - 48px)) !important;
+  }
+
+  .hero-copy h1 {
+    font-size: clamp(48px, 6.5vw, 80px) !important;
+  }
+
+  .hero-copy > p {
+    font-size: 16px !important;
+  }
+
+  /* Section headings: slightly smaller for laptop */
+  .section-heading :is(h1, h2) {
+    font-size: clamp(32px, 4.5vw, 44px) !important;
+  }
+
+  .section-heading p:last-child {
+    font-size: 16px !important;
+  }
+
+  /* Program explorer: sidebar fits better at 1024px */
+  .program-explorer {
+    grid-template-columns: 260px 1fr;
+    width: min(1140px, calc(100% - 40px));
+  }
+
+  .program-sidebar {
+    min-height: 680px;
+  }
+
+  .program-detail-card {
+    min-height: 680px;
+  }
+
+  /* Recommended courses: 6-col bento works at 1024px but tight */
+  .rc-grid {
+    gap: 16px;
+  }
+
+  .rc-card--hero {
+    min-height: 440px;
+  }
+
+  .rc-card--wide,
+  .rc-card--tall {
+    min-height: 220px;
+  }
+
+  .rc-card--compact {
+    min-height: 240px;
+  }
+
+  .rc-card--panel,
+  .rc-card--banner {
+    min-height: 280px;
+  }
+
+  /* Jobs grid: 2 columns at 1024px, 3 at 1280px+ */
+  .jobs-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  /* Mentor grid: 2 columns at 1024px */
+  .mentor-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .mentor-card {
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 16px;
+    padding: 20px;
+  }
+
+  .mentor-card h3 {
+    font-size: 19px;
+  }
+
+  /* Outcome stories: 2 columns */
+  .outcome-stories-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .outcome-story-card {
+    min-height: 0;
+    padding: 22px;
+  }
+
+  /* Stats/metrics: 3 columns */
+  .outcome-stories-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  /* Support grid: 2 columns */
+  .support-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Difference grid: 2 columns */
+  .difference-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Strategy step list: tighter cards */
+  .step-list article {
+    padding: 22px !important;
+  }
+
+  .step-list h3 {
+    font-size: 18px !important;
+  }
+
+  .step-list p {
+    font-size: 14.5px !important;
+  }
+
+  /* Partner logos: slightly smaller trail */
+  .partner-band .partner-trail__strip li {
+    width: 110px;
+    height: 48px;
+  }
+
+  .partner-band .partner-trail__strip img {
+    max-width: 96px;
+    height: 28px;
+  }
+
+  /* Page shell (About, Contact, Alumni, Enroll, Policy): tighter container */
+  .ps-inner {
+    width: min(1140px, calc(100% - 48px));
+  }
+
+  .page-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .page-card {
+    padding: 24px;
+  }
+
+  .page-stat-row {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .page-hero__title {
+    font-size: clamp(40px, 5vw, 56px);
+  }
+
+  .page-hero__lead {
+    font-size: clamp(16px, 1.5vw, 18px);
+  }
+
+  /* Blog grid: 2 columns */
+  .blog-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .blog-card-body {
+    padding: 20px;
+  }
+
+  .blog-card-body h3 {
+    font-size: 18px;
+  }
+
+  /* Program detail: hero grid still 2-col but tighter */
+  .pd-hero__grid {
+    grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.7fr);
+    gap: clamp(24px, 3vw, 40px);
+  }
+
+  .program-detail h1 {
+    font-size: clamp(36px, 5vw, 48px);
+  }
+
+  .pd-price {
+    top: 88px;
+    padding: 24px;
+  }
+
+  .pd-highlights {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .pd-gains {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pd-modules {
+    gap: 10px;
+  }
+
+  .pd-module summary {
+    padding: 16px 18px;
+    font-size: 15px;
+  }
+
+  /* MagicBento: 4-column grid works at 1024px */
+  .bento-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    width: min(1100px, calc(100% - 40px));
+  }
+
+  .bento-grid > * {
+    grid-column: span 2;
+  }
+
+  .bento-grid > *:nth-child(1),
+  .bento-grid > *:nth-child(6),
+  .bento-grid > *:nth-child(9) {
+    grid-column: span 4;
+  }
+
+  .magic-bento-card {
+    min-height: 200px;
+    padding: 24px;
+  }
+
+  .magic-bento-card__title {
+    font-size: 18px;
+  }
+
+  .magic-bento-card__description {
+    font-size: 14px;
+  }
+
+  .magic-bento-card__label {
+    font-size: 26px;
+  }
+
+  /* Consultation form: side-by-side on laptop */
+  .consultation-section {
+    flex-direction: row;
+    gap: 32px;
+    align-items: stretch;
+  }
+
+  .consultation-copy {
+    flex: 1;
+  }
+
+  .consultation-form {
+    flex: 1;
+    min-width: 420px;
+  }
+
+  /* FAQ: side-by-side on larger laptops */
+  .faq-list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  /* Footer: 4 columns on laptop */
+  .site-footer {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 24px !important;
+    padding-block: 56px 28px !important;
+  }
+
+  .site-footer > div {
+    width: auto !important;
+    max-width: none !important;
+  }
+
+  .site-footer .brand {
+    grid-column: 1;
+  }
+
+  /* Stats strip */
+  .stat-strip {
+    width: min(100% - 40px, 680px) !important;
+  }
+
+  .stat-strip div {
+    min-height: 72px !important;
+    padding: 16px 20px !important;
+  }
+
+  .stat-strip strong {
+    font-size: clamp(28px, 4vw, 36px) !important;
+  }
+
+  .stat-strip span {
+    font-size: 13px !important;
   }
 }
 

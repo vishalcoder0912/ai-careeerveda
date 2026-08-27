@@ -150,11 +150,13 @@ body .spline-page--grid .tc-title {
   color: var(--cv-light-text, #f8fafc);
 }
 
-/* The hero is the one place the grid goes over the background rather than
-   under it: it keeps its dark gradient, because the 3D scene and the white hero
-   copy are both built against that field, and takes its own instance of the
-   grid on top of it. Above the gradient, below .hero-word (z-index 1) and
-   everything after it. See Hero.jsx. */
+/* The hero's background layer. It no longer hosts a canvas — the site's one
+   grid is the CursorGrid fixed behind every route (see
+   components/background/CareerVedaBackground.jsx), and careerveda-background.css
+   hands the hero's fill back to that shared field. What remains here is the
+   layer box itself, because navbar-hero-merge.css paints the teal atmosphere
+   hugging the top of the document as this layer's ::after. Above the shared
+   field, below .hero-word (z-index 1) and everything after it. */
 .hero-grid-layer {
   position: absolute;
   inset: 0;

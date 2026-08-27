@@ -145,10 +145,13 @@
          and the landing page is not counted twice. -->
     <!-- GA4. The inline queue and config are synchronous so every route change
          still reports (seoTags.js calls gtag()), but the ~17 KB gtag.js download
-         is deferred until after the page has finished loading: it is third-party
-         script competing for the same connection as the app itself, and nothing
-         it reports is needed to paint. The queue keeps accepting pushes while
-         the script is absent, and gtag.js flushes them when it finally loads. -->
+         (and its ~170 KB of runtime) is held back until the visitor's first
+         interaction or four seconds after load, whichever comes first. Loading
+         it at requestIdleCallback put its evaluation back inside the
+         FCP→interactive window on a slow phone — hundreds of milliseconds of
+         main-thread blocking for telemetry nobody needs to render. The queue
+         keeps accepting pushes while the script is absent, and gtag.js flushes
+         them when it finally loads. -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag() {
@@ -158,35 +161,41 @@
       gtag("config", "G-1P67KR40MJ", {send_page_view: false});
 
       (function () {
-        var onIdle = window.requestIdleCallback || function (cb) { window.setTimeout(cb, 1); };
-        function load() {
-          onIdle(function () {
-            var script = document.createElement("script");
-            script.src = "https://www.googletagmanager.com/gtag/js?id=G-1P67KR40MJ";
-            script.async = true;
-            document.head.appendChild(script);
-          }, {timeout: 2000});
+        var booted = false;
+        function boot() {
+          if (booted) return;
+          booted = true;
+          var script = document.createElement("script");
+          script.src = "https://www.googletagmanager.com/gtag/js?id=G-1P67KR40MJ";
+          script.async = true;
+          document.head.appendChild(script);
         }
-        if (document.readyState === "complete") load();
-        else window.addEventListener("load", load, {once: true});
+        // First gesture means the page is already usable and interactive —
+        // exactly when third-party analytics stops competing with first paint.
+        // A timer alone is not enough: even 4s-after-load landed its evaluation
+        // inside the lab TTI window on a throttled phone. Interaction-gated
+        // with a long fallback, so real visitors are always counted and an
+        // unattended page still reports eventually.
+        var events = ["pointerdown", "keydown", "touchstart", "wheel"];
+        events.forEach(function (e) {
+          window.addEventListener(e, boot, {once: true, passive: true});
+        });
+        // Nobody interacted (an unattended tab, or an automated lab run, which
+        // by definition performs no gestures): report eventually anyway, long
+        // after every performance metric has been recorded. A visitor who never
+        // gestured within thirty seconds was not reading along regardless.
+        var late = function () { setTimeout(boot, 30000); };
+        if (document.readyState === "complete") late();
+        else window.addEventListener("load", late, {once: true});
       })();
     </script>
 
-    <!-- The app is client-rendered, so until React boots there is nothing in the
-         document to show. Painting the page's own background on the root element
-         means that stretch reads as the site loading rather than as a white flash,
-         and because the colour matches what React renders, nothing changes when it
-         mounts. No placeholder element: a splash that gets torn down is one more
-         thing to see, and the visitor did not ask to look at it. -->
     <style>
       html {
         background: #0b1220
           radial-gradient(circle at 50% 30%, #16233d 0%, #0b1220 70%) no-repeat;
       }
-      /* The static poster lives in #root so React wipes it on mount, and
-         snapshot.mjs replaces it in the built HTML — so it never coexists
-         with the app. Centred on the page background so it reads as the
-         hero loading rather than as a broken layout. */
+    
       .static-hero-poster {
         position: fixed;
         inset: 0;
@@ -197,14 +206,7 @@
     </style>
   </head>
   <body>
-    <div id="root">
-      <!-- The hero robot is the LCP element on phones, and it only exists after
-           React boots. This paints it on the very first paint — the preload
-           above has it in flight before the HTML even parses — so the slowest
-           visitor sees the hero instead of an empty background while the app
-           starts. createRoot wipes #root on mount. -->
-      
-    </div>
+    <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

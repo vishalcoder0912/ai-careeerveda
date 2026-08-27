@@ -6,83 +6,12 @@ import { visualizer } from "rollup-plugin-visualizer";
 
 const isAnalyze = process.env.ANALYZE === "true";
 
-// In production Vercel runs everything in api/ as a serverless function. Vite's
-// dev server knows nothing about that, so `npm run dev` used to answer
-// POST /api/enroll with index.html — the form then failed with "we couldn't save
-// your application", which looked like a database fault but was a missing route.
-//
-// This runs the same handler files in-process, with the small slice of the Vercel
-// req/res API they actually use (req.body, res.status().json()). It is dev-only;
-// on Vercel the real runtime serves these and this plugin never loads.
-const apiDevServer = (env) => ({
-  name: "api-dev-server",
-  apply: "serve",
-  configureServer(server) {
-    // The handlers read process.env.MONGODB_URI. Vite only exposes VITE_* to the
-    // client and does not populate process.env for server code, so bridge the
-    // non-public vars across explicitly.
-    for (const key of ["MONGODB_URI", "MONGODB_DB", "IMAGEKIT_PRIVATE_KEY"]) {
-      if (env[key] && !process.env[key]) process.env[key] = env[key];
-    }
-
-    server.middlewares.use(async (req, res, next) => {
-      if (!req.url?.startsWith("/api/")) return next();
-
-      const route = req.url.split("?")[0].replace(/^\/api\//, "").replace(/\/$/, "");
-      const file = path.resolve(__dirname, "api", `${route}.js`);
-
-      try {
-        const body = await new Promise((resolve, reject) => {
-          const chunks = [];
-          req.on("data", (chunk) => chunks.push(chunk));
-          req.on("end", () => {
-            const raw = Buffer.concat(chunks).toString("utf8");
-            if (!raw) return resolve({});
-            try {
-              resolve(JSON.parse(raw));
-            } catch {
-              // Malformed JSON is the client's problem; hand the handler an empty
-              // body and let its own validation reject it.
-              resolve({});
-            }
-          });
-          req.on("error", reject);
-        });
-
-        req.body = body;
-
-        // Minimal Vercel-style response shim.
-        res.status = (code) => {
-          res.statusCode = code;
-          return res;
-        };
-        res.json = (payload) => {
-          res.setHeader("Content-Type", "application/json");
-          res.end(JSON.stringify(payload));
-          return res;
-        };
-        res.setHeader ??= () => res;
-
-        // ssrLoadModule, not import(): it applies Vite's transforms, so the
-        // handler's `import ... from "../src/data/programCatalog.js"` resolves.
-        const module = await server.ssrLoadModule(file);
-        await module.default(req, res);
-      } catch (error) {
-        server.config.logger.error(`[api] ${req.url} failed: ${error.message}`);
-        res.statusCode = 500;
-        res.setHeader("Content-Type", "application/json");
-        res.end(JSON.stringify({error: "The local API route failed. See the terminal."}));
-      }
-    });
-  },
-});
-
 export default defineConfig(({mode}) => {
   // "" loads every variable, not just the VITE_-prefixed ones.
-  const env = loadEnv(mode, process.cwd(), "");
+  loadEnv(mode, process.cwd(), "");
 
   return {
-    plugins: [react(), tailwindcss(), apiDevServer(env), isAnalyze && visualizer({
+    plugins: [react(), tailwindcss(), isAnalyze && visualizer({
       open: true,
       filename: "stats.html",
       gzipSize: true,
@@ -121,6 +50,11 @@ export default defineConfig(({mode}) => {
     },
 
     build: {
+      // Emits dist/.vite/manifest.json: the exact hashed asset names per module,
+      // including every lazy route chunk and its CSS. scripts/preload-routes.mjs
+      // reads it after the build to give each prerendered route a modulepreload
+      // of its own chunk — without the manifest those names are unknowable.
+      manifest: true,
       rollupOptions: {
         output: {
           manualChunks(id) {

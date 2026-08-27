@@ -77,9 +77,9 @@ const ResourceEditor = () => {
     }
   }, [api, canRead, id, isNew]);
 
-  // useEffect(() => {
-  //   load();
-  // }, [load]);
+useEffect(() => {
+    load();
+  }, [load]);
 
   // Decide the opening layout once the record is in hand. A record with work
   // outstanding opens the sections that need attention and folds the settled

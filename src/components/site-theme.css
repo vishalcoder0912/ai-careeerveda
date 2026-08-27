@@ -52,32 +52,8 @@ body .avatar {
   box-shadow: 0 14px 34px rgba(29, 95, 211, 0.26);
 }
 
-body .site-nav {
-  color: var(--site-ink);
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid var(--site-border);
-  border-radius: 0 0 18px 18px;
-  box-shadow: 0 10px 30px rgba(16, 24, 64, 0.08);
-  padding-inline: 18px;
-}
+/* Navbar visuals live solely in navbar-area.css. */
 
-body .site-nav .brand,
-body .site-nav nav a {
-  color: var(--site-ink);
-}
-
-body .site-nav nav {
-  background: #ffffff;
-  border: 1px solid var(--site-border);
-  box-shadow: none;
-}
-
-body .site-nav nav a:hover {
-  color: var(--site-orange-dark);
-  background: var(--site-orange-soft);
-}
-
-body .nav-cta,
 body .primary-action,
 body .program-card a,
 body .consultation-form button {
@@ -86,7 +62,6 @@ body .consultation-form button {
   box-shadow: 0 16px 36px rgba(249, 115, 22, 0.26);
 }
 
-body .nav-cta:hover,
 body .primary-action:hover,
 body .secondary-action:hover,
 body .program-card a:hover,
@@ -272,10 +247,4 @@ body .consultation-form select {
 
 body .faq-list details[open] summary {
   color: var(--site-orange-dark);
-}
-
-@media (max-width: 980px) {
-  body .site-nav {
-    border-radius: 0;
-  }
 }

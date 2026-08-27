@@ -52,7 +52,7 @@
     "firestore:status": "bash scripts/firestore-emulator.sh status",
     "dev:firestore": "npm run firestore:start && sleep 3 && FIRESTORE_EMULATOR_HOST=localhost:8080 npm run dev:backend",
     "prebuild": "node scripts/generate-sitemap.mjs && node scripts/generate-llms-txt.mjs",
-    "postbuild": "node scripts/prerender.mjs && node scripts/snapshot.mjs",
+    "postbuild": "node scripts/prerender.mjs && node scripts/preload-routes.mjs && node scripts/snapshot.mjs",
     "doctor": "npx react-doctor@latest"
   },
   "dependencies": {

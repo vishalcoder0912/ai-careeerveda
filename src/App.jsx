@@ -2,12 +2,24 @@ import {useEffect, lazy} from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
+import {SmoothScrollProvider, useLenis} from "./lib/smoothScroll";
 import HomePage from "./pages/HomePage";
 import {resolvePageMeta, composeTitle, DEFAULT_DESCRIPTION} from "./config/pageMeta";
 import {applySeo} from "./lib/seoTags";
 import {absoluteUrl, OG_IMAGE} from "./config/siteMeta";
 import {organisationSchema, webSiteSchema, breadcrumbSchema, useJsonLd} from "./lib/structuredData";
 import * as routeChunks from "./lib/routeChunks";
+
+// Set once the app's tree has actually committed — an effect runs strictly
+// after mount, so anything waiting on this marker (scripts/snapshot.mjs takes
+// its scroll pass against the live tree) cannot race the concurrent renderer
+// the way it would waiting on a flag set at render()-call time.
+const BootMarker = () => {
+  useEffect(() => {
+    document.getElementById("root")?.setAttribute("data-app-mounted", "true");
+  }, []);
+  return null;
+};
 
 const ProgramsPage = lazy(routeChunks.loadProgramsPage);
 const ProgramDetailPage = lazy(routeChunks.loadProgramDetailPage);
@@ -21,12 +33,36 @@ const AlumniPage = lazy(routeChunks.loadAlumniPage);
 const EnrollPage = lazy(routeChunks.loadEnrollPage);
 const PolicyPage = lazy(routeChunks.loadPolicyPage);
 
+// The browser restores each history entry's scroll offset on its own ("auto"),
+// which would land a back/forward navigation mid-page after the reset below.
+// Route changes are owned by this app, so the browser's memory is switched off
+// and every entry starts from the decision ScrollToTop makes.
+if ("scrollRestoration" in window.history) {
+  window.history.scrollRestoration = "manual";
+}
+
 const ScrollToTop = () => {
   const {pathname, hash} = useLocation();
+  // Null when smooth scrolling is off (reduced motion) — the native branch is
+  // the whole path then, not an error case.
+  const lenis = useLenis();
+
   useEffect(() => {
     if (hash) return;
-    window.scrollTo({top: 0, left: 0, behavior: "instant"});
-  }, [pathname, hash]);
+
+    // The reset must go through Lenis when Lenis drives the page. A native
+    // scrollTo loses the race against the ticker: an interpolation still
+    // settling from the last wheel gesture repaints its old position over this
+    // one on the very next frame, which is how a route change landed where the
+    // previous page was left — often near its end. `immediate` jumps without
+    // animating; `force` covers the stopped state a modal leaves behind.
+    if (lenis) {
+      lenis.scrollTo(0, {immediate: true, force: true});
+    } else {
+      window.scrollTo({top: 0, left: 0, behavior: "instant"});
+    }
+  }, [pathname, hash, lenis]);
+
   return null;
 };
 const ScrollToHash = () => {
@@ -136,10 +172,12 @@ const RouteMeta = () => {
 const App = () => {
   return (
     <BrowserRouter>
-      <ScrollToTop />
-      <ScrollToHash />
-      <RouteMeta />
-      <Routes>
+      <BootMarker />
+      <SmoothScrollProvider>
+        <ScrollToTop />
+        <ScrollToHash />
+        <RouteMeta />
+        <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/programs" element={<ProgramsPage />} />
@@ -159,7 +197,8 @@ const App = () => {
           <Route path="/escalation-policy" element={<PolicyPage slug="escalation-policy" />} />
           <Route path="/:slug" element={<PolicyPage />} />
         </Route>
-      </Routes>
+        </Routes>
+      </SmoothScrollProvider>
     </BrowserRouter>
   );
 };
