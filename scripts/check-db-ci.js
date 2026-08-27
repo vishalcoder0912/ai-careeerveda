@@ -1,5 +1,3 @@
-// Database connectivity check for CI pipeline
-// Verifies MongoDB (in-memory or configured) is reachable
 
 import { MongoClient } from 'mongodb';
 

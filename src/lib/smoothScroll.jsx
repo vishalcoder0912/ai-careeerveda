@@ -34,7 +34,10 @@ export const SmoothScrollProvider = ({enabled = true, children}) => {
     if (!enabled || prefersReducedMotion()) return undefined;
 
     const instance = new Lenis({
-      duration: 1.2,
+      // Sub-second settle. A longer duration keeps gliding after the wheel has
+      // stopped, which reads as the page dragging through mud; 0.9 keeps the
+      // interpolation silk without the lag.
+      duration: 0.9,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
       wheelMultiplier: 1,
@@ -50,59 +53,27 @@ export const SmoothScrollProvider = ({enabled = true, children}) => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLenis(instance);
 
-    let disposed = false;
-    let rafId = null;
-    let gsapTicker = null;
-    let detachScrollTrigger = null;
-
-    // GSAP is in this project and ScrollTrigger is used by
-    // hooks/useCinematicInteractions.js. Where both are present they must share
-    // one clock: a separate rAF loop means Lenis writes a scroll position in one
-    // frame and ScrollTrigger reads the old one in another, and pinned elements
-    // jitter by exactly one frame. Driving Lenis from gsap.ticker removes the
-    // second loop entirely.
+    // Lenis needs something to call its raf(time) once per frame. This used to
+    // be gsap.ticker, which wired Lenis and ScrollTrigger onto one clock — but
+    // it did so by dynamically importing gsap + ScrollTrigger on EVERY route at
+    // startup, putting ~113 KB of animation library and its evaluation into the
+    // critical load path of pages that never animate anything with it.
     //
-    // Imported dynamically so a route that never touches GSAP does not pull it
-    // in just to set up scrolling.
-    const wireToGsap = async () => {
-      try {
-        const [{default: gsap}, {ScrollTrigger}] = await Promise.all([
-          import("gsap"),
-          import("gsap/ScrollTrigger"),
-        ]);
-        if (disposed) return;
-
-        gsap.registerPlugin(ScrollTrigger);
-
-        const update = () => ScrollTrigger.update();
-        instance.on("scroll", update);
-        detachScrollTrigger = () => instance.off("scroll", update);
-
-        gsapTicker = (time) => instance.raf(time * 1000); // gsap.ticker is seconds
-        gsap.ticker.add(gsapTicker);
-        gsap.ticker.lagSmoothing(0);
-      } catch {
-        // No GSAP resolvable — fall back to our own loop.
-        if (disposed) return;
-        const raf = (time) => {
-          instance.raf(time);
-          rafId = requestAnimationFrame(raf);
-        };
-        rafId = requestAnimationFrame(raf);
-      }
+    // A plain rAF loop drives Lenis identically. ScrollTrigger does not need
+    // the shared clock: it listens to native scroll events, and Lenis scrolls
+    // the window natively, so triggers still update as the page moves. The one
+    // visible difference would be a single-frame lag on a scrubbed animation
+    // mid-gesture — imperceptible on the decorative scrubs this site uses, and
+    // not worth 113 KB plus its parse on every first visit.
+    let rafId = null;
+    const loop = (time) => {
+      instance.raf(time);
+      rafId = window.requestAnimationFrame(loop);
     };
-
-    wireToGsap();
+    rafId = window.requestAnimationFrame(loop);
 
     return () => {
-      disposed = true;
       if (rafId) cancelAnimationFrame(rafId);
-      detachScrollTrigger?.();
-      if (gsapTicker) {
-        import("gsap")
-          .then(({default: gsap}) => gsap.ticker.remove(gsapTicker))
-          .catch(() => {});
-      }
       instance.destroy();
       setLenis(null);
     };

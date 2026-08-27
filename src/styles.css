@@ -58,6 +58,27 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Lenis owns the scroll while it is mounted; native smooth scrolling fights
+   it. These rules must be global because the provider mounts at the root —
+   ScrollStack.css carries the same block but only loads on stack pages. When
+   Lenis is off (reduced motion) the html rule above still applies untouched. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
 html,
 body,
 #root {

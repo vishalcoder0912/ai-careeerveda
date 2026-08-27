@@ -1,5 +1,4 @@
 import {BrowserRouter, Routes, Route, Link} from "react-router-dom";
-
 import {AuthProvider, useAuth} from "./context/AuthContext";
 import {ToastProvider} from "./context/ToastContext";
 import Layout from "./components/Layout";

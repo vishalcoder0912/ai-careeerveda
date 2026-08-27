@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useEffect, useRef, useState} from "react";
+import React, {createContext, useContext, useEffect, useLayoutEffect, useRef, useState} from "react";
 
 import "./motion-primitives.css";
 
@@ -21,6 +21,31 @@ import "./motion-primitives.css";
 
 const useInViewOnce = ({ref, amount, rootMargin}) => {
   const [inView, setInView] = useState(false);
+
+  // An element already inside the untouched first viewport must never be
+  // painted hidden. The observer path answers one tick after mount — under CPU
+  // pressure, seconds — long enough to become the page's LCP
+  // ("element render delay") on every route whose hero heading is a Reveal,
+  // and long enough to flash every above-fold heading invisible as the app
+  // boots over its own prerendered markup. This layout-effect check runs
+  // before the first paint: boot-time, above-fold content renders visible
+  // immediately.
+  //
+  // Gated on scrollY being at the top: a section that mounted because a
+  // READING visitor scrolled to it (every DeferUntilVisible child) must keep
+  // its observer-driven entrance — that reveal is the animation, and this hook
+  // has no business cancelling it.
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el || typeof window === "undefined") return undefined;
+    if (window.scrollY > 0) return undefined;
+    const rect = el.getBoundingClientRect();
+    const viewport = window.innerHeight || document.documentElement.clientHeight;
+    if (rect.top < viewport && rect.bottom > 0) {
+      setInView(true);
+    }
+    return undefined;
+  }, [ref]);
 
   useEffect(() => {
     const el = ref.current;

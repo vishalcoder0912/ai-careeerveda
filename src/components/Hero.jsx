@@ -2,7 +2,6 @@ import {useEffect,useRef} from "react";
 import {Link} from "react-router-dom";
 import {SPLINE_SCENE_URL} from "../config/spline";
 import SplineHeroScene from "./SplineHeroScene";
-import ShapeGrid from "./ShapeGrid";
 
 const Hero = ({stats}) => {
   const heroRef = useRef(null);
@@ -80,23 +79,16 @@ const Hero = ({stats}) => {
 
   return (
     <section ref={heroRef} id="top" className="hero-shell">
-      {/* The hero's own grid. The page-wide layer in HomePage cannot reach here:
-          .hero-shell paints an opaque dark gradient over it. Brighter strokes
-          than the page layer, because this is the one dark field on the page. */}
-      <div className="hero-grid-layer" aria-hidden="true">
-        <ShapeGrid
-          shape="square"
-          direction="diagonal"
-          speed={0.1}
-          squareSize={90}
-          hoverTrailAmount={5}
-          borderColor="rgba(255, 255, 255, 0.16)"
-          hoverFillColor="rgba(45, 212, 191, 0.26)"
-          /* No vignette: at full strength it flooded the hero's corners and
-             took the teal glow behind the 3D scene with them. */
-          vignetteColor="rgba(2, 6, 23, 0)"
-        />
-      </div>
+      {/* No canvas here anymore. This section's ShapeGrid used to be the
+          site's ONE grid, anchored to this box so the navbar strip above and
+          the hero below shared one origin — but a document-anchored lattice can
+          only serve its own section. The single grid now lives in
+          CareerVedaBackground (Layout-level): one CursorGrid fixed to the
+          viewport at the same 90px spacing, running behind the navbar, this
+          hero and every section below it without resetting. The layer div
+          itself stays — navbar-hero-merge.css paints the teal atmosphere that
+          hugs the top of the document as its ::after. */}
+      <div className="hero-grid-layer" aria-hidden="true" />
 
       <div className="hero-word" aria-hidden="true">
         CAREERVEDA

@@ -1,6 +1,7 @@
 const http = require("node:http");
 const fs = require("node:fs");
 const path = require("node:path");
+const zlib = require("node:zlib");
 
 const root = path.resolve(__dirname, "..", "dist");
 const port = Number(process.env.PORT || 5180);
@@ -17,11 +18,28 @@ const types = {
   ".ico": "image/x-icon",
 };
 
-function send(res, status, body, type = "text/plain; charset=utf-8") {
-  res.writeHead(status, {
+// gzip like production does (nginx.conf: gzip on, same types). Without this the
+// preview server ships every asset uncompressed, and a Lighthouse run against it
+// models ~3x the wire bytes the real site sends — CSS "3.5s" on slow 4G that is
+// actually ~600ms gzipped. Measuring against uncompressed local serving optimises
+// for a server nobody runs.
+const compressible = new Set([".html", ".js", ".css", ".json", ".svg"]);
+
+function send(res, status, body, type = "text/plain; charset=utf-8", filePath, wantsGzip) {
+  const headers = {
     "Content-Type": type,
     "Cache-Control": "no-store",
-  });
+    Vary: "Accept-Encoding",
+  };
+
+  if (status === 200 && body && wantsGzip && compressible.has(path.extname(filePath ?? ""))) {
+    headers["Content-Encoding"] = "gzip";
+    res.writeHead(status, headers);
+    res.end(zlib.gzipSync(body));
+    return;
+  }
+
+  res.writeHead(status, headers);
   res.end(body);
 }
 
@@ -47,6 +65,8 @@ http
       return;
     }
 
+    const wantsGzip = /\bgzip\b/.test(req.headers["accept-encoding"] ?? "");
+
     fs.readFile(filePath, (error, data) => {
       if (error) {
         fs.readFile(path.join(root, "index.html"), (fallbackError, fallback) => {
@@ -54,12 +74,19 @@ http
             send(res, 404, "Not found");
             return;
           }
-          send(res, 200, fallback, types[".html"]);
+          send(res, 200, fallback, types[".html"], path.join(root, "index.html"), wantsGzip);
         });
         return;
       }
 
-      send(res, 200, data, types[path.extname(filePath)] || "application/octet-stream");
+      send(
+        res,
+        200,
+        data,
+        types[path.extname(filePath)] || "application/octet-stream",
+        filePath,
+        wantsGzip,
+      );
     });
   })
   .listen(port, "127.0.0.1", () => {

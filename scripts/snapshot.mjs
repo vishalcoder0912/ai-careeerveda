@@ -145,21 +145,38 @@ async function scrollThrough(page) {
   // lints this file as a node script and is right to flag them otherwise.
   /* global window, document */
   await page.evaluate(async () => {
-    const step = Math.round(window.innerHeight * 0.8);
+    // The site ships `html { scroll-behavior: smooth }`. Under smooth behaviour
+    // each scrollTo starts an animation the next step retargets, and the final
+    // jump to the bottom lands WITHOUT crossing the middle of the page — so
+    // IntersectionObserver-gated sections in the middle never intersect, never
+    // mount, and the snapshot captures their placeholders. Instant steps put
+    // the viewport actually on every band, long enough for observers to fire.
+    const previousBehavior = document.documentElement.style.scrollBehavior;
+    document.documentElement.style.scrollBehavior = "auto";
+
+    const step = Math.round(window.innerHeight * 0.7);
     const wait = () =>
       new Promise((done) => {
-        setTimeout(done, 120);
+        setTimeout(done, 160);
       });
 
-    for (let y = 0; y < document.body.scrollHeight; y += step) {
-      window.scrollTo(0, y);
-      await wait();
-    }
+    try {
+      for (let y = 0; y < document.body.scrollHeight; y += step) {
+        window.scrollTo({top: y, behavior: "instant"});
+        await wait();
+      }
 
-    window.scrollTo(0, document.body.scrollHeight);
-    await wait();
-    window.scrollTo(0, 0);
-    await wait();
+      window.scrollTo({top: document.body.scrollHeight, behavior: "instant"});
+      await wait();
+      window.scrollTo({top: 0, behavior: "instant"});
+      // Give any lazily-fetched section chunks a beat to resolve before the
+      // capture — the networkidle wait below usually covers this too.
+      await new Promise((done) => {
+        setTimeout(done, 500);
+      });
+    } finally {
+      document.documentElement.style.scrollBehavior = previousBehavior;
+    }
   });
 }
 
@@ -168,21 +185,51 @@ async function snapshot(context, route) {
 
   try {
     await page.goto(`${ORIGIN}${route.loc}`, {waitUntil: "domcontentloaded", timeout: 45000});
-    // React has mounted something. Without this the snapshot races the bundle
-    // and writes the empty div back over itself.
-    //
-    // index.html now paints a static hero poster inside #root before the app
-    // boots (see index.html). Its selector satisfies any "#root > *" wait
-    // instantly, so the poster must be gone — which happens exactly when React
-    // takes over the container — before the scroll and capture below run.
+    // React has taken over from the prerendered markup. The static HTML now
+    // satisfies any "#root > *" check the instant it parses — main.jsx boots
+    // the app after the first paint, so the document is never empty — so the
+    // marker it sets on #root at boot is what actually proves handover. Before
+    // that marker, DeferUntilVisible and lazy() sections do not exist yet, and
+    // a scroll pass taken now would capture placeholders, not sections.
     await page.waitForFunction(
-      () =>
-        !document.querySelector("#root img.static-hero-poster") &&
-        document.querySelector("#root > *"),
+      () => document.querySelector("#root[data-app-mounted]"),
       {timeout: 30000},
     );
 
     await scrollThrough(page);
+
+    // A DeferUntilVisible wrapper ships as an empty div carrying only its
+    // min-height until its observer fires. Under load (four pages capturing
+    // concurrently) a section can sit between two scroll steps and never
+    // intersect. Walk every still-empty wrapper, put it centre-viewport, and
+    // give its chunk a beat to resolve — bounded, so a genuinely empty section
+    // (an admin untick) cannot hang the capture.
+    await page.evaluate(async () => {
+      const wait = (ms) =>
+        new Promise((done) => {
+          setTimeout(done, ms);
+        });
+      const emptyGated = () =>
+        [...document.querySelectorAll('#root div[style*="min-height"]')].filter(
+          (el) => el.style.minHeight !== "0px" && el.children.length === 0,
+        );
+
+      document.documentElement.style.scrollBehavior = "auto";
+      try {
+        for (let round = 0; round < 3; round += 1) {
+          const pending = emptyGated();
+          if (!pending.length) break;
+          for (const el of pending) {
+            el.scrollIntoView({block: "center", behavior: "instant"});
+            await wait(350);
+          }
+        }
+        window.scrollTo({top: 0, behavior: "instant"});
+        await wait(400);
+      } finally {
+        document.documentElement.style.scrollBehavior = "";
+      }
+    });
 
     // Best-effort. A page with a canvas animation or an open API poll may never
     // reach networkidle, and waiting the full timeout for one that will not is
@@ -222,15 +269,17 @@ const targetFor = (loc) =>
 // body (a re-run without a rebuild in between) is left alone rather than having
 // a second copy nested inside the first — and because both writes are gated on
 // that one check, the schema cannot be appended twice either.
-//
-// index.html ships a static hero poster inside #root (the phone LCP image,
-// painted before React boots — see the note there). It is matched and replaced
-// along with the empty div: leaving it would put a second robot beside the one
-// React renders.
 function inject(html, {body, jsonLd}) {
+  // An empty #root, however its emptiness is written: bare, or holding nothing
+  // but whitespace and comments. The second form matters — a comment left
+  // inside the div (as a note about the poster that used to live there) made
+  // both patterns below miss and every route shipped an empty document, the
+  // largest FCP/LCP regression this page has had. Matching "nothing but
+  // comments and space" keeps the guard against double-injection while making
+  // the template's internal notes irrelevant.
   const root =
     /<div id="root"><\/div>/.exec(html) ||
-    /<div id="root">\s*<img class="static-hero-poster"[\s\S]*?<\/div>/.exec(html);
+    /<div id="root">\s*(?:<!--[\s\S]*?-->\s*)*<\/div>/.exec(html);
   if (!root) return null;
 
   let out = html.replace(root[0], `<div id="root">${body}</div>`);

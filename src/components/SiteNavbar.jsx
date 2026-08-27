@@ -1,30 +1,11 @@
-import {useEffect,useRef,useState,useCallback} from "react";
-import {Link, useLocation} from "react-router-dom";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { Link, useLocation } from "react-router-dom";
 import BrandLockup from "./BrandLockup";
-import {externalLinks} from "../config/externalLinks";
+import { externalLinks } from "../config/externalLinks";
+import "./navbar-area.css";
 
-// The drawer's slide, fade and row stagger are CSS animations now — see the
-// mobile-menu keyframes in mobile-responsiveness.css.
-//
-// They were gsap. The navbar renders on every route, so to keep the first tap
-// from waiting on a fetch the library was warmed on requestIdleCallback — which
-// on a phone means "during the load". Every visitor on every page therefore
-// downloaded 45 KB gzipped and parsed ~115 KB of it, to animate a drawer that
-// only exists under 900px and that most of them never open; desktop paid for it
-// without even being able to reach the drawer. Dropping the warm alone would only
-// have moved the cost: the panel paints at its resting position, so gsap arriving
-// late would have snapped it off screen and slid it back in — a visible jump on
-// exactly the slow connections the change was meant to help.
-//
-// CSS has no such race. The animation is part of the same paint as the element,
-// it runs off the main thread, and it costs nothing to download.
-//
-// EXIT_MS must match the drawer-out keyframe duration below: React unmounts the
-// overlay, so the panel has to finish leaving before the element is taken away.
 const EXIT_MS = 280;
 
-/* Sub-labels for the mobile drawer only. The desktop bar has room for context
-   around each link; a phone screen doesn't, so each row says what it opens. */
 const NAV_DESCRIPTIONS = {
   "/programs": "Explore our live cohorts",
   "/alumni": "Where our learners landed",
@@ -36,25 +17,18 @@ const NAV_DESCRIPTIONS = {
 
 const COUNSELLOR_PHONE = "+91 9217801191";
 
-const SiteNavbar = ({navItems}) => {
+const SiteNavbar = ({ navItems }) => {
   const navRef = useRef(null);
   const overlayRef = useRef(null);
   const panelRef = useRef(null);
-  const frameRef = useRef(null);
   const exitTimerRef = useRef(null);
   const location = useLocation();
-  const [isScrolled,setIsScrolled] = useState(false);
-  const [activeHref,setActiveHref] = useState(location.pathname);
-  // Adjust state during render (the documented pattern for state that mirrors a
-  // prop/route) instead of an effect: setState in an effect body causes a
-  // cascading render, and this value is known before the first paint anyway.
-  const [pathForActive,setPathForActive] = useState(location.pathname);
-  if (pathForActive !== location.pathname) {
-    setPathForActive(location.pathname);
-    setActiveHref(location.pathname);
-  }
-  const [isMenuOpen,setIsMenuOpen] = useState(false);
-  const [isClosing,setIsClosing] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isCompact, setIsCompact] = useState(false);
+  const [activeHref, setActiveHref] = useState(location.pathname);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const lastScrollYRef = useRef(0);
 
   const closeMenu = useCallback(() => {
     const finish = () => {
@@ -63,16 +37,14 @@ const SiteNavbar = ({navItems}) => {
       document.body.style.overflow = "";
     };
 
-    // Nothing to animate out, or the visitor asked for no motion: just go.
-    if (!overlayRef.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (
+      !overlayRef.current ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
       finish();
       return;
     }
 
-    // .is-closing swaps the entry keyframes for the exit ones; the timer takes the
-    // element away once they have played. A timer rather than onAnimationEnd
-    // because that event never fires when a system setting or an extension has
-    // disabled animations, and the drawer would then never close.
     setIsClosing(true);
     exitTimerRef.current = window.setTimeout(finish, EXIT_MS);
   }, []);
@@ -89,40 +61,105 @@ const SiteNavbar = ({navItems}) => {
     else openMenu();
   }, [isMenuOpen, closeMenu, openMenu]);
 
-  // Open the drawer as a native modal <dialog>: the browser then owns the focus
-  // trap and inerts the page behind it. Escape is handled by the dialog's own
-  // 'cancel' event (see onCancel below) so it can play the exit animation instead
-  // of the instant native close, so no keydown listener is needed here.
   useEffect(() => {
     if (isMenuOpen) overlayRef.current?.showModal();
   }, [isMenuOpen]);
 
-  // A pending exit timer holds a setState; the drawer can be unmounted before it
-  // fires by a route change.
   useEffect(() => () => window.clearTimeout(exitTimerRef.current), []);
 
+  // Cursor spotlight inside the center navigation pill. Desktop pointers only,
+  // never for touch or reduced-motion users, and rAF-coalesced so a waving
+  // cursor costs one style write per frame — no layout, no React state.
   useEffect(() => {
-    const updateNavbar = () => {
-      frameRef.current = null;
-      const scrollY = window.scrollY || window.pageYOffset;
-      setIsScrolled(scrollY > 24);
+    const pill = navRef.current?.querySelector(".site-nav-links");
+    if (!pill) return undefined;
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+      return undefined;
+    }
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return undefined;
+    }
+
+    let frame = null;
+    const onMove = (event) => {
+      if (frame !== null) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = null;
+        const rect = pill.getBoundingClientRect();
+        pill.style.setProperty("--spot-x", `${event.clientX - rect.left}px`);
+        pill.style.setProperty("--spot-y", `${event.clientY - rect.top}px`);
+      });
+    };
+    const onLeave = () => {
+      if (frame !== null) {
+        window.cancelAnimationFrame(frame);
+        frame = null;
+      }
     };
 
-    const requestNavbarUpdate = () => {
-      if (frameRef.current) return;
-      frameRef.current = window.requestAnimationFrame(updateNavbar);
-    };
-
-    updateNavbar();
-    window.addEventListener("scroll", requestNavbarUpdate, {passive: true});
-    window.addEventListener("resize", requestNavbarUpdate);
-
+    pill.addEventListener("pointermove", onMove, { passive: true });
+    pill.addEventListener("pointerleave", onLeave, { passive: true });
     return () => {
-      if (frameRef.current) window.cancelAnimationFrame(frameRef.current);
-      window.removeEventListener("scroll", requestNavbarUpdate);
-      window.removeEventListener("resize", requestNavbarUpdate);
+      pill.removeEventListener("pointermove", onMove);
+      pill.removeEventListener("pointerleave", onLeave);
+      onLeave();
     };
-  },[]);
+  }, []);
+
+  // Sync active href with route changes
+  useEffect(() => {
+    setActiveHref(location.pathname);
+  }, [location.pathname]);
+
+  // Scroll-aware state machine: top → compact, compact → expand, top on y≈0
+  useEffect(() => {
+    let frame = null;
+    lastScrollYRef.current = window.scrollY || 0;
+
+    // Hydrate on mount: if already scrolled, start compact
+    if (lastScrollYRef.current > 20) {
+      setIsScrolled(true);
+      setIsCompact(true);
+    }
+
+    const apply = () => {
+      frame = null;
+      const y = window.scrollY || window.pageYOffset || 0;
+      const dy = y - lastScrollYRef.current;
+      lastScrollYRef.current = y;
+
+      // At top: fully restore the transparent hero-merged state.
+      if (y <= 10) {
+        setIsScrolled(false);
+        setIsCompact(false);
+        return;
+      }
+
+      // 10–40px is a dead band so tiny scrolls don't toggle the glass (§13:
+      // engage the docked state around 40px, force-restore at ≤10px).
+      if (y >= 40) setIsScrolled(true);
+
+      // Scroll down → dock (slightly shorter bar).
+      if (!isCompact && dy > 4 && y > 56) {
+        setIsCompact(true);
+      }
+      // Scroll up → expand back to full height before undocking.
+      else if (isCompact && (dy < -6 || y < 44)) {
+        setIsCompact(false);
+      }
+    };
+
+    const schedule = () => {
+      if (frame === null) frame = window.requestAnimationFrame(apply);
+    };
+
+    schedule();
+    window.addEventListener("scroll", schedule, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", schedule);
+      if (frame !== null) window.cancelAnimationFrame(frame);
+    };
+  }, [isCompact]);
 
   const handleLinkClick = () => {
     closeMenu();
@@ -132,74 +169,72 @@ const SiteNavbar = ({navItems}) => {
     <>
       <header
         ref={navRef}
-        className={`site-nav ${isScrolled ? "is-scrolled" : ""}`}
+        className={`site-nav ${isScrolled ? "is-scrolled" : ""} ${isCompact ? "is-compact" : ""}`}
         role="banner"
       >
-        {/* No grid canvas in here, and no bar chrome either — see
-            navbar-hero-merge.css. The hero is pulled up underneath the bar, so
-            its own ShapeGrid (the 90px one in Hero.jsx) runs unbroken from the
-            top edge of the viewport through the hero copy. A second canvas at a
-            different cell size is exactly what made the nav read as a separate
-            block before; the grid behind these links is the hero's grid. */}
-        <Link className="brand site-nav-brand" to="/">
-          <BrandLockup />
-        </Link>
+        <div className="nav-container">
+          <Link
+            className="brand site-nav-brand"
+            to="/"
+            aria-label="CareerVeda Home"
+          >
+            <BrandLockup />
+          </Link>
 
-        <nav className="site-nav-links" aria-label="Primary navigation">
-          {navItems.map(([path,label]) => (
-            <Link
-              key={path}
-              to={path}
-              className={activeHref === path ? "is-active" : ""}
-              aria-current={activeHref === path ? "page" : undefined}
-            >
-              {label}
-            </Link>
-          ))}
-        </nav>
+          <nav className="site-nav-links" aria-label="Primary navigation">
+            {navItems.map(([path, label]) => (
+              <Link
+                key={path}
+                to={path}
+                className={activeHref === path ? "is-active" : ""}
+                aria-current={activeHref === path ? "page" : undefined}
+                onClick={handleLinkClick}
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
 
-        <Link className="nav-cta" to="/enroll">
-          Enroll Now
-        </Link>
+          <Link className="nav-cta" to="/enroll" onClick={handleLinkClick}>
+            Enroll Now
+          </Link>
 
-        <button
-          className={`hamburger-btn ${isMenuOpen ? "is-open" : ""}`}
-          onClick={toggleMenu}
-          aria-expanded={isMenuOpen}
-          aria-controls="mobile-menu"
-          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          type="button"
-        >
-          <span />
-          <span />
-          <span />
-        </button>
+          <button
+            className={`hamburger-btn ${isMenuOpen ? "is-open" : ""}`}
+            onClick={toggleMenu}
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-menu"
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            type="button"
+          >
+            <span className="hamburger-line" aria-hidden="true" />
+            <span className="hamburger-line" aria-hidden="true" />
+            <span className="hamburger-line" aria-hidden="true" />
+          </button>
+        </div>
       </header>
 
       {isMenuOpen && (
         <dialog
           ref={overlayRef}
           id="mobile-menu"
-          className={`mobile-menu-overlay${isClosing ? " is-closing" : ""}`}
+          className={`mobile-menu-overlay ${isClosing ? "is-closing" : ""}`}
           aria-label="Mobile navigation"
           onCancel={(event) => {
-            // Escape: keep the element open so the exit animation can play, then
-            // close through the same path a tap on the backdrop takes.
             event.preventDefault();
             closeMenu();
           }}
           onClick={(event) => {
-            // Tapping the dimmed area beside the drawer closes it.
             if (event.target === event.currentTarget) closeMenu();
           }}
         >
           <div className="mobile-menu-panel" ref={panelRef}>
             <div className="mobile-menu-head">
-              {/* No aria-label: the lockup's wordmark and tagline are real
-                  text inside the link, and an aria-label that does not contain
-                  them fails WCAG 2.5.3 (label-in-name), which axe flags as
-                  label-content-name-mismatch. */}
-              <Link className="brand mobile-menu-brand" to="/" onClick={handleLinkClick}>
+              <Link
+                className="brand mobile-menu-brand"
+                to="/"
+                onClick={handleLinkClick}
+              >
                 <BrandLockup />
               </Link>
               <button
@@ -208,14 +243,18 @@ const SiteNavbar = ({navItems}) => {
                 onClick={closeMenu}
                 aria-label="Close menu"
               >
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  focusable="false"
+                >
                   <path d="M6 6l12 12M18 6L6 18" />
                 </svg>
               </button>
             </div>
 
             <nav className="mobile-menu-nav" aria-label="Mobile navigation">
-              {navItems.map(([path,label],index) => (
+              {navItems.map(([path, label], index) => (
                 <Link
                   key={path}
                   to={path}
@@ -224,25 +263,24 @@ const SiteNavbar = ({navItems}) => {
                   onClick={handleLinkClick}
                 >
                   <span className="mobile-menu-index" aria-hidden="true">
-                    {String(index + 1).padStart(2,"0")}
+                    {String(index + 1).padStart(2, "0")}
                   </span>
                   <span className="mobile-menu-label">
                     {label}
                     <small>{NAV_DESCRIPTIONS[path]}</small>
                   </span>
-                  <svg className="mobile-menu-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <svg
+                    className="mobile-menu-chevron"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
                     <path d="M9 5l7 7-7 7" />
                   </svg>
                 </Link>
               ))}
 
-              {/* The LMS and the hiring form are external sites, so they are <a>
-                  rather than <Link> — but they are rows in the same list, numbered
-                  in the same sequence, because to the person holding the phone they
-                  are simply two more places the menu goes. `.mobile-menu-nav a`
-                  styles them and the drawer's stagger animation picks them up for
-                  free, both being element selectors. */}
-              {externalLinks.map(({label, href, description}, index) => (
+              {externalLinks.map(({ label, href, description }, index) => (
                 <a
                   key={label}
                   href={href}
@@ -251,13 +289,18 @@ const SiteNavbar = ({navItems}) => {
                   onClick={handleLinkClick}
                 >
                   <span className="mobile-menu-index" aria-hidden="true">
-                    {String(navItems.length + index + 1).padStart(2,"0")}
+                    {String(navItems.length + index + 1).padStart(2, "0")}
                   </span>
                   <span className="mobile-menu-label">
                     {label}
                     <small>{description}</small>
                   </span>
-                  <svg className="mobile-menu-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <svg
+                    className="mobile-menu-chevron"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
                     <path d="M9 5l7 7-7 7" />
                   </svg>
                 </a>
@@ -265,15 +308,23 @@ const SiteNavbar = ({navItems}) => {
             </nav>
 
             <div className="mobile-menu-foot">
-              <Link className="mobile-menu-cta" to="/enroll" onClick={handleLinkClick}>
+              <Link
+                className="mobile-menu-cta"
+                to="/enroll"
+                onClick={handleLinkClick}
+              >
                 Enroll Now
               </Link>
               <a
                 className="mobile-menu-call"
-                href={`tel:${COUNSELLOR_PHONE.replace(/\s/g,"")}`}
+                href={`tel:${COUNSELLOR_PHONE.replace(/\s/g, "")}`}
                 onClick={handleLinkClick}
               >
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  focusable="false"
+                >
                   <path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.24 11.4 11.4 0 0 0 3.6.58 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1 11.4 11.4 0 0 0 .58 3.6 1 1 0 0 1-.25 1z" />
                 </svg>
                 Talk to a counsellor

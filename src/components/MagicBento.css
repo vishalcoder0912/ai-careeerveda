@@ -182,6 +182,51 @@
   user-select: none;
 }
 
+/* Laptop (1024px - 1280px): 6-col grid with adjusted spans for 1024px screens */
+@media (min-width: 1025px) and (max-width: 1280px) {
+  .bento-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+    width: min(1100px, calc(100% - 40px));
+  }
+
+  .bento-grid > * {
+    grid-column: span 2;
+  }
+
+  .bento-grid > *:nth-child(1),
+  .bento-grid > *:nth-child(4) {
+    grid-column: span 4;
+  }
+
+  .bento-grid > *:nth-child(5),
+  .bento-grid > *:nth-child(6) {
+    grid-column: span 3;
+  }
+
+  .bento-grid > *:nth-child(1),
+  .bento-grid > *:nth-child(4) {
+    min-height: 240px;
+  }
+
+  .magic-bento-card {
+    min-height: 200px;
+    padding: 24px;
+  }
+
+  .magic-bento-card__title {
+    font-size: 18px;
+  }
+
+  .magic-bento-card__description {
+    font-size: 14px;
+  }
+
+  .magic-bento-card__label {
+    font-size: 26px;
+  }
+}
+
 /* Tablet: six uneven columns would squeeze the 2-wide cards to a sliver, so the
    track drops to four. The rhythm is kept, just simpler — one full-width card
    opening each half, the rest paired. */

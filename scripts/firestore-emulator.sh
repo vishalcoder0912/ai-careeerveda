@@ -1,10 +1,4 @@
-#!/usr/bin/env bash
-# Start Firestore Emulator for local development
-#
-# Requires: gcloud components install cloud-firestore-emulator
-#           (or use the prebuilt Docker image)
-#
-# Usage: ./scripts/firestore-emulator.sh [start|stop|status]
+
 
 set -euo pipefail
 

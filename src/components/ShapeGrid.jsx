@@ -225,7 +225,13 @@ const ShapeGrid = ({
 
       // Capped, so returning to a backgrounded tab advances the grid by one
       // sensible step rather than leaping several cells in a single frame.
-      const step = Math.max(speed, 0.1) * Math.min(elapsed / (1000 / 60), 3);
+      // The floor is 0, not 0.1: the hero's grid passes speed={0} so its
+      // lattice stays frozen at a fixed origin — the navbar strip and the hero
+      // below it share that one canvas and must stay square-for-square
+      // aligned, which perpetual drift made impossible. The frame loop still
+      // runs at speed 0 (the hover trail needs it for its fades); only the
+      // travel stops.
+      const step = Math.max(speed, 0) * Math.min(elapsed / (1000 / 60), 3);
 
       // Scrolling the offset the other way from the name: "right" means the
       // shapes travel right, which is the grid origin moving left.

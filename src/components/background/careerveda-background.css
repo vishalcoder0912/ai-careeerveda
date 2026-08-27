@@ -1,0 +1,133 @@
+/* The global background field behind the whole landing page.
+ *
+ * Layer order inside .cv-bg-fixed (all pointer-inert, all fixed inset 0):
+ *
+ *   .cv-bg-base   z 0 — the dark ramp every section reads against
+ *   .cv-bg-grid   z 1 — the one CursorGrid canvas (90px lattice)
+ *   .cv-bg-glow   z 2 — atmospheric teal light, ABOVE the grid lines so the
+ *                       illumination reads as lit haze rather than raw strokes
+ *
+ * .cv-bg-fixed itself is z-index 0 among Layout's children; the content
+ * wrapper below is z-index 10, the sticky navbar 1000 (navbar-hero-merge.css).
+ * Nothing here intercepts a pointer — CursorGrid listens on window.
+ */
+
+.cv-bg-root {
+  position: relative;
+}
+
+.cv-bg-fixed {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.cv-bg-base {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  /* The hero's own ramp (slate-color-system.css), promoted to the shared
+     field: same slate family, deepened toward the bottom edge so long pages
+     settle darker instead of looping back to the top tone. */
+  background: linear-gradient(
+    135deg,
+    var(--cv-slate, #34445c) 0%,
+    var(--cv-slate-dark, #263447) 48%,
+    var(--cv-slate-deep, #1f2b3a) 100%
+  );
+}
+
+.cv-bg-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.cv-bg-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  /* The hero's corner radials, kept at their old strengths and positions but
+     now viewport-wide — the ambience no longer stops where a section begins.
+     Deliberately fainter than the side clouds (.cv-grid-layer::before/after),
+     which stay the loudest colour on the page margins. */
+  background:
+    radial-gradient(circle at 84% 18%, rgba(45, 212, 191, 0.14), transparent 35%),
+    radial-gradient(circle at 12% 14%, rgba(16, 185, 129, 0.09), transparent 28%),
+    radial-gradient(circle at 72% 58%, rgba(56, 189, 248, 0.05), transparent 32%);
+}
+
+/* Foreground. A plain static div paints its background BEFORE positioned
+   siblings (CSS painting step 3 vs step 8), so without this wrapper the
+   footer's opaque fill would sit UNDER the fixed layers and the grid would
+   draw over it. relative + z-index 10 puts every route, the footer and the
+   floating buttons above the background for good. */
+.cv-bg-content {
+  position: relative;
+  z-index: 10;
+}
+
+/* ── Hero reads the shared field ──────────────────────────────────────────────
+   The home page's full-bleed bands already hand their fill back to the shared
+   background (shape-grid.css); the hero was the last holdout because its
+   lattice used to be anchored to its own box. With the ONE grid now fixed to
+   the viewport behind everything, an opaque hero would hide it across the
+   whole first screen — so the hero drops its private ramp too and reads the
+   same base + glow the rest of the page does. Its two corner radials moved up
+   into .cv-bg-glow unchanged, the vignette stays exactly where it was in the
+   stacking order, and nothing else about the hero is touched.
+
+   Specificity note: this must out-rank slate-color-system.css's
+   `body .hero-shell { ... !important }` — three classes plus body does that
+   regardless of import order. Scoped to the home page class so other routes'
+   heroes (if any ever exist) keep whatever they declare. */
+body .spline-page.spline-page--grid .hero-shell {
+  background: none !important;
+}
+
+/* ── Every route reads the shared field ───────────────────────────────────────
+   The home page handed its fills back to this background (shape-grid.css and
+   the hero rule above); these rules do the same for every other route, so the
+   CursorGrid lattice shows site-wide instead of stopping at the landing page.
+
+   What goes transparent: the page-wide shell fills (.spline-page on every
+   non-home main, .jobs-page) and slate-color-system.css's full-bleed section
+   bands (.light-section, .support-section, #faculty.dark-section, …), which
+   currently win those routes and paint an opaque ramp over the grid. What
+   deliberately does NOT: floating panels and cards — course explorer, mentor
+   cards, blog cards, form fields — they keep their surfaces to hold text
+   legible over a moving grid, the exact trade the home page made (see
+   shape-grid.css's panel note). Form fields additionally stay opaque for OS
+   <select> popup rendering; page-shell.css and jobs-page.css document that.
+
+   Readability is preserved because slate-color-system.css already wins these
+   surfaces today: every one of them renders dark-slate right now with its text
+   tuned light-on-dark. Transparent swaps that opaque dark ramp for the shared
+   dark field behind it — near-identical tone, plus the lattice and glow.
+
+   Cascade mechanics: the sheets being overridden declare the same surfaces
+   with `body ` prefixes and !important, so matching specificity and racing
+   import order would work until someone reordered an import. Out-ranking them
+   outright instead: :not() counts its argument toward specificity, lifting the
+   shell rule to three classes; #faculty is spelled out because an ID beats any
+   number of classes; .cv-bg-content does the same job for the footer. */
+body .spline-page:not(.spline-page--grid),
+body .jobs-page {
+  background: transparent !important;
+}
+
+body .spline-page:not(.spline-page--grid) .light-section,
+body .spline-page:not(.spline-page--grid) .section-block,
+body .spline-page:not(.spline-page--grid) .support-section,
+body .spline-page:not(.spline-page--grid) .review-section,
+body .spline-page:not(.spline-page--grid) .faq-section,
+body .spline-page:not(.spline-page--grid) .partner-band,
+body .spline-page:not(.spline-page--grid) .program-showcase-section,
+body .spline-page:not(.spline-page--grid) .dark-section,
+body .spline-page:not(.spline-page--grid) .strategy-section,
+body .spline-page:not(.spline-page--grid) .consultation-section,
+body .spline-page:not(.spline-page--grid) #faculty.dark-section,
+body .cv-bg-content .site-footer {
+  background: transparent !important;
+}

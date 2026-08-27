@@ -1,7 +1,6 @@
 import { lazy, useRef } from "react";
 import Hero from "../components/Hero";
 import DeferUntilVisible from "../components/DeferUntilVisible";
-import ShapeGrid from "../components/ShapeGrid";
 import ConsultationAtmosphere from "../components/ConsultationAtmosphere";
 import { Reveal, StaggerGroup, StaggerItem } from "../components/motionPrimitives";
 import { useCinematicInteractions } from "../hooks/useCinematicInteractions";
@@ -68,30 +67,17 @@ const HomePage = () => {
 
   return (
     <main ref={pageRef} className="spline-page spline-page--grid">
-      {/* Backdrop for the whole page. Fixed and inert, so it sits under every
-          section and never takes a click — see shape-grid.css for which bands
-          are made transparent to let it show, and why the hero is not one. */}
-      <div className="cv-grid-layer" aria-hidden="true">
-        <ShapeGrid
-          shape="square"
-          direction="diagonal"
-          speed={0.1}
-          squareSize={90}
-          hoverTrailAmount={5}
-          /* Teal on slate: the live palette is slate-color-system.css, and the
-             page is dark, so the lines are the teal accent rather than the
-             brand blue, which disappears into the background.
-
-             No vignette. It is drawn as an opaque ring closing at half the
-             canvas diagonal, which is exactly the margin either side of the
-             content column — the one place on this page where there is nothing
-             on top of the grid, so vignetting it hid the effect where it was
-             the most visible. */
-          borderColor="rgba(45, 212, 191, 0.30)"
-          hoverFillColor="rgba(45, 212, 191, 0.22)"
-          vignetteColor="rgba(15, 23, 42, 0)"
-        />
-      </div>
+      {/* Backdrop layer for the whole page. The layer stays — its ::before and
+          ::after in shape-grid.css are the teal/blue glow clouds that give the
+          page margins their ambience — but it hosts NO grid canvas. It used to
+          run a second ShapeGrid, fixed to the VIEWPORT, while the hero's grid
+          was anchored to the DOCUMENT: two coordinate systems that agreed only
+          at scrollY 0. Since then the single grid moved again — the hero's
+          document-anchored canvas retired with it, and the ONE CursorGrid now
+          lives viewport-fixed behind every route (see
+          components/background/CareerVedaBackground.jsx); these clouds are the
+          glow system that rides above it. */}
+      <div className="cv-grid-layer" aria-hidden="true" />
 
       <div className="scroll-progress" aria-hidden="true" />
       <Hero stats={stats} />
@@ -109,13 +95,16 @@ const HomePage = () => {
       {/* Press first, then the logo wall: both are credibility, and the reader
           meets the named publications before the row of employer marks. */}
 
-      {/* A wider margin than the rest: this is the one section whose mount is the
-          start of a chain — chunk, then six card images — rather than the end of
-          it, and at the shared 300px a phone arrived while the strips were still
-          blank. 900px is roughly a viewport of warning on a phone, which covers
-          the chunk and lets the images be in flight by the time the cards are
-          read. The section is still not fetched by someone who never scrolls. */}
-      <DeferUntilVisible minHeight={600} margin="900px">
+      {/* Negative margin. This section sits close enough behind the hero that a
+          phone's initial viewport already intersects its placeholder — even at
+          rootMargin 0 — which mounted it during the load and pulled in its
+          chunk AND framer-motion (which it imports) AND five hero-card PNGs
+          from ImageKit, all competing with the LCP for bandwidth. A -120px
+          margin means the reader must scroll into the section itself before
+          anything is fetched; the minHeight placeholder holds the layout so
+          there is nothing to shift, and the card images are loading="lazy"
+          behind it. */}
+      <DeferUntilVisible minHeight={600} margin="-120px">
         <RecommendedCourses1 />
       </DeferUntilVisible>
 

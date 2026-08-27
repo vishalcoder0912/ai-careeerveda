@@ -1,140 +1,202 @@
-/* ── Navbar ⇆ hero merge ────────────────────────────────────────────────────
+/* ── Navbar ⇆ hero merge + scroll-aware dock ────────────────────────────────
  *
- * One background, one grid, no navbar chrome.
+ * ONE background, ONE grid, TWO navbar states.
  *
- * The hero's own ShapeGrid canvas (the 90px one in Hero.jsx) is now the single
- * grid for the top of the page. The navbar contributes nothing of its own: its
- * old private 34px canvas is deleted from SiteNavbar.jsx, its bar chrome is
- * stripped down to a whisper of tint, and the hero is pulled up underneath it —
- * so the same canvas, at the same square size, with the same drift and the
- * same hover trail, runs unbroken from the top edge of the viewport down
- * through the hero copy. The nav links float on the grid; they no longer sit
- * in a box on top of it.
+ * The single grid is the CursorGrid canvas inside
+ * components/background/CareerVedaBackground.jsx — fixed to the viewport at
+ * squareSize = GRID_SIZE from src/config/grid.js, running behind the navbar
+ * strip, the hero and every section below it. (It was the hero's ShapeGrid,
+ * document-anchored; the fixed global lattice serves all of that without
+ * resetting between sections.) Nothing drifts; scrolling away and back
+ * reproduces the initial frame exactly.
  *
- * This file is imported after mobile-responsiveness.css on purpose. It has to
- * coordinate geometry across two components whose sizes are declared in three
- * other files — the navbar's heights live in slate-color-system.css and
- * mobile-responsiveness.css, the hero's padding lives in final-alignment-
- * polish.css and slate-color-system.css — so for exactly those properties it
- * needs the final word in the cascade.
+ * Scroll architecture (the "navbar shell" pattern):
+ *
+ *   .navbar-shell  → owns LAYOUT. Always reserves var(--navbar-height), so
+ *                    the document never shifts and content is never covered
+ *                    when the bar changes size. On the home page the hero is
+ *                    pulled up beneath shell + bar, so whatever strip the
+ *                    compressed bar frees is filled by the shared grid/glow —
+ *                    the "breathing space" — never by a blank area.
+ *
+ *   header.site-nav → owns VISUALS. Fixed to the viewport top, it renders
+ *                     STATE 1 (transparent, merged) or STATE 2 (.is-compact:
+ *                     shorter, tighter, quiet glass) and animates between
+ *                     them. SiteNavbar.jsx decides which, with direction
+ *                     hysteresis on a rAF-throttled passive scroll listener.
+ *
+ * This file imports after mobile-responsiveness.css on purpose: it coordinates
+ * geometry across files that declare navbar heights and hero padding, so for
+ * exactly those properties it needs the final word.
  */
 
-/* The hero slides up behind the transparent navbar. The negative margins match
- * the navbar heights already declared elsewhere (84px desktop in
- * slate-color-system.css; 64px ≤980px and 58px ≤480px in
- * mobile-responsiveness.css), and each rule hands that height straight back to
- * the hero as padding-top, so the eyebrow, headline and robot keep exactly the
- * distance from the nav that they had when the bar sat above the hero in flow:
- *
- *   >980px : bar 84px  → hero padding-top = old clamp(46px,5vw,72px) + 84px
- *   ≤980px : bar 64px  → hero padding-top = slate's 72px + 64px
- *   ≤480px : bar 58px  → hero padding-top = slate's 72px + 58px
- *
- * Scoped to .spline-page because only the home page has a hero; every other
- * route keeps its normal flow under an unchanged (if quieter) navbar. */
-body .spline-page .hero-shell {
-  margin-top: -84px !important;
-  padding-top: calc(clamp(46px, 5vw, 72px) + 84px) !important;
+/* The single grid measurement, mirrored from src/config/grid.js (GRID_SIZE =
+   the squareSize of the hero's canvas). Defined once so no consumer invents a
+   second spacing. Origin contract: lattice starts at 0 0 of the hero-shell
+   box, which this file pins to the top-left of the document. */
+:root {
+  --grid-size: 90px;
+  /* Navbar sizing contract — STATE 1 / STATE 2 heights. Compact bar (78px),
+     docking 8px (to 70px) once scrolled. The shell always reserves
+     var(--navbar-height), so the document never shifts. */
+  --navbar-height: 78px;
+  --navbar-height-scrolled: 70px;
 }
 
 @media (max-width: 980px) {
-  body .spline-page .hero-shell {
-    margin-top: -64px !important;
-    /* slate-color-system.css owns the 72px base at this breakpoint. */
-    padding-top: calc(72px + 64px) !important;
+  :root {
+    --navbar-height: 64px;
+    --navbar-height-scrolled: 56px;
   }
 }
 
 @media (max-width: 480px) {
-  body .spline-page .hero-shell {
-    margin-top: -58px !important;
-    padding-top: calc(72px + 58px) !important;
+  :root {
+    --navbar-height: 58px;
+    --navbar-height-scrolled: 52px;
   }
 }
 
-/* No card, no line, no shadow. What remains is the tint the design calls for —
-   barely a breath of navy over the grid. backdrop-filter stays off at rest
-   because any blur would frost the grid inside the bar's rectangle and read as
-   a panel again; the whole point is that nothing distinguishes the strip the
-   links occupy from the strip the headline occupies. */
-body .site-nav,
-body .site-nav.is-scrolled {
-  border-bottom: 0 !important;
-  background: rgba(8, 24, 43, 0.08) !important;
+/* ── Shell: layout space, not visuals ────────────────────────────────────── */
+body .navbar-shell {
+  height: var(--navbar-height);
+  /* Shell prevents content from being covered by always reserving the
+     navbar height. On home page the hero is pulled up beneath shell + bar,
+     so the freed strip shows the shared background ("breathing room"). */
+  position: relative;
+}
+
+@media (max-width: 980px) {
+  body .navbar-shell {
+    height: var(--navbar-height);
+  }
+}
+
+@media (max-width: 480px) {
+  body .navbar-shell {
+    height: var(--navbar-height);
+  }
+}
+
+/* The hero slides up behind shell + bar. Desktop hands back clamp(46px,5vw,
+   72px) of pre-existing padding; ≤980px hands back slate-color-system.css's
+   72px base — same totals as before the merge, so the eyebrow, headline and
+   robot keep their exact distance from the nav. Scoped to .spline-page
+   because only the home page has a hero. */
+body .spline-page .hero-shell {
+  margin-top: calc(-1 * var(--navbar-height)) !important;
+  padding-top: calc(clamp(46px, 5vw, 72px) + var(--navbar-height)) !important;
+}
+
+@media (max-width: 980px) {
+  body .spline-page .hero-shell {
+    padding-top: calc(72px + var(--navbar-height)) !important;
+  }
+}
+
+/* ── STATE 1 — top of page: transparent window onto the frozen lattice ──────
+   Width, padding, and display are now managed by navbar-area.css.
+   This file only controls: position, z-index, min-height (shell height),
+   transparent background defaults, and the height/min-height transitions. */
+body .site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  /* Height is reserved by .navbar-shell; we only set min-height here. */
+  min-height: var(--navbar-height);
+  /* Transparent — any fill would cut grid edges. */
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transition:
+    height 420ms cubic-bezier(0.33, 1, 0.68, 1),
+    min-height 420ms cubic-bezier(0.33, 1, 0.68, 1) !important;
+}
+
+/* The three-zone rhythm is now handled by flexbox in navbar-area.css via
+   .nav-container. Grid-specific justify-self rules are no longer needed. */
+
+/* Laptop/mid-size breakpoints are handled by navbar-area.css. */
+
+/* Spotlight moved to navbar-area.css (::before). The ::after here is removed
+   to avoid double spotlight effects. */
+
+/* ── STATE 2 — scrolled: compact dock ──────────────────────────────────────
+   Shorter than STATE 1 by design; the shell keeps reserving the full height,
+   so the freed strip below the bar shows the same background — controlled
+   breathing room, never a blank band and never covered content.
+
+   The dock stays TRANSPARENT, exactly like the top state: same clear window
+   onto the frozen lattice in both states, so the navbar can never read as a
+   separate surface anywhere on the page. Only geometry changes — height,
+   logo scale, spacing, button size. */
+body .site-nav.is-compact {
+  height: var(--navbar-height-scrolled) !important;
+  min-height: var(--navbar-height-scrolled) !important;
+}
+
+/* Navigation spacing and brand compression are now handled by navbar-area.css. */
+
+/* Navigation links are now styled by navbar-area.css with Area-inspired
+   clean text + teal underline indicator. The old chip/glass hover is removed. */
+
+/* CTA button is now styled by navbar-area.css with Area-inspired teal gradient. */
+
+/* ── Atmosphere: hero glow continued up into the navbar strip ──────────────
+   The hero's teal/cyan radial glows sat below the fold of the navbar, so the
+   strip the links occupy read flatter than the field right underneath it —
+   the "effect" stopped where the bar began.
+
+   Fix lives on the SHARED BACKGROUND, never on the bar: a soft multi-source
+   glow painted as ::after of the hero's grid layer (the one background
+   system), hugging the top of the document where the navbar floats. Because
+   the bar is fully transparent, the glow shows through it directly — the
+   navbar inherits the atmosphere instead of imitating it, and the same
+   teal/cyan ramp continues unbroken from behind the links into the headline.
+
+   Painted ABOVE the frozen lattice but BELOW every content layer (the layer's
+   own stacking keeps it under hero-word/vignette/hero-layout), pointer-inert,
+   and static — the blur rasterises once and nothing animates. The filter
+   blurs only this overlay's own gradients, never the grid lines under it. */
+body .spline-page .hero-grid-layer::after {
+  content: "";
+  position: absolute;
+  top: -22%;
+  left: -8%;
+  right: -8%;
+  height: 58%;
+  pointer-events: none;
+  background:
+    radial-gradient(42% 62% at 24% 32%, rgba(45, 212, 191, 0.15), transparent 70%),
+    radial-gradient(38% 58% at 76% 28%, rgba(56, 189, 248, 0.1), transparent 70%),
+    radial-gradient(52% 68% at 50% 42%, rgba(16, 185, 129, 0.08), transparent 72%);
+  filter: blur(28px);
+}
+
+/* ── Stat strip: same contract as the bar ───────────────────────────────────
+   Content directly on the shared lattice — no panel, no border, no shadow, no
+   blur, transparent cells. Text colours untouched; slate-color-system.css
+   keeps owning them. */
+body .stat-strip {
+  border-color: transparent !important;
+  background: transparent !important;
   box-shadow: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
 
-/* Links: text floating over the grid. Glass exists only under the cursor — a
-   translucent teal chip with a soft cyan edge and a local blur, per the
-   interaction spec. Everything else about the chip is invisible until hover,
-   so the declared border/transition here cost nothing visually at rest. */
-body .site-nav nav a,
-body .site-nav.is-scrolled nav a {
-  min-height: 40px !important;
-  padding: 0 14px !important;
-  border: 1px solid transparent;
-  border-radius: 10px;
-  background: transparent;
-  color: rgba(228, 240, 250, 0.85) !important;
-  font-weight: 600;
-  transition:
-    color 200ms ease,
-    background-color 200ms ease,
-    border-color 200ms ease,
-    box-shadow 200ms ease,
-    backdrop-filter 200ms ease,
-    min-height 480ms var(--cv-navbar-ease) !important;
+body .stat-strip div {
+  background: transparent !important;
 }
 
-body .site-nav.is-scrolled nav a {
-  min-height: 38px !important;
-}
-
-/* The underline belonged to the boxed bar; over an open grid the hover chip is
-   the affordance, so the pseudo-element goes entirely. */
-body .site-nav nav a::after {
-  content: none !important;
-  display: none !important;
-}
-
-body .site-nav nav a:hover,
-body .site-nav nav a:focus-visible,
-body .site-nav nav a.is-active {
-  color: #ffffff !important;
-  background: rgba(20, 180, 190, 0.1);
-  border-color: rgba(45, 212, 191, 0.18);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 0 18px -6px rgba(45, 212, 191, 0.35);
-}
-
-/* Keyboard focus keeps a visible ring even where the chip alone would do. */
-body .site-nav nav a:focus-visible {
-  outline: 1px solid rgba(94, 234, 212, 0.55);
-  outline-offset: 2px;
-}
-
-/* Enroll Now: same size and gradient as slate-color-system.css gives it — only
-   the finish changes. An inset highlight along the top reads as glass catching
-   light; the outer glow stays soft enough to belong to the room rather than to
-   the button. */
-body .nav-cta,
-body .site-nav.is-scrolled .nav-cta {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.24),
-    inset 0 0 0 1px rgba(110, 231, 183, 0.12),
-    0 10px 26px -12px rgba(16, 185, 129, 0.55),
-    0 0 24px -8px rgba(45, 212, 191, 0.35) !important;
-}
-
-body .nav-cta:hover,
-body .nav-cta:focus-visible {
-  transform: translateY(-1px);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.28),
-    inset 0 0 0 1px rgba(110, 231, 183, 0.16),
-    0 14px 30px -12px rgba(16, 185, 129, 0.6),
-    0 0 28px -8px rgba(45, 212, 191, 0.45) !important;
+/* ── Reduced motion: stable layout, instant states, no spotlight ─────────── */
+@media (prefers-reduced-motion: reduce) {
+  body .site-nav,
+  body .site-nav nav,
+  body .site-nav nav a,
+  body .site-nav .brand img.brand-icon {
+    transition: none !important;
+  }
 }

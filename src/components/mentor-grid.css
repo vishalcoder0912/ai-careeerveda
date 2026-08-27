@@ -555,6 +555,57 @@
     transition: none;
   }
 }
+src/config/pageMeta.js:2 + src/config/siteMeta.js:43
+/* ── Laptop (1024px - 1280px): 2-col mentor grid ─────────────────────────── */
+@media (min-width: 1025px) and (max-width: 1280px) {
+  .mentor-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .mentor-card {
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 16px;
+    padding: 20px;
+  }
+
+  .mentor-card h3 {
+    font-size: 19px;
+  }
+
+  .mentor-card__role {
+    font-size: 13.5px;
+  }
+
+  .mentor-card__discipline {
+    font-size: 11px;
+    padding: 3px 9px;
+  }
+
+  .mentor-card__more {
+    font-size: 12.5px;
+    margin-top: 12px.
+  }
+
+  .mentor-card__portrait {
+    aspect-ratio: 3 / 4;
+  }
+
+  .mentor-card__programs {
+    margin-top: 14px;
+    padding-top: 12px.
+  }
+
+  .mentor-card__programs > small {
+    font-size: 11px.
+  }
+
+  .mentor-card__programs a,
+  .mentor-card__programs span {
+    padding: 4px 10px.
+    font-size: 12px.
+  }
+}
 
 @media (max-width: 560px) {
   .mentor-modal {

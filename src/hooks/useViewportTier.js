@@ -2,11 +2,12 @@ import {useEffect, useState} from "react";
 
 // Reports which breakpoint the viewport is in, so a component can scale its own
 // cost down on smaller screens. The breakpoints deliberately match the ones the
-// stylesheets already use (980px / 680px) rather than inventing new ones.
+// stylesheets already use (1024px / 980px / 680px) rather than inventing new ones.
 //
 // Written against matchMedia instead of a resize listener: the browser only
 // notifies us when a boundary is actually crossed, so scrolling and resizing
 // don't trigger a render per pixel.
+const LAPTOP_QUERY = "(max-width: 1024px)";
 const TABLET_QUERY = "(max-width: 980px)";
 const MOBILE_QUERY = "(max-width: 680px)";
 
@@ -15,6 +16,7 @@ const readTier = () => {
 
   if (window.matchMedia(MOBILE_QUERY).matches) return "mobile";
   if (window.matchMedia(TABLET_QUERY).matches) return "tablet";
+  if (window.matchMedia(LAPTOP_QUERY).matches) return "laptop";
 
   return "desktop";
 };
@@ -27,7 +29,7 @@ export const useViewportTier = () => {
   useEffect(() => {
     if (typeof window === "undefined" || !window.matchMedia) return undefined;
 
-    const queries = [window.matchMedia(TABLET_QUERY), window.matchMedia(MOBILE_QUERY)];
+    const queries = [window.matchMedia(LAPTOP_QUERY), window.matchMedia(TABLET_QUERY), window.matchMedia(MOBILE_QUERY)];
     const sync = () => setTier(readTier());
 
     queries.forEach((query) => query.addEventListener("change", sync));

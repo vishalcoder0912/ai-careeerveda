@@ -79,6 +79,7 @@ const SLOT_IMAGE_WIDTH = {hero: 720, wide: 520, tall: 520, compact: 420, panel: 
 // reveal leaves the reader waiting on it.
 const REVEAL_TIERS = {
   desktop: {stagger: 0.08, duration: 0.62},
+  laptop: {stagger: 0.075, duration: 0.56},
   tablet: {stagger: 0.07, duration: 0.52},
   mobile: {stagger: 0.05, duration: 0.4},
 };

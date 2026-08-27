@@ -78,17 +78,12 @@ const ConsultationForm = () => {
     setMessage("");
 
     try {
-      const result = await submitLead(
-        {
-          ...values,
-          type: "consultation",
-          source: "home-consultation-form",
-          sourcePage: window.location.pathname,
-        },
-        // Used only when no backend is configured. Same endpoint this form has
-        // always posted to, so nothing is lost in that configuration.
-        {legacyEndpoint: "/api/consultation"},
-      );
+      const result = await submitLead({
+        ...values,
+        type: "consultation",
+        source: "home-consultation-form",
+        sourcePage: window.location.pathname,
+      });
 
       if (!result.ok) {
         // Surface the server's own field errors when it sends them.
