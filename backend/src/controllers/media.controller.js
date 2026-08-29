@@ -159,7 +159,7 @@ export const createFromUrl = async (request, response, next) => {
       // No ImageKit file handle exists for a URL-only asset, but the schema
       // requires a unique one — a derived pseudo-id that can never collide
       // with a real fileId (real ones never start with "external-").
-      fileId: `external-${createHash("sha1").update(url).digest("hex").slice(0, 20)}${Math.random().toString(36).slice(2, 8)}`,
+      fileId: `external-${createHash("sha256").update(url).digest("hex").slice(0, 20)}${Math.random().toString(36).slice(2, 8)}`,
       folder,
       alt: alt || "",
       external: true,
