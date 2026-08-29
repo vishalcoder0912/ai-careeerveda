@@ -8,8 +8,12 @@
 export const readPath = (object, path) =>
   path.split(".").reduce((value, key) => (value == null ? undefined : value[key]), object);
 
+const UNSAFE_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+
 export const writePath = (object, path, value) => {
   const keys = path.split(".");
+  if (keys.some((k) => UNSAFE_KEYS.has(k))) return object;
+
   const next = {...object};
   let cursor = next;
 
