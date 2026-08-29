@@ -61,7 +61,9 @@ export const sanitizeRequest = (request, response, next) => {
     for (const key of Object.keys(request.query)) {
       if (!(key in cleaned)) delete request.query[key];
     }
-    Object.assign(request.query, cleaned);
+    for (const [key, val] of Object.entries(cleaned)) {
+      request.query[key] = val;
+    }
   }
 
   next();
