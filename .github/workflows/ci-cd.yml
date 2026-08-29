@@ -41,6 +41,32 @@ env:
 
 jobs:
   # ─────────────────────────────────────────────────────────────────────────────
+  # SAST — Static Application Security Testing (Semgrep)
+  # Runs in parallel, uploads SARIF to GitHub Code Scanning. Does not block.
+  # ─────────────────────────────────────────────────────────────────────────────
+  sast:
+    name: Semgrep SAST
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Run Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: auto
+          generateSarif: true
+
+      - name: Upload SARIF to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep.sarif
+          category: semgrep
+
+  # ─────────────────────────────────────────────────────────────────────────────
   # QUALITY — Audit + Lint + Unit/Integration Tests
   # No servers, no credentials, just the registry and in-memory databases.
   # ─────────────────────────────────────────────────────────────────────────────
