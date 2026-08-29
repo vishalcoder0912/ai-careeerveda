@@ -58,10 +58,22 @@ export const sanitizeRequest = (request, response, next) => {
   // so mutate its contents rather than reassigning the property.
   if (request.query && isPlainObject(request.query)) {
     const cleaned = clean(request.query);
-    for (const key of Object.keys(request.query)) {
-      if (!(key in cleaned)) delete request.query[key];
+    const query = request.query;
+    for (const key of Object.keys(query)) {
+      if (!(key in cleaned)) delete query[key];
     }
-    Object.assign(request.query, cleaned);
+    // Define each sanitized key as an own property instead of merging with
+    // Object.assign. defineProperty never invokes a setter, so even a key that
+    // somehow survived the filter could not walk onto the prototype chain —
+    // the same guarantee the body/param paths get from Object.fromEntries.
+    for (const key of Object.keys(cleaned)) {
+      Object.defineProperty(query, key, {
+        value: cleaned[key],
+        writable: true,
+        enumerable: true,
+        configurable: true,
+      });
+    }
   }
 
   next();

@@ -200,3 +200,32 @@ body .stat-strip div {
     transition: none !important;
   }
 }
+
+/* ── Footer ⇆ navbar left-edge alignment ────────────────────────────────────
+   The layout test (accessibility.spec.js "footer starts on the same line as
+   the navbar") requires .site-footer .brand to share the navbar brand's left
+   gutter. The navbar anchors its brand flush at the left edge of .nav-container,
+   which narrows at each breakpoint (navbar-area.css): min(1440px, 100% - 64px),
+   then 100% - 40px / 100% - 32px / 100% - 24px. The footer's padding-inline must
+   equal half of the leftover viewport so its brand lands on the same line. */
+body .site-footer {
+  padding-inline: calc((100% - min(1440px, calc(100% - 64px))) / 2) !important;
+}
+
+@media (max-width: 1279px) {
+  body .site-footer {
+    padding-inline: 20px !important;
+  }
+}
+
+@media (max-width: 980px) {
+  body .site-footer {
+    padding-inline: 16px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  body .site-footer {
+    padding-inline: 12px !important;
+  }
+}

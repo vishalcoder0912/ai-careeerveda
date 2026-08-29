@@ -22,5 +22,8 @@
     "jsdom": "^25.0.1",
     "vite": "^6.0.7",
     "vitest": "^4.1.10"
+  },
+  "allowScripts": {
+    "esbuild": true
   }
 }
