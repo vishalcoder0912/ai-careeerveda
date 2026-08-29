@@ -3,22 +3,6 @@ import path from "node:path";
 import os from "node:os";
 import {pathToFileURL} from "node:url";
 
-// Loads the frontend's static data files into plain Node.
-//
-// They are written for Vite, which resolves two things Node does not:
-//
-//   1. `import.meta.glob(...)` — a build-time directory scan. Used by
-//      alumniSpotlight.js and partnerLogos.js to pick up images dropped into
-//      src/assets. Shimmed to an empty object: the migration wants the hosted
-//      ImageKit URLs those modules fall back to, not bundled local assets.
-//
-//   2. Extensionless relative imports (`from "./partnerLogos"`). Node's ESM
-//      resolver requires the extension.
-//
-// Rather than editing the frontend to suit a backend script — which would be
-// the tail wagging the dog — the files are copied to a temp directory and
-// transformed there. The originals are never touched.
-
 const GLOB_SHIM = "const __viteGlobShim = () => ({});\n";
 
 const transform = (source) => {
@@ -28,7 +12,6 @@ const transform = (source) => {
     output = GLOB_SHIM + output.replaceAll("import.meta.glob", "__viteGlobShim");
   }
 
-  // Add .js to relative imports and re-exports that lack an extension.
   output = output.replace(
     /(\bfrom\s+["'])(\.[^"']*?)(["'])/g,
     (match, prefix, specifier, suffix) =>
