@@ -1,25 +1,3 @@
-// The backend the end-to-end tests run against.
-//
-// It is deliberately NOT the development server. Playwright creates, publishes,
-// edits and deletes real records, and pointing that at the Atlas database the
-// site actually serves would mean a test run editing live content. So this
-// starts an in-memory MongoDB, seeds exactly the accounts and content the specs
-// expect, and serves the real application on a separate port.
-//
-// Three safety properties, each enforced here rather than left to a runbook:
-//
-//   1. The database is created per run and discarded on exit. There is no
-//      connection string to get wrong and no data to clean up.
-//   2. The ImageKit credentials are blanked. imagekit.service.js refuses to act
-//      unless all three keys are present, so uploads and deletes fail closed and
-//      no test can reach the production media account by accident. The Media
-//      Library still lists and reads from MongoDB, which is what the picker
-//      needs; only the calls that would mutate the real account are dead.
-//   3. The port is 8081, not 8080, so a running dev server is neither disturbed
-//      nor mistaken for this one.
-//
-// Started by playwright.config.js as a webServer. Run it directly to poke at the
-// seeded stack by hand.
 
 import {MongoMemoryServer} from "mongodb-memory-server";
 
@@ -48,14 +26,6 @@ export const E2E = Object.freeze({
 
 const start = async () => {
   const mongo = await MongoMemoryServer.create();
-
-  // Set before importing anything from src/: config/env.js validates and freezes
-  // process.env at import time, and dotenv is loaded there with override:false,
-  // so whatever is assigned here wins over the developer's .env file.
-  // Rate limits are a production safeguard, but a serial browser suite makes
-  // more than ten deliberate login requests from one loopback IP. `test`
-  // keeps those test-only requests from poisoning the mobile half of the run;
-  // the unit security suite separately verifies the limiter in production mode.
   process.env.NODE_ENV = "test";
   process.env.PORT = String(E2E.port);
   process.env.MONGODB_URI = mongo.getUri();
@@ -90,12 +60,7 @@ const start = async () => {
     console.log(`E2E API on http://localhost:${E2E.port} (in-memory MongoDB, ImageKit disabled)`);
   });
 
-  // Browser tests keep HTTP sockets alive longer than a single request. On
-  // Windows, `server.close()` waits for those keep-alive connections forever
-  // in some runs, which left Playwright hanging after every assertion had
-  // passed. Ask idle clients to leave first, then force-close any stragglers
-  // after a short grace period. This process owns only the disposable in-memory
-  // E2E API, so a forced close cannot affect a real application request.
+
   let stopping = false;
   let finalizing = false;
   const finish = async () => {

@@ -1,16 +1,4 @@
-﻿// Deterministic fixtures for the end-to-end run.
-//
-// Every spec starts from exactly this state, so a failure means the code
-// changed, not that the database drifted. The records here are the minimum the
-// specs need to observe a real workflow: one already-published program to prove
-// the public site renders live data, and one already-published alumni story so
-// the home and alumni pages have something of their own to show. Everything
-// else a spec needs, it creates and cleans up itself.
-//
-// The accounts cover the four roles, because the authorization specs assert
-// what each one may and may not do. All share one password        this is a
-// throwaway in-memory database, and four different ones would be four things to
-// look up with no security gained.
+﻿
 
 import {Admin} from "../../src/models/Admin.js";
 import {Program} from "../../src/models/Program.js";
