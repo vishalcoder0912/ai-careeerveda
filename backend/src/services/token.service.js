@@ -1,9 +1,10 @@
-import {createHash, randomBytes, randomUUID} from "node:crypto";
+import {randomBytes, randomUUID} from "node:crypto";
 
 import jwt from "jsonwebtoken";
 
 import {env} from "../config/env.js";
 import {RefreshToken} from "../models/RefreshToken.js";
+import {sha256Hex} from "../utils/sha256.js";
 
 const ISSUER = "careerveda-api";
 const AUDIENCE = "careerveda-admin";
@@ -41,7 +42,7 @@ export const verifyAccessToken = (token) =>
 
 const REFRESH_BYTES = 32;
 
-export const hashRefreshToken = (token) => createHash("sha256").update(token).digest("hex");
+export const hashRefreshToken = (token) => sha256Hex(token);
 
 // Only the first two octets of an IPv4 address (or the first two groups of an
 // IPv6 one) are kept. Enough to show "signed in from a different network" on

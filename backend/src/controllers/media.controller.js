@@ -1,5 +1,3 @@
-import {createHash} from "node:crypto";
-
 import {Media} from "../models/Media.js";
 import {RESOURCES} from "../config/resources.js";
 import {AUDIT_ACTIONS} from "../models/AuditLog.js";
@@ -15,6 +13,7 @@ import {
   ALLOWED_FOLDERS,
 } from "../services/imagekit.service.js";
 import {escapeRegex} from "../utils/sanitize.js";
+import {sha256Hex} from "../utils/sha256.js";
 import {ok, created, paginated} from "../utils/respond.js";
 import {badRequest, notFound, conflict} from "../utils/apiError.js";
 
@@ -159,7 +158,7 @@ export const createFromUrl = async (request, response, next) => {
       // No ImageKit file handle exists for a URL-only asset, but the schema
       // requires a unique one — a derived pseudo-id that can never collide
       // with a real fileId (real ones never start with "external-").
-      fileId: `external-${createHash("sha256").update(url).digest("hex").slice(0, 20)}${Math.random().toString(36).slice(2, 8)}`,
+      fileId: `external-${sha256Hex(url).slice(0, 20)}${Math.random().toString(36).slice(2, 8)}`,
       folder,
       alt: alt || "",
       external: true,

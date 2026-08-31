@@ -1,5 +1,3 @@
-import {createHash} from "node:crypto";
-
 import {Router} from "express";
 
 import {RESOURCES} from "../config/resources.js";
@@ -9,6 +7,7 @@ import {publicLimiter} from "../middleware/rateLimit.js";
 import {publicListQuery, slugParam} from "../validators/content.validators.js";
 import {paginated, ok} from "../utils/respond.js";
 import {notFound} from "../utils/apiError.js";
+import {sha256Base64Url} from "../utils/sha256.js";
 
 export const publicRouter = Router();
 
@@ -40,7 +39,7 @@ const CACHE_CONTROL = "public, max-age=0, must-revalidate, s-maxage=60, stale-wh
 // with no body, which for a large listing (the blog index is not small) is the
 // difference between 40 KB and a few hundred bytes.
 const withCache = (request, response, payload) => {
-  const etag = `W/"${createHash("sha1").update(JSON.stringify(payload)).digest("base64url")}"`;
+  const etag = `W/"${sha256Base64Url(JSON.stringify(payload))}"`;
 
   response.set("Cache-Control", CACHE_CONTROL);
   response.set("ETag", etag);

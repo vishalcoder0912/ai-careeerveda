@@ -1,6 +1,6 @@
-import {createHash} from "node:crypto";
-
 import ImageKit, {toFile} from "@imagekit/nodejs";
+
+import {sha256Hex} from "../utils/sha256.js";
 
 import {env} from "../config/env.js";
 import {badRequest, serviceUnavailable} from "../utils/apiError.js";
@@ -113,7 +113,7 @@ export const safeFileName = (original, extension) => {
     .slice(0, 80) || "image";
 
   // A short random suffix avoids collisions without ImageKit having to rename.
-  const unique = createHash("sha1").update(`${base}${Date.now()}${Math.random()}`).digest("hex").slice(0, 8);
+  const unique = sha256Hex(`${base}${Date.now()}${Math.random()}`).slice(0, 8);
 
   return `${base}-${unique}.${extension}`;
 };
@@ -135,7 +135,7 @@ export const ALLOWED_FOLDERS = [
   "/careerveda/press",
 ];
 
-export const hashBuffer = (buffer) => createHash("sha256").update(buffer).digest("hex");
+export const hashBuffer = (buffer) => sha256Hex(buffer);
 
 export const uploadImage = async ({buffer, fileName, folder}) => {
   const imagekit = getImageKit();
