@@ -1271,7 +1271,7 @@
   /* Hero: slightly tighter grid gap and type scale for 1024-1280px */
   .hero-layout {
     gap: clamp(32px, 4vw, 56px) !important;
-    width: min(1080px, calc(100% - 48px)) !important;
+    width: min(1280px, calc(100% - 48px)) !important;
   }
 
   .hero-copy h1 {
@@ -1401,7 +1401,7 @@
 
   /* Page shell (About, Contact, Alumni, Enroll, Policy): tighter container */
   .ps-inner {
-    width: min(1140px, calc(100% - 48px));
+    width: min(1280px, calc(100% - 48px));
   }
 
   .page-grid {

@@ -60,7 +60,10 @@ const buildFilter = (
     // $text: $text cannot do prefix matching, and an admin typing "prod"
     // expects to see "Product Management" before finishing the word.
     // escapeRegex is what stops the input being a pattern in its own right.
-    const pattern = new RegExp(escapeRegex(search), "i");
+    // Keep the pattern as Mongo data instead of constructing a server-side
+    // RegExp from request input. The term is escaped, so it remains a literal
+    // prefix search while avoiding main-thread regex evaluation in Node.
+    const pattern = {$regex: escapeRegex(String(search).slice(0, 100)), $options: "i"};
     const fields = Model.searchFields || [];
     if (fields.length > 0) filter.$or = fields.map((field) => ({[field]: pattern}));
   }

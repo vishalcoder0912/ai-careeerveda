@@ -24,7 +24,7 @@
   display: grid;
   grid-template-columns: 280px 1fr;
   gap: clamp(18px, 3vw, 34px);
-  width: min(1180px, calc(100% - 40px));
+  width: min(1400px, calc(100% - 40px));
   margin: 48px auto 0;
   padding: clamp(14px, 2vw, 20px);
   border: 1px solid rgba(15, 118, 110, 0.12);

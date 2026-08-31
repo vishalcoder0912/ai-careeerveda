@@ -2,7 +2,12 @@
    same surfaces, accents and buttons as every other standalone route. */
 
 .program-detail .pd-hero {
-  padding: clamp(96px, 12vw, 140px) 0 clamp(24px, 4vw, 40px);
+  /* Tight, controlled top spacing. The page sits under a fixed navbar whose
+     shell already reserves var(--navbar-height) (~78px), so a large padding-top
+     here stacks on top of that and pushes "-- All programs" far down the
+     viewport. The content is what defines the hero's height — start it right
+     beneath the bar with a small deliberate gap instead. */
+  padding: clamp(20px, 3vw, 40px) 0 clamp(32px, 5vw, 56px);
   /* Anchors the laser canvas, which is absolutely positioned inside.
      Deliberately NOT `overflow: hidden` (the price card here is position:sticky,
      and any clipping ancestor silently kills sticky) and deliberately NOT
@@ -60,6 +65,11 @@
 .program-detail .pd-hero .ps-inner {
   position: relative;
   z-index: 2;
+  /* Wide detail-page hero: matches the new 1440px site-measure so the
+     two-column hero has room for a prominent title AND a ~400px investment
+     card without cramping either. The sections below keep the standard
+     measure. */
+  width: min(1400px, calc(100% - 48px));
 }
 
 .pd-back {
@@ -68,7 +78,7 @@
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  margin-bottom: clamp(10px, 2vw, 20px);
+  margin-bottom: clamp(16px, 2vw, 28px);
   color: var(--ps-muted);
   font-size: 14px;
   font-weight: 600;
@@ -81,16 +91,16 @@
 
 .pd-hero__grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.75fr);
-  gap: clamp(24px, 4vw, 48px);
+  grid-template-columns: minmax(0, 1.5fr) minmax(360px, 0.75fr);
+  gap: clamp(28px, 3.5vw, 48px);
   align-items: start;
 }
 
 .pd-badges {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 20px;
+  gap: 10px;
+  margin-bottom: clamp(14px, 2vw, 24px);
 }
 
 .pd-badges span {
@@ -105,26 +115,30 @@
 
 .program-detail h1 {
   margin: 0;
-  font-size: clamp(30px, 4.4vw, 52px);
+  /* Prominent but contained: tight letter-spacing and line-height keep a long
+     program title from ballooning into vertical space the hero does not have.
+     The 1280px container (see .pd-hero .ps-inner below) gives the heading a
+     wide left column to breathe in without pushing the card off-screen. */
+  font-size: clamp(34px, 3.8vw, 58px);
   font-weight: 800;
   letter-spacing: -0.045em;
-  line-height: 1.06;
+  line-height: 1.03;
 }
 
 .pd-lead {
   max-width: 62ch;
-  margin: 18px 0 0;
+  margin: 16px 0 0;
   color: var(--ps-muted);
-  font-size: clamp(15px, 1.3vw, 17px);
-  line-height: 1.72;
+  font-size: clamp(15px, 1.25vw, 17px);
+  line-height: 1.66;
 }
 
 .pd-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: clamp(18px, 3vw, 40px);
-  margin-top: 28px;
-  padding-top: 22px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(20px, 3vw, 32px);
+  margin-top: 24px;
+  padding-top: 20px;
   border-top: 1px solid var(--ps-border);
 }
 
@@ -144,15 +158,16 @@
 .pd-hero__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 28px;
+  gap: 14px;
+  align-items: center;
+  margin-top: 24px;
 }
 
 /* ---------- price card ---------- */
 .pd-price {
   position: sticky;
-  top: 96px;
-  padding: clamp(22px, 2.6vw, 30px);
+  top: 84px;
+  padding: clamp(22px, 2vw, 30px);
   border: 1px solid var(--ps-border-strong);
   border-radius: 24px;
   background:
@@ -190,13 +205,13 @@
 }
 
 .pd-price__rows {
-  margin: 22px 0 0;
-  padding: 20px 0 0;
+  margin: 20px 0 0;
+  padding: 18px 0 0;
   border-top: 1px solid var(--ps-border);
 }
 
 .pd-price__rows > div + div {
-  margin-top: 16px;
+  margin-top: 14px;
 }
 
 .pd-price__rows dt {
@@ -215,7 +230,7 @@
 
 .pd-price__cta {
   width: 100%;
-  margin-top: 24px;
+  margin-top: 22px;
   justify-content: center;
 }
 
@@ -481,19 +496,104 @@
   content: "→";
 }
 
+/* ── Wide detail-page composition ────────────────────────────────────────── */
+.program-detail .ps-inner {
+  width: min(1440px, calc(100% - 64px));
+}
+
+.program-detail .pd-hero__grid {
+  grid-template-columns: minmax(0, 1fr) 400px;
+  column-gap: 48px;
+}
+
+.program-detail .pd-hero__copy {
+  width: 100%;
+  max-width: 860px;
+}
+
+.program-detail .pd-lead {
+  max-width: 840px;
+}
+
+.program-detail .pd-price {
+  width: 100%;
+  max-width: 410px;
+  justify-self: end;
+  margin-top: 8px;
+}
+
+.program-detail .pd-heading {
+  max-width: 850px;
+}
+
+.program-detail .pd-gains {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.program-detail .pd-gain {
+  padding: 18px 20px;
+}
+
+.program-detail .pd-modules,
+.program-detail .pd-outline,
+.program-detail .pd-tracks {
+  max-width: 1380px;
+}
+
+@media (min-width: 901px) and (max-width: 1279px) {
+  .program-detail .ps-inner {
+    width: min(100% - 48px, 1320px);
+  }
+
+  .program-detail .pd-hero__grid {
+    grid-template-columns: minmax(0, 1fr) 360px;
+    column-gap: 32px;
+  }
+}
+
+@media (max-width: 900px) {
+  .program-detail .ps-inner {
+    width: calc(100% - 40px);
+  }
+
+  .program-detail .pd-hero__grid {
+    column-gap: 0;
+  }
+
+  .program-detail .pd-price {
+    max-width: none;
+    margin-top: 24px;
+  }
+
+  .program-detail .pd-gains {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .program-detail .ps-inner {
+    width: calc(100% - 32px);
+  }
+
+  .program-detail .pd-gains {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ── Laptop (1024px - 1280px): tighter hero grid, scaled type ─────────────── */
 @media (min-width: 1025px) and (max-width: 1280px) {
   .pd-hero {
-    padding: clamp(88px, 10vw, 120px) 0 clamp(20px, 3vw, 36px);
+    padding: clamp(20px, 3vw, 36px) 0 clamp(28px, 4vw, 44px);
   }
 
   .pd-hero__grid {
-    grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.7fr);
+    grid-template-columns: minmax(0, 1.4fr) minmax(300px, 0.7fr);
     gap: clamp(24px, 3vw, 40px);
   }
 
   .program-detail h1 {
-    font-size: clamp(36px, 5vw, 48px);
+    font-size: clamp(32px, 4vw, 46px);
   }
 
   .pd-lead {
@@ -581,15 +681,36 @@
   }
 }
 
+/* ── Tablet (901px - 1024px): keeps two columns but scales everything down so
+     the card never crowds the copy and the heading never blows the column. ── */
+@media (min-width: 901px) and (max-width: 1024px) {
+  .pd-hero {
+    padding: clamp(20px, 3vw, 32px) 0 clamp(28px, 4vw, 40px);
+  }
+
+  .pd-hero__grid {
+    grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
+    gap: 24px;
+  }
+
+  .program-detail h1 {
+    font-size: clamp(30px, 3.6vw, 40px);
+  }
+
+  .pd-price {
+    top: 80px;
+    padding: 22px;
+  }
+}
+
 @media (max-width: 900px) {
   .pd-hero__grid {
     grid-template-columns: 1fr;
   }
 
-  /* A pinned card on a phone would sit on top of the content it's meant to
-     support, so it returns to the flow and simply follows the hero. */
   .pd-price {
     position: static;
+    margin-top: 24px;
   }
 
   /* Once the hero stacks to one column the copy runs the full width, straight
@@ -611,6 +732,26 @@
 }
 
 @media (max-width: 560px) {
+  .pd-hero {
+    padding: 14px 0 clamp(20px, 5vw, 28px);
+  }
+
+  .pd-hero__grid {
+    gap: 24px;
+  }
+
+  .program-detail h1 {
+    font-size: clamp(36px, 10vw, 46px);
+  }
+
+  .pd-back {
+    margin-bottom: 14px;
+  }
+
+  .pd-badges {
+    gap: 8px;
+  }
+
   .pd-hero__actions .page-btn,
   .pd-module ul {
     width: 100%;
@@ -626,5 +767,21 @@
 
   .pd-module summary {
     font-size: 15px;
+  }
+}
+
+/* Final detail-page width contract: keep legacy breakpoint rules from
+   re-expanding the hero gap after the shared wide composition is applied. */
+@media (min-width: 1280px) {
+  .program-detail .pd-hero__grid {
+    grid-template-columns: minmax(0, 1fr) 400px;
+    column-gap: 48px;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1279px) {
+  .program-detail .pd-hero__grid {
+    grid-template-columns: minmax(0, 1fr) 360px;
+    column-gap: 32px;
   }
 }

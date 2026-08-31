@@ -1,13 +1,11 @@
-import {useEffect,useRef} from "react";
 import {Link} from "react-router-dom";
 import {SPLINE_SCENE_URL} from "../config/spline";
 import SplineHeroScene from "./SplineHeroScene";
 
 const Hero = ({stats}) => {
-  const heroRef = useRef(null);
-
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
+  /* ponytail: keep the decorative robot static; scroll-linked transforms made
+     the largest visual repaint every frame and added no product value. */
+  /*
     // Phones do not get the parallax, and so do not get gsap. It is a decorative
     // scrub on the hero as you scroll away from it — worth 45 KB of download plus
     // its parse and its per-frame scroll work on a desktop, not on the device
@@ -75,10 +73,10 @@ const Hero = ({stats}) => {
       cancelled = true;
       context?.revert();
     };
-  },[]);
+  */
 
   return (
-    <section ref={heroRef} id="top" className="hero-shell">
+    <section id="top" className="hero-shell">
       {/* No canvas here anymore. This section's ShapeGrid used to be the
           site's ONE grid, anchored to this box so the navbar strip above and
           the hero below shared one origin — but a document-anchored lattice can

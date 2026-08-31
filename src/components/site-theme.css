@@ -12,12 +12,12 @@
   --site-border: #e6ebf4;
   --site-shadow: 0 18px 50px rgba(16, 24, 64, 0.08);
   --site-shadow-strong: 0 24px 70px rgba(16, 24, 64, 0.14);
-  /* One content measure for the whole site. It had drifted into three — the
-     navbar sat on 1180, the footer and landing sections on 1240, the standalone
-     pages on 1160 — so the footer overhung the header by 30px on each side and
-     an About page's text started 10px inside its own navbar. 1180 is the
-     navbar's, the one element on every page, so nothing above the fold moves. */
-  --site-measure: 1180px;
+  /* Widened from 1180 → 1440 to eliminate the "website inside a container"
+     feel. The navbar already sat on 1440; this brings every section, hero,
+     page-shell inner, and footer padding into alignment with it. At a 1440px
+     viewport the outer gutters drop from ~130px to ~48px, giving the layout
+     the wide immersive quality of a modern EdTech platform. */
+  --site-measure: 1440px;
 }
 
 body {

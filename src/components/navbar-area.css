@@ -135,7 +135,10 @@ body header.site-nav .nav-container .site-nav-brand {
   color: var(--cv-white, #ffffff) !important;
   text-decoration: none !important;
   transform-origin: left center;
-  transition: transform 420ms cubic-bezier(0.33, 1, 0.68, 1) !important;
+  transition:
+    transform 420ms cubic-bezier(0.33, 1, 0.68, 1),
+    opacity 360ms cubic-bezier(0.33, 1, 0.68, 1),
+    visibility 0s linear 0s !important;
 }
 
 body header.site-nav.is-scrolled .nav-container .brand,
@@ -283,7 +286,12 @@ body header.site-nav .nav-container a.nav-cta {
   box-shadow: 0 6px 22px rgba(0, 190, 150, 0.18) !important;
   cursor: pointer;
   z-index: 2;
-  transition: transform 200ms ease, filter 200ms ease, box-shadow 200ms ease !important;
+  transition:
+    transform 200ms ease,
+    filter 200ms ease,
+    box-shadow 200ms ease,
+    opacity 320ms ease,
+    visibility 0s linear 0s !important;
 }
 
 body header.site-nav .nav-container a.nav-cta:hover,
@@ -453,6 +461,65 @@ body header.site-nav .nav-container .hamburger-btn {
   }
 }
 
+/* ══ SCROLLED — logo + Enroll Now fade out; the nav pill floats centered ════
+   When the user scrolls past the threshold (is-scrolled/is-compact), the two
+   side zones (logo, Enroll Now) are hidden so ONLY the centered nav pill
+   remains as a compact floating glass capsule near the top.
+
+   The header itself stays transparent and full-width — it is never a bar, so
+   nothing reads as a separate surface; only the pill carries the glass. The
+   nav-container is deliberately NOT switched from grid to flex and the side
+   tracks are NOT collapsed: the grid is `1fr auto 1fr`, and collapsing either
+   side would slide the centered pill off-axis. Holding the tracks keeps the
+   capsule perfectly centered with zero layout shift while the sides fade away.
+   visibility is delayed until the fade completes, which also removes the links
+   from the tab/AT order so the collapsed logo/CTA are never keyboard-focusable. */
+@media (min-width: 981px) {
+  body header.site-nav.is-scrolled,
+  body header.site-nav.is-compact {
+    min-height: 0 !important;
+    height: auto !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    border-bottom: none !important;
+  }
+
+  body header.site-nav.is-scrolled .nav-container,
+  body header.site-nav.is-compact .nav-container {
+    height: auto !important;
+    padding-top: 14px !important;
+  }
+
+  body header.site-nav.is-scrolled .nav-container .brand,
+  body header.site-nav.is-scrolled .nav-container .site-nav-brand,
+  body header.site-nav.is-scrolled .nav-container a.nav-cta,
+  body header.site-nav.is-compact .nav-container .brand,
+  body header.site-nav.is-compact .nav-container .site-nav-brand,
+  body header.site-nav.is-compact .nav-container a.nav-cta {
+    opacity: 0 !important;
+    transform: translateY(-4px) scale(0.97) !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+    transition:
+      opacity 320ms cubic-bezier(0.33, 1, 0.68, 1),
+      transform 320ms cubic-bezier(0.33, 1, 0.68, 1),
+      visibility 0s linear 320ms !important;
+  }
+
+  body header.site-nav.is-scrolled .nav-container nav.site-nav-links,
+  body header.site-nav.is-compact .nav-container nav.site-nav-links {
+    height: 54px !important;
+    padding: 5px 10px !important;
+    background: rgba(21, 38, 54, 0.58) !important;
+    border-color: rgba(255, 255, 255, 0.14) !important;
+    backdrop-filter: blur(18px) saturate(140%) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(140%) !important;
+    box-shadow: 0 12px 40px rgba(2, 8, 20, 0.35) !important;
+  }
+}
+
 /* ══ Reduced motion: states snap, nothing glides, spotlight never appears ══ */
 
 @media (prefers-reduced-motion: reduce) {
@@ -477,5 +544,113 @@ body header.site-nav .nav-container .hamburger-btn {
 
   html {
     scroll-behavior: auto !important;
+  }
+}
+
+/* ── Premium navigation finish ─────────────────────────────────────────────
+   Keep the existing single component and scroll state; the top state is a
+   quiet full-width shell, while only the scrolled navigation becomes the
+   detached signature capsule. */
+body header.site-nav {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+body header.site-nav .nav-container nav.site-nav-links {
+  background: transparent !important;
+  border-color: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  overflow: visible !important;
+}
+
+body header.site-nav .nav-container .site-nav-brand {
+  opacity: 0.96 !important;
+}
+
+body header.site-nav .nav-container .site-nav-brand:hover {
+  opacity: 1 !important;
+}
+
+body header.site-nav .nav-container nav.site-nav-links a {
+  padding: 8px 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+}
+
+body header.site-nav .nav-container nav.site-nav-links a.is-active {
+  background: rgba(34, 211, 238, 0.08) !important;
+  border: 1px solid rgba(34, 211, 238, 0.12) !important;
+  box-shadow: 0 0 0 1px rgba(24, 200, 180, 0.08) !important;
+}
+
+body header.site-nav .nav-container nav.site-nav-links a.is-active::after {
+  display: none !important;
+  content: none !important;
+}
+
+body header.site-nav .nav-container nav.site-nav-links {
+  gap: 8px !important;
+}
+
+body header.site-nav .nav-container nav.site-nav-links a {
+  padding: 9px 14px !important;
+}
+
+body header.site-nav .nav-container a.nav-cta {
+  background: linear-gradient(135deg, #18c7a3 0%, #19aee8 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 8px 28px rgba(20, 200, 180, 0.16) !important;
+}
+
+body header.site-nav .nav-container a.nav-cta:hover,
+body header.site-nav .nav-container a.nav-cta:focus-visible {
+  filter: brightness(1.06) !important;
+  box-shadow: 0 10px 30px rgba(20, 200, 180, 0.22) !important;
+}
+
+@media (min-width: 981px) {
+  body header.site-nav.is-scrolled,
+  body header.site-nav.is-compact {
+    background: transparent !important;
+    border-bottom: 0 !important;
+  }
+
+  body header.site-nav.is-scrolled .nav-container,
+  body header.site-nav.is-compact .nav-container {
+    padding-top: 14px !important;
+  }
+
+  body header.site-nav.is-scrolled .nav-container nav.site-nav-links,
+  body header.site-nav.is-compact .nav-container nav.site-nav-links {
+    height: 54px !important;
+    padding: 6px 8px !important;
+    gap: 8px !important;
+    background: rgba(18, 35, 48, 0.72) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    backdrop-filter: blur(20px) saturate(140%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.24), 0 4px 15px rgba(0, 0, 0, 0.12) !important;
+  }
+
+  body header.site-nav.is-scrolled .nav-container nav.site-nav-links::after,
+  body header.site-nav.is-compact .nav-container nav.site-nav-links::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: 1px !important;
+    z-index: -1 !important;
+    border-radius: inherit !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.015)) !important;
+    pointer-events: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body header.site-nav .nav-container nav.site-nav-links a.is-active::after {
+    display: none !important;
+    content: none !important;
   }
 }

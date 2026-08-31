@@ -638,7 +638,7 @@
 /* ── Laptop (1024px - 1280px): tighter container, 2-col grids ────────────── */
 @media (min-width: 1025px) and (max-width: 1280px) {
   .ps-inner {
-    width: min(1140px, calc(100% - 48px));
+    width: min(1280px, calc(100% - 48px));
   }
 
   .page-hero {

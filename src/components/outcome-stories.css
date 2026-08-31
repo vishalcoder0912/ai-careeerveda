@@ -6,7 +6,7 @@
    See Recommended/RecommendedCourses1.css. */
 .outcome-stories {
   position: relative;
-  width: min(1180px, calc(100% - 40px));
+  width: min(1400px, calc(100% - 40px));
   margin: clamp(42px, 6vw, 76px) auto 0;
   padding: clamp(22px, 4vw, 42px);
   overflow: hidden;

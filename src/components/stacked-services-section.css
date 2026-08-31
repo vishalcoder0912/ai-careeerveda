@@ -42,7 +42,7 @@ body .support-section > *,
 
 body .support-section .section-heading,
 .support-section .section-heading {
-  width: min(1180px, 100%);
+  width: min(1400px, 100%);
   max-width: none;
   margin: 0 auto clamp(34px, 5vw, 58px);
   text-align: center;
@@ -89,7 +89,7 @@ body .support-section .support-grid,
   position: relative;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  width: min(1180px, calc(100vw - 42px));
+  width: min(1400px, calc(100vw - 42px));
   margin-inline: auto;
   gap: clamp(16px, 2.6vw, 28px);
 }

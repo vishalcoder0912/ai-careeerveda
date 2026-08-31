@@ -103,7 +103,7 @@
   }
 
   .program-explorer {
-    width: min(1140px, calc(100% - 40px));
+    width: min(1280px, calc(100% - 40px));
     margin-top: 24px;
     padding: 10px;
     border-radius: 22px;

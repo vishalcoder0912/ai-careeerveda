@@ -47,7 +47,7 @@
 }
 
 .jobs-page .jp-inner {
-  width: min(1200px, calc(100% - 48px));
+  width: min(1400px, calc(100% - 48px));
   margin-inline: auto;
 }
 
@@ -481,7 +481,7 @@
 /* ── Laptop (1024px - 1280px): 2-col job grid, tighter toolbar ────────────── */
 @media (min-width: 1025px) and (max-width: 1280px) {
   .jobs-page .jp-inner {
-    width: min(1140px, calc(100% - 48px));
+    width: min(1280px, calc(100% - 48px));
   }
 
   .jobs-hero {

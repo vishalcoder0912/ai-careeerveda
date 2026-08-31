@@ -555,7 +555,6 @@
     transition: none;
   }
 }
-src/config/pageMeta.js:2 + src/config/siteMeta.js:43
 /* ── Laptop (1024px - 1280px): 2-col mentor grid ─────────────────────────── */
 @media (min-width: 1025px) and (max-width: 1280px) {
   .mentor-grid {
