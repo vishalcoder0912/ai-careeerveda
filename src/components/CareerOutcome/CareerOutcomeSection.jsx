@@ -52,7 +52,7 @@ export default function CareerOutcomeSection() {
         <small className="co-micro-label">BUILD → APPLY → IMPROVE</small>
         <div className="co-skills"><strong>Skill Progress</strong>{[["Python",78],["SQL",92],["Product Thinking",74],["Projects",68]].map(([name, progress]) => <div key={name}><span>{name}</span><b>{progress}%</b><em><i style={{ width: `${progress}%` }} /></em></div>)}</div>
         <div className="co-project"><small>REAL PROJECT · PROJECT 04</small><h3>Customer Segmentation Dashboard</h3><span className="co-project-status">In Progress · 3 / 4 milestones</span><div className="co-tasks">{[["✓","Data Cleaning","done"],["✓","SQL Analysis","done"],["●","Dashboard","progress"],["○","Presentation","pending"]].map(([icon, task, status]) => <span className={status} key={task}><b>{icon}</b>{task}</span>)}</div><div className="co-chips"><i>SQL</i><i>Python</i><i>Analytics</i><i>Power BI</i></div></div>
-        <aside className="co-float co-float-top"><span>MENTOR FEEDBACK</span><strong>3 suggestions</strong><small>“Add customer-segment insights.”</small></aside><aside className="co-float co-float-bottom"><span>TODAY'S PRACTICE</span><strong>SQL Challenge</strong><small>07 / 10 completed</small></aside>
+        <aside className="co-float co-float-top"><span>MENTOR FEEDBACK</span><strong>3 suggestions</strong><small>“Add customer-segment insights.”</small></aside>
       </div>
     </div>
 

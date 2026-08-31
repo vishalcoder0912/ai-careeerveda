@@ -4,6 +4,11 @@
 @media(max-width:700px){.co-container{width:calc(100% - 24px)}.co-hero-grid,.co-engine{grid-template-columns:1fr}.co-hero-grid{padding-top:80px}.co-dashboard{transform:none}.co-float-top{right:0}.co-float-bottom{left:0}.co-journey,.co-cards,.co-programs,.co-difference{grid-template-columns:1fr}.co-difference article,.co-difference .wide{grid-column:span 1}.co-metrics{grid-template-columns:repeat(2,1fr)}.co-actions{flex-direction:column}.co-button{width:100%}.co-section{padding:75px 0}}
 @media(prefers-reduced-motion:reduce){[data-reveal]{opacity:1;transform:none;transition:none}}
 
+.career-outcome .co-hero-grid > div:first-child{text-align:center}
+.career-outcome .co-hero-grid > div:first-child .co-lead{margin-inline:auto}
+.career-outcome .co-hero-grid > div:first-child .co-actions{justify-content:center}
+.career-outcome .co-learning-head,.career-outcome .co-micro-label,.career-outcome .co-skills,.career-outcome .co-project{display:none}
+
 /* Keep the career engine readable as a compact card grid at every width. */
 .career-outcome .co-stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;min-height:0}
 .career-outcome .co-stack div{position:relative;inset:auto;width:100%;min-height:118px}
