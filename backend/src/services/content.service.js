@@ -68,6 +68,10 @@ const buildFilter = (
     if (fields.length > 0) filter.$or = fields.map((field) => ({[field]: pattern}));
   }
 
+
+
+  
+
   return filter;
 };
 
