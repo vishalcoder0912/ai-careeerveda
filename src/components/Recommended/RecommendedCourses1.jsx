@@ -84,7 +84,7 @@ const recommendedCourses = [
   {
     id: "data-science-ai",
     slug: "data-science-ai",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/data-5283dc81.webp?tr=w-840,f-auto,q-80",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/PG-WITH-GENAI-803ad9e9.webp?tr=w-840,f-auto,q-80",
     label: "Advanced Track",
     title: "PG Program in Data Science with Generative AI",
     subtitle: "Build AI, ML and Agentic AI Skills",

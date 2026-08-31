@@ -1316,7 +1316,7 @@ export const programCatalog = [
     mentorship: "AI Mentor",
     format: "Live Online",
     startingPrice: "â‚¹1,55,000",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/data-c3b60741.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/PG-WITH-GENAI-803ad9e9.webp",
     overview: [
       "Machine learning, deep learning, NLP and computer vision",
       "LLM projects, AI agents and applied generative AI workflows",
