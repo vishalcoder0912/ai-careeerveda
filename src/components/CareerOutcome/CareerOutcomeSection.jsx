@@ -42,16 +42,17 @@ export default function CareerOutcomeSection() {
   return <section ref={ref} className="career-outcome">
     <div className="co-container co-hero-grid">
       <div data-reveal>
-        <span className="co-eyebrow">INDUSTRY-ALIGNED CAREER LEARNING</span>
-        <h2>Turn ambition into <em>career outcomes.</em></h2>
-        <p className="co-lead">CareerVeda helps learners move from classroom to real careers through practical projects, expert mentorship and dedicated placement support.</p>
-        <div className="co-actions"><a className="co-button co-primary" href="/enroll">Enroll Now →</a><a className="co-button" href="/programs">Explore Programs</a></div>
+        <span className="co-eyebrow">PRACTICAL LEARNING. REAL CAREERS.</span>
+        <h2>Turn ambition into <em>career-ready skills.</em></h2>
+        <p className="co-lead">CareerVeda helps you learn by doing — through live instruction, real projects, practical case studies, expert mentorship and structured career support.</p>
+        <div className="co-actions"><a className="co-button co-primary" href="/enroll">Start Learning →</a><a className="co-button" href="/programs">Explore Programs</a></div>
       </div>
-      <div className="co-dashboard" data-reveal aria-label="Career growth dashboard">
-        <div className="co-dashboard-top"><span>Career Growth</span><strong>+68%</strong><b>Growing</b></div>
-        <div className="co-chart"><i /><i /><i /><i /><i /></div>
-        <div className="co-dashboard-bottom"><span>Placement Readiness <strong>92%</strong><small><i /></small></span><span>Projects <strong>12/15</strong></span></div>
-        <aside className="co-float co-float-top">Mentor Sessions <strong>08</strong></aside><aside className="co-float co-float-bottom">Career Signal <strong>Strong</strong></aside>
+      <div className="co-dashboard" data-reveal aria-label="Conceptual practical learning interface">
+        <div className="co-learning-head"><div><span>PRACTICAL LEARNING</span><small>Learn by building real things</small></div><b><i />72% ACTIVE</b></div>
+        <small className="co-micro-label">BUILD → APPLY → IMPROVE</small>
+        <div className="co-skills"><strong>Skill Progress</strong>{[["Python",78],["SQL",92],["Product Thinking",74],["Projects",68]].map(([name, progress]) => <div key={name}><span>{name}</span><b>{progress}%</b><em><i style={{ width: `${progress}%` }} /></em></div>)}</div>
+        <div className="co-project"><small>REAL PROJECT · PROJECT 04</small><h3>Customer Segmentation Dashboard</h3><span className="co-project-status">In Progress · 3 / 4 milestones</span><div className="co-tasks">{[["✓","Data Cleaning","done"],["✓","SQL Analysis","done"],["●","Dashboard","progress"],["○","Presentation","pending"]].map(([icon, task, status]) => <span className={status} key={task}><b>{icon}</b>{task}</span>)}</div><div className="co-chips"><i>SQL</i><i>Python</i><i>Analytics</i><i>Power BI</i></div></div>
+        <aside className="co-float co-float-top"><span>MENTOR FEEDBACK</span><strong>3 suggestions</strong><small>“Add customer-segment insights.”</small></aside><aside className="co-float co-float-bottom"><span>TODAY'S PRACTICE</span><strong>SQL Challenge</strong><small>07 / 10 completed</small></aside>
       </div>
     </div>
 
