@@ -243,6 +243,19 @@ body .consultation-section > * {
   }
 }
 
+/* Tablet: the visual is an absolute backdrop, so the legacy 54vh spacer only
+   pushes the copy down and makes the hero feel empty. Keep the proof points
+   compact enough to scan without turning them into a long single column. */
+@media (min-width: 769px) and (max-width: 980px) {
+  body .hero-copy {
+    padding-top: 0 !important;
+  }
+
+  body .stat-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
 @media (max-width: 640px) {
   body .brand {
     font-size: 17px !important;

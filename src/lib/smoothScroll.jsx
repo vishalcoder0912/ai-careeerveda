@@ -20,6 +20,53 @@ const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+/**
+ * A single event-source subscription registry.
+ *
+ * OOP + a Set: subscribes/removes listeners against either a Lenis instance or
+ * the window, deduplicating by identity so the same handler can never be
+ * registered twice (O(1) add / remove / membership). `unsubscribeAll()` is the
+ * guarantee that a hook's teardown detaches everything it attached — the thing
+ * that prevents a listener from surviving its component, the classic scroll
+ * leak. Holds a Set, so both hooks share one bookkeeping mechanism instead of
+ * restating `on/off` and `add/removeEventListener` in each.
+ */
+class ScrollSource {
+  constructor(source, eventName) {
+    this.source = source;
+    this.eventName = eventName;
+    this.handlers = new Set();
+    // A Lenis instance exposes `on`/`off`; the window exposes add/removeEventListener.
+    this.isLenis = Boolean(source && typeof source.on === "function");
+  }
+
+  subscribe(handler) {
+    if (this.handlers.has(handler)) return;
+    this.handlers.add(handler);
+    if (this.isLenis) this.source.on(this.eventName, handler);
+    else this.source.addEventListener(this.eventName, handler, {passive: true});
+  }
+
+  unsubscribe(handler) {
+    if (!this.handlers.has(handler)) return;
+    this.handlers.delete(handler);
+    if (this.isLenis) this.source.off(this.eventName, handler);
+    else this.source.removeEventListener(this.eventName, handler);
+  }
+
+  unsubscribeAll() {
+    for (const handler of this.handlers) {
+      if (this.isLenis) this.source.off(this.eventName, handler);
+      else this.source.removeEventListener(this.eventName, handler);
+    }
+    this.handlers.clear();
+  }
+
+  get size() {
+    return this.handlers.size;
+  }
+}
+
 export const SmoothScrollProvider = ({enabled = true, children}) => {
   const [lenis, setLenis] = useState(null);
 
@@ -177,15 +224,18 @@ export const useScrollProgress = () => {
     read();
 
     if (lenis) {
-      lenis.on("scroll", read);
-      return () => lenis.off("scroll", read);
+      const source = new ScrollSource(lenis, "scroll");
+      source.subscribe(read);
+      return () => source.unsubscribeAll();
     }
 
-    window.addEventListener("scroll", read, {passive: true});
-    window.addEventListener("resize", read);
+    const scroll = new ScrollSource(window, "scroll");
+    const resize = new ScrollSource(window, "resize");
+    scroll.subscribe(read);
+    resize.subscribe(read);
     return () => {
-      window.removeEventListener("scroll", read);
-      window.removeEventListener("resize", read);
+      scroll.unsubscribeAll();
+      resize.unsubscribeAll();
     };
   }, [lenis]);
 
@@ -206,15 +256,17 @@ export const useSmoothScrollY = () => {
 
   useEffect(() => {
     if (lenis) {
+      const source = new ScrollSource(lenis, "scroll");
       const read = ({scroll}) => setOffset(scroll);
-      lenis.on("scroll", read);
-      return () => lenis.off("scroll", read);
+      source.subscribe(read);
+      return () => source.unsubscribeAll();
     }
 
+    const source = new ScrollSource(window, "scroll");
     const read = () => setOffset(window.scrollY);
     read();
-    window.addEventListener("scroll", read, {passive: true});
-    return () => window.removeEventListener("scroll", read);
+    source.subscribe(read);
+    return () => source.unsubscribeAll();
   }, [lenis]);
 
   return offset;

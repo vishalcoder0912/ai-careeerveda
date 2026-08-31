@@ -6,12 +6,11 @@ const uploadedPhotos = import.meta.glob(
   { eager: true, import: "default", query: "?url" },
 );
 
-const photoBySlug = Object.fromEntries(
-  Object.entries(uploadedPhotos).map(([path, url]) => {
-    const filename = path.split("/").pop() || "";
-    const slug = filename.replace(/\.[^.]+$/, "");
-    return [slug, url];
-  }),
+const photoBySlug = new Map(
+  Object.entries(uploadedPhotos).map(([path, url]) => [
+    (path.split("/").pop() || "").replace(/\.[^.]+$/, ""),
+    url,
+  ]),
 );
 
 // Exported because API-sourced alumni need the same placeholder: a profile the
@@ -228,14 +227,30 @@ const spotlightProfiles = [
   
 ];
 
-const resolveProfileImage = (profile) => {
-  const imageUrl = typeof profile.imageUrl === "string" ? profile.imageUrl.trim() : "";
-  return imageUrl || photoBySlug[profile.id] || avatarPlaceholder(profile);
-};
+// OOP Strategy: encapsulates the fallback chain (hosted URL → uploaded file
+// → generated initials placeholder). Injected `placeholder` keeps the class
+// decoupled from the SVG generator so the admin API can reuse it.
+class ProfileImage {
+  #hosted;
+  #local;
+  #profile;
+  #placeholder;
+
+  constructor(profile, localPhotos, placeholder) {
+    this.#hosted = typeof profile.imageUrl === "string" ? profile.imageUrl.trim() : "";
+    this.#local = localPhotos;
+    this.#profile = profile;
+    this.#placeholder = placeholder;
+  }
+
+  get url() {
+    return this.#hosted || this.#local.get(this.#profile.id) || this.#placeholder(this.#profile);
+  }
+}
 
 export const alumniSpotlights = spotlightProfiles.map((profile) => ({
   ...profile,
-  image: resolveProfileImage(profile),
+  image: new ProfileImage(profile, photoBySlug, avatarPlaceholder).url,
 }));
 
 export const alumniDomeImages = alumniSpotlights.map(({ id, image, name }) => ({
