@@ -478,7 +478,7 @@ body header.site-nav .nav-container .hamburger-btn {
    capsule perfectly centered with zero layout shift while the sides fade away.
    visibility is delayed until the fade completes, which also removes the links
    from the tab/AT order so the collapsed logo/CTA are never keyboard-focusable. */
-@media (min-width: 981px) {
+@media (min-width: 1280px) {
   body header.site-nav.is-scrolled,
   body header.site-nav.is-compact {
     min-height: 0 !important;

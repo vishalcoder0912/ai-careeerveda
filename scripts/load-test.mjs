@@ -89,6 +89,10 @@ const percentile = (sorted, p) => {
 try {
   await waitForHealth();
 
+  // Warm each route once so module/database initialization is not measured as
+  // request latency. The load window should measure sustained service behavior.
+  await Promise.all(ENDPOINTS.map((endpoint) => fetch(endpoint, {signal: AbortSignal.timeout(10_000)})));
+
   const deadline = Date.now() + DURATION * 1000;
   await Promise.all(Array.from({length: CONCURRENCY}, () => worker(deadline)));
 
