@@ -546,6 +546,11 @@
     width: min(100% - 48px, 1320px);
   }
 
+  .program-detail .pd-hero__copy {
+    opacity: 1;
+    transform: none;
+  }
+
   .program-detail .pd-hero__grid {
     grid-template-columns: minmax(0, 1fr) 360px;
     column-gap: 32px;
