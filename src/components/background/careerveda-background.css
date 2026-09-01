@@ -56,6 +56,7 @@
     radial-gradient(circle at 84% 18%, rgba(45, 212, 191, 0.14), transparent 35%),
     radial-gradient(circle at 12% 14%, rgba(16, 185, 129, 0.09), transparent 28%),
     radial-gradient(circle at 72% 58%, rgba(56, 189, 248, 0.05), transparent 32%);
+  opacity: 0.72;
 }
 
 /* Foreground. A plain static div paints its background BEFORE positioned

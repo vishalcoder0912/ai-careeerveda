@@ -1,0 +1,45 @@
+/* Small-screen layout guardrails for the public home page. */
+.spline-page--grid {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+@media (max-width: 1024px) {
+  .consultation-panel {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .faq-section,
+  .consultation-section {
+    padding-inline: 24px;
+  }
+}
+
+@media (max-width: 600px) {
+  .faq-section,
+  .consultation-section {
+    padding-inline: 16px;
+  }
+
+  .faq-section h2,
+  .consultation-headline {
+    font-size: clamp(28px, 8vw, 38px);
+    line-height: 1.12;
+  }
+
+  .faq-list summary {
+    padding: 18px 16px;
+    font-size: 15px;
+  }
+
+  .faq-list details p {
+    padding-inline: 16px;
+    line-height: 1.6;
+  }
+
+  .consultation-copy--panel,
+  .consultation-form {
+    min-width: 0;
+  }
+}

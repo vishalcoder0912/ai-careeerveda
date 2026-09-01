@@ -11,6 +11,7 @@ import { faqSchema, useJsonLd } from "../lib/structuredData";
 import "../components/SplineLanding.css";
 import "../components/cinematic-interactions.css";
 import "../components/shape-grid.css";
+import "./HomePage.css";
 
 /* Only the hero is above the fold. Everything below it is split out and fetched
    as the reader approaches it, so the first paint is the hero and the navigation

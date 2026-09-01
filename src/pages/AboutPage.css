@@ -1,0 +1,1367 @@
+/* ── CareerVeda About — a modern EdTech product experience ──────────────────
+ *
+ * The page is built to feel like a learning platform, not a company profile.
+ * Every section reads the shared dark CursorGrid background (set transparent
+ * on .spline-page in careerveda-background.css); this file only adds its own
+ * atmospheric glows, product-UI panels and centered composition.
+ *
+ * Layout contract: major storytelling sections are CENTERED with constrained
+ * text, while card grids span wide. One wrap width (min(calc(100% - 64px),
+ * 1400px)) keeps the page balanced without making it narrow.
+ */
+
+.about-page {
+  --about-text: var(--ps-ink, #f1f5f9);
+  --about-muted: var(--ps-muted, rgba(226, 232, 240, 0.68));
+  --about-border: var(--ps-border, rgba(148, 163, 184, 0.16));
+  --about-cyan: var(--ps-teal, #14b8a6);
+  --about-blue: #38bdf8;
+  --about-panel: rgba(255, 255, 255, 0.035);
+  --about-panel-strong: rgba(255, 255, 255, 0.07);
+  position: relative;
+  color: var(--about-text);
+  font-family: inherit;
+}
+
+/* ── Shared wrap + centered section rhythm ──────────────────────────────── */
+.about-wrap {
+  position: relative;
+  z-index: 1;
+  width: min(calc(100% - 64px), 1400px);
+  margin-inline: auto;
+}
+
+.about-section {
+  position: relative;
+  padding: 64px 0;
+}
+
+/* ── Typography ─────────────────────────────────────────────────────────── */
+.about-eyebrow {
+  display: inline-block;
+  padding: 7px 12px;
+  border: 1px solid rgba(22, 212, 208, 0.2);
+  border-radius: 999px;
+  color: #52e5df;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.about-page h1 {
+  margin: 20px 0;
+  font-size: clamp(50px, 6vw, 88px);
+  line-height: 1;
+  letter-spacing: -0.05em;
+  color: var(--about-text);
+}
+
+.about-page h2 {
+  margin: 20px 0 0;
+  font-size: clamp(36px, 4vw, 58px);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: var(--about-text);
+}
+
+.about-page em {
+  color: var(--about-cyan);
+  font-style: normal;
+}
+
+.about-heading {
+  text-align: center;
+  max-width: 780px;
+  margin-inline: auto;
+}
+
+.about-sub {
+  color: var(--about-muted);
+  font-size: 17px;
+  line-height: 1.65;
+  max-width: 640px;
+  margin: 18px auto 0;
+}
+
+/* ── Reusable buttons ───────────────────────────────────────────────────── */
+.about-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 30px;
+}
+
+.about-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+  padding: 0 22px;
+  border: 1px solid var(--about-border);
+  border-radius: 999px;
+  color: var(--about-text);
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.03);
+  font-weight: 750;
+  transition: transform 200ms ease, background 200ms ease, border-color 200ms ease;
+}
+
+.about-btn:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(22, 212, 208, 0.4);
+}
+
+.about-btn-primary {
+  color: #031018;
+  border: 0;
+  background: linear-gradient(135deg, #1ad8c8, #2498ff);
+  box-shadow: 0 14px 38px rgba(22, 212, 208, 0.18);
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   1. HERO — centered EdTech hero + Career Learning System
+   ════════════════════════════════════════════════════════════════════════ */
+.about-hero {
+  position: relative;
+  padding: 110px 0 60px;
+  text-align: center;
+}
+
+.about-hero-inner {
+  max-width: 820px;
+  margin-inline: auto;
+}
+
+.about-hero .about-eyebrow {
+  animation: cv-hero-enter 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.about-hero h1 {
+  animation: cv-hero-enter 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+
+/* Keeps the full headline in the DOM for crawlers and screen readers while the
+   typewriter animates it visually. */
+.about-h1-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.about-h1-visible {
+  display: block;
+}
+
+.about-h1-fixed,
+.about-h1-moving {
+  display: inline-block;
+  min-height: 1.15em;
+}
+
+.about-typed {
+  white-space: pre-wrap;
+}
+
+.about-lead {
+  color: var(--about-muted);
+  font-size: 17px;
+  line-height: 1.7;
+  max-width: 620px;
+  margin: 24px auto 0;
+}
+
+.about-hero .about-actions {
+  animation: cv-hero-enter 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.16s both;
+}
+
+.about-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(52% 60% at 50% 22%, rgba(45, 212, 191, 0.12), transparent 70%);
+}
+
+/* ── The Career Learning System — centered product panel ────────────────── */
+.about-learn-sys {
+  position: relative;
+  width: min(720px, 100%);
+  margin: 70px auto 0;
+  padding: 34px;
+  border: 1px solid var(--about-border);
+  border-radius: 28px;
+  background:
+    linear-gradient(145deg, rgba(27, 48, 70, 0.92), rgba(7, 20, 33, 0.94));
+  box-shadow: 0 38px 100px rgba(0, 0, 0, 0.35);
+  text-align: left;
+}
+
+.about-learn-sys-title {
+  display: block;
+  text-align: center;
+  margin-bottom: 22px;
+  color: #61dad6;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.about-learn-panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.about-learn-panel-head strong {
+  display: block;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.about-learn-panel-head small {
+  display: block;
+  margin-top: 5px;
+  color: #8ea4b9;
+  font-size: 11px;
+}
+
+.about-learn-panel-head b {
+  color: var(--about-cyan);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.about-learn-panel-head b i {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--about-cyan);
+}
+
+.about-micro-label {
+  display: block;
+  margin-top: 20px;
+  color: #61dad6;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+
+.about-skills {
+  margin-top: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--about-border);
+}
+
+.about-skills > strong {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 12px;
+}
+
+.about-skill {
+  display: grid;
+  grid-template-columns: 130px 40px 1fr;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.about-skill span,
+.about-skill b {
+  font-size: 12px;
+  color: var(--about-text);
+}
+
+.about-skill b {
+  text-align: right;
+  color: var(--about-cyan);
+}
+
+.about-skill em {
+  height: 7px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.about-skill em i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #16d4d0, #2498ff);
+  animation: about-progress 0.8s ease both;
+}
+
+.about-skill em.two i { background: linear-gradient(90deg, #2dd4bf, #38bdf8); }
+.about-skill em.three i { background: linear-gradient(90deg, #22d3ee, #34d399); }
+.about-skill em.four i { background: linear-gradient(90deg, #16d4d0, #2498ff); }
+
+@keyframes about-progress {
+  from { width: 0; }
+}
+
+.about-project {
+  margin-top: 18px;
+}
+
+.about-project > small {
+  color: #61dad6;
+  letter-spacing: 0.1em;
+  font-size: 10px;
+}
+
+.about-project h3 {
+  margin: 6px 0;
+  font-size: 19px;
+}
+
+.about-project-status {
+  font-size: 11px;
+  color: #a6b8c7;
+}
+
+.about-tasks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.about-tasks span {
+  font-size: 12px;
+  color: #9fb0be;
+}
+
+.about-tasks b {
+  margin-right: 7px;
+  color: #657d91;
+}
+
+.about-tasks .done b,
+.about-tasks .progress b {
+  color: var(--about-cyan);
+}
+
+.about-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.about-chips i {
+  padding: 5px 9px;
+  border: 1px solid rgba(22, 212, 208, 0.16);
+  border-radius: 99px;
+  color: #8ee6df;
+  font-size: 10px;
+  font-style: normal;
+}
+
+/* Floating micro-labels around the learning system. */
+.about-float {
+  position: absolute;
+  padding: 10px 14px;
+  border: 1px solid var(--about-border);
+  border-radius: 14px;
+  background: rgba(6, 20, 33, 0.92);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+  color: #61dad6;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.about-float-live { top: 6%; right: -6%; }
+.about-float-project { bottom: 18%; right: -8%; }
+.about-float-feedback { top: 22%; left: -7%; }
+.about-float-portfolio { bottom: 8%; left: -6%; }
+
+/* ════════════════════════════════════════════════════════════════════════
+   2. JOURNEY — horizontal learning methodology
+   ════════════════════════════════════════════════════════════════════════ */
+.about-journey-section {
+  background:
+    radial-gradient(50% 55% at 50% 40%, rgba(56, 189, 248, 0.08), transparent 72%);
+}
+
+.about-journey {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-top: 50px;
+}
+
+.about-journey-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.about-journey-card {
+  flex: 1;
+  min-height: 210px;
+  padding: 24px;
+  border: 1px solid var(--about-border);
+  border-radius: 20px;
+  background: var(--about-panel);
+  transition: background 240ms ease, border-color 240ms ease, transform 240ms ease;
+}
+
+.about-journey-row:hover .about-journey-card {
+  background: var(--about-panel-strong);
+  border-color: rgba(22, 212, 208, 0.35);
+}
+
+.about-journey-card b {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  color: var(--about-cyan);
+  background: rgba(22, 212, 208, 0.08);
+  font-size: 15px;
+}
+
+.about-journey-card h3 {
+  margin: 16px 0 8px;
+  font-size: 18px;
+}
+
+.about-journey-card p {
+  color: var(--about-muted);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+.about-journey-card small {
+  display: block;
+  margin-top: 14px;
+  color: #6edbd4;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+/* Connector between cards, illuminates when the next card hovers. */
+.about-connector {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 2px;
+  background: rgba(22, 212, 208, 0.18);
+  transition: background 240ms ease, box-shadow 240ms ease;
+}
+
+.about-journey-row:hover .about-connector {
+  background: rgba(22, 212, 208, 0.7);
+  box-shadow: 0 0 10px rgba(22, 212, 208, 0.5);
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   3. PROBLEMS — centered pill field around a core
+   ════════════════════════════════════════════════════════════════════════ */
+.about-problems-section {
+  background:
+    radial-gradient(46% 50% at 50% 45%, rgba(59, 130, 246, 0.07), transparent 70%);
+}
+
+.about-pill-field {
+  position: relative;
+  max-width: 860px;
+  margin: 54px auto 0;
+  text-align: center;
+}
+
+.about-pill-core {
+  display: inline-grid;
+  place-items: center;
+  min-width: 150px;
+  min-height: 150px;
+  margin: 0 auto 40px;
+  border: 1px solid rgba(22, 212, 208, 0.22);
+  border-radius: 50%;
+  background: rgba(22, 212, 208, 0.06);
+  color: #52e5df;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  box-shadow: 0 0 50px rgba(22, 212, 208, 0.15);
+}
+
+.about-pills {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.about-pills-bottom {
+  margin-top: 12px;
+}
+
+.about-pill {
+  padding: 10px 18px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--about-muted);
+  font-size: 13.5px;
+  transition: color 200ms ease, border-color 200ms ease, background 200ms ease;
+}
+
+.about-pill:hover {
+  color: var(--about-text);
+  border-color: rgba(248, 113, 113, 0.4);
+  background: rgba(248, 113, 113, 0.06);
+}
+
+/* ── The PASSIVE → ACTIVE pivot ─────────────────────────────────────────── */
+.about-pivot {
+  margin-top: 64px;
+  text-align: center;
+}
+
+.about-pivot-line {
+  position: relative;
+  width: min(560px, 80%);
+  height: 2px;
+  margin: 0 auto 26px;
+  background: linear-gradient(90deg, rgba(148, 163, 184, 0.25), var(--about-cyan));
+}
+
+.about-pivot-pair {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.about-pivot-from {
+  color: var(--about-muted);
+  text-decoration: line-through;
+  text-decoration-color: rgba(248, 113, 113, 0.6);
+}
+
+.about-pivot-divider {
+  color: var(--about-cyan);
+  font-size: 22px;
+}
+
+.about-pivot-to {
+  color: var(--about-cyan);
+}
+
+.about-pivot-eyebrow {
+  display: block;
+  margin-top: 24px;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   4. THE CAREERVEDA WAY — four learning-system cards
+   ════════════════════════════════════════════════════════════════════════ */
+.about-way-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 50px;
+}
+
+.about-way-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 230px;
+  padding: 24px;
+  border: 1px solid var(--about-border);
+  border-radius: 22px;
+  background: var(--about-panel);
+  overflow: hidden;
+}
+
+.about-way-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+}
+
+.about-way-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.about-way-number {
+  font-size: 14px;
+  color: var(--about-cyan);
+}
+
+.about-way-card.tone-blue .about-way-number { color: var(--about-blue); }
+.about-way-card.tone-cyan .about-way-number { color: #22d3ee; }
+.about-way-card.tone-mint .about-way-number { color: #34d399; }
+
+.about-way-indicator {
+  padding: 4px 8px;
+  border-radius: 99px;
+  background: rgba(22, 212, 208, 0.08);
+  color: #61dad6;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.about-way-card.tone-blue .about-way-indicator { background: rgba(56, 189, 248, 0.1); color: #7dd3fc; }
+.about-way-card.tone-cyan .about-way-indicator { background: rgba(34, 211, 238, 0.1); color: #67e8f9; }
+.about-way-card.tone-mint .about-way-indicator { background: rgba(52, 211, 153, 0.1); color: #6ee7b7; }
+
+.about-way-card h3 {
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+
+.about-way-card p {
+  color: var(--about-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* The React Bits Folder, animated in each journey card. */
+.about-way-folder {
+  display: grid;
+  place-items: center;
+  margin: 12px auto 0;
+  transform-origin: center;
+}
+
+.about-way-folder .folder {
+  margin-inline: auto;
+}
+
+.about-way-folder .folder__back {
+  background: var(--folder-back-color);
+}
+
+.about-way-folder-item {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: rgba(20, 210, 200, 0.10);
+  color: #d7f6f1;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.folder.open .paper {
+  display: grid;
+  place-items: center;
+  color: #101b27;
+}
+
+.folder.open .paper .about-way-folder-item {
+  background: rgba(20, 210, 200, 0.12);
+  color: #0d1b26;
+}
+
+.folder.open .paper {
+  display: grid;
+  place-items: center;
+}
+
+.about-way-card.tone-teal { background: linear-gradient(160deg, rgba(20, 184, 166, 0.05), var(--about-panel)); }
+.about-way-card.tone-blue { background: linear-gradient(160deg, rgba(56, 189, 248, 0.05), var(--about-panel)); }
+.about-way-card.tone-cyan { background: linear-gradient(160deg, rgba(34, 211, 238, 0.05), var(--about-panel)); }
+.about-way-card.tone-mint { background: linear-gradient(160deg, rgba(52, 211, 153, 0.05), var(--about-panel)); }
+
+/* ════════════════════════════════════════════════════════════════════════
+   5. PROOF — metrics as product analytics rail
+   ════════════════════════════════════════════════════════════════════════ */
+.about-proof-section {
+  background:
+    radial-gradient(48% 50% at 50% 40%, rgba(45, 212, 191, 0.06), transparent 70%);
+}
+
+.about-proof-rail {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  margin-top: 50px;
+}
+
+.about-proof-cell {
+  padding: 26px 18px;
+  border: 1px solid var(--about-border);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.03);
+  text-align: center;
+}
+
+.about-proof-cell strong {
+  display: block;
+  font-size: clamp(26px, 3vw, 36px);
+  line-height: 1;
+  color: #19cad7;
+  letter-spacing: -0.02em;
+}
+
+.about-proof-cell small {
+  display: block;
+  margin-top: 12px;
+  color: var(--about-muted);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   6. WHO WE ARE — mission → education → outcome
+   ════════════════════════════════════════════════════════════════════════ */
+.about-who-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 50px;
+}
+
+.about-who-card {
+  position: relative;
+  min-height: 220px;
+  padding: 26px;
+  border: 1px solid var(--about-border);
+  border-radius: 22px;
+  background: var(--about-panel);
+  overflow: hidden;
+}
+
+.about-who-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+}
+
+.about-who-flow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.about-who-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: rgba(22, 212, 208, 0.08);
+  color: var(--about-cyan);
+  font-size: 20px;
+}
+
+.about-who-flow-line {
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(22, 212, 208, 0.6), rgba(22, 212, 208, 0.1));
+}
+
+.about-who-card > b {
+  display: block;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.about-who-card h3 {
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+
+.about-who-card p {
+  color: var(--about-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   7. WHAT WE VALUE — four distinct accents
+   ════════════════════════════════════════════════════════════════════════ */
+.about-value-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 50px;
+}
+
+.about-value-card {
+  position: relative;
+  min-height: 195px;
+  padding: 24px;
+  border: 1px solid var(--about-border);
+  border-radius: 22px;
+  background: var(--about-panel);
+  overflow: hidden;
+}
+
+.about-value-card.tone-teal { background: linear-gradient(160deg, rgba(20, 184, 166, 0.14), rgba(18, 42, 60, 0.82)); }
+.about-value-card.tone-blue { background: linear-gradient(160deg, rgba(56, 189, 248, 0.14), rgba(18, 42, 60, 0.82)); }
+.about-value-card.tone-cyan { background: linear-gradient(160deg, rgba(34, 211, 238, 0.14), rgba(18, 42, 60, 0.82)); }
+.about-value-card.tone-mint { background: linear-gradient(160deg, rgba(52, 211, 153, 0.14), rgba(18, 42, 60, 0.82)); }
+
+.about-value-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(22, 212, 208, 0.08);
+  color: var(--about-cyan);
+  font-size: 19px;
+}
+
+.about-value-card.tone-blue .about-value-icon { background: rgba(56, 189, 248, 0.1); color: var(--about-blue); }
+.about-value-card.tone-cyan .about-value-icon { background: rgba(34, 211, 238, 0.1); color: #22d3ee; }
+.about-value-card.tone-mint .about-value-icon { background: rgba(52, 211, 153, 0.1); color: #34d399; }
+
+.about-value-card h3 {
+  margin: 16px 0 8px;
+  font-size: 18px;
+}
+
+.about-value-card p {
+  color: #d8e8ee;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.about-value-card {
+  --value-card-depth: 0 3px 2px rgba(0, 0, 0, 0.2);
+  min-height: 170px;
+  padding: 20px;
+  box-shadow: var(--value-card-depth);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.about-value-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.42);
+}
+
+@media (max-width: 1024px) {
+  .about-value-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .about-diff-primary,
+  .about-diff-secondary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .about-value-grid,
+  .about-diff-primary,
+  .about-diff-secondary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .about-value-card {
+    min-height: 0;
+    padding: 18px;
+  }
+
+  .about-value-card p,
+  .about-diff-card p {
+    font-size: 15px;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   8. CAREER ENGINE — the signature vertical product timeline
+   ════════════════════════════════════════════════════════════════════════ */
+.about-engine-section {
+  background:
+    radial-gradient(52% 60% at 50% 42%, rgba(34, 211, 238, 0.09), transparent 72%);
+}
+
+.about-engine {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  align-items: start;
+  gap: 18px;
+  margin-top: 36px;
+}
+
+.about-engine-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.about-engine-dot {
+  width: 14px;
+  height: 14px;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  background: var(--about-cyan);
+  box-shadow: 0 0 12px rgba(22, 212, 208, 0.6);
+}
+
+.about-engine-card {
+  width: 100%;
+  padding: 14px 12px;
+  border: 1px solid rgba(91, 226, 232, 0.5);
+  border-radius: 18px;
+  background: rgba(18, 42, 60, 0.72);
+  box-shadow: 0 0 22px rgba(34, 211, 238, 0.12), inset 0 0 18px rgba(34, 211, 238, 0.05);
+}
+
+.about-engine-card b {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+}
+
+.about-engine-card h3 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  color: #f4ffff;
+}
+
+.about-engine-card small {
+  display: block;
+  color: rgba(236, 250, 255, 0.82);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.about-engine-connector {
+  position: absolute;
+  top: 7px;
+  right: -18px;
+  width: 18px;
+  height: 0;
+  border-top: 1px solid rgba(91, 226, 232, 0.7);
+}
+
+.about-engine-connector::after {
+  content: "›";
+  position: absolute;
+  right: -2px;
+  top: -11px;
+  color: #8ffcff;
+  font-size: 22px;
+  line-height: 1;
+  text-shadow: 0 0 10px rgba(34, 211, 238, 0.9);
+}
+
+.about-engine-item:last-child .about-engine-card {
+  border-color: rgba(22, 212, 208, 0.4);
+  background: linear-gradient(160deg, rgba(20, 184, 166, 0.1), rgba(9, 25, 40, 0.9));
+}
+
+.about-engine-item:last-child .about-engine-card h3 {
+  color: #34d399;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   9. DIFFERENCE — asymmetric editorial matrix
+   ════════════════════════════════════════════════════════════════════════ */
+.about-difference-section {
+  background:
+    radial-gradient(48% 55% at 50% 42%, rgba(59, 130, 246, 0.07), transparent 70%);
+}
+
+.about-diff-primary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 50px;
+}
+
+.about-diff-wide {
+  min-height: 230px;
+}
+
+.about-diff-secondary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.about-diff-card {
+  position: relative;
+  padding: 26px;
+  border: 1px solid var(--about-border);
+  border-radius: 22px;
+  background: var(--about-panel);
+  overflow: hidden;
+}
+
+.about-diff-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+}
+
+.about-diff-wide {
+  background:
+    linear-gradient(165deg, rgba(20, 184, 166, 0.07), var(--about-panel));
+}
+
+.about-diff-tag {
+  display: inline-block;
+  margin-bottom: 16px;
+  padding: 5px 9px;
+  border-radius: 99px;
+  background: rgba(22, 212, 208, 0.1);
+  color: #61dad6;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.about-diff-card h3 {
+  margin: 0 0 10px;
+  font-size: 20px;
+}
+
+.about-diff-wide h3 {
+  font-size: 27px;
+}
+
+.about-diff-card p {
+  color: #d8e8ee;
+  font-size: 15px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.about-diff-card h3 {
+  color: #f5ffff;
+  line-height: 1.25;
+  font-size: 23px;
+}
+
+.about-diff-icon {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 26px;
+  line-height: 1;
+}
+
+.about-diff-wide h3 {
+  font-size: 27px;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   10. FINAL CTA — the culmination of the journey
+   ════════════════════════════════════════════════════════════════════════ */
+.about-final {
+  padding-top: 40px;
+}
+
+.about-final-inner {
+  padding: 70px 30px;
+  text-align: center;
+  border: 1px solid rgba(22, 212, 208, 0.22);
+  border-radius: 28px;
+  background:
+    radial-gradient(60% 80% at 50% 0%, rgba(20, 184, 166, 0.16), transparent 70%),
+    linear-gradient(135deg, rgba(20, 49, 69, 0.85), rgba(12, 28, 46, 0.75));
+}
+
+.about-final h2 {
+  font-size: clamp(36px, 4.5vw, 60px);
+}
+
+.about-final p {
+  color: var(--about-muted);
+  font-size: 17px;
+  line-height: 1.7;
+  max-width: 560px;
+  margin: 20px auto 0;
+}
+
+.about-final .about-eyebrow {
+  display: inline-block;
+}
+
+/* ── Reveal helper (lightweight, respects reduced motion) ──────────────── */
+.about-page [data-reveal] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.about-page [data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 1100px) {
+  .about-journey {
+    grid-template-columns: 1fr;
+    max-width: 720px;
+    margin-inline: auto;
+  }
+
+  .about-journey-row {
+    flex-direction: column;
+  }
+
+  .about-journey-card {
+    width: 100%;
+  }
+
+  .about-connector {
+    width: 2px;
+    height: 18px;
+  }
+
+  .about-engine {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px 12px;
+  }
+
+  .about-engine-connector {
+    display: none;
+  }
+}
+
+@media (max-width: 980px) {
+  .about-wrap {
+    width: calc(100% - 40px);
+  }
+
+  .about-hero {
+    padding-top: 84px;
+  }
+
+  .about-section {
+    padding: 56px 0;
+  }
+
+  .about-learn-sys {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .about-float-live,
+  .about-float-project,
+  .about-float-feedback,
+  .about-float-portfolio {
+    position: relative;
+    top: auto;
+    right: auto;
+    left: auto;
+    bottom: auto;
+    margin: 8px 6px 0;
+  }
+
+  .about-learn-sys > .about-float {
+    align-self: center;
+  }
+}
+
+@media (max-width: 800px) {
+  .about-way-grid,
+  .about-value-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .about-who-grid,
+  .about-diff-primary {
+    grid-template-columns: 1fr;
+  }
+
+  .about-diff-secondary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .about-proof-rail {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .about-wrap {
+    width: calc(100% - 28px);
+  }
+
+  .about-hero {
+    padding-top: 70px;
+  }
+
+  .about-learn-sys {
+    padding: 22px;
+    border-radius: 22px;
+  }
+
+  .about-tasks {
+    grid-template-columns: 1fr;
+  }
+
+  .about-skill {
+    grid-template-columns: 110px 38px 1fr;
+  }
+
+  .about-actions {
+    flex-direction: column;
+  }
+
+  .about-btn {
+    width: 100%;
+  }
+
+  .about-section {
+    padding: 52px 0;
+  }
+
+  .about-pill-core {
+    width: 128px;
+    height: 128px;
+    min-width: 128px;
+    min-height: 128px;
+  }
+
+  .about-engine {
+    grid-template-columns: 1fr;
+    max-width: 420px;
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-way-grid,
+  .about-value-grid,
+  .about-diff-secondary,
+  .about-proof-rail {
+    grid-template-columns: 1fr;
+  }
+
+  .about-pivot-pair {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .about-pivot-divider {
+    transform: rotate(90deg);
+  }
+}
+
+/* ── Reduced motion: everything shows instantly, no drift ──────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .about-page [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .about-skill em i {
+    animation: none;
+  }
+}
+
+.about-pill-field { display: none; }
+.about-problem-map { margin: 48px auto 0; max-width: 1000px; }
+.about-problem-orbit { position: relative; min-height: 500px; display: grid; place-items: center; }
+.about-problem-core { width: 250px; height: 250px; border: 1px solid rgba(20,210,200,.45); border-radius: 50%; display: grid; place-content: center; text-align: center; background: radial-gradient(circle, rgba(20,210,200,.15), rgba(7,20,36,.92) 68%); box-shadow: 0 0 70px rgba(20,210,200,.12); }
+.about-problem-core span { font-weight: 800; letter-spacing: .08em; line-height: 1.15; font-size: 22px; }
+.about-problem-core em, .about-pivot-to em { color: #48e1d7; font-style: normal; }.about-problem-core small { margin-top: 12px; color: var(--about-muted); }
+.about-problem-node { position: absolute; width: 190px; padding: 13px 16px; text-align: left; border: 1px solid rgba(255,255,255,.08); border-radius: 14px; color: white; background: rgba(255,255,255,.035); cursor: grab; touch-action: none; transition: .35s ease; }.about-problem-node:active { cursor: grabbing; }.about-problem-node:hover,.about-problem-node:focus-visible,.about-problem-node.is-active { transform: translateY(-3px); border-color: rgba(20,210,200,.45); background: rgba(20,210,200,.08); outline: none; }.about-problem-node strong,.about-problem-node small { display: block; }.about-problem-node small { color: var(--about-muted); font-size: 11px; margin-top: 5px; }
+.about-problem-status { display:flex; gap:18px; justify-content:center; color:var(--about-muted); }.about-problem-status b { color:#48e1d7; }.about-way-stack { max-width: 880px; height: 840px; margin: 48px auto 0; overflow: visible; }.about-way-stack .scroll-stack-inner { padding: 80px 0 300px; }.about-way-card { height: 500px; padding: 48px; border: 1px solid rgba(20,210,200,.2); background: linear-gradient(145deg, rgba(17,44,58,.96), rgba(9,24,40,.96)); }.about-way-card:hover { border-color: rgba(20,210,200,.55); box-shadow: 0 20px 60px rgba(0,0,0,.3); }.about-way-number { font-size: 52px; color:#48e1d7; }.about-way-stage { display:block; color:#9debe5; letter-spacing:.16em; font-size:12px; font-weight:800; }.about-way-card h3 { font-size: clamp(28px,4vw,48px); margin: 28px 0 10px; }.about-way-card p { max-width: 520px; }.about-way-visual { margin-top:35px; padding:18px; min-height:170px; display:grid; place-items:center; border:1px solid rgba(255,255,255,.1); border-radius:12px; color:#bcefeb; font-size:12px; letter-spacing:.06em; }
+@media (max-width: 768px) { .about-problem-orbit { min-height: 0; display:grid; grid-template-columns:1fr 1fr; gap:10px; }.about-problem-core { grid-column:1/-1; grid-row:1; width:210px;height:210px; margin-bottom:12px; }.about-problem-node { position:static; width:auto; }.node-7,.node-8 { display:none; }.about-way-stack { height:auto; }.about-way-stack .scroll-stack-inner { padding: 30px 0; }.about-way-card { height:auto; min-height:330px; padding:28px; margin-bottom:24px; } }
+@media (prefers-reduced-motion: reduce) { .about-problem-node,.about-way-card { transition:none; } }
+
+/* Folder papers intentionally extend beyond the card while open. */
+.about-way-stack .about-way-card { overflow: visible; }
+.career-way-folder-hub { position: relative; z-index: 5; display: grid; place-items: center; gap: 18px; min-height: 210px; margin: 24px auto 0; color: #8de9e1; font-size: 10px; font-weight: 800; letter-spacing: .16em; }
+.career-way-folder-hub .about-way-folder { margin: 0; }
+.about-way-stack .about-way-card:not(.is-revealed) { opacity: 0; transform: translateY(35px) scale(.94); pointer-events: none; }
+.about-way-stack .about-way-card.is-revealed { opacity: 1; transform: translateY(0) scale(1); transition: opacity .6s cubic-bezier(.22,1,.36,1), transform .6s cubic-bezier(.22,1,.36,1); }
+.about-way-folder-item { max-width: 100%; padding: 3px 4px; font-size: 8px; line-height: 1.1; text-align: center; white-space: normal; overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: reduce) { .about-way-stack .about-way-card:not(.is-revealed) { opacity: 1; transform: none; } }
+.about-learn-sys,
+.about-journey-section {
+  display: none !important;
+}
+.career-way-section,
+.about-proof-section,
+.about-who-section {
+  display: none;
+}
+
+/* Keep About content aligned to a clear editorial edge. */
+.about-page,
+.about-hero,
+.about-heading,
+.about-final-inner {
+  text-align: left;
+}
+
+.about-heading {
+  margin-inline: 0;
+}
+
+.about-sub,
+.about-lead {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.about-actions {
+  justify-content: flex-start;
+}
+
+.about-hero,
+.about-hero-inner {
+  text-align: center;
+}
+
+.about-hero-inner {
+  margin-inline: auto;
+}
+
+.about-hero .about-lead {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.about-hero .about-actions {
+  justify-content: center;
+}

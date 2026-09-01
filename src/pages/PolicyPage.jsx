@@ -1,8 +1,44 @@
-import {Navigate, useParams} from "react-router-dom";
+import {useEffect, useState} from "react";
+import {Link, Navigate, useParams} from "react-router-dom";
 import {PageHero} from "../components/PageShell";
 import {policies as staticPolicies} from "../data/policies";
 import {useContentMap} from "../hooks/useContent";
 import {adaptPolicyMap} from "../lib/contentAdapters";
+
+const policyLinks = [
+  ["privacy-policy", "Privacy Policy"],
+  ["refund-policy", "Refund Policy"],
+  ["terms", "Terms of Use"],
+  ["escalation-policy", "Escalation Policy"],
+];
+
+const PolicyToc = ({sections}) => {
+  const [active, setActive] = useState(sections[0]?.id);
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries.find((entry) => entry.isIntersecting);
+      if (visible) setActive(visible.target.id);
+    }, {rootMargin: "-18% 0px -70%"});
+    sections.forEach(({id}) => {
+      const section = document.getElementById(id);
+      if (section) observer.observe(section);
+    });
+    return () => observer.disconnect();
+  }, [sections]);
+
+  return (
+    <aside className="legal-toc" aria-label="On this page">
+      <strong>On this page</strong>
+      <div className="legal-toc-links">
+        {sections.map((section, i) => (
+          <a className={active === section.id ? "is-active" : ""} href={`#${section.id}`} key={section.id}>
+            <span>{String(i + 1).padStart(2, "0")}</span>{section.heading.replace(/^\d+\.\s*/, "")}
+          </a>
+        ))}
+      </div>
+    </aside>
+  );
+};
 
 // Reusable renderer for every legal/policy route.
 //
@@ -121,15 +157,11 @@ const PolicyPage = ({slug: slugProp}) => {
               </div>
             </div>
 
-            <aside className="legal-toc">
-              <strong>On this page</strong>
-              {policy.sections.map((section) => (
-                <a href={`#${section.id}`} key={section.id}>{section.heading}</a>
-              ))}
-            </aside>
+            <PolicyToc sections={policy.sections} />
           </div>
         </div>
       </section>
+
     </main>
   );
 };

@@ -51,7 +51,8 @@
   pointer-events: none;
   /* 70px, not 90: at 90 the two gradients smear into one flat wash and the
      cloud stops having a shape to read. */
-  filter: blur(70px);
+  filter: blur(96px);
+  opacity: 0.58;
   will-change: transform;
 }
 

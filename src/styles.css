@@ -39,6 +39,23 @@
    the header comment in that file. */
 @import "./components/navbar-hero-merge.css";
 
+/* Shared route-level contract: page chunks may load their own styles after the
+   layout. Keep the shell and outer header transparent; the compact nav links
+   pill remains the only navbar surface. */
+body .navbar-shell,
+body header.site-nav,
+body header.site-nav > .nav-container {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+  opacity: 1 !important;
+}
+
 @theme {
   --font-sans: "Inter", system-ui, sans-serif;
   --font-heading: "Manrope", "Inter", system-ui, sans-serif;

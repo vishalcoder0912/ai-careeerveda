@@ -74,6 +74,10 @@ body header.site-nav {
   box-shadow: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  filter: none !important;
+  opacity: 1 !important;
 }
 
 /* Kill every legacy divider/underline pseudo-element:
@@ -98,10 +102,10 @@ body header.site-nav::after {
 body header.site-nav.is-scrolled,
 body header.site-nav.is-compact {
   min-height: var(--navbar-height-scrolled, 70px) !important;
-  background: rgba(8, 24, 42, 0.22) !important;
-  backdrop-filter: blur(10px) saturate(1.06) !important;
-  -webkit-backdrop-filter: blur(10px) saturate(1.06) !important;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1) !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
   border-bottom: none !important;
 }
 
@@ -167,10 +171,10 @@ body header.site-nav .nav-container nav.site-nav-links {
   height: 50px !important;
   padding: 4px 6px !important;
   border-radius: 999px !important;
-  background: rgba(255, 255, 255, 0.055) !important;
-  border: 1px solid rgba(255, 255, 255, 0.09) !important;
-  backdrop-filter: blur(10px) !important;
-  -webkit-backdrop-filter: blur(10px) !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   box-shadow: none !important;
   white-space: nowrap !important;
   min-width: 0 !important;
@@ -182,7 +186,7 @@ body header.site-nav .nav-container nav.site-nav-links {
 /* §22 micro-interaction: the dock brightens a touch under the pointer. The
    1px lift belongs to individual LINKS (below), never to the whole pill. */
 body header.site-nav .nav-container nav.site-nav-links:hover {
-  background: rgba(255, 255, 255, 0.075) !important;
+  background: transparent !important;
 }
 
 /* §20 cursor spotlight — painted by SiteNavbar's pointermove into
