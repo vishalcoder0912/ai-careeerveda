@@ -1,16 +1,9 @@
 import {useEffect, useState} from "react";
-import {Link, Navigate, useParams} from "react-router-dom";
+import {Navigate, useParams} from "react-router-dom";
 import {PageHero} from "../components/PageShell";
 import {policies as staticPolicies} from "../data/policies";
 import {useContentMap} from "../hooks/useContent";
 import {adaptPolicyMap} from "../lib/contentAdapters";
-
-const policyLinks = [
-  ["privacy-policy", "Privacy Policy"],
-  ["refund-policy", "Refund Policy"],
-  ["terms", "Terms of Use"],
-  ["escalation-policy", "Escalation Policy"],
-];
 
 const PolicyToc = ({sections}) => {
   const [active, setActive] = useState(sections[0]?.id);

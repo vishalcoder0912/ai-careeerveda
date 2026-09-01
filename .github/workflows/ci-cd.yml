@@ -290,7 +290,7 @@ jobs:
   # ─────────────────────────────────────────────────────────────────────────────
   publish:
     name: Publish dev → main
-    needs: [build]
+    needs: [build, sast]
     if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     timeout-minutes: 10
