@@ -562,7 +562,13 @@
     width: calc(100% - 40px);
   }
 
+  .program-detail .pd-hero__copy {
+    opacity: 1;
+    transform: none;
+  }
+
   .program-detail .pd-hero__grid {
+    grid-template-columns: minmax(0, 1fr);
     column-gap: 0;
   }
 

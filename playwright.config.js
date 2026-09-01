@@ -65,7 +65,14 @@ export default defineConfig({
       url: `http://localhost:${API_PORT}/health`,
       // Booting downloads-and-starts an in-memory mongod on a cold machine.
       timeout: 180_000,
-      reuseExistingServer: !process.env.CI,
+      // The e2e ports (8081/5273/5274) are dedicated — the normal dev stack runs
+      // on 8080/5173/5174 and never touches them. There is therefore no
+      // legitimate already-running server to reuse: only an orphan left behind
+      // by an interrupted run, which Playwright would trust and then choke on
+      // with ECONNREFUSED for every test. Always boot a fresh one so a rerun is
+      // never poisoned by a stale half-dead process (and if port reuse is ever
+      // wanted again, pass E2E_REUSE=1 rather than flipping this).
+      reuseExistingServer: process.env.E2E_REUSE === "1",
       stdout: "pipe",
       stderr: "pipe",
       env: {
@@ -78,7 +85,7 @@ export default defineConfig({
       command: `node node_modules/vite/bin/vite.js --port ${FRONTEND_PORT} --strictPort`,
       url: FRONTEND,
       timeout: 120_000,
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: process.env.E2E_REUSE === "1",
       stdout: "pipe",
       stderr: "pipe",
       env: {VITE_PUBLIC_API_BASE_URL: API},
@@ -88,7 +95,7 @@ export default defineConfig({
       cwd: "./admin",
       url: ADMIN,
       timeout: 120_000,
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: process.env.E2E_REUSE === "1",
       stdout: "pipe",
       stderr: "pipe",
       env: {VITE_ADMIN_API_BASE_URL: API, VITE_PUBLIC_SITE_URL: FRONTEND},
