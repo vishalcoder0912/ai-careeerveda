@@ -13,8 +13,8 @@ import "../components/cinematic-interactions.css";
 import "../components/programs-page-responsive.css";
 
 // The explorer is the page — it stays eager. These two sit under it.
-const RecommendedCourses1 = lazy(() => import("../components/Recommended/RecommendedCourses1"));
-const OutcomeStories = lazy(() => import("../components/OutcomeStories"));
+const RecommendedCourses = lazy(() => import("../components/Recommended/RecommendedCourses"));
+const LearnerOutcomes = lazy(() => import("../components/LearnerOutcomes"));
 
 const ProgramsPage = () => {
   const pageRef = useCinematicInteractions();
@@ -25,7 +25,7 @@ const ProgramsPage = () => {
   // pages and left this one showing the four hardcoded entries forever.
   //
   // Same resource and same `featured` flag as the home page: both render the
-  // OutcomeStories strip, and Alumni.js documents `featured` as the flag for it.
+  // LearnerOutcomes strip, and Alumni.js documents `featured` as the flag for it.
   // No fallback, so nothing renders here that an admin did not publish.
   const {items: reviews} = useContentList("alumni", {
     adapt: adaptAlumniReview,
@@ -65,10 +65,10 @@ const ProgramsPage = () => {
           <ProgramExplorer />
         </Reveal>
         <DeferUntilVisible minHeight={600}>
-          <RecommendedCourses1 />
+          <RecommendedCourses />
         </DeferUntilVisible>
         <DeferUntilVisible minHeight={520}>
-          <OutcomeStories reviews={reviews} stats={stats} />
+          <LearnerOutcomes reviews={reviews} stats={stats} />
         </DeferUntilVisible>
       </section>
     </main>

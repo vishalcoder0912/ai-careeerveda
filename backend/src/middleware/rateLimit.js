@@ -17,6 +17,18 @@ const base = {
   skip: () => env.isTest,
 };
 
+// Global baseline: every request, regardless of route. This is the safety net
+// that catches an attacker who hits different paths to evade per-route limits.
+// 500 req/min/IP is invisible to real users but prevents a single IP from
+// generating thousands of requests across many endpoints.
+export const globalLimiter = rateLimit({
+  ...base,
+  windowMs: 60 * 1000,
+  limit: 500,
+  handler: handler("Too many requests from this network. Please try again later."),
+  keyGenerator: (req) => req.ip,
+});
+
 // Auth: strict, and counted per IP. Deliberately does NOT key on the submitted
 // email — that would let an attacker spread attempts across accounts for free.
 export const authLimiter = rateLimit({

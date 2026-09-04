@@ -109,9 +109,31 @@ const ConsultationForm = () => {
 
   return (
     <Reveal as="form" className="consultation-form" onSubmit={handleSubmit} noValidate>
-      <h3>Start Your Career Journey with a Free Expert Consultation</h3>
+      <header className="consultation-form__head">
+        <span className="consultation-form__badge" aria-hidden="true">
+          <svg
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <rect x="3" y="5" width="18" height="16" rx="2" />
+            <path d="M8 3v4M16 3v4M3 10h18" />
+          </svg>
+        </span>
+        <div>
+          <h3>Book Your Free Expert Consultation</h3>
+          <span className="consultation-form__subtitle">
+            Take the first step toward your dream career
+          </span>
+        </div>
+      </header>
 
-      <label>
+      <label className="consultation-field">
         Name*
         <input
           type="text"
@@ -125,7 +147,7 @@ const ConsultationForm = () => {
         {errors.name && <small className="field-error">{errors.name}</small>}
       </label>
 
-      <label>
+      <label className="consultation-field">
         Email*
         <input
           type="email"
@@ -139,21 +161,24 @@ const ConsultationForm = () => {
         {errors.email && <small className="field-error">{errors.email}</small>}
       </label>
 
-      <label>
+      <label className="consultation-field consultation-field--full">
         Mobile No.*
-        <input
-          type="tel"
-          name="mobile"
-          value={values.mobile}
-          onChange={update}
-          placeholder="+91 92178 01191"
-          autoComplete="tel"
-          aria-invalid={Boolean(errors.mobile)}
-        />
+        <span className="phone-field">
+          <span className="phone-field__prefix" aria-hidden="true">+91</span>
+          <input
+            type="tel"
+            name="mobile"
+            value={values.mobile}
+            onChange={update}
+            placeholder="98765 43210"
+            autoComplete="tel"
+            aria-invalid={Boolean(errors.mobile)}
+          />
+        </span>
         {errors.mobile && <small className="field-error">{errors.mobile}</small>}
       </label>
 
-      <label>
+      <label className="consultation-field">
         User Type
         <select name="userType" value={values.userType} onChange={update}>
           {USER_TYPES.map((type) => (
@@ -162,7 +187,7 @@ const ConsultationForm = () => {
         </select>
       </label>
 
-      <label>
+      <label className="consultation-field">
         Select Program
         <select
           name="program"
@@ -193,9 +218,28 @@ const ConsultationForm = () => {
         aria-hidden="true"
       />
 
-      <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Submitting…" : "Submit"}
-      </button>
+      <div className="consultation-form__footer">
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Submitting…" : "Submit"}
+        </button>
+        <p className="consultation-security">
+          <svg
+            viewBox="0 0 24 24"
+            width="15"
+            height="15"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <rect x="4" y="11" width="16" height="10" rx="2" />
+            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+          </svg>
+          Your details are secure. No spam, ever.
+        </p>
+      </div>
 
       {message && (
         <p

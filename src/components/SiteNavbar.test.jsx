@@ -139,7 +139,7 @@ describe("SiteNavbar mobile menu", () => {
     openMenu();
 
     await act(async () => {
-      fireEvent.click(drawer().getByRole("button", {name: "Close menu"}));
+      fireEvent.click(drawer().getByRole("button", {name: "Close navigation"}));
       await new Promise((resolve) => { setTimeout(resolve, 320); });
     });
 

@@ -152,505 +152,39 @@
 
   body .hero-layout {
     gap: 24px !important;
-    /* No top padding on phones: .hero-shell's padding-top already equals the
-       fixed nav's height, so the eyebrow starts flush under the nav border.
-       Anything here reads as a gap between the nav and the hero copy. */
     padding-top: 0 !important;
     padding-bottom: 24px !important;
   }
 
-  body .hero-copy h1 {
+  body .hero-headline {
     font-size: clamp(28px, 9vw, 38px) !important;
     line-height: 1.15 !important;
   }
 
-  body .hero-copy > p {
+  body .hero-description {
     font-size: 14px !important;
     margin-top: 14px !important;
   }
-
-  body .trust-line {
-    font-size: 13px !important;
-    margin-top: 12px !important;
-  }
-
-  body .eyebrow {
-    font-size: clamp(12px, 3.5vw, 14px) !important;
-    margin-bottom: 10px !important;
-  }
-
-  body .hero-actions {
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 20px !important;
-  }
-
-  body .primary-action,
-  body .secondary-action {
-    width: 100%;
-    min-height: 48px !important;
-    font-size: 14px !important;
-    justify-content: center;
-  }
-
-  body .hero-visual-shell {
-    min-height: 38vh !important;
-    border-radius: 20px !important;
-  }
-
-  body .stat-strip {
-    width: min(100% - 24px, 520px) !important;
-    border-radius: 14px !important;
-  }
-
-  body .stat-strip div {
-    min-height: auto !important;
-    padding: 12px 14px !important;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  body .stat-strip strong {
-    font-size: clamp(20px, 6vw, 28px) !important;
-  }
-
-  body .stat-strip span {
-    font-size: 11px !important;
-    margin-top: 4px;
-  }
-
-  body .hero-dashboard-card {
-    width: min(260px, 72%) !important;
-    padding: 14px !important;
-    border-radius: 16px !important;
-    right: 6px !important;
-    bottom: 6px !important;
-  }
 }
 
-/* ── Navbar mobile + tablet improvements ──
-   Widened from 768px to 980px so the hamburger and the slate drawer appear at
-   exactly the width the desktop nav links disappear (they hide at ≤980px in
-   SplineLanding.css and navbar-interaction-fix.css). Below 980px the desktop
-   links were already gone while this block — the only thing that shows the
-   hamburger and styles the drawer — did not start until 768px, leaving 769–980px
-   (iPad portrait, landscape phones) with no navigation at all: brand and CTA
-   only. Matching the two breakpoints closes that gap and extends the same tested
-   phone treatment across the tablet range. */
+/* ── Mobile brand sizing (non-nav) ── */
 @media (max-width: 980px) {
-  /* Bar geometry (heights, padding, grid) lives solely in navbar-area.css. */
-
   body .brand {
     font-size: 16px !important;
   }
 
-  /* Height-driven, not a 30px square. These were written for the old square "CV"
-     tile; the real logo is a ~2.5:1 lockup, so forcing it into a square left
-     object-fit: contain to shrink it to a ~30x12 sliver. That was survivable
-     while the "CareerVeda" wordmark sat next to it — now that the image is the
-     whole brand, it has to be legible on its own. */
   body .brand .brand-mark {
     width: auto !important;
     height: 42px !important;
     max-width: 165px !important;
   }
 
-  /* Glass on the slate bar, matching the close button inside the drawer it
-     opens. It used to be a white box with dark bars, which was left over from a
-     white header the site no longer has. */
-  body .hamburger-btn {
-    display: flex !important;
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    border: 1px solid var(--cv-dark-border, rgba(255, 255, 255, 0.12)) !important;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.08) !important;
-    cursor: pointer;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 5px;
-    flex: 0 0 auto;
-  }
-
-  /* The brand gives up width first, so the pair on the right is never squeezed
-     off the edge on a narrow phone. */
+  /* Brand gives up width first so the right-side pair is never squeezed. */
   body .site-nav .brand,
   body .site-nav-brand {
     min-width: 0 !important;
     overflow: hidden !important;
     white-space: nowrap !important;
-  }
-
-  body .hamburger-btn span {
-    display: block;
-    width: 18px;
-    height: 2px;
-    border-radius: 2px;
-    background: var(--cv-white, #ffffff) !important;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-  }
-
-  .hamburger-btn.is-open span:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
-  }
-
-  .hamburger-btn.is-open span:nth-child(2) {
-    opacity: 0;
-  }
-
-  .hamburger-btn.is-open span:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
-  }
-
-  /* ── Mobile menu: a slate side drawer that carries the site's own theme ──
-     The old overlay covered the whole viewport — including the header — so the
-     hamburger that closes it was buried underneath and there was no visible way
-     out. The drawer carries its own header with an explicit close button, and
-     the dimmed strip beside it is tappable to dismiss.
-
-     Colours come from the slate/teal system (--cv-*) that the navbar and the
-     page behind it use, so the drawer reads as the site's own surface sliding
-     in rather than a white sheet from a different design. */
-  body .mobile-menu-overlay {
-    position: fixed !important;
-    inset: 0 !important;
-    z-index: 9999 !important;
-    /* Reset the native <dialog> chrome so it fills the viewport like the plain
-       overlay div did: the drawer is its own element sliding in, and the dim veil
-       stays on this element's background (::backdrop is neutralised below). */
-    max-width: none !important;
-    max-height: none !important;
-    width: auto !important;
-    height: auto !important;
-    margin: 0 !important;
-    border: 0 !important;
-    padding: 0 !important;
-    color: inherit;
-    display: flex !important;
-    align-items: stretch !important;
-    justify-content: flex-end !important;
-    background: rgba(15, 23, 42, 0.62) !important;
-    backdrop-filter: blur(10px) saturate(1.08);
-    -webkit-backdrop-filter: blur(10px) saturate(1.08);
-    animation: cv-drawer-fade-in 280ms ease-out both;
-  }
-
-  body .mobile-menu-overlay::backdrop {
-    background: transparent;
-  }
-
-  /* The drawer's entry and exit, which gsap used to drive from JS. See the note
-     at the top of SiteNavbar.jsx for why they are CSS now. `both` matters: it
-     holds the first frame from the moment the element exists, so the panel is
-     never painted at its resting position and then yanked off screen.
-
-     .is-closing is set by closeMenu(), which then unmounts the overlay after
-     EXIT_MS — keep these durations and that constant in step. */
-  body .mobile-menu-overlay.is-closing {
-    animation: cv-drawer-fade-out 280ms ease-in both;
-  }
-
-  body .mobile-menu-panel {
-    /* Overshoot-free ease-out, the CSS reading of gsap's power3.out. */
-    animation: cv-drawer-panel-in 450ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  body .mobile-menu-overlay.is-closing .mobile-menu-panel {
-    animation: cv-drawer-panel-out 280ms ease-in both;
-  }
-
-  /* The row stagger: gsap ran this as one tween with stagger 0.05 and delay 0.12,
-     which in CSS is a per-row delay. Ten rows covers six nav items plus the two
-     external links plus the two footer actions; a row past the tenth simply lands
-     on the last step rather than never arriving, because :nth-child(n + 10) has no
-     upper bound. */
-  body .mobile-menu-nav a,
-  body .mobile-menu-foot > * {
-    animation: cv-drawer-row-in 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  body .mobile-menu-nav a:nth-child(1) { animation-delay: 120ms; }
-  body .mobile-menu-nav a:nth-child(2) { animation-delay: 170ms; }
-  body .mobile-menu-nav a:nth-child(3) { animation-delay: 220ms; }
-  body .mobile-menu-nav a:nth-child(4) { animation-delay: 270ms; }
-  body .mobile-menu-nav a:nth-child(5) { animation-delay: 320ms; }
-  body .mobile-menu-nav a:nth-child(6) { animation-delay: 370ms; }
-  body .mobile-menu-nav a:nth-child(7) { animation-delay: 420ms; }
-  body .mobile-menu-nav a:nth-child(n + 8) { animation-delay: 470ms; }
-  body .mobile-menu-foot > *:nth-child(1) { animation-delay: 520ms; }
-  body .mobile-menu-foot > *:nth-child(n + 2) { animation-delay: 570ms; }
-
-  /* On the way out the panel carries the rows with it; re-running their entry
-     animation would fade them back in as the drawer leaves. */
-  body .mobile-menu-overlay.is-closing .mobile-menu-nav a,
-  body .mobile-menu-overlay.is-closing .mobile-menu-foot > * {
-    animation: none;
-  }
-
-  body .mobile-menu-panel {
-    display: flex;
-    flex-direction: column;
-    width: min(92vw, 400px);
-    height: 100%;
-    padding: 0 20px calc(20px + env(safe-area-inset-bottom));
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    /* Same mint/teal wash the hero and page background carry, so the drawer is
-       lit from the same direction as everything behind it. */
-    background:
-      radial-gradient(circle at 92% 4%, rgba(45, 212, 191, 0.16), transparent 42%),
-      radial-gradient(circle at 8% 88%, rgba(16, 185, 129, 0.1), transparent 38%),
-      linear-gradient(
-        180deg,
-        var(--cv-slate-dark, #263447) 0%,
-        var(--cv-slate-deep, #1f2b3a) 100%
-      ) !important;
-    border-left: 1px solid var(--cv-dark-border, rgba(255, 255, 255, 0.12));
-    border-radius: 14px 0 0 14px;
-    box-shadow: -24px 0 70px rgba(2, 6, 23, 0.46);
-  }
-
-  /* Drawer header: keeps the brand anchored and puts the close button exactly
-     where the hamburger was, so the tap that opened the menu closes it too.
-     Semi-transparent + blurred so rows scroll under it without a hard seam. */
-  body .mobile-menu-head {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    min-height: 64px;
-    margin-inline: -20px;
-    padding: calc(8px + env(safe-area-inset-top)) 20px 8px;
-    background: rgba(38, 52, 71, 0.82);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--cv-dark-border, rgba(255, 255, 255, 0.12));
-    /* Follow the panel's side curve: with square corners the sticky head poked
-       out of the rounded edge as a notch at the top of the drawer. */
-    border-radius: 14px 0 0 0;
-  }
-
-  body .mobile-menu-brand {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--cv-white, #ffffff) !important;
-    font-size: 17px;
-    font-weight: 800;
-    letter-spacing: -0.01em;
-    text-decoration: none;
-  }
-
-  /* Mirrors the hamburger it replaces: same size, same glass treatment. */
-  body .mobile-menu-close {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 auto;
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    border: 1px solid var(--cv-dark-border, rgba(255, 255, 255, 0.12));
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--cv-white, #ffffff);
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  body .mobile-menu-close svg {
-    width: 20px;
-    height: 20px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2;
-    stroke-linecap: round;
-  }
-
-  /* align-items must be reset: the desktop rule centres these links, which left
-     each row only as wide as its own text instead of filling the drawer. */
-  body .mobile-menu-nav {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch !important;
-    padding-block: 8px;
-  }
-
-  /* Each row is a full-width target with a number, the label, what the page is
-     for, and a chevron — scannable with one thumb instead of a stack of pills. */
-  body .mobile-menu-nav a {
-    position: relative;
-    display: grid !important;
-    grid-template-columns: 26px 1fr 20px;
-    align-items: center;
-    gap: 14px;
-    min-height: 64px;
-    padding: 12px 12px 12px 14px;
-    border-radius: 14px;
-    background: transparent;
-    color: rgba(255, 255, 255, 0.88) !important;
-    text-decoration: none;
-    transition: background 0.2s ease, transform 0.2s ease;
-  }
-
-  /* Divider as a pseudo-element rather than a border: the row's corner radius
-     would otherwise bend the line up at both ends. */
-  body .mobile-menu-nav a::after {
-    content: "";
-    position: absolute;
-    right: 12px;
-    bottom: 0;
-    left: 14px;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.08);
-  }
-
-  body .mobile-menu-nav a:last-child::after {
-    display: none;
-  }
-
-  /* Teal-bright rail on the current page — the drawer's echo of the underline
-     the desktop nav puts under its active link. */
-  body .mobile-menu-nav a::before {
-    content: "";
-    position: absolute;
-    top: 12px;
-    bottom: 12px;
-    left: 0;
-    width: 3px;
-    border-radius: 0 3px 3px 0;
-    background: linear-gradient(
-      180deg,
-      var(--cv-teal-bright, #2dd4bf),
-      var(--cv-mint, #10b981)
-    );
-    opacity: 0;
-    transition: opacity 0.2s ease;
-  }
-
-  body .mobile-menu-index {
-    font-size: 12px;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-    color: var(--cv-teal-bright, #2dd4bf);
-    opacity: 0.72;
-  }
-
-  body .mobile-menu-label {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    font-size: 19px;
-    font-weight: 700;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
-  }
-
-  body .mobile-menu-label small {
-    font-size: 13px;
-    font-weight: 500;
-    line-height: 1.35;
-    color: var(--cv-muted-on-dark, #cbd5e1);
-    opacity: 0.78;
-  }
-
-  body .mobile-menu-chevron {
-    width: 20px;
-    height: 20px;
-    fill: none;
-    stroke: var(--cv-muted-on-dark, #cbd5e1);
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    opacity: 0.5;
-  }
-
-  body .mobile-menu-nav a:active {
-    background: rgba(255, 255, 255, 0.06);
-    transform: scale(0.985);
-  }
-
-  body .mobile-menu-nav a.is-active {
-    background: rgba(45, 212, 191, 0.12);
-  }
-
-  body .mobile-menu-nav a.is-active::before {
-    opacity: 1;
-  }
-
-  body .mobile-menu-nav a.is-active .mobile-menu-label {
-    color: var(--cv-white, #ffffff);
-  }
-
-  body .mobile-menu-nav a.is-active .mobile-menu-index {
-    color: var(--cv-teal-bright, #2dd4bf);
-    opacity: 1;
-  }
-
-  body .mobile-menu-nav a.is-active .mobile-menu-chevron {
-    stroke: var(--cv-teal-bright, #2dd4bf);
-    opacity: 1;
-  }
-
-  /* Pinned to the bottom of the drawer: the two things a visitor on a phone is
-     most likely to want are always in thumb reach, no scrolling. */
-  body .mobile-menu-foot {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: auto;
-    padding-top: 18px;
-  }
-
-  /* Same teal→mint gradient and 10px radius as the Enroll Now button in the bar
-     above, so it stays recognisably the same button after the drawer opens. */
-  body .mobile-menu-cta {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    min-height: 54px;
-    padding: 12px 20px;
-    border-radius: 10px;
-    font-size: 17px;
-    font-weight: 700;
-    color: var(--cv-white, #ffffff) !important;
-    background: linear-gradient(
-      135deg,
-      var(--cv-teal, #0f766e),
-      var(--cv-mint, #10b981)
-    ) !important;
-    text-decoration: none;
-    box-shadow: 0 16px 34px rgba(16, 185, 129, 0.24);
-  }
-
-  body .mobile-menu-call {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    min-height: 50px;
-    padding: 12px 20px;
-    border: 1px solid var(--cv-dark-border, rgba(255, 255, 255, 0.12));
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--cv-white, #ffffff) !important;
-    font-size: 15px;
-    font-weight: 600;
-    text-decoration: none;
-  }
-
-  body .mobile-menu-call svg {
-    width: 18px;
-    height: 18px;
-    fill: var(--cv-teal-bright, #2dd4bf);
-    opacity: 0.9;
   }
 }
 
@@ -734,19 +268,6 @@
   .cta-secondary {
     font-size: 0.82rem !important;
     min-height: 44px !important;
-  }
-}
-
-/* ── Recommended courses mobile ──
-   The card overrides that used to live here (.recommended-card,
-   .recommended-card-copy, .recommended-meta-row) went with the bento redesign —
-   the section owns its own phone layout in RecommendedCourses1.css now, and
-   these were sizing elements that no longer exist. Only the panel inset stays,
-   because 768px sits between that file's two breakpoints. */
-@media (max-width: 768px) {
-  .recommended-courses-section {
-    width: min(100% - 16px, 1240px) !important;
-    padding: 26px 16px 30px !important;
   }
 }
 
@@ -1084,7 +605,7 @@
     font-size: clamp(22px, 7vw, 30px) !important;
   }
 
-  .press-card.scroll-stack-card {
+  .press-card {
     padding: 22px !important;
     border-radius: 20px !important;
   }
@@ -1147,29 +668,17 @@
     font-size: 15px !important;
   }
 
-  /* Same reason as the 30px block above — square box, wide logo. */
   body .brand .brand-mark {
     width: auto !important;
     height: 38px !important;
     max-width: 150px !important;
   }
 
-  /* Stays 44px — it's a touch target, and it has to match the Enroll Now button
-     sitting next to it. Only the bars inside get smaller. */
-  .hamburger-btn {
-    width: 44px;
-    height: 44px;
-  }
-
-  .hamburger-btn span {
-    width: 16px;
-  }
-
   body .hero-layout {
-    width: min(100% - 16px, 520px) !important;
+    width: calc(100% - 16px) !important;
   }
 
-  body .hero-copy h1 {
+  body .hero-headline {
     font-size: clamp(24px, 8.5vw, 32px) !important;
   }
 
@@ -1219,24 +728,6 @@
 
   .page-stat-row {
     grid-template-columns: 1fr !important;
-  }
-
-  /* Rows stay above the 44px touch minimum; only the type scales down. */
-  body .mobile-menu-nav a {
-    min-height: 58px;
-  }
-
-  body .mobile-menu-label {
-    font-size: 17px;
-  }
-
-  body .mobile-menu-label small {
-    font-size: 12.5px;
-  }
-
-  body .mobile-menu-cta {
-    min-height: 50px;
-    font-size: 16px;
   }
 }
 
@@ -1305,28 +796,8 @@
     min-height: 680px;
   }
 
-  /* Recommended courses: 6-col bento works at 1024px but tight */
-  .rc-grid {
-    gap: 16px;
-  }
-
-  .rc-card--hero {
-    min-height: 440px;
-  }
-
-  .rc-card--wide,
-  .rc-card--tall {
-    min-height: 220px;
-  }
-
-  .rc-card--compact {
-    min-height: 240px;
-  }
-
-  .rc-card--panel,
-  .rc-card--banner {
-    min-height: 280px;
-  }
+  /* Recommended courses: layout owns its own tablet spacing in
+     RecommendedCourses.css; nothing extra to override at laptop width. */
 
   /* Jobs grid: 2 columns at 1024px, 3 at 1280px+ */
   .jobs-grid {
@@ -1610,20 +1081,6 @@
   body .hero-visual-shell {
     min-height: 60vh !important;
   }
-
-  /* Landscape: barely any vertical room, so the rows lose their sub-labels and
-     the drawer scrolls rather than squeezing the pinned CTA off-screen. */
-  body .mobile-menu-nav a {
-    min-height: 48px;
-  }
-
-  body .mobile-menu-label {
-    font-size: 16px;
-  }
-
-  body .mobile-menu-label small {
-    display: none;
-  }
 }
 
 /* ── No floating labels on stacked layouts ──
@@ -1753,48 +1210,3 @@ body .spline-frame.is-interactive {
   white-space: nowrap;
 }
 
-/* ── Mobile drawer keyframes ──────────────────────────────────────────────────
-   Top level rather than inside the drawer's media query: @keyframes are global
-   whatever they are nested in, and keeping them here says so.
-
-   Only transform and opacity, so the whole drawer animates on the compositor —
-   the reason this is worth doing on a phone at all. closeMenu() in SiteNavbar.jsx
-   unmounts the overlay after EXIT_MS; the -out durations above must match it. */
-@keyframes cv-drawer-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes cv-drawer-fade-out {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-
-@keyframes cv-drawer-panel-in {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
-}
-
-@keyframes cv-drawer-panel-out {
-  from { transform: translateX(0); }
-  to { transform: translateX(100%); }
-}
-
-@keyframes cv-drawer-row-in {
-  from { transform: translateX(24px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
-/* Reduced motion gets the drawer, not the performance: it appears already in
-   place. closeMenu() likewise skips the exit and unmounts immediately, so the
-   menu still closes when these animations are off. */
-@media (prefers-reduced-motion: reduce) {
-  body .mobile-menu-overlay,
-  body .mobile-menu-overlay.is-closing,
-  body .mobile-menu-panel,
-  body .mobile-menu-overlay.is-closing .mobile-menu-panel,
-  body .mobile-menu-nav a,
-  body .mobile-menu-foot > * {
-    animation: none !important;
-  }
-}

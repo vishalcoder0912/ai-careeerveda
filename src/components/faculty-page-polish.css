@@ -1,0 +1,82 @@
+/* Faculty page polish
+   - Swaps the 01/02/03 number badges on the support track cards for the line
+     icons rendered by FacultyPage's `.support-card__icon`. The pseudo-element
+     keeps its white chip (border, shadow) so the icon sits on the same tile the
+     number occupied; only the `content` is blanked.
+   - Pulls the #faculty section heading flush under the transparent navbar on
+     tablets and phones. Desktop keeps the 120px drop the page always had; the
+     inline style that previously carried it at every width is gone. */
+
+body .support-section .support-grid article::before {
+  content: "" !important;
+  font-size: 0 !important;
+}
+
+body .support-section .support-grid article .support-card__icon {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  color: var(--cv-teal, #0f766e);
+  pointer-events: none;
+}
+
+body .support-section .support-grid article .support-card__icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+@keyframes supportIconFloat {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(0, -4px, 0);
+  }
+}
+
+@media (max-width: 768px) {
+  body .support-section .support-grid article .support-card__icon {
+    top: 22px;
+    right: 22px;
+    width: 38px;
+    height: 38px;
+  }
+
+  body .support-section .support-grid article .support-card__icon svg {
+    width: 19px;
+    height: 19px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body .support-section .support-grid article:hover .support-card__icon {
+    animation: supportIconFloat 1.6s ease-in-out 1;
+  }
+}
+
+/* ── #faculty heading: flush under the transparent navbar ── */
+
+body #faculty.dark-section {
+  padding-top: 120px;
+}
+
+@media (max-width: 980px) {
+  body #faculty.dark-section {
+    /* navbar-height is 64px here → ~12px of breathing room. */
+    padding-top: 76px;
+  }
+}
+
+@media (max-width: 480px) {
+  body #faculty.dark-section {
+    /* navbar-height is 58px here → ~10px of breathing room. */
+    padding-top: 68px;
+  }
+}

@@ -1,3 +1,8 @@
+/* Blog heading description: tighter than the shared page-heading gap. */
+.blog-heading p {
+  margin-top: 8px;
+}
+
 /* Blog filter bar */
 .blog-filter-bar {
   display: flex;

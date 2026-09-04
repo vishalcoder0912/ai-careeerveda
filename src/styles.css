@@ -39,6 +39,10 @@
    the header comment in that file. */
 @import "./components/navbar-hero-merge.css";
 
+/* Faculty page polishes must come last: they intentionally out-specify the
+   support-section tile and the generic .section-block padding. */
+@import "./components/faculty-page-polish.css";
+
 /* Shared route-level contract: page chunks may load their own styles after the
    layout. Keep the shell and outer header transparent; the compact nav links
    pill remains the only navbar surface. */

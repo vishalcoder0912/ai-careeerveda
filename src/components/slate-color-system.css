@@ -27,24 +27,6 @@ body .spline-page {
     linear-gradient(180deg, var(--cv-slate) 0%, var(--cv-slate-dark) 46%, var(--cv-slate) 100%) !important;
 }
 
-body .hero-shell {
-  background:
-    radial-gradient(circle at 84% 18%, rgba(45, 212, 191, 0.16), transparent 35%),
-    radial-gradient(circle at 12% 18%, rgba(16, 185, 129, 0.1), transparent 28%),
-    linear-gradient(135deg, var(--cv-slate) 0%, var(--cv-slate-dark) 55%, var(--cv-slate-deep) 100%) !important;
-}
-
-body .hero-vignette {
-  background:
-    linear-gradient(90deg, rgba(31, 43, 58, 0.86), rgba(31, 43, 58, 0.26) 52%, rgba(31, 43, 58, 0.48)),
-    radial-gradient(circle at 68% 44%, transparent 0%, rgba(38, 52, 71, 0.2) 55%, rgba(31, 43, 58, 0.78) 100%) !important;
-}
-
-body .hero-word {
-  color: rgba(248, 250, 252, 0.055) !important;
-  text-shadow: none !important;
-}
-
 body .hero-copy h1,
 body .consultation-copy h2,
 body .site-footer h3,
@@ -63,35 +45,8 @@ body .site-footer small {
 }
 
 body .eyebrow,
-body .hero-dashboard-card p,
-body .hero-dashboard-card b,
 body .site-footer a:hover {
   color: rgba(94, 234, 212, 0.96) !important;
-}
-
-body .spline-glow {
-  background:
-    radial-gradient(circle at 50% 50%, rgba(45, 212, 191, 0.42), transparent 38%),
-    radial-gradient(circle at 58% 48%, rgba(16, 185, 129, 0.22), transparent 50%),
-    radial-gradient(circle at 35% 70%, rgba(238, 243, 246, 0.18), transparent 44%) !important;
-}
-
-body .hero-dashboard-card,
-body .ai-label,
-body .spline-loader,
-body .stat-strip {
-  border-color: var(--cv-dark-border) !important;
-  background: rgba(38, 52, 71, 0.58) !important;
-  color: rgba(248, 250, 252, 0.88) !important;
-  box-shadow: var(--cv-slate-shadow) !important;
-}
-
-body .stat-strip strong {
-  color: var(--cv-white) !important;
-}
-
-body .stat-strip span {
-  color: rgba(203, 213, 225, 0.78) !important;
 }
 
 body .scroll-progress {
@@ -271,8 +226,6 @@ body .mobile-menu-cta {
   color: var(--cv-white) !important;
 }
 
-
-/* Keep program cards and recommended cards on the original CareerVeda mint-white theme. */
 body .program-explorer .section-label {
   color: #10b981 !important;
 }
@@ -292,22 +245,6 @@ body .program-explorer .cta-secondary {
   color: #0f766e !important;
 }
 
-/* The recommended strip used to need five colour rules here to undo the slate
-   above it. It is a dark panel now and sets its own ink, so the rules that
-   named .recommended-card-copy and .recommended-meta-row are gone with the
-   elements. Note that .program-explorer is also the recommended section's root
-   class — the rules above are all scoped to descendants that only exist inside
-   the actual explorer, which is why they do not reach it. */
-
-@media (max-width: 980px) {
-  /* Matches SplineLanding.css's ≤980px value — both files declare this and
-     which one wins depends on import order, so keep them the same. */
-  body .hero-shell {
-    padding-top: 72px !important;
-  }
-
-}
-
 @media (max-width: 640px) {
   body .section-block,
   body .partner-band,
@@ -320,24 +257,12 @@ body .program-explorer .cta-secondary {
   }
 }
 
-/* ── Support & strategy sections: last of the pre-slate accents ──
-   These two sections were built against an earlier palette and still carried its
-   blue index chips, orange bullets and purple outcome card, which read as three
-   unrelated brands stacked down one page. Everything below is the same accent
-   the rest of the site uses: teal on the white cards (it has the contrast for
-   it), teal-bright on the dark ones.
-
-   The selectors are one level deeper than the rules they replace — the source
-   files reach these elements through `.support-section …` / `.strategy-section …`,
-   so `body` alone would lose the specificity tie. */
 body .support-section .support-grid article::before {
   color: var(--cv-teal) !important;
   border-color: rgba(15, 118, 110, 0.16) !important;
   box-shadow: 0 12px 30px rgba(15, 118, 110, 0.12) !important;
 }
 
-/* The three cards keep their separate corner glows — that rhythm was worth
-   keeping — but as three steps along the teal ramp rather than three hues. */
 body .support-section .support-grid article::after {
   background: radial-gradient(circle, rgba(45, 212, 191, 0.2), transparent 68%) !important;
 }
@@ -364,8 +289,6 @@ body .support-section .support-grid article:hover ul::after {
   background: var(--cv-teal) !important;
 }
 
-/* Outcome card: was a purple-bordered panel with a magenta glow, sitting inside
-   a slate section. Same glass as every other card on a dark background. */
 body .strategy-section .project-number {
   color: var(--cv-light-text) !important;
   border-color: var(--cv-dark-border) !important;
@@ -402,9 +325,6 @@ body .strategy-section .step-list small {
   border-color: rgba(45, 212, 191, 0.24) !important;
 }
 
-/* Section labels: each section decorated its eyebrow in a different leftover
-   colour — orange sparkles here, orange dots there, a purple rule under the
-   third. Same mark, same teal, so the three eyebrows read as one system. */
 body #faculty .section-label::before,
 body #faculty .section-label::after {
   color: var(--cv-teal-bright) !important;

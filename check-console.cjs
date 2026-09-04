@@ -33,10 +33,6 @@ const { chromium } = require('playwright');
     const iframes = await page.$$('iframe');
     console.log(`Found ${iframes.length} iframe elements`);
     
-    // Check for cloud-band
-    const cloudBand = await page.$('.cloud-band');
-    console.log(`Cloud band exists: ${!!cloudBand}`);
-    
     // Check for scroll-progress
     const scrollProgress = await page.$('.scroll-progress');
     console.log(`Scroll progress exists: ${!!scrollProgress}`);

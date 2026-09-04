@@ -1,0 +1,676 @@
+/* ── Recommended Programs — exact reference composition ────────────────────
+ *
+ * The section is transparent and renders directly on the CareerVeda
+ * background (deep navy + subtle blue/teal + the technical grid), which stays
+ * visible around and between the cards. Only the individual course cards carry
+ * surfaces — there is deliberately no large enclosing panel.
+ *
+ * Composition (12-column grid):
+ *   Row 1:  featured (7)  +  right stack (5: two cards)
+ *   Row 2:  small (3)     +  wide (9)
+ *   Row 3:  full (12)
+ *
+ * The class `recommended-courses-section` is also applied to the element so
+ * the external overrides written against the old name (SplineLanding.css,
+ * programs-page-responsive.css) keep working.
+ */
+
+.recommended-courses {
+  --rc-accent: #16d4d0;
+  --rc-blue: #2998f2;
+  --rc-surface: rgba(7, 26, 43, 0.70);
+  --rc-surface-soft: rgba(7, 26, 43, 0.66);
+  --rc-text: rgba(255, 255, 255, 0.96);
+  --rc-muted: rgba(255, 255, 255, 0.62);
+  --rc-border: rgba(255, 255, 255, 0.10);
+
+  width: 100%;
+  position: relative;
+
+  background: transparent;
+
+  padding: clamp(44px, 5vw, 68px) 0 clamp(64px, 6vw, 88px);
+
+  isolation: isolate;
+}
+
+/* No section-wide background, no huge gradient, no backdrop-filter, no giant
+   rounded container here. ::before / ::after are intentionally unused — the
+   CareerVeda background and technical grid must remain visible. */
+
+.recommended-courses__inner {
+  width: min(calc(100% - 80px), 1180px);
+  margin-inline: auto;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+
+.recommended-courses__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  width: min(100%, 600px);
+  margin-inline: auto;
+
+  margin-top: 12px;
+  margin-bottom: clamp(28px, 3vw, 34px);
+}
+
+.recommended-courses__eyebrow {
+  margin-bottom: 9px;
+
+  color: var(--rc-accent);
+
+  font-size: 9px;
+  line-height: 1;
+  font-weight: 800;
+
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.recommended-courses__title {
+  margin: 0;
+
+  color: var(--rc-text);
+
+  font-size: clamp(36px, 3.6vw, 46px);
+  line-height: 0.98;
+  font-weight: 800;
+
+  letter-spacing: -0.045em;
+}
+
+.recommended-courses__description {
+  max-width: 520px;
+
+  margin: 11px 0 0;
+
+  color: var(--rc-muted);
+
+  font-size: 13px;
+  line-height: 1.45;
+
+  text-wrap: pretty;
+}
+
+/* ── Main 12-column grid ────────────────────────────────────────────────── */
+
+.recommended-courses__grid {
+  display: grid;
+
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+
+  gap: 11px;
+
+  width: 100%;
+}
+
+/* ── Row 1: featured (7) + right stack (5) ──────────────────────────────── */
+
+.recommended-card--featured {
+  grid-column: span 7;
+  min-height: 265px;
+}
+
+/* The two stacked cards live in one wrapper, so the 5-column column is
+   deterministic rather than fragile. */
+.recommended-courses__stack {
+  grid-column: span 5;
+
+  display: grid;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+
+  gap: 11px;
+
+  min-width: 0;
+}
+
+.recommended-card--stacked {
+  grid-column: span 5;
+  min-height: 126px;
+}
+
+/* ── Row 2: small (3) + wide (9) ────────────────────────────────────────── */
+
+.recommended-card--small {
+  grid-column: span 3;
+  min-height: 145px;
+}
+
+.recommended-card--wide {
+  grid-column: span 9;
+  min-height: 145px;
+}
+
+/* ── Row 3: full (12) ───────────────────────────────────────────────────── */
+
+.recommended-card--full {
+  grid-column: 1 / -1;
+  min-height: 125px;
+}
+
+/* ── Base card ──────────────────────────────────────────────────────────── */
+
+.recommended-card {
+  position: relative;
+
+  min-width: 0;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  border-radius: 16px;
+
+  background: var(--rc-surface);
+
+  isolation: isolate;
+
+  transition:
+    transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 280ms ease,
+    box-shadow 280ms ease;
+}
+
+.recommended-card:hover {
+  transform: translateY(-2px);
+
+  border-color: rgba(22, 212, 208, 0.24);
+
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.15);
+}
+
+.recommended-card--stacked,
+.recommended-card--small,
+.recommended-card--wide,
+.recommended-card--full {
+  background: var(--rc-surface-soft);
+}
+
+/* The stretched link: it carries no ink, it is the whole-card click target. */
+.recommended-card__link {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: inherit;
+}
+
+.recommended-card.is-linked {
+  cursor: pointer;
+}
+
+.recommended-card__link:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: -4px;
+}
+
+/* ── Image ──────────────────────────────────────────────────────────────── */
+
+.recommended-card__image {
+  position: absolute;
+  inset: 0;
+
+  z-index: -2;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  display: block;
+
+  transform: scale(1.001);
+
+  transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.recommended-card:hover .recommended-card__image {
+  transform: scale(1.025);
+}
+
+/* ── Card-level overlay only ────────────────────────────────────────────── */
+
+.recommended-card__overlay {
+  position: absolute;
+  inset: 0;
+
+  z-index: -1;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(3, 16, 27, 0.02) 18%,
+      rgba(3, 16, 27, 0.22) 48%,
+      rgba(3, 16, 27, 0.94) 100%
+    );
+}
+
+.recommended-card--stacked .recommended-card__overlay,
+.recommended-card--small .recommended-card__overlay,
+.recommended-card--wide .recommended-card__overlay,
+.recommended-card--full .recommended-card__overlay {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(3, 16, 27, 0.02) 15%,
+      rgba(3, 16, 27, 0.86) 100%
+    );
+}
+
+/* ── Content ────────────────────────────────────────────────────────────── */
+
+.recommended-card__content {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  min-width: 0;
+
+  height: 100%;
+
+  padding: 17px;
+}
+
+.recommended-card--featured .recommended-card__content {
+  justify-content: flex-end;
+
+  padding: 18px 20px;
+}
+
+.recommended-card--stacked .recommended-card__content {
+  justify-content: flex-end;
+
+  padding: 11px 13px;
+}
+
+.recommended-card--small .recommended-card__content,
+.recommended-card--wide .recommended-card__content {
+  justify-content: flex-end;
+
+  padding: 12px 14px;
+}
+
+.recommended-card--full .recommended-card__content {
+  justify-content: flex-end;
+
+  padding: 13px 16px;
+}
+
+/* ── Category ───────────────────────────────────────────────────────────── */
+
+.recommended-card__category {
+  display: inline-flex;
+  align-items: center;
+
+  width: fit-content;
+
+  margin-bottom: 6px;
+
+  padding: 3px 6px;
+
+  border: 1px solid rgba(22, 212, 208, 0.28);
+
+  border-radius: 999px;
+
+  background: rgba(22, 212, 208, 0.08);
+
+  color: #16D4D0;
+
+  font-size: 7px;
+  font-weight: 800;
+
+  line-height: 1;
+
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ── Title ──────────────────────────────────────────────────────────────── */
+
+.recommended-card__title {
+  margin: 0;
+
+  max-width: 100%;
+
+  color: var(--rc-text);
+
+  font-size: 16px;
+  font-weight: 800;
+
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+
+  overflow-wrap: anywhere;
+}
+
+.recommended-card--featured .recommended-card__title {
+  max-width: 460px;
+
+  font-size: clamp(21px, 1.8vw, 27px);
+}
+
+.recommended-card--stacked .recommended-card__title {
+  font-size: 13px;
+}
+
+.recommended-card--small .recommended-card__title {
+  font-size: 13px;
+}
+
+.recommended-card--wide .recommended-card__title {
+  font-size: 16px;
+}
+
+.recommended-card--full .recommended-card__title {
+  font-size: 17px;
+}
+
+/* ── Subtitle ───────────────────────────────────────────────────────────── */
+
+.recommended-card__subtitle {
+  margin: 4px 0 0;
+
+  color: rgba(22, 212, 208, 0.9);
+
+  font-size: 8px;
+  font-weight: 650;
+
+  line-height: 1.3;
+}
+
+/* ── Description ────────────────────────────────────────────────────────── */
+
+.recommended-card__description {
+  display: -webkit-box;
+
+  margin: 5px 0 0;
+
+  max-width: 680px;
+
+  overflow: hidden;
+
+  color: rgba(255, 255, 255, 0.65);
+
+  font-size: 8px;
+  line-height: 1.4;
+
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.recommended-card--featured .recommended-card__description {
+  max-width: 500px;
+
+  font-size: 9px;
+}
+
+.recommended-card--stacked .recommended-card__description {
+  font-size: 7px;
+
+  -webkit-line-clamp: 1;
+}
+
+.recommended-card--small .recommended-card__description,
+.recommended-card--wide .recommended-card__description {
+  font-size: 8px;
+
+  -webkit-line-clamp: 1;
+}
+
+/* ── Meta pills ─────────────────────────────────────────────────────────── */
+
+.recommended-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+
+  margin-top: 7px;
+}
+
+.recommended-card__meta span {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 3px 6px;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  border-radius: 999px;
+
+  background: rgba(6, 24, 38, 0.58);
+
+  color: rgba(255, 255, 255, 0.76);
+
+  font-size: 6.5px;
+  font-weight: 650;
+
+  line-height: 1;
+
+  white-space: nowrap;
+}
+
+/* ── CTA ────────────────────────────────────────────────────────────────── */
+
+.recommended-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  margin-top: 7px;
+
+  color: rgba(255, 255, 255, 0.94);
+
+  font-size: 7px;
+  font-weight: 750;
+
+  text-decoration: none;
+
+  transition:
+    color 180ms ease,
+    gap 180ms ease;
+}
+
+.recommended-card--featured .recommended-card__cta {
+  font-size: 8px;
+}
+
+.recommended-card__cta:hover {
+  color: var(--rc-accent);
+  gap: 6px;
+}
+
+/* ── Full-width card ────────────────────────────────────────────────────── */
+
+.recommended-card--full .recommended-card__content {
+  display: grid;
+
+  grid-template-columns: minmax(0, 1fr) auto;
+
+  column-gap: 24px;
+
+  align-items: end;
+}
+
+.recommended-card--full .recommended-card__meta {
+  margin-top: 0;
+}
+
+.recommended-card--full .recommended-card__cta {
+  margin-top: 6px;
+}
+
+/* ── Focus accessibility ────────────────────────────────────────────────── */
+
+.recommended-card:focus-within {
+  border-color: rgba(22, 212, 208, 0.35);
+}
+
+/* ── Tablet (768–1199px) ────────────────────────────────────────────────── */
+
+@media (max-width: 1199px) {
+  .recommended-courses__inner {
+    width: min(calc(100% - 48px), 1100px);
+  }
+
+  .recommended-courses__grid {
+    gap: 11px;
+  }
+
+  .recommended-card--featured {
+    grid-column: 1 / -1;
+    min-height: 310px;
+  }
+
+  .recommended-courses__stack {
+    grid-column: span 12;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: none;
+  }
+
+  .recommended-card--stacked {
+    grid-column: span 6;
+    min-height: 170px;
+  }
+
+  .recommended-card--small {
+    grid-column: span 4;
+  }
+
+  .recommended-card--wide {
+    grid-column: span 8;
+  }
+
+  .recommended-card--full {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ── Mobile (≤767px) ────────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .recommended-courses {
+    padding: 42px 0 64px;
+  }
+
+  .recommended-courses__inner {
+    width: min(calc(100% - 40px), 430px);
+  }
+
+  .recommended-courses__header {
+    margin-bottom: 28px;
+  }
+
+  .recommended-courses__eyebrow {
+    font-size: 8px;
+  }
+
+  .recommended-courses__title {
+    font-size: clamp(32px, 9vw, 42px);
+  }
+
+  .recommended-courses__description {
+    max-width: 340px;
+    font-size: 12px;
+  }
+
+  .recommended-courses__grid {
+    grid-template-columns: 1fr;
+    gap: 11px;
+  }
+
+  .recommended-card--featured,
+  .recommended-card--stacked,
+  .recommended-card--small,
+  .recommended-card--wide,
+  .recommended-card--full {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+
+  .recommended-courses__stack {
+    grid-column: 1 / -1;
+
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+
+    gap: 11px;
+  }
+
+  .recommended-card--featured {
+    min-height: 340px;
+  }
+
+  .recommended-card--stacked {
+    min-height: 220px;
+  }
+
+  .recommended-card--small,
+  .recommended-card--wide {
+    min-height: 220px;
+  }
+
+  .recommended-card--full {
+    min-height: 205px;
+  }
+
+  .recommended-card--featured .recommended-card__title {
+    font-size: 22px;
+  }
+
+  .recommended-card--full .recommended-card__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .recommended-card--full .recommended-card__meta {
+    margin-top: 7px;
+  }
+}
+
+/* ── Very small phones (≤390px) ─────────────────────────────────────────── */
+
+@media (max-width: 390px) {
+  .recommended-courses__inner {
+    width: min(calc(100% - 32px), 360px);
+  }
+
+  .recommended-courses__title {
+    font-size: 34px;
+  }
+
+  .recommended-card--featured {
+    min-height: 315px;
+  }
+
+  .recommended-card--featured .recommended-card__title {
+    font-size: 20px;
+  }
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .recommended-card,
+  .recommended-card__image,
+  .recommended-card__cta {
+    transition: none;
+  }
+
+  .recommended-card:hover {
+    transform: none;
+  }
+
+  .recommended-card:hover .recommended-card__image {
+    transform: none;
+  }
+}

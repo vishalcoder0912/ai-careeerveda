@@ -46,7 +46,7 @@ describe("BlogDetailPage", () => {
 
     expect(screen.getByRole("heading", {level: 1, name: FIRST.title})).toBeTruthy();
     // The body, not just the header — proves the whole article is on hand.
-    expect(screen.getByText(FIRST.sections[0].heading)).toBeTruthy();
+    expect(screen.getByRole("heading", {level: 2, name: FIRST.sections[0].heading})).toBeTruthy();
   });
 
   it("redirects an unknown slug to the index", () => {

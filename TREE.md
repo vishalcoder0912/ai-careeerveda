@@ -95,7 +95,7 @@ implementatoin-of-chatbot-alumnai-profile/
 │   │   │   ├── CareerVedaBackground.jsx/.css
 │   │   │   └── CursorGrid.jsx/.css
 │   │   ├── Recommended/
-│   │   │   └── RecommendedCourses1.jsx/.css
+│   │   │   └── RecommendedCourses.jsx/.css
 │   │   └── ui/
 │   │       ├── Antigravity.jsx
 │   │       └── LaserFlow.jsx/.css

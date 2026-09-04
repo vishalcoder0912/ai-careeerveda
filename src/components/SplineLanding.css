@@ -353,13 +353,13 @@
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.1);
+  background: transparent;
   backdrop-filter: blur(22px);
 }
 
 .stat-strip div {
   padding: 18px;
-  background: rgba(2, 6, 23, 0.35);
+  background: transparent;
 }
 
 .stat-strip strong {
@@ -1322,8 +1322,8 @@ body .hero-shell > .hero-visual-shell {
   bottom: 0;
   left: 0;
   height: 58%;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   -webkit-mask-image: linear-gradient(180deg, transparent, #000 52%, rgba(0, 0, 0, 0.7) 100%);
   mask-image: linear-gradient(180deg, transparent, #000 52%, rgba(0, 0, 0, 0.7) 100%);
 }
@@ -1403,8 +1403,8 @@ body .hero-shell > .hero-visual-shell {
   }
 
   .cloud-band__veil {
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 }
 

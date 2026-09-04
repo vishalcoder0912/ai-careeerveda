@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
 import "./styles.css";
+import "./components/mobile-navbar-premium.css";
 
 const rootElement = document.getElementById("root");
 

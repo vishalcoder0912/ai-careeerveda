@@ -5,6 +5,57 @@ import { Reveal, StaggerGroup, StaggerItem } from "../components/motionPrimitive
 import DeferUntilVisible from "../components/DeferUntilVisible";
 import { differentiators, supportTracks, careerSteps } from "../data/siteData";
 
+// Decorative mini-icons for the support track cards. Each is a 24px line glyph
+// that inherits the card's accent colour via currentColor, so the cards keep the
+// teal ramp and add a recognisable mark without a different illustration system.
+const SUPPORT_ICONS = {
+  workshops: (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1.3.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5" />
+      <path d="M9 18h6" />
+      <path d="M10 22h4" />
+    </svg>
+  ),
+  tutoring: (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+    </svg>
+  ),
+  mentorship: (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36 6.36-2.12z" />
+    </svg>
+  ),
+};
+
 // The bento grid carries its own GSAP spotlight/particle machinery; it sits below
 // the section heading, so it can arrive as the reader reaches it.
 const MagicBento = lazy(() => import("../components/MagicBento"));
@@ -21,7 +72,7 @@ const FacultyPage = () => {
     <main ref={pageRef} className="spline-page">
       <div className="scroll-progress" aria-hidden="true" />
 
-      <section id="faculty" className="section-block dark-section" style={{ paddingTop: "120px" }}>
+      <section id="faculty" className="section-block dark-section">
         <Reveal className="section-heading">
           <p className="section-label">What Makes CareerVeda Different?</p>
           {/* h1: this route had none. See the note on ProgramsPage — the
@@ -59,6 +110,9 @@ const FacultyPage = () => {
         <StaggerGroup className="support-grid">
           {supportTracks.map((track) => (
             <StaggerItem as="article" interactive key={track.title}>
+              <span className="support-card__icon" aria-hidden="true">
+                {SUPPORT_ICONS[track.icon]}
+              </span>
               <h3>{track.title}</h3>
               <ul>
                 {track.points.map((point) => (

@@ -1,17 +1,209 @@
-/* Status and validation styling for the consultation form. The form's layout,
-   inputs, and button are already styled by the shared stylesheets — this file
-   only adds the states the old dead form never had. */
+/* Premium conversion panel styling for the consultation form. This file only
+   styles the rendered look — it never touches submission logic, validation, or
+   field semantics. The form is a two-column grid on desktop (Name/Email, full-
+   width Mobile, User Type/Program, full-width Submit) and a single column on
+   phones. */
+
+.consultation-form {
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+  margin-inline: auto;
+  padding: 30px 32px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 24px;
+  background: rgba(16, 40, 58, 0.72);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.22);
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px 20px;
+  align-items: start;
+}
+
+/* ─── Header: calendar icon in a teal badge + title ────────────────── */
+
+.consultation-form__head {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 4px;
+}
+
+.consultation-form__badge {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  background: rgba(22, 212, 208, 0.1);
+  border: 1px solid rgba(22, 212, 208, 0.45);
+  color: #16d4d0;
+}
+
+.consultation-form__head h3 {
+  margin: 0;
+  color: #f8fafc;
+  font-size: clamp(22px, 2vw, 28px);
+  line-height: 1.12;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+
+/* ─── Field grid ─────────────────────────────────────────────────────── */
+
+.consultation-form .consultation-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 11.5px;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.consultation-form .consultation-field--full {
+  grid-column: 1 / -1;
+}
+
+.consultation-form input[type="text"],
+.consultation-form input[type="email"],
+.consultation-form input[type="tel"],
+.consultation-form select {
+  width: 100%;
+  height: 54px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  background: rgba(28, 54, 74, 0.72);
+  color: rgba(255, 255, 255, 0.92);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  outline: none;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease;
+}
+
+.consultation-form input::placeholder {
+  color: rgba(255, 255, 255, 0.48);
+  font-weight: 400;
+}
+
+.consultation-form input:focus,
+.consultation-form select:focus {
+  border-color: rgba(22, 212, 208, 0.7);
+  box-shadow: 0 0 0 3px rgba(22, 212, 208, 0.12);
+  outline: none;
+  background: rgba(28, 54, 74, 0.9);
+}
+
+/* Selects must match inputs exactly so the form reads as one surface.
+   The chevron is a single clean SVG glyph — not two CSS triangle gradients,
+   which mis-register and render as broken triangular/diamond artifacts. */
+.consultation-form select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-opacity='0.62' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-position: right 12px center;
+  background-size: 16px 16px;
+  background-repeat: no-repeat;
+  padding-right: 36px;
+  min-width: 0;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+/* India-only mobile field: a fixed +91 prefix with a divider, then the
+   editable 10-digit input. The prefix is decorative; the tel input keeps full
+   control of the submitted value. */
+.consultation-form .phone-field {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+}
+
+.consultation-form .phone-field__prefix {
+  flex: 0 0 74px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-right-width: 0;
+  border-radius: 12px 0 0 12px;
+  background: rgba(22, 40, 56, 0.9);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+}
+
+.consultation-form .phone-field input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0 12px 12px 0;
+}
+
+.consultation-form .phone-field input:focus {
+  border-left-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Validation states — preserved existing semantics, purely visual. */
+.consultation-form [aria-invalid="true"] {
+  border-color: rgba(255, 90, 90, 0.7) !important;
+  box-shadow: 0 0 0 3px rgba(255, 90, 90, 0.08);
+}
 
 .consultation-form .field-error {
-  margin-top: 6px;
-  color: #f87171;
-  font-size: 0.8rem;
+  margin-top: 0;
+  color: #fca5a5;
+  font-size: 12px;
   font-weight: 600;
   line-height: 1.4;
 }
 
-.consultation-form [aria-invalid="true"] {
-  border-color: rgba(248, 113, 113, 0.65) !important;
+/* ─── Footer: full-width submit + security note ──────────────────────── */
+
+.consultation-form__footer {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.consultation-form button[type="submit"] {
+  width: 100%;
+  min-height: 54px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(100deg, #16C7B7, #2798F2);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 750;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    filter 220ms ease;
+}
+
+.consultation-form button[type="submit"]:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(22, 212, 208, 0.2);
+  filter: saturate(1.08);
 }
 
 .consultation-form button[type="submit"]:disabled {
@@ -19,11 +211,28 @@
   cursor: progress;
 }
 
+.consultation-form .consultation-security {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.consultation-form .consultation-security svg {
+  color: rgba(22, 212, 208, 0.8);
+}
+
+/* Status messages */
 .consultation-status {
-  margin: 4px 0 0;
+  grid-column: 1 / -1;
+  margin: 2px 0 0;
   padding: 12px 14px;
   border-radius: 12px;
-  font-size: 0.9rem;
+  font-size: 13px;
   font-weight: 600;
   line-height: 1.5;
 }
@@ -49,4 +258,393 @@
   height: 1px !important;
   opacity: 0 !important;
   pointer-events: none;
+}
+
+/* ─── Single column on small screens ─────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .consultation-form {
+    max-width: 480px;
+  }
+}
+
+@media (max-width: 768px) {
+  .consultation-form {
+    grid-template-columns: 1fr;
+    max-width: 440px;
+    padding: 26px 22px;
+    gap: 13px;
+    border-radius: 20px;
+  }
+
+  .consultation-form__head {
+    margin-bottom: 2px;
+  }
+
+  .consultation-form__badge {
+    width: 62px;
+    height: 62px;
+  }
+
+  .consultation-form .consultation-field {
+    grid-column: 1 / -1;
+  }
+
+  .consultation-form input[type="text"],
+  .consultation-form input[type="email"],
+  .consultation-form input[type="tel"],
+  .consultation-form select {
+    height: 48px;
+    font-size: 15px;
+  }
+
+  .consultation-form button[type="submit"] {
+    min-height: 50px;
+    font-size: 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .consultation-form input[type="text"],
+  .consultation-form input[type="email"],
+  .consultation-form input[type="tel"],
+  .consultation-form select,
+  .consultation-form button[type="submit"] {
+    transition: none;
+  }
+
+  .consultation-form button[type="submit"]:hover:not(:disabled) {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   AUTHORITATIVE FORM POLISH (loaded last, from this component chunk).
+   A single coherent pass that resolves every earlier, conflicting
+   consultation-form paint (site-theme.css / slate-color-system.css /
+   brand-alignment.css / cine interactions). They force light inputs, the
+   cinematic file force hover glows, and the two-column fields sit on uneven
+   rhythm. Those global files all win ties with `body .consultation-form …
+   !important`, so every rule below matches that specificity AND adds
+   !important; and because this stylesheet is imported by the component itself
+   it is the final word for the form surface.
+
+   Design intent: one calm, dark-glass surface. White-text inputs with a subtle
+   raised fill, evenly spaced two-column grid, a proportional header, exact
+   focus ring, and a single confident submit axis. Nothing glows, nothing
+   floats, nothing changes colour.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/* Enough top air so the header reads as a heading, not a squeezed strip, and
+   a consistent gap reads through every field so the form looks evenly drawn.
+   The form is the primary surface — sized to its content, never dominating
+   the left message. */
+body .consultation-section .consultation-form {
+  gap: 16px 18px !important;
+  max-width: 540px !important;
+  margin-left: auto !important;
+  padding: 29px !important;
+  border: 1px solid rgba(255, 255, 255, 0.13) !important;
+  border-radius: 20px !important;
+  background: rgba(17, 42, 59, 0.80) !important;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.16) !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  overflow: visible !important;
+}
+
+/* The cinematic file sets overflow:hidden + a hover glow on ::after and a
+   light background shift on hover. Remove all three so the panel stays still. */
+body .consultation-section .consultation-form::after {
+  content: none !important;
+}
+
+body .consultation-section .consultation-form:hover {
+  border-color: rgba(255, 255, 255, 0.13) !important;
+  background: rgba(17, 42, 59, 0.80) !important;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.16) !important;
+}
+
+/* The cinematic file sets overflow:hidden + a hover glow on ::after and a
+   light background shift on hover. Remove all three so the panel stays still. */
+body .consultation-section .consultation-form::after {
+  content: none !important;
+}
+
+body .consultation-section .consultation-form:hover {
+  border-color: rgba(255, 255, 255, 0.13) !important;
+  background: rgba(17, 42, 59, 0.80) !important;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.16) !important;
+}
+
+/* Head: a real calendar glyph inside a quiet teal chip, then the title. The
+   badge stays proportional (not a giant circle) and sits in a 68px grid cell
+   so the header reads as one compact lockup. */
+body .consultation-section .consultation-form .consultation-form__head {
+  display: grid !important;
+  grid-template-columns: 68px minmax(0, 1fr) !important;
+  gap: 16px !important;
+  align-items: center !important;
+  margin-bottom: 20px !important;
+}
+
+body .consultation-section .consultation-form .consultation-form__badge {
+  width: 64px !important;
+  height: 64px !important;
+  border-radius: 18px !important;
+  background: rgba(22, 212, 208, 0.10) !important;
+  border: 1px solid rgba(22, 212, 208, 0.35) !important;
+  color: #4fd9d6 !important;
+}
+
+body .consultation-section .consultation-form .consultation-form__badge svg {
+  width: 22px !important;
+  height: 22px !important;
+}
+
+body .consultation-section .consultation-form .consultation-form__head h3 {
+  font-size: clamp(24px, 2vw, 28px) !important;
+  font-weight: 750 !important;
+  line-height: 1.08 !important;
+  letter-spacing: -0.025em !important;
+  margin: 0 !important;
+}
+
+body .consultation-section .consultation-form .consultation-form__subtitle {
+  display: block;
+  margin-top: 6px;
+  color: rgba(255, 255, 255, 0.60) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+/* Fields: labels sit above a raised input, evenly spaced, nothing squished. */
+body .consultation-section .consultation-form .consultation-field {
+  gap: 6px !important;
+  color: rgba(255, 255, 255, 0.78) !important;
+  font-size: 11.5px !important;
+  font-weight: 650 !important;
+  letter-spacing: 0.01em !important;
+  text-transform: none !important;
+  min-width: 0 !important;
+}
+
+/* One consistent input treatment — slightly lighter than the card, white text,
+   simple edge, no heavy inner effects. */
+body .consultation-section .consultation-form input[type="text"],
+body .consultation-section .consultation-form input[type="email"],
+body .consultation-section .consultation-form input[type="tel"],
+body .consultation-section .consultation-form select {
+  height: 50px !important;
+  padding: 0 15px !important;
+  border: 1px solid rgba(255, 255, 255, 0.13) !important;
+  border-radius: 12px !important;
+  background: rgba(28, 53, 71, 0.82) !important;
+  color: rgba(255, 255, 255, 0.92) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease !important;
+}
+
+body .consultation-section .consultation-form input::placeholder {
+  color: rgba(255, 255, 255, 0.50) !important;
+  font-weight: 400;
+}
+
+/* Focus: one clean teal ring, identical on inputs and selects. */
+body .consultation-section .consultation-form input:focus,
+body .consultation-section .consultation-form select:focus {
+  border-color: rgba(22, 212, 208, 0.65) !important;
+  box-shadow: 0 0 0 3px rgba(22, 212, 208, 0.14) !important;
+  background: rgba(28, 53, 71, 0.9) !important;
+  outline: none;
+}
+
+/* Selects: keep the custom chevron so the control reads like an input.
+   One clean SVG glyph — the previous two-triangle gradient chevron registered
+   as broken triangular/diamond artifacts; that root cause is removed. */
+body .consultation-section .consultation-form select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-opacity='0.62' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-position: right 12px center !important;
+  background-size: 16px 16px !important;
+  background-repeat: no-repeat !important;
+  padding-right: 36px !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  white-space: nowrap;
+}
+
+body .consultation-section .consultation-form select option {
+  color: #0f172a;
+  background: #ffffff;
+}
+
+/* Phone prefix: same surface as the input it precedes, joined seam. Compact —
+   the +91 must not dominate the control. */
+body .consultation-section .consultation-form .phone-field__prefix {
+  flex: 0 0 64px !important;
+  border-color: rgba(255, 255, 255, 0.13) !important;
+  border-right-width: 0 !important;
+  border-radius: 12px 0 0 12px !important;
+  background: rgba(28, 53, 71, 0.82) !important;
+  color: rgba(255, 255, 255, 0.82) !important;
+  font-size: 14px !important;
+  font-weight: 650 !important;
+}
+
+body .consultation-section .consultation-form .phone-field input {
+  border-radius: 0 12px 12px 0 !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+body .consultation-section .consultation-form .phone-field input:focus {
+  border-left-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Errors keep their meaning, just divisible from the surface. */
+body .consultation-section .consultation-form .field-error {
+  color: #fda4af !important;
+}
+
+/* Submit: a single confident, full-width button with a quiet 3D press. */
+body .consultation-section .consultation-form button[type="submit"] {
+  min-height: 52px !important;
+  border-radius: 12px !important;
+  background: linear-gradient(100deg, #16C7B7, #2798F2) !important;
+  box-shadow: 0 10px 26px rgba(22, 212, 208, 0.18) !important;
+  font-size: 15px !important;
+  font-weight: 750 !important;
+  letter-spacing: 0.01em !important;
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease !important;
+}
+
+body .consultation-section .consultation-form button[type="submit"]:hover:not(:disabled) {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 14px 32px rgba(22, 212, 208, 0.26) !important;
+}
+
+body .consultation-section .consultation-form button[type="submit"]:active:not(:disabled) {
+  transform: translateY(0) !important;
+  box-shadow: 0 4px 12px rgba(22, 212, 208, 0.14) !important;
+}
+
+/* Security note: aligned with the form content (left), slightly more visible
+   than before, with the teal lock icon leading. */
+body .consultation-section .consultation-form .consultation-security {
+  justify-content: flex-start !important;
+  color: rgba(255, 255, 255, 0.62) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+body .consultation-section .consultation-form .consultation-security svg {
+  color: #16d4d0 !important;
+  flex: 0 0 auto;
+}
+
+/* Keep these tall-enough-touch targets uniformly spaced even on phones. */
+@media (max-width: 768px) {
+  body .consultation-section .consultation-form {
+    padding: 24px 20px !important;
+    gap: 15px !important;
+  }
+
+  body .consultation-section .consultation-form input[type="text"],
+  body .consultation-section .consultation-form input[type="email"],
+  body .consultation-section .consultation-form input[type="tel"],
+  body .consultation-section .consultation-form select {
+    height: 48px !important;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   SECTION BALANCE — consultation copy vs form
+   A single pass that rebalances the two-column consultation section so the
+   form no longer dominates the left message, sizes the left headline and
+   paragraph down to match, and quiets the outer surface. The form itself is
+   the primary (only) card; the section shell just frames it.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/* Outer shell: transparent, no second giant rounded panel. It also forms its own
+   stacking context (position: relative + z-index) so the press section's
+   transformed ScrollStack cards above it can never paint over the form — the
+   form always stays on top and at its natural position as the user scrolls down
+   to it. */
+body .consultation-section {
+  position: relative;
+  z-index: 1;
+  background:
+    radial-gradient(120% 90% at 78% 22%, rgba(19, 128, 146, 0.12), transparent 48%),
+    linear-gradient(135deg, #0b1330 0%, #0e1a3c 52%, #0a1128 100%) !important;
+}
+
+body .consultation-section .consultation-panel {
+  grid-template-columns: minmax(0, 1.04fr) minmax(440px, 0.96fr) !important;
+  gap: clamp(48px, 5vw, 64px) !important;
+  align-items: center !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Left copy: constrained width so it never extends beneath the form, and
+   optically centered within its own column. */
+body .consultation-section .consultation-copy--panel {
+  padding: 0 !important;
+  max-width: 600px !important;
+  justify-self: center;
+}
+
+body .consultation-section .consultation-copy--panel .section-label {
+  margin-bottom: 18px !important;
+  font-size: 12px !important;
+  letter-spacing: 0.13em !important;
+}
+
+/* Headline: dominant but controlled — not larger than the form. */
+body .consultation-section .consultation-copy--panel .consultation-headline {
+  font-size: clamp(44px, 4.5vw, 60px) !important;
+  line-height: 1.02 !important;
+  letter-spacing: -0.03em !important;
+  max-width: 600px !important;
+}
+
+/* Description: narrower and quieter so it supports rather than competes. */
+body .consultation-section .consultation-copy--panel > p:not(.section-label) {
+  max-width: 520px !important;
+  font-size: 15.5px !important;
+  line-height: 1.6 !important;
+  color: rgba(255, 255, 255, 0.68) !important;
+}
+
+/* Particle field: faint so the purple never competes with readable text. */
+body .consultation-atmosphere {
+  opacity: 0.35 !important;
+}
+
+/* Grid: visible but not competing with the headline or form. */
+body .consultation-section .cv-grid-layer {
+  opacity: 0.55 !important;
+}
+
+@media (max-width: 1024px) {
+  body .consultation-section .consultation-panel {
+    grid-template-columns: 1fr !important;
+    gap: 36px !important;
+  }
+
+  body .consultation-section .consultation-copy--panel {
+    max-width: 640px !important;
+    justify-self: start;
+  }
 }

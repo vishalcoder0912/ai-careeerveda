@@ -46,7 +46,7 @@ const BlogPage = () => {
 
       <section className="page-section">
         <div className="ps-inner">
-          <SectionHeading label="Latest articles" title="Explore our latest posts">
+          <SectionHeading className="blog-heading" label="Latest articles" title="Explore our latest posts">
             Learn from real-world case studies, program insights, and career strategies shared by our mentors and alumni
           </SectionHeading>
 

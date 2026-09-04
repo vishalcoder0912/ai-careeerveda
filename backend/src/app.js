@@ -17,7 +17,13 @@ import {adminRouter} from "./routes/admin.routes.js";
 import {publicRouter} from "./routes/public.routes.js";
 import {mediaRouter} from "./routes/media.routes.js";
 import {publicLeadRouter, adminLeadRouter} from "./routes/lead.routes.js";
+import {securityRouter} from "./routes/security.routes.js";
 import {forbidden} from "./utils/apiError.js";
+import {globalLimiter} from "./middleware/rateLimit.js";
+import {authSlowDown, publicSlowDown, formSlowDown} from "./middleware/slowDown.js";
+import {ipBlockGuard} from "./middleware/ipBlocklist.js";
+import {anomalyDetector} from "./middleware/anomalyDetector.js";
+import {metricsMiddleware} from "./services/metrics.js";
 
 // `extraRouters` lets a caller mount additional routers between the real ones
 // and the 404 handler. It exists so tests can exercise the auth middleware on a
@@ -55,6 +61,23 @@ export const createApp = ({extraRouters = []} = {}) => {
       },
       crossOriginResourcePolicy: {policy: "same-site"},
       referrerPolicy: {policy: "no-referrer"},
+      // Enable HSTS when TLS is configured (behind Cloudflare or load balancer).
+      // maxAge: 1 year, includeSubDomains, preload list eligible.
+      hsts: env.isProduction ? {maxAge: 31536000, includeSubDomains: true, preload: true} : false,
+      // Block browser features that are never needed for a JSON API.
+      permissionsPolicy: {
+        directives: {
+          camera: [],
+          microphone: [],
+          geolocation: [],
+          payment: [],
+          usb: [],
+          magnetometer: [],
+          gyroscope: [],
+          accelerometer: [],
+          "interest-cohort": [],
+        },
+      },
     }),
   );
 
@@ -81,6 +104,9 @@ export const createApp = ({extraRouters = []} = {}) => {
 
   app.use(compression());
 
+  // Record request metrics for the /api/v1/admin/metrics dashboard.
+  app.use(metricsMiddleware);
+
   // 256 KB is generous for the largest thing we accept as JSON (a page with many
   // sections) and far below what would let a caller exhaust memory. File uploads
   // do not pass through here — multer handles those with its own limit.
@@ -97,18 +123,33 @@ export const createApp = ({extraRouters = []} = {}) => {
   // prototype-pollution keys from everything.
   app.use(sanitizeRequest);
 
+  // ── DDoS / abuse protection ────────────────────────────────────────────────
+  // Order matters: IP blocklist first (cheapest check), then anomaly detection,
+  // then global rate limit. All three run before any route handler.
+  app.use(ipBlockGuard);
+  app.use(globalLimiter);
+  app.use(anomalyDetector);
+
   // Unversioned and outside /api on purpose — probe URLs should not move when
   // the API version does.
   app.use(healthRouter);
 
+  // ── Per-route rate limiting + slow-down ─────────────────────────────────────
+  // Slow-down runs before the rate limiter on each route group: it penalises
+  // sustained high request rates with progressive delays, while the rate limiter
+  // hard-cuts after the absolute ceiling.
+  app.use("/api/v1/auth", authSlowDown);
   app.use("/api/v1/auth", authRouter);
   // Registered before the generic public router so /public/leads is not
   // matched as a content resource named "leads".
+  app.use("/api/v1/public/leads", formSlowDown);
   app.use("/api/v1/public/leads", publicLeadRouter);
+  app.use("/api/v1/public", publicSlowDown);
   app.use("/api/v1/public", publicRouter);
 
   app.use("/api/v1/admin/media", mediaRouter);
   app.use("/api/v1/admin/leads", adminLeadRouter);
+  app.use("/api/v1/admin/security", securityRouter);
   app.use("/api/v1/admin", adminRouter);
 
   for (const {path, router} of extraRouters) app.use(path, router);

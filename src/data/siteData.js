@@ -66,6 +66,7 @@ export const differentiators = [
 
 export const supportTracks = [
   {
+    icon: "workshops",
     title: "Skill Enhancement Workshops",
     points: [
       "Hands-on workshops for in-demand workplace skills",
@@ -74,6 +75,7 @@ export const supportTracks = [
     ],
   },
   {
+    icon: "tutoring",
     title: "Bespoke Tutoring Sessions",
     points: [
       "Interactive live classes with expert instructors",
@@ -82,6 +84,7 @@ export const supportTracks = [
     ],
   },
   {
+    icon: "mentorship",
     title: "Career Aligned Mentorship",
     points: [
       "Personal mentor assigned based on your learning goals",

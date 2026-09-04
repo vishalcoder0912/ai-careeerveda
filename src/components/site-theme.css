@@ -120,7 +120,7 @@ body .spline-loader {
 }
 
 body .stat-strip {
-  background: rgba(16, 24, 64, 0.92);
+  background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.14);
   box-shadow: 0 24px 70px rgba(16, 24, 64, 0.28);
 }

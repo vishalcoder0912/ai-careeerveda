@@ -1,0 +1,760 @@
+/* ── Mobile Navigation — Unified System ────────────────────────────────────
+ * Single source of truth for ALL mobile navigation styles:
+ *   • Mobile top navbar (logo | Enroll + hamburger)
+ *   • Scrolled glass-pill state
+ *   • Hamburger button + X animation
+ *   • Side drawer overlay + panel
+ *   • Numbered navigation rows
+ *   • Bottom CTA zone
+ *
+ * This file replaces scattered mobile-nav rules from navbar-area.css and
+ * mobile-responsiveness.css. The hamburger and drawer styles that lived in
+ * those files are consolidated here so ONE file owns the entire mobile nav.
+ *
+ * Import: main.jsx (before styles.css, or alongside it)
+ * Breakpoint: <= 980px for mobile layout, <= 768px / <= 480px for refinements
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+/* ════════════════════════════════════════════════════════════════════════════
+   1. MOBILE TOP NAVBAR — actions group (Enroll + hamburger)
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* <= 980px: mobile layout — logo left, actions right */
+@media (max-width: 980px) {
+  body header.site-nav .nav-container .mobile-navbar-actions {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-left: auto;
+    flex: 0 0 auto;
+    min-width: 0;
+  }
+}
+
+/* >= 981px: desktop — actions in grid zone 3 */
+@media (min-width: 981px) {
+  body header.site-nav .nav-container .mobile-navbar-actions {
+    grid-column: 3;
+    justify-self: end;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   2. MOBILE TOP NAVBAR — brand sizing
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 980px) {
+  body header.site-nav .nav-container .brand,
+  body header.site-nav .nav-container .site-nav-brand {
+    width: clamp(132px, 39vw, 155px);
+    min-width: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  body header.site-nav,
+  body header.site-nav.is-scrolled {
+    padding-block: 0;
+    padding-inline: 0;
+    padding-top: max(8px, env(safe-area-inset-top));
+  }
+
+  body header.site-nav .nav-container .brand .brand-icon {
+    height: 30px;
+    width: auto;
+    flex: none;
+  }
+
+  body header.site-nav .nav-container .brand .brand-name {
+    font-size: clamp(15px, 4.5vw, 19px);
+    line-height: 1.05;
+    white-space: nowrap;
+  }
+
+  body header.site-nav .nav-container .brand .brand-tagline {
+    display: none;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   3. MOBILE ENROLL BUTTON
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 980px) {
+  body header.site-nav .nav-container .mobile-navbar-actions a.nav-cta {
+    margin-left: 0 !important;
+    justify-self: auto;
+    grid-column: auto;
+    min-width: 96px !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    padding: 0 14px !important;
+    font-size: 12.5px !important;
+    line-height: 1;
+    border-radius: 999px !important;
+    box-shadow: 0 6px 20px rgba(0, 190, 150, 0.16);
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   4. HAMBURGER BUTTON — 42px glass square, CSS-only X animation
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 980px) {
+  body header.site-nav .nav-container .mobile-navbar-actions .hamburger-btn,
+  body header.site-nav .nav-container .hamburger-btn {
+    display: inline-flex !important;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 13px;
+    background: rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body header.site-nav .nav-container .hamburger-btn .hamburger-line {
+    display: block;
+    width: 18px;
+    height: 2px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.88);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  body header.site-nav .nav-container .hamburger-btn.is-open .hamburger-line:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  body header.site-nav .nav-container .hamburger-btn.is-open .hamburger-line:nth-child(2) {
+    opacity: 0;
+  }
+
+  body header.site-nav .nav-container .hamburger-btn.is-open .hamburger-line:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   5. SCROLLED GLASS PILL — outer transparent, inner floating surface
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 980px) {
+  body header.site-nav .nav-container {
+    transition:
+      background-color 280ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 280ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 280ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  body header.site-nav.is-scrolled .nav-container,
+  body header.site-nav.is-compact .nav-container {
+    width: calc(100% - 20px) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 8px 9px !important;
+    gap: 8px !important;
+    border-radius: 16px !important;
+    background: rgba(10, 32, 48, 0.88) !important;
+    background-color: rgba(10, 32, 48, 0.88) !important;
+    background-image: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18) !important;
+    transition:
+      background-color 280ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 280ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 280ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-radius 280ms cubic-bezier(0.22, 1, 0.36, 1),
+      width 280ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 280ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+  }
+
+  body header.site-nav.is-scrolled .nav-container .mobile-navbar-actions a.nav-cta,
+  body header.site-nav .nav-container .mobile-navbar-actions a.nav-cta {
+    height: 42px !important;
+    min-height: 42px !important;
+    min-width: 96px !important;
+    padding: 0 14px !important;
+    font-size: 12.5px !important;
+  }
+
+  body header.site-nav.is-scrolled .nav-container .mobile-navbar-actions .hamburger-btn,
+  body header.site-nav .nav-container .mobile-navbar-actions .hamburger-btn {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  body header.site-nav .nav-container {
+    width: calc(100% - 32px) !important;
+  }
+
+  body header.site-nav .nav-container .mobile-navbar-actions a.nav-cta {
+    min-width: 0;
+    height: 40px;
+    min-height: 40px;
+    padding: 0 12px;
+    font-size: 12px;
+  }
+
+  body header.site-nav .nav-container .mobile-navbar-actions .hamburger-btn,
+  body header.site-nav .nav-container .hamburger-btn {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 12px;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   6. SIDE DRAWER — OVERLAY
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 980px) {
+  body .mobile-menu-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 2000 !important;
+    max-width: none !important;
+    max-height: none !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    border: 0 !important;
+    padding: 0 !important;
+    color: inherit;
+    display: flex !important;
+    align-items: stretch !important;
+    justify-content: flex-end !important;
+    background: rgba(3, 12, 20, 0.38) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    animation: cv-nav-overlay-in 250ms cubic-bezier(0.22, 1, 0.36, 1) both !important;
+  }
+
+  body .mobile-menu-overlay::backdrop {
+    background: transparent;
+  }
+
+  body .mobile-menu-overlay.is-closing {
+    animation: cv-nav-overlay-out 250ms cubic-bezier(0.22, 1, 0.36, 1) both !important;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   7. SIDE DRAWER — PANEL
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 980px) {
+  body .mobile-menu-panel {
+    width: calc(100% - 20px) !important;
+    max-width: 370px !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden !important;
+    overscroll-behavior: contain !important;
+    padding: 0 !important;
+    /* Lighter CareerVeda navy — dark blue, never pure black. */
+    background:
+      radial-gradient(circle at 100% 5%, rgba(22, 212, 208, 0.08), transparent 28%),
+      linear-gradient(165deg, #102D42 0%, #0D293C 48%, #0B2437 100%) !important;
+    border-left: 1px solid rgba(255, 255, 255, 0.09) !important;
+    border-radius: 0 !important;
+    box-shadow: -18px 0 45px rgba(0, 0, 0, 0.20) !important;
+    animation: cv-nav-panel-in 300ms cubic-bezier(0.22, 1, 0.36, 1) both !important;
+  }
+
+  body .mobile-menu-overlay.is-closing .mobile-menu-panel {
+    animation: cv-nav-panel-out 280ms cubic-bezier(0.22, 1, 0.36, 1) both !important;
+  }
+
+  body .mobile-menu-nav a,
+  body .mobile-menu-secondary a,
+  body .mobile-menu-foot > * {
+    animation: none !important;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   8. DRAWER HEADER — brand left, close right, hairline below
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 980px) {
+  body .mobile-menu-head {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 70px;
+    height: 70px;
+    flex: 0 0 auto;
+    padding: max(8px, env(safe-area-inset-top)) 16px 8px;
+    margin: 0;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+  }
+
+  body .mobile-menu-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    color: #ffffff !important;
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+  }
+
+  body .mobile-menu-brand .brand-icon {
+    height: 30px;
+    width: auto;
+    flex: none;
+  }
+
+  body .mobile-menu-brand .brand-name {
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  body .mobile-menu-brand .brand-tagline {
+    display: none;
+  }
+
+  body .mobile-menu-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    padding: 0;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    color: rgba(255, 255, 255, 0.92);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 180ms ease, border-color 180ms ease, transform 180ms ease;
+  }
+
+  body .mobile-menu-close svg {
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  body .mobile-menu-close:hover,
+  body .mobile-menu-close:focus-visible {
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(22, 212, 208, 0.25);
+    transform: scale(1.02);
+  }
+
+  body .mobile-menu-close:focus-visible {
+    outline: 2px solid rgba(22, 212, 208, 0.7);
+    outline-offset: 2px;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   9. SCROLLABLE CONTENT AREA
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 980px) {
+  body .mobile-menu-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 8px 10px 0;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+  }
+
+  body .mobile-menu-scroll::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  body .mobile-menu-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+  }
+
+  body .mobile-menu-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   10. NAVIGATION LIST — numbered items with grid alignment
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 980px) {
+  body .mobile-menu-nav {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 auto;
+    align-items: stretch !important;
+    padding: 0;
+  }
+
+  /* Row: number | title+desc | chevron — grid keeps every column aligned */
+  body .mobile-menu-nav a {
+    position: relative;
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr) 18px;
+    column-gap: 8px;
+    align-items: center;
+    min-height: 62px;
+    padding: 8px 12px;
+    margin: 0 4px;
+    border-radius: 14px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: rgba(255, 255, 255, 0.92) !important;
+    text-decoration: none;
+    transition: background-color 200ms ease, border-color 200ms ease, transform 200ms ease, color 200ms ease;
+  }
+
+  /* Subtle divider, indented so it starts beneath the title, not the number */
+  body .mobile-menu-nav a::after {
+    content: "";
+    position: absolute;
+    right: 12px;
+    bottom: 0;
+    left: 48px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.065);
+  }
+
+  body .mobile-menu-nav a:last-of-type::after {
+    display: none;
+  }
+
+  /* 2-3px cyan accent rail on the active row only */
+  body .mobile-menu-nav a::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: -4px;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 100%;
+    border-radius: 999px;
+    background: #16d4d0;
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+
+  /* Number column: aligned, quiet teal */
+  body .mobile-menu-index {
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: rgba(22, 212, 208, 0.75);
+    transition: color 200ms ease;
+  }
+
+  /* Title + description stacked in the middle column */
+  body .mobile-menu-label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  body .mobile-menu-title {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: rgba(255, 255, 255, 0.92);
+    white-space: nowrap;
+  }
+
+  body .mobile-menu-desc {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.3;
+    color: rgba(255, 255, 255, 0.56);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Chevron: small, right edge aligned across all rows */
+  body .mobile-menu-chevron {
+    width: 16px;
+    height: 16px;
+    justify-self: end;
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.38);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex: 0 0 auto;
+    transition: stroke 200ms ease;
+  }
+
+  /* Hover */
+  body .mobile-menu-nav a:hover {
+    background: rgba(255, 255, 255, 0.035);
+    transform: translateX(2px);
+  }
+
+  body .mobile-menu-nav a:hover .mobile-menu-title {
+    color: #ffffff;
+  }
+
+  body .mobile-menu-nav a:hover .mobile-menu-chevron {
+    stroke: #16d4d0;
+  }
+
+  /* Active press (touch) */
+  body .mobile-menu-nav a:active {
+    background: rgba(255, 255, 255, 0.06);
+    transform: scale(0.985);
+  }
+
+  /* Focus visible */
+  body .mobile-menu-nav a:focus-visible {
+    outline: 2px solid rgba(22, 212, 208, 0.7);
+    outline-offset: -2px;
+  }
+
+  /* ── Active route: dark teal tint, subtle border, left accent ── */
+  body .mobile-menu-nav a.is-active {
+    background: rgba(22, 212, 208, 0.075);
+    border: 1px solid rgba(22, 212, 208, 0.11);
+    color: #ffffff !important;
+  }
+
+  body .mobile-menu-nav a.is-active::before {
+    opacity: 1;
+  }
+
+  body .mobile-menu-nav a.is-active .mobile-menu-title {
+    color: #ffffff;
+  }
+
+  body .mobile-menu-nav a.is-active .mobile-menu-index {
+    color: #16d4d0;
+  }
+
+  body .mobile-menu-nav a.is-active .mobile-menu-chevron {
+    stroke: #16d4d0;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   11. BOTTOM CTA ZONE — Enroll + Talk to counsellor
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 980px) {
+  body .mobile-menu-foot {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: auto;
+    flex-shrink: 0;
+    padding: 12px 10px max(14px, env(safe-area-inset-bottom));
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  /* Primary: Enroll Now */
+  body .mobile-menu-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 48px;
+    height: 48px;
+    padding: 0 20px;
+    border: 0;
+    border-radius: 13px;
+    font-size: 14px;
+    font-weight: 750;
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #18c7a3 0%, #19aee8 100%) !important;
+    text-decoration: none;
+    box-shadow: 0 8px 22px rgba(20, 200, 180, 0.18);
+    transition: filter 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  }
+
+  body .mobile-menu-cta:hover,
+  body .mobile-menu-cta:focus-visible {
+    filter: brightness(1.06);
+    box-shadow: 0 10px 28px rgba(20, 200, 180, 0.24);
+    transform: translateY(-1px);
+  }
+
+  /* Secondary: Talk to a counsellor */
+  body .mobile-menu-call {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 46px;
+    height: 46px;
+    margin-top: 0;
+    padding: 0 20px;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 13px;
+    background: rgba(255, 255, 255, 0.045);
+    color: rgba(255, 255, 255, 0.82) !important;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 180ms ease, border-color 180ms ease;
+  }
+
+  body .mobile-menu-call:hover,
+  body .mobile-menu-call:focus-visible {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.14);
+  }
+
+  body .mobile-menu-call svg {
+    width: 16px;
+    height: 16px;
+    fill: #16d4d0;
+    opacity: 0.9;
+    flex: none;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   12. SMALL PHONES — keep density, never clip or overflow
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 480px) {
+  body .mobile-menu-scroll {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  body .mobile-menu-nav a {
+    min-height: 56px;
+    grid-template-columns: 26px minmax(0, 1fr) 18px;
+    column-gap: 7px;
+    padding: 7px 10px;
+    margin: 0 3px;
+  }
+
+  body .mobile-menu-title {
+    font-size: 15px;
+  }
+
+  body .mobile-menu-desc {
+    font-size: 11px;
+  }
+
+  body .mobile-menu-cta {
+    min-height: 46px;
+    height: 46px;
+    font-size: 13px;
+  }
+
+  body .mobile-menu-call {
+    min-height: 44px;
+    height: 44px;
+    font-size: 12.5px;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   13. LANDSCAPE PHONE — barely any vertical room
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) and (orientation: landscape) {
+  body .mobile-menu-nav a {
+    min-height: 48px;
+  }
+
+  body .mobile-menu-title {
+    font-size: 15px;
+  }
+
+  body .mobile-menu-desc {
+    display: none;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   14. REDUCED MOTION — snap states, no animation
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  body .mobile-menu-overlay,
+  body .mobile-menu-overlay.is-closing,
+  body .mobile-menu-panel,
+  body .mobile-menu-overlay.is-closing .mobile-menu-panel,
+  body .mobile-menu-nav a,
+  body .mobile-menu-foot > * {
+    animation: none !important;
+  }
+
+  body .mobile-menu-nav a {
+    transition: none !important;
+  }
+
+  body header.site-nav .nav-container .hamburger-btn .hamburger-line {
+    transition: none !important;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   15. KEYFRAMES — drawer slide, overlay fade, row stagger
+   ════════════════════════════════════════════════════════════════════════════ */
+
+@keyframes cv-nav-overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes cv-nav-overlay-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes cv-nav-panel-in {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes cv-nav-panel-out {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}

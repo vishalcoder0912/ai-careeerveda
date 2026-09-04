@@ -137,6 +137,6 @@ export default [
   // resolved by the k6 binary and are not npm packages.
   {
     files: ["tests/load/**/*.js"],
-    languageOptions: {globals: {__ENV: "readonly"}},
+    languageOptions: {globals: {__ENV: "readonly", __ITER: "readonly", __VU: "readonly"}},
   },
 ];

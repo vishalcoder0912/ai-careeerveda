@@ -5,40 +5,11 @@
  * The single grid is the CursorGrid canvas inside
  * components/background/CareerVedaBackground.jsx — fixed to the viewport at
  * squareSize = GRID_SIZE from src/config/grid.js, running behind the navbar
- * strip, the hero and every section below it. (It was the hero's ShapeGrid,
- * document-anchored; the fixed global lattice serves all of that without
- * resetting between sections.) Nothing drifts; scrolling away and back
- * reproduces the initial frame exactly.
- *
- * Scroll architecture (the "navbar shell" pattern):
- *
- *   .navbar-shell  → owns LAYOUT. Always reserves var(--navbar-height), so
- *                    the document never shifts and content is never covered
- *                    when the bar changes size. On the home page the hero is
- *                    pulled up beneath shell + bar, so whatever strip the
- *                    compressed bar frees is filled by the shared grid/glow —
- *                    the "breathing space" — never by a blank area.
- *
- *   header.site-nav → owns VISUALS. Fixed to the viewport top, it renders
- *                     STATE 1 (transparent, merged) or STATE 2 (.is-compact:
- *                     shorter, tighter, quiet glass) and animates between
- *                     them. SiteNavbar.jsx decides which, with direction
- *                     hysteresis on a rAF-throttled passive scroll listener.
- *
- * This file imports after mobile-responsiveness.css on purpose: it coordinates
- * geometry across files that declare navbar heights and hero padding, so for
- * exactly those properties it needs the final word.
+ * strip, the hero and every section below it.
  */
 
-/* The single grid measurement, mirrored from src/config/grid.js (GRID_SIZE =
-   the squareSize of the hero's canvas). Defined once so no consumer invents a
-   second spacing. Origin contract: lattice starts at 0 0 of the hero-shell
-   box, which this file pins to the top-left of the document. */
 :root {
   --grid-size: 90px;
-  /* Navbar sizing contract — STATE 1 / STATE 2 heights. Compact bar (78px),
-     docking 8px (to 70px) once scrolled. The shell always reserves
-     var(--navbar-height), so the document never shifts. */
   --navbar-height: 78px;
   --navbar-height-scrolled: 70px;
 }
@@ -66,9 +37,6 @@ body .navbar-shell {
   box-shadow: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  /* Shell prevents content from being covered by always reserving the
-     navbar height. On home page the hero is pulled up beneath shell + bar,
-     so the freed strip shows the shared background ("breathing room"). */
   position: relative;
 }
 
@@ -84,11 +52,7 @@ body .navbar-shell {
   }
 }
 
-/* The hero slides up behind shell + bar. Desktop hands back clamp(46px,5vw,
-   72px) of pre-existing padding; ≤980px hands back slate-color-system.css's
-   72px base — same totals as before the merge, so the eyebrow, headline and
-   robot keep their exact distance from the nav. Scoped to .spline-page
-   because only the home page has a hero. */
+/* Hero slides up behind shell + bar */
 body .spline-page .hero-shell {
   margin-top: calc(-1 * var(--navbar-height)) !important;
   padding-top: calc(clamp(46px, 5vw, 72px) + var(--navbar-height)) !important;
@@ -100,17 +64,12 @@ body .spline-page .hero-shell {
   }
 }
 
-/* ── STATE 1 — top of page: transparent window onto the frozen lattice ──────
-   Width, padding, and display are now managed by navbar-area.css.
-   This file only controls: position, z-index, min-height (shell height),
-   transparent background defaults, and the height/min-height transitions. */
+/* ── STATE 1 — top of page: transparent ──────────────────────────────────── */
 body .site-nav {
   position: sticky;
   top: 0;
   z-index: 1000;
-  /* Height is reserved by .navbar-shell; we only set min-height here. */
   min-height: var(--navbar-height);
-  /* Transparent — any fill would cut grid edges. */
   border: 0;
   background: transparent;
   box-shadow: none;
@@ -121,52 +80,15 @@ body .site-nav {
     min-height 420ms cubic-bezier(0.33, 1, 0.68, 1) !important;
 }
 
-/* The three-zone rhythm is now handled by flexbox in navbar-area.css via
-   .nav-container. Grid-specific justify-self rules are no longer needed. */
-
-/* Laptop/mid-size breakpoints are handled by navbar-area.css. */
-
-/* Spotlight moved to navbar-area.css (::before). The ::after here is removed
-   to avoid double spotlight effects. */
-
-/* ── STATE 2 — scrolled: compact dock ──────────────────────────────────────
-   Shorter than STATE 1 by design; the shell keeps reserving the full height,
-   so the freed strip below the bar shows the same background — controlled
-   breathing room, never a blank band and never covered content.
-
-   The dock stays TRANSPARENT, exactly like the top state: same clear window
-   onto the frozen lattice in both states, so the navbar can never read as a
-   separate surface anywhere on the page. Only geometry changes — height,
-   logo scale, spacing, button size. */
+/* ── STATE 2 — scrolled: compact dock ────────────────────────────────────── */
 body .site-nav.is-compact {
   height: var(--navbar-height-scrolled) !important;
   min-height: var(--navbar-height-scrolled) !important;
 }
 
-/* Navigation spacing and brand compression are now handled by navbar-area.css. */
-
-/* Navigation links are now styled by navbar-area.css with Area-inspired
-   clean text + teal underline indicator. The old chip/glass hover is removed. */
-
-/* CTA button is now styled by navbar-area.css with Area-inspired teal gradient. */
-
 /* ── Atmosphere: hero glow continued up into the navbar strip ──────────────
-   The hero's teal/cyan radial glows sat below the fold of the navbar, so the
-   strip the links occupy read flatter than the field right underneath it —
-   the "effect" stopped where the bar began.
-
-   Fix lives on the SHARED BACKGROUND, never on the bar: a soft multi-source
-   glow painted as ::after of the hero's grid layer (the one background
-   system), hugging the top of the document where the navbar floats. Because
-   the bar is fully transparent, the glow shows through it directly — the
-   navbar inherits the atmosphere instead of imitating it, and the same
-   teal/cyan ramp continues unbroken from behind the links into the headline.
-
-   Painted ABOVE the frozen lattice but BELOW every content layer (the layer's
-   own stacking keeps it under hero-word/vignette/hero-layout), pointer-inert,
-   and static — the blur rasterises once and nothing animates. The filter
-   blurs only this overlay's own gradients, never the grid lines under it. */
-body .spline-page .hero-grid-layer::after {
+   (moved from .hero-grid-layer::after which was removed) */
+body .spline-page .hero-shell::after {
   content: "";
   position: absolute;
   top: -22%;
@@ -174,6 +96,7 @@ body .spline-page .hero-grid-layer::after {
   right: -8%;
   height: 58%;
   pointer-events: none;
+  z-index: 0;
   background:
     radial-gradient(42% 62% at 24% 32%, rgba(45, 212, 191, 0.15), transparent 70%),
     radial-gradient(38% 58% at 76% 28%, rgba(56, 189, 248, 0.1), transparent 70%),
@@ -181,23 +104,7 @@ body .spline-page .hero-grid-layer::after {
   filter: blur(28px);
 }
 
-/* ── Stat strip: same contract as the bar ───────────────────────────────────
-   Content directly on the shared lattice — no panel, no border, no shadow, no
-   blur, transparent cells. Text colours untouched; slate-color-system.css
-   keeps owning them. */
-body .stat-strip {
-  border-color: transparent !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-
-body .stat-strip div {
-  background: transparent !important;
-}
-
-/* ── Reduced motion: stable layout, instant states, no spotlight ─────────── */
+/* ── Reduced motion ──────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   body .site-nav,
   body .site-nav nav,
@@ -207,13 +114,7 @@ body .stat-strip div {
   }
 }
 
-/* ── Footer ⇆ navbar left-edge alignment ────────────────────────────────────
-   The layout test (accessibility.spec.js "footer starts on the same line as
-   the navbar") requires .site-footer .brand to share the navbar brand's left
-   gutter. The navbar anchors its brand flush at the left edge of .nav-container,
-   which narrows at each breakpoint (navbar-area.css): min(1440px, 100% - 64px),
-   then 100% - 40px / 100% - 32px / 100% - 24px. The footer's padding-inline must
-   equal half of the leftover viewport so its brand lands on the same line. */
+/* ── Footer alignment ────────────────────────────────────────────────────── */
 body .site-footer {
   padding-inline: calc((100% - min(1440px, calc(100% - 64px))) / 2) !important;
 }

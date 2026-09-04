@@ -117,7 +117,7 @@ body header.site-nav.is-compact .nav-container {
 /* ── Container: LOGO | PILL | CTA — three zones, three grid columns ────────── */
 
 body header.site-nav .nav-container {
-  width: min(1440px, calc(100% - 64px)) !important;
+  width: min(calc(100% - 80px), 1440px) !important;
   max-width: none !important;
   height: var(--navbar-height, 78px);
   margin: 0 auto !important;
@@ -125,7 +125,7 @@ body header.site-nav .nav-container {
   display: grid !important;
   grid-template-columns: 1fr auto 1fr !important;
   align-items: center !important;
-  column-gap: clamp(20px, 2.5vw, 40px) !important;
+  column-gap: clamp(24px, 3vw, 36px) !important;
 }
 
 /* ── Zone 1: CareerVeda logo — independent, hard left ──────────────────────── */
@@ -384,19 +384,6 @@ body header.site-nav .nav-container .hamburger-btn {
     flex: 0 1 auto !important;
   }
 
-  /* Enroll Now + menu button sit side by side on the right, one matched pair:
-     margin-left:auto pushes both against the container's right edge. */
-  body header.site-nav .nav-container a.nav-cta {
-    margin-left: auto !important;
-    justify-self: auto !important;
-    grid-column: auto !important;
-    min-width: 110px !important;
-    height: 44px !important;
-    min-height: 44px !important;
-    padding: 0 18px !important;
-    font-size: 13px !important;
-  }
-
   body header.site-nav.is-scrolled .nav-container .brand,
   body header.site-nav.is-compact .nav-container .brand,
   body header.site-nav.is-scrolled .nav-container .site-nav-brand,
@@ -404,64 +391,67 @@ body header.site-nav .nav-container .hamburger-btn {
     transform: none !important;
   }
 
-  /* Menu button: same 44px glass square as the drawer's close button. */
-  body header.site-nav .nav-container .hamburger-btn {
-    display: flex !important;
-    flex: 0 0 auto !important;
-    align-items: center !important;
-    justify-content: center !important;
-    flex-direction: column !important;
-    gap: 5px !important;
-    width: 44px !important;
-    height: 44px !important;
-    padding: 0 !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    border-radius: 10px !important;
-    background: rgba(255, 255, 255, 0.08) !important;
-    cursor: pointer !important;
+}
+
+/* ══ MOBILE SCROLLED — inner glass pill, outer stays transparent ════════════
+   The header (<header>) remains fully transparent at every scroll depth — it
+   never paints a rectangle on mobile. Only the INNER nav-container receives
+   the glass surface, creating the compact floating-pill the spec calls for:
+
+     transparent ─────────────────────────────────────── (outer header)
+     ╭──────────────────────────────────────────────╮   (inner glass pill)
+     │ CareerVeda                     Enroll   ☰    │
+     ╰──────────────────────────────────────────────╯
+
+   Width narrows to calc(100% - 20px) so the pill floats with small side
+   gutters, reinforcing that it is a detached element rather than a full-width
+   bar. The outer .navbar-shell continues to reserve --navbar-height (64px) of
+   document space, so the shorter scrolled bar (56px) simply frees a strip of
+   the shared page background — no layout shift, no covered content. */
+
+@media (max-width: 980px) {
+  body header.site-nav.is-scrolled .nav-container,
+  body header.site-nav.is-compact .nav-container {
+    width: calc(100% - 20px) !important;
+    margin: 0 auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 8px 9px !important;
+    gap: 8px !important;
+    border-radius: 16px !important;
+    background: rgba(10, 32, 48, 0.88) !important;
+    background-color: rgba(10, 32, 48, 0.88) !important;
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18) !important;
+    transition:
+      width 280ms cubic-bezier(0.22, 1, 0.36, 1),
+      height 280ms cubic-bezier(0.22, 1, 0.36, 1),
+      background 280ms ease,
+      border-color 280ms ease,
+      border-radius 280ms ease,
+      box-shadow 280ms ease,
+      backdrop-filter 280ms ease,
+      -webkit-backdrop-filter 280ms ease !important;
   }
 
-  body header.site-nav .nav-container .hamburger-btn .hamburger-line {
-    display: block !important;
-    width: 18px !important;
-    height: 2px !important;
-    border-radius: 2px !important;
-    background: #ffffff !important;
-    transition: transform 0.3s ease, opacity 0.3s ease !important;
-  }
-
-  body header.site-nav .nav-container .hamburger-btn.is-open .hamburger-line:nth-child(1) {
-    transform: translateY(7px) rotate(45deg) !important;
-  }
-
-  body header.site-nav .nav-container .hamburger-btn.is-open .hamburger-line:nth-child(2) {
-    opacity: 0 !important;
-  }
-
-  body header.site-nav .nav-container .hamburger-btn.is-open .hamburger-line:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg) !important;
+  /* The brand mark shrinks slightly inside the pill to keep it from dominating
+     the tighter container. */
+  body header.site-nav.is-scrolled .nav-container .brand .brand-mark,
+  body header.site-nav.is-compact .nav-container .brand .brand-mark {
+    height: 34px !important;
+    max-width: 130px !important;
+    transition: height 280ms ease, max-width 280ms ease !important;
   }
 }
 
-/* ══ SMALL MOBILE ≤480px ═══════════════════════════════════════════════════ */
+/* ══ SMALL MOBILE ≤480px — tighter outer gutter, same glass pill ═══════════ */
 
 @media (max-width: 480px) {
   body header.site-nav .nav-container {
     width: calc(100% - 24px) !important;
     gap: 8px !important;
-  }
-
-  body header.site-nav .nav-container a.nav-cta {
-    min-width: 0 !important;
-    height: 40px !important;
-    min-height: 40px !important;
-    padding: 0 15px !important;
-    font-size: 12px !important;
-  }
-
-  body header.site-nav .nav-container .hamburger-btn {
-    width: 40px !important;
-    height: 40px !important;
   }
 }
 

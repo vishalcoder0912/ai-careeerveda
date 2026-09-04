@@ -41,10 +41,14 @@
   color: rgba(226, 232, 240, 0.68);
 }
 
-/* ---- window-scroll overrides for the ScrollStack shell ---- */
+/* ---- window-scroll overrides for the ScrollStack shell ----
+   The cards pin and stack against window scroll. `overflow: clip` CONTAINS the
+   translate3d transforms: a card that translates as it pins can never escape the
+   section and paint over the Consultation section that follows it. (clip, not
+   hidden, so no new scroll container is created.) */
 .press-stack.scroll-stack-scroller {
   height: auto;
-  overflow: visible;
+  overflow: clip;
   transform: none;
   will-change: auto;
 }
@@ -52,12 +56,13 @@
 .press-stack .scroll-stack-inner {
   width: min(900px, 100%);
   margin-inline: auto;
-  padding: 4vh 0 34vh;
+  padding: 8px 0 100px;
   min-height: 0;
 }
 
 /* ---- press card ---- */
 .press-card.scroll-stack-card {
+  display: block;
   height: auto;
   min-height: 14rem;
   width: 100%;
@@ -293,7 +298,7 @@
 
 @media (max-width: 640px) {
   .press-stack .scroll-stack-inner {
-    padding: 3vh 0 30vh;
+    padding: 8px 0 72px;
   }
 
   .press-card.scroll-stack-card {

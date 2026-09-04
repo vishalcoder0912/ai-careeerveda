@@ -9,6 +9,7 @@ import { useContentList } from "../hooks/useContent";
 import { adaptFaq, adaptAlumniReview } from "../lib/contentAdapters";
 import { faqSchema, useJsonLd } from "../lib/structuredData";
 import "../components/SplineLanding.css";
+import "../components/careerveda-hero-refinement.css";
 import "../components/cinematic-interactions.css";
 import "../components/shape-grid.css";
 import "./HomePage.css";
@@ -17,8 +18,8 @@ import "./HomePage.css";
    as the reader approaches it, so the first paint is the hero and the navigation
    rather than the whole page's worth of code. */
 const TrustedCompanies = lazy(() => import("../components/TrustedCompanies"));
-const RecommendedCourses1 = lazy(() => import("../components/Recommended/RecommendedCourses1"));
-const OutcomeStories = lazy(() => import("../components/OutcomeStories"));
+const RecommendedCourses = lazy(() => import("../components/Recommended/RecommendedCourses"));
+const LearnerOutcomes = lazy(() => import("../components/LearnerOutcomes"));
 const ConsultationForm = lazy(() => import("../components/ConsultationForm"));
 const PressSection = lazy(() => import("../components/PressSection"));
 
@@ -106,11 +107,11 @@ const HomePage = () => {
           there is nothing to shift, and the card images are loading="lazy"
           behind it. */}
       <DeferUntilVisible minHeight={600} margin="-120px">
-        <RecommendedCourses1 />
+        <RecommendedCourses />
       </DeferUntilVisible>
 
       <DeferUntilVisible minHeight={520}>
-        <OutcomeStories reviews={reviews} stats={stats} />
+        <LearnerOutcomes reviews={reviews} stats={stats} />
       </DeferUntilVisible>
        <DeferUntilVisible minHeight={520}>
         <TrustedCompanies />

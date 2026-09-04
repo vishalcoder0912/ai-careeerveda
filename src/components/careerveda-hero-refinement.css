@@ -1,0 +1,479 @@
+/* ---------------------------------------------------------------------------
+   CAREERVEDA HERO — PREMIUM EDITORIAL COMPOSITION
+   -----------------------------------------------
+   One wide editorial hero: LEFT copy / RIGHT Spline / transparent proof strip.
+   The content is unchanged; this file governs layout, alignment, type scale,
+   spacing, hierarchy, floating-label anchor zones and the stats placement.
+
+   Loaded AFTER SplineLanding.css (see HomePage.jsx) and written with
+   `body .spline-page`-level specificity so it outranks every earlier hero rule
+   (real-careerveda-palette.css, site-theme.css, professional-hero-sizing.css,
+   navbar-hero-merge.css, mobile-responsiveness.css, etc.) without touching any
+   other section of the site.
+
+   The navbar merges over the hero top via navbar-hero-merge.css (margin-top +
+   padding-top), so the hero's own box here is only its content region.
+---------------------------------------------------------------------------- */
+
+/* ── 0. Shared global rail ─────────────────────────────────────────────────
+   ONE horizontal alignment system for the hero content, the visual and the
+   stats — so the left edge of the eyebrow, H1, description, CTA and every
+   stat all share the same margin from the viewport. */
+:root {
+  --cv-rail: min(calc(100% - 80px), 1440px);
+}
+
+body .spline-page .hero-layout {
+  width: var(--cv-rail);
+  margin-inline: auto;
+}
+
+/* ── 1. Hero container: rich navy base, controlled height ─────────────────
+   Vertically balanced and naturally sized. Minimum 680px so the composition
+   stays roomy at 1440×900, capped at 760px on very large desks; it grows
+   naturally only if the content genuinely needs more. */
+body .spline-page .hero-shell {
+  min-height: 680px;
+  background:
+    radial-gradient(120% 90% at 78% 22%, rgba(19, 128, 146, 0.20), transparent 48%),
+    radial-gradient(70% 80% at 88% 40%, rgba(37, 99, 201, 0.18), transparent 40%),
+    radial-gradient(90% 70% at 14% 14%, rgba(12, 140, 214, 0.10), transparent 46%),
+    linear-gradient(135deg, #0b1330 0%, #0e1a3c 52%, #0a1128 100%) !important;
+}
+
+/* Left content is its own flex column so its band centers within the grid
+   cell (the two-column grid aligns both tracks with align-items:center). */
+body .spline-page .hero-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ── 1b. Kill the dark veil ────────────────────────────────────────────────
+   .hero-vignette was a near-opaque navy gradient painted ABOVE the hero content
+   (z-index 3), which made text, robot and grid look washed out. Drop it below
+   the content and reduce it to a barely-there corner edge. */
+body .spline-page .hero-vignette {
+  z-index: 0;
+  background: transparent !important;
+}
+
+/* ── 1c. Quiet the giant decorative wordmark ───────────────────────────────
+   The full-width "CAREERVEDA" text adds clutter. Keep it as a faint watermark
+   behind everything rather than an element of the composition. */
+body .spline-page .hero-word {
+  opacity: 0.06;
+}
+
+/* ── 2. Desktop hero grid: two columns, balanced and natural ─────────────── */
+body .spline-page .hero-layout {
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: clamp(28px, 3.5vw, 60px);
+  align-items: center;
+  /* Natural sizing: the copy and robot decide the height; this floor only guards
+     against a too-shallow hero. Leave room below for the stats proof layer so
+     the nav, hero, robot, labels and stats all fit the first viewport. */
+  min-height: calc(100svh - var(--navbar-height, 78px) - 170px);
+  padding-bottom: clamp(40px, 6vh, 72px);
+}
+
+/* ── 3. Left copy: compact editorial hierarchy ─────────────────────────────
+   Runs the full height of its grid cell and centers its content — no manual
+   top/transform positioning anywhere. */
+body .spline-page .hero-copy {
+  width: min(640px, 100%);
+  justify-self: start;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 0;
+}
+
+/* Eyebrow — small, editorial, even margin. */
+body .spline-page .hero-copy .eyebrow {
+  margin: 0 0 20px;
+  color: rgba(255, 255, 255, 0.72) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  line-height: 1.35 !important;
+  letter-spacing: 0.03em !important;
+  text-transform: uppercase;
+}
+
+/* Heading — visually dominant but controlled. White with a single teal accent
+   word (see the .hero-title-accent span in Hero.jsx). Wraps naturally; the
+   browser chooses line breaks. */
+body .spline-page .hero-copy h1 {
+  max-width: 620px;
+  margin: 0;
+  color: #ffffff !important;
+  font-size: clamp(50px, 4.8vw, 68px) !important;
+  font-weight: 800 !important;
+  line-height: 1.02 !important;
+  letter-spacing: -0.045em !important;
+  text-wrap: balance;
+}
+
+body .spline-page .hero-title-accent {
+  color: #16d4d0;
+  font-weight: 800;
+}
+
+/* Description — readable, even spacing, clear gap below the H1. */
+body .spline-page .hero-copy > p {
+  max-width: 580px;
+  margin: 22px 0 0;
+  color: rgba(226, 232, 240, 0.68) !important;
+  font-size: clamp(16px, 1.1vw, 18px) !important;
+  font-weight: 400 !important;
+  line-height: 1.66 !important;
+  letter-spacing: -0.01em;
+}
+
+/* Trust line — supporting sentence, subordinate to the description. */
+body .spline-page .hero-copy .trust-line,
+body .spline-page .trust-line {
+  display: block;
+  max-width: 580px;
+  margin: 18px 0 0;
+  color: rgba(255, 255, 255, 0.70) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  line-height: 1.5 !important;
+}
+
+body .spline-page .trust-line::before,
+body .spline-page .trust-line::after {
+  content: none !important;
+}
+
+/* ── 4. CTA buttons: compact, quiet pair ─────────────────────────────────── */
+body .spline-page .hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+body .spline-page .hero-actions .primary-action,
+body .spline-page .hero-actions .secondary-action {
+  min-height: 50px;
+  padding-inline: 24px;
+  border-radius: 14px;
+  font-size: 14px !important;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+body .spline-page .hero-actions .primary-action {
+  color: #ffffff;
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+  box-shadow: 0 14px 30px rgba(13, 148, 136, 0.26);
+}
+
+body .spline-page .hero-actions .secondary-action {
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: none;
+}
+
+/* ── 5. Robot: its own compact visual canvas ────────────────────────────────
+   The Spline fills this region and is centered inside it. Height scales fluidly
+   with the viewport; the robot is confined to this box so it can never touch
+   the right edge, the CTA, or the stats. Sized smaller so the visual stays a
+   supporting element rather than dominating the composition. */
+body .spline-page .hero-visual-shell {
+  position: relative;
+  width: 100%;
+  height: clamp(400px, 34vw, 520px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+/* Center the robot slightly right-of-center and slightly above vertical
+   center (55–60% horizontal, 48–52% vertical feel) — the grid ignores it since
+   this is the decorative layer; the iframe is the full box. */
+body .spline-page .spline-frame {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body .spline-page .spline-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Subtle local glow only — no fog, no cloud, no large blurred region. */
+body .spline-page .spline-glow {
+  inset: 18% 12% 0;
+  filter: blur(40px);
+  opacity: 0.5;
+  background:
+    radial-gradient(circle at 52% 46%, rgba(22, 212, 208, 0.06), transparent 46%);
+}
+
+/* ── 6. Floating labels: balanced ring around the robot ────────────────────
+   All positions are relative to .hero-visual-shell (the labels' inset:0
+   parent), not the body/window. They are decorative — smaller and lower
+   priority than the H1, Spline and CTA. */
+body .spline-page .ai-label {
+  min-height: 26px;
+  padding: 5px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.78);
+  background: rgba(10, 31, 47, 0.70);
+  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.18);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  font-size: 10px !important;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  animation: labelFloat 5s ease-in-out infinite;
+}
+
+/* Anchor zones (map to SplineHeroScene label order) — frame the robot with
+   25–55px of breathing room, no collisions:
+   1 Personalized Learning — upper left
+   2 Expert Mentorship     — upper right
+   7 Hiring Partners       — top center
+   3 Interview Support     — middle left
+   4 Placement Focus       — middle right
+   5 Verified Projects     — lower left
+   6 Career Programs       — lower right */
+body .spline-page .label-1 { left: 8%;  top: 34%;                       animation-delay: -1s;  }
+body .spline-page .label-2 { right: 8%; top: 34%;                       animation-delay: -1.7s; }
+body .spline-page .label-3 { left: 5%;  top: 56%;                       animation-delay: -2.4s; }
+body .spline-page .label-4 { right: 5%; top: 56%;                       animation-delay: -3.1s; }
+body .spline-page .label-5 { left: 16%; bottom: 16%;                    animation-delay: -3.8s; }
+body .spline-page .label-6 { right: 16%; bottom: 16%;                   animation-delay: -4.5s; }
+body .spline-page .label-7 { left: 40%; top: 8%;                        animation-delay: -5.2s; }
+
+/* Respect reduced motion: no floating labels. */
+@media (prefers-reduced-motion: reduce) {
+  body .spline-page .ai-label {
+    animation: none !important;
+  }
+}
+
+/* ── 7. Statistics: small, transparent proof strip ────────────────────────
+   A separate proof layer below the hero story + visual. It shares the exact
+   global rail (--cv-rail) with the hero content so all left and right edges
+   align. NO card, NO border, NO glass, NO shadow — transparent throughout. */
+body .spline-page .stat-strip {
+  position: relative;
+  left: auto;
+  bottom: auto;
+  transform: none;
+  width: var(--cv-rail);
+  margin: 32px auto 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0;
+  padding: 8px 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
+
+body .spline-page .stat-strip div {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 84px;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  text-align: center;
+}
+
+/* Subtle vertical separator on the right of each item except the last —
+   52–58px tall, centered, faint. Not full-height borders. */
+body .spline-page .stat-strip div:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 1px;
+  height: 54px;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+body .spline-page .stat-strip div:last-child::after {
+  display: none;
+}
+
+body .spline-page .stat-strip strong {
+  display: block;
+  color: #16d4d0;
+  font-size: clamp(30px, 2.4vw, 36px) !important;
+  font-weight: 800 !important;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-shadow: 0 0 20px rgba(22, 212, 208, 0.1);
+}
+
+body .spline-page .stat-strip span {
+  display: block;
+  margin-top: 6px;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: clamp(11px, 1vw, 12px) !important;
+  font-weight: 550;
+  line-height: 1.3;
+}
+
+/* ── 8. Tablet 861–1024: 3 + 2 stat columns, tighter hero ────────────────── */
+@media (max-width: 1024px) and (min-width: 861px) {
+  body .spline-page .hero-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: 28px;
+    padding-bottom: 40px;
+  }
+
+  body .spline-page .hero-visual-shell {
+    height: clamp(340px, 32vw, 440px);
+  }
+
+  body .spline-page .stat-strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: min(calc(100% - 48px), 1400px) !important;
+  }
+
+  body .spline-page .stat-strip div {
+    min-height: 72px;
+    padding: 12px 14px !important;
+  }
+
+  body .spline-page .stat-strip div:nth-child(3n)::after {
+    display: none;
+  }
+}
+
+/* ── 9. Mobile ≤ 860: stacked copy → robot → transparent stats ─────────────
+   Single-column layout: eyebrow, H1, description, trust, CTA, Spline, stats.
+   Two-column stats, final metric full width. */
+@media (max-width: 860px) {
+  body .spline-page .hero-shell {
+    min-height: 0;
+    max-height: none;
+  }
+
+  body .spline-page .hero-layout {
+    grid-template-columns: 1fr;
+    width: min(calc(100% - 40px), 560px);
+    gap: 24px;
+    min-height: 0;
+    padding-top: 20px;
+    padding-bottom: 8px;
+  }
+
+  body .spline-page .hero-copy {
+    width: 100%;
+    text-align: left;
+  }
+
+  body .spline-page .hero-copy h1 {
+    font-size: clamp(34px, 10vw, 46px) !important;
+    line-height: 1.04 !important;
+  }
+
+  body .spline-page .hero-visual-shell {
+    height: clamp(300px, 80vw, 400px);
+  }
+
+  /* Mobile shows five essential labels; hide the top center and middle
+     left/right ones to avoid an overcrowded ring on a small canvas. */
+  body .spline-page .label-3,
+  body .spline-page .label-7 {
+    display: none;
+  }
+
+  /* Stats become normal flow below the visual with breathing room. */
+  body .spline-page .stat-strip {
+    position: static;
+    transform: none;
+    width: min(calc(100% - 28px), 560px) !important;
+    margin: 28px auto 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding-top: 0;
+    padding-bottom: 4px;
+  }
+
+  body .spline-page .stat-strip div {
+    min-height: 72px;
+    padding: 12px 10px !important;
+  }
+
+  body .spline-page .stat-strip div:nth-child(odd)::after {
+    display: block;
+  }
+
+  body .spline-page .stat-strip div:nth-child(even)::after {
+    display: none;
+  }
+
+  body .spline-page .stat-strip div:nth-child(5) {
+    grid-column: 1 / -1;
+  }
+
+  body .spline-page .stat-strip div:nth-child(5)::after {
+    display: none;
+  }
+
+  body .spline-page .stat-strip strong {
+    font-size: clamp(22px, 6.5vw, 27px) !important;
+  }
+
+  body .spline-page .stat-strip span {
+    font-size: 11px !important;
+  }
+}
+
+/* ── 10. Small mobile refinements ───────────────────────────────────────── */
+@media (max-width: 560px) {
+  body .spline-page .hero-layout {
+    width: min(calc(100% - 28px), 440px);
+    padding-top: 16px;
+  }
+
+  body .spline-page .hero-copy .eyebrow {
+    font-size: 11.5px !important;
+  }
+
+  body .spline-page .hero-copy h1 {
+    font-size: clamp(28px, 8.5vw, 34px) !important;
+  }
+
+  body .spline-page .hero-copy > p {
+    font-size: 14px !important;
+  }
+
+  body .spline-page .hero-visual-shell {
+    height: clamp(240px, 70vw, 320px);
+  }
+
+  body .spline-page .hero-actions .primary-action,
+  body .spline-page .hero-actions .secondary-action {
+    flex: 1 1 100%;
+  }
+}

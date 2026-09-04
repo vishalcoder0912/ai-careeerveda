@@ -1,0 +1,558 @@
+/* ── Learner Outcomes — asymmetric career-proof wall ─────────────────────────
+ *
+ * Rebuild of the old outcome strip. Instead of a row of three metric tiles over
+ * a grid of equal testimonial cards, this section reads as ONE evidence system:
+ *
+ *    SCALE      — the metrics column (left anchor)
+ *    PROOF      — the learner stories (asymmetric wall)
+ *    MECHANISM  — the practical-learning line ("Projects create proof…")
+ *
+ * The header is centred; the proof below it is deliberately asymmetric so it
+ * feels curated rather than templated. All cards share the same border/radius/
+ * shadow material, featured being the one that carries a teal atmosphere and a
+ * glow. Shared alignment lines and gutters keep the asymmetry intentional, not
+ * random.
+ *
+ * This file is entirely self-contained responsive — it does not lean on the
+ * shared mobile-responsiveness.css overrides (which target the old
+ * .outcome-stories-* classes).
+ */
+
+.learner-outcomes {
+  position: relative;
+  width: min(calc(100% - 64px), 1380px);
+  margin-inline: auto;
+  margin-top: clamp(42px, 6vw, 76px);
+  padding-block: clamp(60px, 7vw, 104px);
+  color: #f1f5f9;
+}
+
+.learner-outcomes-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+
+.learner-header {
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  max-width: 700px;
+  margin: 0 auto clamp(40px, 4.5vw, 54px);
+  text-align: center;
+}
+
+.learner-eyebrow {
+  margin: 0 0 4px;
+  color: #2dd4bf;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.74rem;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.learner-header h2 {
+  max-width: 100%;
+  margin: 0;
+  color: #f8fafc;
+  font-family: "Manrope", "Inter", system-ui, sans-serif;
+  font-size: clamp(2.1rem, 4.2vw, 3.4rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.learner-highlight {
+  color: #2dd4bf;
+}
+
+.learner-lead {
+  max-width: 600px;
+  margin: 2px 0 0;
+  color: rgba(226, 232, 240, 0.72);
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: clamp(0.95rem, 1.4vw, 1.05rem);
+  line-height: 1.7;
+}
+
+/* ── The wall grid ──────────────────────────────────────────────────────── */
+
+.learner-wall {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+/* Metrics column: the left anchor, one full-height proof module. */
+.learner-metrics-block {
+  grid-column: span 4;
+  min-width: 0;
+}
+
+.learner-metrics {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  padding: clamp(20px, 2.4vw, 30px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 22px;
+  background: transparent;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.16);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.learner-metrics .learner-proof-label {
+  margin: 0 0 20px;
+}
+
+.learner-metric {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+  padding: clamp(18px, 2.2vw, 24px) 0;
+}
+
+.learner-metric + .learner-metric {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.learner-metric dt {
+  order: 2;
+  margin: 0;
+  color: rgba(203, 213, 225, 0.72);
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.learner-metric dd {
+  order: 1;
+  margin: 0;
+  color: #2dd4bf;
+  font-family: "Manrope", "Inter", system-ui, sans-serif;
+  font-size: clamp(2.25rem, 4vw, 3.2rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.learner-metric-value {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Featured story: spans the remaining 8 columns beside the metrics. */
+.learner-story--featured {
+  grid-column: span 8;
+  min-width: 0;
+}
+
+.learner-story--featured .learner-story-inner {
+  height: 100%;
+  min-height: 420px;
+  padding: clamp(24px, 3vw, 40px);
+  border: 1px solid rgba(45, 212, 191, 0.18);
+  border-radius: 26px;
+  background:
+    linear-gradient(145deg, rgba(22, 212, 208, 0.07), rgba(255, 255, 255, 0.025)),
+    radial-gradient(120% 130% at 12% 0%, rgba(45, 212, 191, 0.1), transparent 55%);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.16),
+    0 0 0 1px inset rgba(45, 212, 191, 0.02);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.learner-story--featured .learner-story-inner::before {
+  content: "\201C";
+  position: absolute;
+  top: 8px;
+  right: 26px;
+  color: rgba(45, 212, 191, 0.08);
+  font-family: Georgia, serif;
+  font-size: 9rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.learner-story--featured .learner-quote p {
+  color: rgba(241, 245, 249, 0.95);
+  font-family: "Manrope", "Inter", system-ui, sans-serif;
+  font-size: clamp(1.2rem, 1.8vw, 1.5rem);
+  font-weight: 500;
+  line-height: 1.6;
+  letter-spacing: -0.012em;
+}
+
+.learner-story--featured .learner-learner {
+  margin-top: auto;
+}
+
+/* Secondary stories: asymmetric spans in row two. */
+.learner-secondaries {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+}
+
+.learner-secondary-slot {
+  min-width: 0;
+}
+
+.learner-secondary-slot--syed {
+  grid-column: span 4;
+}
+
+.learner-secondary-slot--anjali {
+  grid-column: span 5;
+}
+
+.learner-secondary-slot--himani {
+  grid-column: span 3;
+}
+
+.learner-secondary-slot--medium {
+  grid-column: span 4;
+}
+
+.learner-story--secondary {
+  height: 100%;
+}
+
+.learner-story--secondary .learner-story-inner {
+  height: 100%;
+  min-height: 240px;
+  padding: clamp(20px, 2.2vw, 28px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.035);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.16);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: transform 0.28s ease, border-color 0.28s ease, box-shadow 0.28s ease;
+}
+
+.learner-story--secondary .learner-quote p {
+  color: rgba(226, 232, 240, 0.82);
+  font-family: "Manrope", "Inter", system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 400;
+  line-height: 1.65;
+}
+
+/* Shared card interior structure. */
+.learner-story-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.learner-card-meta {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.learner-chip {
+  display: inline-flex;
+  width: max-content;
+  max-width: 100%;
+  padding: 6px 10px;
+  border: 1px solid rgba(45, 212, 191, 0.22);
+  border-radius: 999px;
+  color: #99f6e4;
+  background: rgba(45, 212, 191, 0.08);
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.66rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.learner-quote-mark {
+  flex: 0 0 auto;
+  color: rgba(148, 163, 184, 0.12);
+  font-family: Georgia, serif;
+  font-size: 3.4rem;
+  line-height: 0.7;
+  margin-top: 4px;
+}
+
+.learner-quote {
+  margin: 0;
+}
+
+.learner-quote p {
+  margin: 0;
+}
+
+.learner-learner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.learner-avatar {
+  display: grid;
+  width: 56px;
+  height: 56px;
+  flex: 0 0 auto;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(45, 212, 191, 0.3);
+  border-radius: 50%;
+  color: #042f2e;
+  background: linear-gradient(180deg, #2dd4bf, #0d9488);
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.learner-story--featured .learner-avatar {
+  width: 72px;
+  height: 72px;
+  font-size: 0.9rem;
+}
+
+.learner-avatar__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.learner-learner-copy {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.learner-learner-copy strong,
+.learner-learner-copy small,
+.learner-learner-copy em {
+  font-family: "Inter", system-ui, sans-serif;
+  line-height: 1.3;
+  font-style: normal;
+}
+
+.learner-learner-copy strong {
+  color: #f8fafc;
+  font-size: 0.94rem;
+  font-weight: 700;
+}
+
+.learner-learner-copy small {
+  color: rgba(203, 213, 225, 0.68);
+  font-size: 0.8rem;
+}
+
+.learner-learner-copy em {
+  color: #2dd4bf;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.learner-story--secondary .learner-learner-copy em {
+  display: none;
+}
+
+/* ── Asymmetric accents (kept inside the CareerVeda palette) ────────────── */
+
+.learner-story[data-accent="blue"] .learner-chip,
+.learner-story[data-accent="blue"] .learner-learner-copy em {
+  color: #93c5fd;
+  border-color: rgba(96, 165, 250, 0.26);
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.learner-story[data-accent="cyan"] .learner-chip,
+.learner-story[data-accent="cyan"] .learner-learner-copy em {
+  color: #a5f3fc;
+  border-color: rgba(34, 211, 238, 0.26);
+  background: rgba(34, 211, 238, 0.08);
+}
+
+/* ── Hover: secondary cards lift; featured only glows ───────────────────── */
+
+@media (hover: hover) and (pointer: fine) {
+  .learner-story--secondary .learner-story-inner:hover {
+    transform: translateY(-3px);
+    border-color: rgba(45, 212, 191, 0.24);
+    box-shadow: 0 26px 62px rgba(0, 0, 0, 0.22);
+  }
+
+  .learner-story--featured .learner-story-inner {
+    transition: box-shadow 0.28s ease, border-color 0.28s ease;
+  }
+
+  .learner-story--featured .learner-story-inner:hover {
+    border-color: rgba(45, 212, 191, 0.28);
+    box-shadow:
+      0 20px 60px rgba(0, 0, 0, 0.16),
+      0 0 40px rgba(45, 212, 191, 0.1);
+  }
+}
+
+/* ── Tablet 768–1099 ────────────────────────────────────────────────────── */
+
+@media (max-width: 1099px) and (min-width: 768px) {
+  .learner-wall {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .learner-metrics-block {
+    grid-column: 1 / -1;
+  }
+
+  .learner-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 16px;
+  }
+
+  .learner-metrics .learner-proof-label {
+    grid-column: 1 / -1;
+  }
+
+  .learner-metric:nth-child(3) {
+    grid-column: 1 / -1;
+    padding-bottom: 4px;
+  }
+
+  .learner-story--featured {
+    grid-column: 1 / -1;
+  }
+
+  .learner-secondaries {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .learner-secondary-slot--syed {
+    grid-column: span 1;
+  }
+
+  .learner-secondary-slot--anjali {
+    grid-column: span 1;
+  }
+
+  .learner-secondary-slot--himani {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ── Mobile ≤ 767 ───────────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .learner-outcomes {
+    width: min(100% - 24px, 1180px);
+    padding-block: clamp(48px, 8vw, 72px);
+  }
+
+  .learner-header {
+    gap: 16px;
+    text-align: left;
+    justify-items: start;
+    margin-bottom: 34px;
+  }
+
+  .learner-lead {
+    text-align: left;
+  }
+
+  .learner-wall {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .learner-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 14px;
+    padding: 18px;
+  }
+
+  .learner-metrics .learner-proof-label {
+    grid-column: 1 / -1;
+    margin-bottom: 8px;
+  }
+
+  .learner-metric {
+    padding: 16px 0;
+  }
+
+  .learner-metric:nth-child(3) {
+    grid-column: 1 / -1;
+    padding-bottom: 2px;
+  }
+
+  .learner-story--featured .learner-story-inner {
+    min-height: 0;
+    padding: 22px;
+    border-radius: 22px;
+  }
+
+  /* The secondary reviews read comfortably as a stacked list on a phone —
+     the asymmetric 4/5/3 spans only exist where the columns are wide enough
+     to keep two or three testimonials side by side. Full width, in order. */
+  .learner-secondaries {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .learner-secondary-slot--syed,
+  .learner-secondary-slot--anjali,
+  .learner-secondary-slot--himani,
+  .learner-secondary-slot--medium {
+    grid-column: auto;
+  }
+
+  .learner-story--secondary .learner-story-inner {
+    min-height: 0;
+    padding: 20px;
+  }
+
+  .learner-story--featured .learner-quote p {
+    font-size: 1.1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .learner-story--secondary .learner-story-inner,
+  .learner-story--featured .learner-story-inner {
+    transition: none;
+  }
+
+  .learner-story--secondary .learner-story-inner:hover {
+    transform: none;
+  }
+}

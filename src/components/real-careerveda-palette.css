@@ -175,7 +175,7 @@ body .rating-row strong {
 
 body .stat-strip {
   width: min(1360px, calc(100% - 72px));
-  background: rgba(23, 32, 51, 0.9);
+  background: transparent;
 }
 
 body .light-section,

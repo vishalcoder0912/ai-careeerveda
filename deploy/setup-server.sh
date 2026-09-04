@@ -33,10 +33,10 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-echo "==> Installing system packages (nginx, git, curl)"
+echo "==> Installing system packages (nginx, git, curl, fail2ban, jq)"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq
-apt-get install -y -qq curl git nginx >/dev/null
+apt-get install -y -qq curl git nginx fail2ban jq >/dev/null
 
 echo "==> Installing Node.js 22"
 if ! command -v node >/dev/null 2>&1 || [ "$(node -v | cut -dv -f2 | cut -d. -f1)" -lt 22 ]; then
@@ -116,6 +116,52 @@ ln -sf /etc/nginx/sites-available/careerveda /etc/nginx/sites-enabled/careerveda
 nginx -t
 systemctl reload nginx
 
+# ── fail2ban (SSH + HTTP brute-force protection) ───────────────────────────────
+echo "==> Configuring fail2ban"
+cat > /etc/fail2ban/jail.local <<'JAIL'
+[DEFAULT]
+bantime = 1h
+findtime = 10m
+maxretry = 5
+
+[sshd]
+enabled = true
+port = ssh,22
+logpath = /var/log/auth.log
+maxretry = 3
+bantime = 2h
+
+[nginx-limit-req]
+enabled = true
+port = http,https
+filter = nginx-limit-req
+logpath = /var/log/nginx/error.log
+maxretry = 3
+findtime = 10m
+bantime = 1h
+JAIL
+
+cat > /etc/fail2ban/filter.d/nginx-limit-req.conf <<'FILTER'
+[Definition]
+failregex = limiting requests, excess:.*by client \S+ error_code=429
+ignoreregex = health|ready
+FILTER
+
+systemctl enable --now fail2ban
+fail2ban-client reload 2>/dev/null || true
+echo "    fail2ban configured: 3 failed SSH logins or rate-limit triggers → 1-2h ban"
+
+# ── Backup cron ────────────────────────────────────────────────────────────────
+echo "==> Installing backup cron jobs"
+if command -v mongodump >/dev/null 2>&1 || [ -x "$(command -v mongodump 2>/dev/null)" ]; then
+  # Database backup: daily at 3am
+  (crontab -l 2>/dev/null | grep -v 'careerveda/backup' || true; \
+   echo "0 3 * * * $APP_DIR/deploy/backup.sh all >> /var/backups/careerveda/cron.log 2>&1") | crontab -
+  echo "    Daily 3am backup scheduled"
+else
+  echo "    WARNING: mongodump not found — install mongodb-database-tools for DB backups"
+fi
+
 # ── First deploy ───────────────────────────────────────────────────────────────
 echo "==> Running first deploy (build + start) — this takes a few minutes"
 FORCE=1 "$APP_DIR/deploy/deploy.sh"
@@ -133,6 +179,12 @@ cat <<EOF
   Admin  : http://${VM_IP}:8081/
   API    : http://${VM_IP}/api/v1/...   (health: http://${VM_IP}/health)
 
+  Security hardening applied:
+   - fail2ban         → 3 failed logins = 2h ban (SSH + HTTP rate-limit)
+   - nginx hardening  → connection/rate limits, bad bot blocking
+   - Express hardening→ global + per-route rate limits, slow-down, IP blocklist
+   - Daily 3am backup → /var/backups/careerveda
+
  The autodeploy timer now watches origin/main every 2 minutes:
  push to main → live within ~2 minutes, automatically.
 
@@ -140,6 +192,8 @@ cat <<EOF
    journalctl -u careerveda-backend -f          # API logs
    journalctl -u careerveda-autodeploy -n 50    # last deploy log
    sudo systemctl list-timers careerveda-*      # next pull time
+   fail2ban-client status sshd                   # blocked IPs
+   fail2ban-client status nginx-limit-req        # rate-limit bans
 
  If the page does not load yet, open the firewall once:
    gcloud compute firewall-rules create careerveda-allow-http \\

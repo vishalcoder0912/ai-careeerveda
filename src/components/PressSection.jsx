@@ -57,10 +57,13 @@ const OutletChip = ({source}) => {
   );
 };
 
-// The coverage cards stack and scale as the page scrolls past them, so the
-// section reads as one deck being dealt rather than a list of press clippings.
-// ScrollStack drives that off window scroll, which means this wants to be a
-// full-width section with room above and below it — not a card in a grid.
+// The coverage cards deck and pin as the page scrolls past them, so the section
+// reads as a prized stack being dealt rather than a list of clippings. This uses
+// a deliberately mild, readable stack: near-full scale, no blur, and a very small
+// per-card tilt, so the reveal stays a flourish and never makes the copy hard to
+// read. The scroll-stack-scroller is clipped (see press-section.css) so a card
+// translating as it pins can never escape the section and paint over the
+// Consultation section that follows it.
 const PressSection = () => (
   <section id="press" className="press-section">
     <Reveal className="press-section-heading">
@@ -75,12 +78,13 @@ const PressSection = () => (
     <ScrollStack
       className="press-stack"
       useWindowScroll
-      itemDistance={80}
-      itemScale={0.02}
-      baseScale={0.88}
-      stackPosition="18%"
-      scaleEndPosition="8%"
-      blurAmount={1}
+      itemDistance={90}
+      itemStackDistance={18}
+      itemScale={0.012}
+      baseScale={0.96}
+      stackPosition="22%"
+      scaleEndPosition="10%"
+      blurAmount={0}
     >
       {pressArticles.map((article) => (
         <ScrollStackItem key={article.id} itemClassName="press-card">
