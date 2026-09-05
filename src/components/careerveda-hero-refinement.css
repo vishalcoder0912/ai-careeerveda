@@ -224,7 +224,7 @@ body .spline-page .spline-scene {
      runs after scale, so the 8% pushes relative to the scaled box width. With the
      robot centred and scaled down it sits between the outer label ring instead of
      crowding the left labels. */
-  transform: translateX(8%) scale(0.8) !important;
+  transform: translateX(8%) scale(0.72) !important;
   transform-origin: center center !important;
   z-index: 1;
 }
@@ -235,7 +235,7 @@ body .spline-page .spline-poster {
   z-index: 1;
 }
 body .spline-page .spline-poster img {
-  transform: scale(0.8);
+  transform: scale(0.72);
   transform-origin: center center;
 }
 
