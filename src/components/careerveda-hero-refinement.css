@@ -21,6 +21,17 @@
    stat all share the same margin from the viewport. */
 :root {
   --cv-rail: min(calc(100% - 72px), 1280px);
+
+  /* The .hero-spline-stage coordinate system — one place to retune the whole
+     robot + label orbit. The stage is the fixed box; --cv-spline is the size of
+     the centered robot square; the --label-* values anchor the six orbital
+     zones in plain stage pixels. */
+  --cv-stage-h: 540px;
+  --cv-spline: 400px;
+  --label-top: 34px;
+  --label-top-side: 148px;
+  --label-top-mid: 300px;
+  --label-bottom: 62px;
 }
 
 body .spline-page .hero-layout {
@@ -183,89 +194,108 @@ body .spline-page .hero-actions .secondary-action {
   box-shadow: none;
 }
 
-/* ── 5. Robot: its own compact visual canvas ────────────────────────────────
-   The Spline fills this region and is centered inside it. Height scales fluidly
-   with the viewport; the robot is confined to this box so it can never touch
-   the right edge, the CTA, or the stats. Sized smaller so the visual stays a
-   supporting element rather than dominating the composition. */
-body .spline-page .hero-visual-shell {
+/* ── 5. Robot: its own centered stage ───────────────────────────────────────
+   One coordinate system controls the robot and its labels together.
+   .hero-spline-stage is the fixed reference box; the Spline scene sits at its
+   exact centre in a --cv-spline square, and every label is anchored to the
+   stage in plain top/right/bottom/left pixels — never to the page, never to
+   the iframe, never with translate compensation — so the robot and the labels
+   live in two separate zones by geometry, not by masking overlap. A 400px
+   square inside a 620px stage leaves a ring around the robot that is the
+   labels' exclusive home. */
+body .spline-page .hero-visual-shell.hero-spline-stage {
   position: relative;
-  width: min(100%, 480px);
-  max-width: 480px;
-  height: clamp(320px, 30vh, 420px);
+  width: min(100%, 620px);
+  max-width: 620px;
+  height: var(--cv-stage-h);
+  min-height: 0 !important;
   margin-inline: auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: visible;
+  overflow: visible !important;
+  z-index: 1;
 }
 
-/* Center the robot inside its column — not pinned to the right edge. */
-body .spline-page .spline-frame {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* The scene's box: the live iframe, sized as an even square so the robot reads
+   centred. translate(-50%,-50%) centers it without inset arithmetic. */
+body .spline-page .spline-frame.hero-spline-scene {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  inset: auto !important;
+  width: var(--cv-spline) !important;
+  height: var(--cv-spline) !important;
+  transform: translate(-50%, -50%) !important;
+  transform-origin: center center !important;
+  overflow: visible !important;
+  z-index: 2 !important;
 }
 
-body .spline-page .spline-scene {
-  position: absolute;
-  inset: 0;
+/* The embed fills its square exactly — no scale, no per-axis stretch, no
+   8% camera-shift guess (that was tuned for a full-column box that no longer
+   exists). */
+body .spline-page .spline-frame.hero-spline-scene .spline-scene {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  transform: none !important;
+  z-index: 1;
+}
+
+/* The reduced-motion / save-data still stands in the same square, framed the
+   same way, so the swap is not a different composition. */
+body .spline-page .spline-poster {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  inset: auto !important;
+  width: var(--cv-spline) !important;
+  height: var(--cv-spline) !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 1;
+  pointer-events: none;
+}
+body .spline-page .spline-poster img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  /* !important to override image-position-fix.css's transform: none and desktop
-     translateX(8%) on the same iframe — this file is the last word on the hero.
-
-     The Spline scene renders the robot LEFT of the box centre (image-position-fix
-     measured the head-and-torso mass ~8% off), so the centering push is kept via
-     translateX(8%) and combined with the size reduction. Order matters: translate
-     runs after scale, so the 8% pushes relative to the scaled box width. With the
-     robot centred and scaled down it sits between the outer label ring instead of
-     crowding the left labels. */
-  transform: translateX(8%) scale(0.72) !important;
-  transform-origin: center center !important;
-  z-index: 1;
-}
-
-/* Keep the fallback still the same size/shape as the live robot so reduced-motion
-   and save-data visitors see the identical (smaller, centered) composition. */
-body .spline-page .spline-poster {
-  z-index: 1;
-}
-body .spline-page .spline-poster img {
-  transform: scale(0.72);
-  transform-origin: center center;
+  object-position: center;
 }
 
 /* Subtle local glow only — no fog, no cloud, no large blurred region. */
 body .spline-page .spline-glow {
-  inset: 18% 12% 0;
+  inset: 14% 12% 0;
   filter: blur(40px);
   opacity: 0.5;
   background:
     radial-gradient(circle at 52% 46%, rgba(22, 212, 208, 0.04), transparent 46%);
 }
 
-/* ── 6. Floating labels: balanced ring around the robot ────────────────────
-   All positions are relative to .hero-visual-shell (the labels' inset:0
-   parent), not the body/window. They are decorative supporting UI, never the
-   hero: smaller than the headline, no glow, kept clear of the robot's face and
-   body. pointer-events are off so they can never block the CTA or scrolling. */
+/* ── 6. Floating labels: balanced orbit around the stage ────────────────────
+   Every label is absolute and anchored to the stage's coordinate box in plain
+   top/right/bottom/left (only the centered top label uses translateX, and only
+   as its axis pin). The positions ride on the --label-* variables above so the
+   whole ring retunes from one place. pointer-events off: they are decoration,
+   not controls, and must never block the robot or the page. */
 body .spline-page .floating-labels {
-  z-index: 2;
+  z-index: 4;
   pointer-events: none;
 }
 
 body .spline-page .ai-label {
+  position: absolute;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
   min-height: 28px;
-  padding: 9px 14px;
+  padding: 8px 13px;
   border: 1px solid rgba(255, 255, 255, 0.11);
   border-radius: 999px;
-  color: rgba(255, 255, 255, 0.90);
-  background: rgba(8, 31, 47, 0.76);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(8, 31, 47, 0.82);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   font-size: 13px !important;
@@ -274,26 +304,32 @@ body .spline-page .ai-label {
   letter-spacing: 0.01em;
   white-space: nowrap;
   pointer-events: none;
-  transition: opacity 200ms ease, transform 200ms ease;
+  transition: opacity 200ms ease;
   animation: labelFloat 5s ease-in-out infinite;
 }
 
-/* Anchor zones (map to SplineHeroScene label order) — frame the smaller robot
-   with clear separation so no label covers its face or body and none overlap:
-   1 Personalized Learning — left of robot
-   2 Expert Mentorship     — upper right
-   7 Hiring Partners       — top center
-   3 Interview Support     — lower left
-   4 Placement Focus       — right / lower right
-   5 Verified Projects     — below left
-   6 Career Programs       — lower right */
-body .spline-page .label-1 { left: 2%;  top: 32%;                       animation-delay: -1s;  }
-body .spline-page .label-2 { right: 2%; top: 26%;                       animation-delay: -1.7s; }
-body .spline-page .label-3 { left: 2%;  top: 62%;                       animation-delay: -2.4s; }
-body .spline-page .label-4 { right: 2%; top: 56%;                       animation-delay: -3.1s; }
-body .spline-page .label-5 { left: 8%;  bottom: 4%;                     animation-delay: -3.8s; }
-body .spline-page .label-6 { right: 8%; bottom: 4%;                     animation-delay: -4.5s; }
-body .spline-page .label-7 { left: 36%; top: 2%;                        animation-delay: -5.2s; }
+/* The six orbital zones. The top pair and middle pair share one vertical level
+   each; the bottom pair shares one baseline. The centered top label gets its
+   own keyframes so the translateX(-50%) axis pin survives the float loop. */
+body .spline-page .label-7.hero-label--hiring { top: var(--label-top); left: 50%; transform: translateX(-50%); animation: labelFloatCentered 5s ease-in-out infinite; animation-delay: -5.2s; }
+body .spline-page .label-1.hero-label--personalized { top: var(--label-top-side); left: 0; animation-delay: -1s; }
+body .spline-page .label-2.hero-label--mentorship { top: var(--label-top-side); right: 0; animation-delay: -1.7s; }
+body .spline-page .label-3.hero-label--interview { top: var(--label-top-mid); left: 0; animation-delay: -2.4s; }
+body .spline-page .label-4.hero-label--placement { top: var(--label-top-mid); right: 0; animation-delay: -3.1s; }
+body .spline-page .label-5.hero-label--verified { bottom: var(--label-bottom); left: var(--label-bottom); animation-delay: -3.8s; }
+body .spline-page .label-6.hero-label--career { bottom: var(--label-bottom); right: var(--label-bottom); animation-delay: -4.5s; }
+
+/* The labelFloat loop that rides on translateX(-50%) without dropping the pin. */
+@keyframes labelFloatCentered {
+  0%,
+  100% {
+    transform: translateX(-50%) translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translateX(-50%) translate3d(0, -10px, 0);
+  }
+}
 
 /* Respect reduced motion: no floating labels. */
 @media (prefers-reduced-motion: reduce) {
@@ -382,9 +418,19 @@ body .spline-page .stat-strip span {
     padding-bottom: 40px;
   }
 
-  body .spline-page .hero-visual-shell {
-    height: clamp(180px, 18vw, 240px);
-    width: min(100%, 360px);
+  body .spline-page .hero-visual-shell.hero-spline-stage {
+    --cv-stage-h: 470px;
+    --cv-spline: 360px;
+    --label-top: 26px;
+    --label-top-side: 132px;
+    --label-top-mid: 260px;
+    --label-bottom: 48px;
+    height: var(--cv-stage-h);
+    width: min(100%, 560px);
+  }
+
+  body .spline-page .spline-glow {
+    inset: 15% 13% 0;
   }
 
   body .spline-page .ai-label {
@@ -406,9 +452,32 @@ body .spline-page .stat-strip span {
   }
 }
 
+/* ── 8b. Laptop 1025–1199: desktop grid, slightly tighter stage ──────────── */
+@media (min-width: 1025px) and (max-width: 1199px) {
+  body .spline-page .hero-visual-shell.hero-spline-stage {
+    --cv-stage-h: 500px;
+    --cv-spline: 380px;
+    --label-top: 30px;
+    --label-top-side: 140px;
+    --label-top-mid: 275px;
+    --label-bottom: 54px;
+    height: var(--cv-stage-h);
+  }
+
+  body .spline-page .spline-glow {
+    inset: 15% 12% 0;
+  }
+
+  body .spline-page .ai-label {
+    font-size: 12px !important;
+  }
+}
+
 /* ── 9. Mobile ≤ 860: stacked copy → robot → transparent stats ─────────────
    Single-column layout: eyebrow, H1, description, trust, CTA, Spline, stats.
-   Two-column stats, final metric full width. */
+   Each label is still anchored to the stage; the stage itself just
+   shrinks. Only the three most important labels survive so the small canvas
+   stays clear. Two-column stats, final metric full width. */
 @media (max-width: 860px) {
   body .spline-page .hero-shell {
     min-height: 0;
@@ -424,9 +493,26 @@ body .spline-page .stat-strip span {
     padding-bottom: 8px;
   }
 
+  /* Copy first, robot below it — SplineLanding.css pins the shell to grid-row 1
+     and the copy to grid-row 2 for the stacked hero; undo that so the phone reads
+     heading → copy → CTA → robot → stats. */
   body .spline-page .hero-copy {
+    grid-row: 1 !important;
     width: 100%;
     text-align: left;
+    padding-top: 0 !important;
+  }
+
+  body .spline-page .hero-visual-shell.hero-spline-stage {
+    grid-row: 2 !important;
+    --cv-stage-h: 400px;
+    --cv-spline: 300px;
+    --label-top: 18px;
+    --label-top-side: 120px;
+    --label-top-mid: 240px;
+    --label-bottom: 44px;
+    width: min(100%, 360px);
+    height: var(--cv-stage-h);
   }
 
   body .spline-page .hero-copy h1 {
@@ -434,14 +520,19 @@ body .spline-page .stat-strip span {
     line-height: 1.04 !important;
   }
 
-  body .spline-page .hero-visual-shell {
-    height: clamp(180px, 52vw, 240px);
-    width: min(100%, 320px);
+  body .spline-page .ai-label {
+    font-size: 10px !important;
+    padding: 7px 10px;
+    min-height: 24px;
   }
 
-  /* Mobile shows only the most important labels around the robot — Hiring
-     Partners, Expert Mentorship, Placement Focus — to avoid clutter on a small
-     canvas. The rest are hidden. */
+  /* mobile-responsiveness.css:1100 hides the whole label rail below 980px;
+     the mobile stage has room for exactly three, so bring the rail back and
+     hide the rest. */
+  body .spline-page .floating-labels {
+    display: block !important;
+  }
+
   body .spline-page .label-1,
   body .spline-page .label-3,
   body .spline-page .label-5,
@@ -449,10 +540,16 @@ body .spline-page .stat-strip span {
     display: none;
   }
 
-  /* Reposition the three visible labels around the smaller mobile robot. */
-  body .spline-page .label-7 { left: 34%; top: 2%; }
-  body .spline-page .label-2 { right: 2%; top: 34%; }
-  body .spline-page .label-4 { right: 2%; top: 60%; }
+  body .spline-page .label-2.hero-label--mentorship {
+    top: 120px;
+    right: 6px;
+  }
+
+  body .spline-page .label-4.hero-label--placement {
+    top: auto;
+    right: 6px;
+    bottom: 48px;
+  }
 
   /* Stats become normal flow below the visual with breathing room. */
   body .spline-page .stat-strip {
@@ -514,9 +611,11 @@ body .spline-page .stat-strip span {
     font-size: 14px !important;
   }
 
-  body .spline-page .hero-visual-shell {
-    height: clamp(170px, 54vw, 220px);
-    width: min(100%, 280px);
+  body .spline-page .hero-visual-shell.hero-spline-stage {
+    --cv-stage-h: 360px;
+    --cv-spline: 270px;
+    width: min(100%, 320px);
+    height: var(--cv-stage-h);
   }
 
   body .spline-page .ai-label {
@@ -525,11 +624,16 @@ body .spline-page .stat-strip span {
     min-height: 24px;
   }
 
-  /* Reposition the three mobile-visible labels around the smaller robot with
-     clear separation from the edges and the robot body. */
-  body .spline-page .label-7 { left: 32%; top: 2%; }
-  body .spline-page .label-2 { right: 2%; top: 36%; }
-  body .spline-page .label-4 { right: 2%; top: 62%; }
+  /* Nudge the two right-hand labels in with the smaller stage. */
+  body .spline-page .label-2.hero-label--mentorship {
+    top: 104px;
+    right: 4px;
+  }
+
+  body .spline-page .label-4.hero-label--placement {
+    right: 4px;
+    bottom: 40px;
+  }
 
   body .spline-page .hero-actions .primary-action,
   body .spline-page .hero-actions .secondary-action {

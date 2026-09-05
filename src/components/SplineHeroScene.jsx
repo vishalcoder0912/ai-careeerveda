@@ -10,6 +10,19 @@ const labels = [
   "Hiring Partners",
 ];
 
+// Label ↔ stage-zone map, in the order labels are listed above. The stage
+// (careerveda-hero-refinement.css) positions the labels around the centered
+// robot; these names hook each label to one zone of that coordinate system.
+const labelZones = [
+  "hero-label--personalized",
+  "hero-label--mentorship",
+  "hero-label--interview",
+  "hero-label--placement",
+  "hero-label--verified",
+  "hero-label--career",
+  "hero-label--hiring",
+];
+
 // Shown only to the visitors listed in shouldSkipScene() below, who get no live
 // scene either way. A still of the same robot, from the same scene, in the same
 // place: 25 KB, and it keeps its alpha channel, so the hero's gradient and glow
@@ -176,7 +189,7 @@ const SplineHeroScene = ({sceneUrl}) => {
   return (
     <div
       ref={shellRef}
-      className="hero-visual-shell"
+      className="hero-visual-shell hero-spline-stage"
       role="img"
       aria-label="CareerVeda industry-led career and placement system"
     >
@@ -194,7 +207,7 @@ const SplineHeroScene = ({sceneUrl}) => {
       ) : (
         shouldRender && (
           <div
-            className={`spline-frame${isInteractive ? " is-interactive" : ""}`}
+            className={`spline-frame hero-spline-scene${isInteractive ? " is-interactive" : ""}`}
             aria-hidden="true"
           >
             <iframe
@@ -243,7 +256,10 @@ const SplineHeroScene = ({sceneUrl}) => {
 
       <div className="floating-labels" aria-hidden="true">
         {labels.map((label,index) => (
-          <span className={`ai-label label-${index + 1}`} key={label}>
+          <span
+            className={`ai-label label-${index + 1} hero-label ${labelZones[index]}`}
+            key={label}
+          >
             {label}
           </span>
         ))}

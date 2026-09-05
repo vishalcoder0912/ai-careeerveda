@@ -51,6 +51,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "fast-check": "^4.9.0",
     "jest": "^30.4.2",
     "mongodb-memory-server": "^10.1.4",
     "supertest": "^7.0.0",
