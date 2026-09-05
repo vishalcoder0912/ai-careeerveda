@@ -42,7 +42,7 @@ export const ToastProvider = ({children}) => {
       success: (message) => push(message, "success"),
       error: (message) => push(message, "error"),
     }),
-    [push, dismiss],
+    [push],
   );
 
   return (

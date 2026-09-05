@@ -63,13 +63,12 @@ const ResourceEditor = () => {
   const load = useCallback(async () => {
     if (isNew || !api || !canRead) return;
 
-    setLoading(true);
-    setError(null);
     try {
       const response = await api.get(id);
       setRecord(response.data);
       setForm(response.data);
       setDirty(false);
+      setError(null);
     } catch (failure) {
       setError(failure);
     } finally {
@@ -77,9 +76,27 @@ const ResourceEditor = () => {
     }
   }, [api, canRead, id, isNew]);
 
-useEffect(() => {
+  useEffect(() => {
+    // load() awaits the API before any setState runs, so nothing here cascades
+    // a render synchronously. The rule cannot trace setState across an async
+    // function boundary and reports the call regardless; the skeleton for the
+    // fetch is settled during render (the loadedKey block below), and load() is
+    // also the retry handler for a click, where this rule does not apply.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
   }, [load]);
+
+  // The router reuses this component when the id in the URL changes, and retry
+  // re-runs load() from a click event. Settle the loading flag the same way the
+  // opening section layout is settled below — decided during render, once, when
+  // the editor is pointed at a record it has not loaded yet — so a new record
+  // always arrives behind a skeleton instead of flashed as stale form data.
+  const [loadedKey, setLoadedKey] = useState(() => (!isNew && resource ? `${resourceName}/${id}` : null));
+  if (resource && canRead && !isNew && loadedKey !== `${resourceName}/${id}`) {
+    setLoadedKey(`${resourceName}/${id}`);
+    setLoading(true);
+    setError(null);
+  }
 
   // Decide the opening layout once the record is in hand. A record with work
   // outstanding opens the sections that need attention and folds the settled
@@ -117,7 +134,7 @@ useEffect(() => {
   if (!resource) return <ErrorState error={{message: `Unknown section "${resourceName}"`}} />;
   if (!canRead || (isNew && !canCreate)) return <Forbidden />;
   if (loading) return <Skeleton rows={8} />;
-  if (error) return <ErrorState error={error} onRetry={load} />;
+  if (error) return <ErrorState error={error} onRetry={() => { setLoading(true); setError(null); load(); }} />;
 
   const setValue = (path, value) => {
     setForm((current) => writePath(current, path, value));

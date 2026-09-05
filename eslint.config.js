@@ -27,6 +27,11 @@ export default [
       ".agents/**",
       // Separate sub-project with its own vite config and build tooling.
       "_lovisual/**",
+      // Root `_*.mjs` scripts are paste-into-a-browser-console helpers (they
+      // read `document`, `location` and `window` as if the page were the host),
+      // not Node modules. No globals set fits them, so linting them only ever
+      // produced no-undef noise with zero signal.
+      "**/_*.mjs",
     ],
   },
 

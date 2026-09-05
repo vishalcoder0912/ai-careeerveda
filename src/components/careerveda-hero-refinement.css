@@ -138,11 +138,11 @@ body .spline-page .hero-copy .trust-line,
 body .spline-page .trust-line {
   display: block;
   max-width: 580px;
-  margin: 18px 0 0;
-  color: rgba(255, 255, 255, 0.70) !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  line-height: 1.5 !important;
+  margin: 20px 0 0;
+  color: rgba(255, 255, 255, 0.78) !important;
+  font-size: 15px !important;
+  font-weight: 650 !important;
+  line-height: 1.45 !important;
 }
 
 body .spline-page .trust-line::before,
@@ -155,13 +155,13 @@ body .spline-page .hero-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  margin-top: 28px;
+  margin-top: 26px;
 }
 
 body .spline-page .hero-actions .primary-action,
 body .spline-page .hero-actions .secondary-action {
   min-height: 50px;
-  padding-inline: 24px;
+  padding: 14px 24px;
   border-radius: 14px;
   font-size: 14px !important;
   font-weight: 700;
@@ -190,17 +190,17 @@ body .spline-page .hero-actions .secondary-action {
    supporting element rather than dominating the composition. */
 body .spline-page .hero-visual-shell {
   position: relative;
-  width: 100%;
-  height: clamp(240px, 20vw, 320px);
+  width: min(100%, 480px);
+  max-width: 480px;
+  height: clamp(320px, 30vh, 420px);
+  margin-inline: auto;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: visible;
 }
 
-/* Center the robot slightly right-of-center and slightly above vertical
-   center (55–60% horizontal, 48–52% vertical feel) — the grid ignores it since
-   this is the decorative layer; the iframe is the full box. */
+/* Center the robot inside its column — not pinned to the right edge. */
 body .spline-page .spline-frame {
   position: absolute;
   inset: 0;
@@ -215,6 +215,28 @@ body .spline-page .spline-scene {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  /* !important to override image-position-fix.css's transform: none and desktop
+     translateX(8%) on the same iframe — this file is the last word on the hero.
+
+     The Spline scene renders the robot LEFT of the box centre (image-position-fix
+     measured the head-and-torso mass ~8% off), so the centering push is kept via
+     translateX(8%) and combined with the size reduction. Order matters: translate
+     runs after scale, so the 8% pushes relative to the scaled box width. With the
+     robot centred and scaled down it sits between the outer label ring instead of
+     crowding the left labels. */
+  transform: translateX(8%) scale(0.8) !important;
+  transform-origin: center center !important;
+  z-index: 1;
+}
+
+/* Keep the fallback still the same size/shape as the live robot so reduced-motion
+   and save-data visitors see the identical (smaller, centered) composition. */
+body .spline-page .spline-poster {
+  z-index: 1;
+}
+body .spline-page .spline-poster img {
+  transform: scale(0.8);
+  transform-origin: center center;
 }
 
 /* Subtle local glow only — no fog, no cloud, no large blurred region. */
@@ -223,47 +245,55 @@ body .spline-page .spline-glow {
   filter: blur(40px);
   opacity: 0.5;
   background:
-    radial-gradient(circle at 52% 46%, rgba(22, 212, 208, 0.06), transparent 46%);
+    radial-gradient(circle at 52% 46%, rgba(22, 212, 208, 0.04), transparent 46%);
 }
 
 /* ── 6. Floating labels: balanced ring around the robot ────────────────────
    All positions are relative to .hero-visual-shell (the labels' inset:0
-   parent), not the body/window. They are decorative — smaller and lower
-   priority than the H1, Spline and CTA. */
+   parent), not the body/window. They are decorative supporting UI, never the
+   hero: smaller than the headline, no glow, kept clear of the robot's face and
+   body. pointer-events are off so they can never block the CTA or scrolling. */
+body .spline-page .floating-labels {
+  z-index: 2;
+  pointer-events: none;
+}
+
 body .spline-page .ai-label {
-  min-height: 34px;
-  padding: 8px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  min-height: 28px;
+  padding: 9px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
   border-radius: 999px;
-  color: rgba(255, 255, 255, 0.92);
-  background: rgba(10, 31, 47, 0.78);
-  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.24);
+  color: rgba(255, 255, 255, 0.90);
+  background: rgba(8, 31, 47, 0.76);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  font-size: clamp(15px, 1.15vw, 18px) !important;
+  font-size: 13px !important;
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: 0.01em;
   white-space: nowrap;
+  pointer-events: none;
+  transition: opacity 200ms ease, transform 200ms ease;
   animation: labelFloat 5s ease-in-out infinite;
 }
 
-/* Anchor zones (map to SplineHeroScene label order) — frame the robot with
-   25–55px of breathing room, no collisions:
-   1 Personalized Learning — upper left
+/* Anchor zones (map to SplineHeroScene label order) — frame the smaller robot
+   with clear separation so no label covers its face or body and none overlap:
+   1 Personalized Learning — left of robot
    2 Expert Mentorship     — upper right
    7 Hiring Partners       — top center
-   3 Interview Support     — middle left
-   4 Placement Focus       — middle right
-   5 Verified Projects     — lower left
+   3 Interview Support     — lower left
+   4 Placement Focus       — right / lower right
+   5 Verified Projects     — below left
    6 Career Programs       — lower right */
-body .spline-page .label-1 { left: 6%;  top: 30%;                       animation-delay: -1s;  }
-body .spline-page .label-2 { right: 6%; top: 30%;                       animation-delay: -1.7s; }
-body .spline-page .label-3 { left: 3%;  top: 56%;                       animation-delay: -2.4s; }
-body .spline-page .label-4 { right: 3%; top: 56%;                       animation-delay: -3.1s; }
-body .spline-page .label-5 { left: 14%; bottom: 28%;                    animation-delay: -3.8s; }
-body .spline-page .label-6 { right: 14%; bottom: 28%;                   animation-delay: -4.5s; }
-body .spline-page .label-7 { left: 38%; top: 8%;                        animation-delay: -5.2s; }
+body .spline-page .label-1 { left: 2%;  top: 32%;                       animation-delay: -1s;  }
+body .spline-page .label-2 { right: 2%; top: 26%;                       animation-delay: -1.7s; }
+body .spline-page .label-3 { left: 2%;  top: 62%;                       animation-delay: -2.4s; }
+body .spline-page .label-4 { right: 2%; top: 56%;                       animation-delay: -3.1s; }
+body .spline-page .label-5 { left: 8%;  bottom: 4%;                     animation-delay: -3.8s; }
+body .spline-page .label-6 { right: 8%; bottom: 4%;                     animation-delay: -4.5s; }
+body .spline-page .label-7 { left: 36%; top: 2%;                        animation-delay: -5.2s; }
 
 /* Respect reduced motion: no floating labels. */
 @media (prefers-reduced-motion: reduce) {
@@ -353,7 +383,12 @@ body .spline-page .stat-strip span {
   }
 
   body .spline-page .hero-visual-shell {
-    height: clamp(200px, 19vw, 260px);
+    height: clamp(180px, 18vw, 240px);
+    width: min(100%, 360px);
+  }
+
+  body .spline-page .ai-label {
+    font-size: 11.5px !important;
   }
 
   body .spline-page .stat-strip {
@@ -400,15 +435,24 @@ body .spline-page .stat-strip span {
   }
 
   body .spline-page .hero-visual-shell {
-    height: clamp(200px, 52vw, 260px);
+    height: clamp(180px, 52vw, 240px);
+    width: min(100%, 320px);
   }
 
-  /* Mobile shows five essential labels; hide the top center and middle
-     left/right ones to avoid an overcrowded ring on a small canvas. */
+  /* Mobile shows only the most important labels around the robot — Hiring
+     Partners, Expert Mentorship, Placement Focus — to avoid clutter on a small
+     canvas. The rest are hidden. */
+  body .spline-page .label-1,
   body .spline-page .label-3,
-  body .spline-page .label-7 {
+  body .spline-page .label-5,
+  body .spline-page .label-6 {
     display: none;
   }
+
+  /* Reposition the three visible labels around the smaller mobile robot. */
+  body .spline-page .label-7 { left: 34%; top: 2%; }
+  body .spline-page .label-2 { right: 2%; top: 34%; }
+  body .spline-page .label-4 { right: 2%; top: 60%; }
 
   /* Stats become normal flow below the visual with breathing room. */
   body .spline-page .stat-strip {
@@ -471,13 +515,21 @@ body .spline-page .stat-strip span {
   }
 
   body .spline-page .hero-visual-shell {
-    height: clamp(180px, 54vw, 240px);
+    height: clamp(170px, 54vw, 220px);
+    width: min(100%, 280px);
   }
 
   body .spline-page .ai-label {
-    font-size: clamp(13px, 3.6vw, 15px) !important;
-    padding: 6px 12px;
+    font-size: 10.5px !important;
+    padding: 7px 10px;
+    min-height: 24px;
   }
+
+  /* Reposition the three mobile-visible labels around the smaller robot with
+     clear separation from the edges and the robot body. */
+  body .spline-page .label-7 { left: 32%; top: 2%; }
+  body .spline-page .label-2 { right: 2%; top: 36%; }
+  body .spline-page .label-4 { right: 2%; top: 62%; }
 
   body .spline-page .hero-actions .primary-action,
   body .spline-page .hero-actions .secondary-action {
