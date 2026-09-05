@@ -70,7 +70,7 @@ const PressSection = () => (
       <span className="label">Media Coverage</span>
       <h2>CareerVeda in the News</h2>
       <p>
-        Featured across India&apos;s leading publications for placement outcomes and
+        Featured across India's leading publications for placement outcomes and
         upskilling excellence.
       </p>
     </Reveal>

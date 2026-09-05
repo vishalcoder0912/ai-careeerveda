@@ -10,7 +10,7 @@ import {badRequest, serviceUnavailable} from "../utils/apiError.js";
 // a credential.
 
 // The only host we will ever rewrite a URL for. See isImageKitUrl below.
-export const IMAGEKIT_HOST = "ik.imagekit.io";
+const IMAGEKIT_HOST = "ik.imagekit.io";
 
 let client = null;
 
@@ -32,21 +32,11 @@ export const getImageKit = () => {
 
 // ── Upload validation ───────────────────────────────────────────────────────
 
-// SVG is deliberately absent. An SVG is an XML document that can carry
-// <script>, and serving one from our own domain makes it same-origin — a
-// stored XSS with extra steps. Raster formats only; a logo that must be vector
-// can be added to the repo by a developer, where it gets code review.
-const ALLOWED = {
-  "image/jpeg": {extensions: ["jpg", "jpeg"], magic: [[0xff, 0xd8, 0xff]]},
-  "image/png": {extensions: ["png"], magic: [[0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]]},
-  "image/gif": {extensions: ["gif"], magic: [[0x47, 0x49, 0x46, 0x38]]},
-  // RIFF....WEBP — the format marker is at offset 8, checked separately below.
-  "image/webp": {extensions: ["webp"], magic: [[0x52, 0x49, 0x46, 0x46]]},
-  // ISO-BMFF: "ftyp" at offset 4. Same structural check as webp.
-  "image/avif": {extensions: ["avif"], magic: null},
-};
-
-export const ALLOWED_MIME_TYPES = Object.keys(ALLOWED);
+// Raster formats only. An SVG is deliberately absent — an SVG is an XML
+// document that can carry <script>, and serving one from our own domain makes
+// it same-origin (a stored XSS with extra steps); a logo that must be vector
+// can be added to the repo by a developer, where it gets code review. The
+// accepted formats are enumerated by the byte sniffing in detectImageType.
 export const MAX_UPLOAD_BYTES = 8 * 1024 * 1024; // 8 MB
 
 const startsWith = (buffer, bytes) => bytes.every((byte, index) => buffer[index] === byte);

@@ -30,7 +30,7 @@ const EXTENSION_FOR = {
 // Checked before deletion, because removing an image that a published program
 // still renders turns a live page into a broken box. The scan walks every
 // content collection looking for the URL in any media-shaped field.
-export const findReferences = async (media) => {
+const findReferences = async (media) => {
   const references = [];
 
   for (const resource of Object.values(RESOURCES)) {

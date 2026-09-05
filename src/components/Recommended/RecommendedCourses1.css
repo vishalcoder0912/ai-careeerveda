@@ -1,0 +1,774 @@
+/* ── Recommended Programs — editorial bento ────────────────────────────────
+ *
+ * The section is a dark panel, not a white one. The page behind it is the slate
+ * body plus the ShapeGrid layer, and the cards are photographs under a heavy
+ * scrim: a white surface between the two put a bright band in the middle of a
+ * dark page and forced the card artwork to fight it. Dark also settles the
+ * contrast problem the old white panel had — light ink on a dark field is one
+ * decision for every card, rather than a `:has()` rule per element switching
+ * the copy from dark to light depending on whether an image loaded.
+ *
+ * Layers, back to front:
+ *   ::before   the very subtle grid, faded out at the edges
+ *   ::after    one large blurred orb
+ *   everything else at z-index 1
+ *
+ * Both decorative layers are CSS. The three.js particle field that used to sit
+ * between them is gone — see the note at the top of RecommendedCourses1.jsx.
+ */
+
+.recommended-courses-section {
+  --rc-radius: 28px;
+  --rc-blue: #4d8dff;
+  --rc-blue-deep: #1d5fd3;
+  --rc-amber: #ff9d5c;
+  --rc-ink: #f8fafc;
+  --rc-muted: rgba(226, 232, 240, 0.72);
+  --rc-gap: clamp(14px, 1.5vw, 22px);
+
+  position: relative;
+  width: min(1240px, calc(100% - 40px));
+  margin: clamp(42px, 6vw, 76px) auto 0;
+  padding: clamp(28px, 4.2vw, 64px) clamp(20px, 3vw, 46px) clamp(34px, 4.5vw, 68px);
+  overflow: hidden;
+  border: 1px solid rgba(148, 178, 255, 0.14);
+  border-radius: clamp(28px, 3vw, 40px);
+  background:
+    radial-gradient(120% 90% at 12% -10%, rgba(37, 99, 235, 0.34), transparent 58%),
+    radial-gradient(90% 70% at 92% 4%, rgba(249, 115, 22, 0.16), transparent 55%),
+    radial-gradient(120% 120% at 50% 120%, rgba(13, 148, 136, 0.14), transparent 60%),
+    linear-gradient(180deg, #080d20 0%, #05081a 55%, #070b1c 100%);
+  box-shadow:
+    0 40px 120px rgba(3, 7, 20, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  /* The card hover glows and the blurred orb resolve against this panel rather
+     than against the page's own stacking context. */
+  isolation: isolate;
+}
+
+/* The very subtle grid. Two repeating gradients rather than an image or a
+   second canvas, and masked so the lines dissolve before they reach the panel's
+   rounded edge instead of stopping at it. */
+.recommended-courses-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(148, 178, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 178, 255, 0.06) 1px, transparent 1px);
+  background-size: 72px 72px;
+  -webkit-mask-image: radial-gradient(120% 100% at 50% 0%, #000 30%, transparent 78%);
+  mask-image: radial-gradient(120% 100% at 50% 0%, #000 30%, transparent 78%);
+}
+
+/* One large blurred orb behind the heading. Blurred once and then only moved,
+   so the drift is a composite rather than a re-blur every frame — the same
+   trick the page-wide clouds in shape-grid.css use. */
+.recommended-courses-section::after {
+  content: "";
+  position: absolute;
+  top: -18%;
+  left: 50%;
+  z-index: 0;
+  width: min(620px, 70%);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.42), transparent 68%);
+  filter: blur(80px);
+  pointer-events: none;
+  animation: rc-orb-drift 28s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Translate only. Scaling a layer that carries an 80px blur makes the browser
+   re-rasterize the blur at the new size on the way through, which is a repaint
+   of a 620px element every frame for a drift nobody measures. */
+@keyframes rc-orb-drift {
+  from {
+    transform: translate3d(-58%, 0, 0);
+  }
+  to {
+    transform: translate3d(-42%, 5%, 0);
+  }
+}
+
+/* The heading and the bento sit above the two decorative layers. */
+.recommended-courses-section > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Heading ──────────────────────────────────────────────────────────────── */
+
+.rc-header {
+  max-width: 720px;
+  margin: 0 auto clamp(34px, 4.5vw, 64px);
+  text-align: center;
+}
+
+.rc-header .rc-eyebrow {
+  margin: 0 0 16px;
+  color: rgba(157, 195, 255, 0.9);
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+/* Gradient text. `color: transparent` is the fallback the clip needs; where
+   background-clip: text is unsupported the browser ignores the clip and would
+   paint transparent ink, so the @supports below puts a solid colour back. */
+.recommended-courses-section .rc-header h2 {
+  /* The padding is load-bearing, and only because of the clip.
+   *
+   * line-height below is 0.98 — tighter than the font's own em box — so the
+   * ascenders and the descender of the "g" in "Programs" are drawn outside the
+   * element's background box. On ordinary text that is invisible and fine.
+   * Here the glyphs are painted *by* the background (background-clip: text over
+   * color: transparent), and a background only exists inside its own box, so
+   * every part of a letter that overhung it received no paint at all: the tail
+   * of the "g" was cut off mid-stroke.
+   *
+   * Measured at the 1920px size: 70.4px type on a 68.99px line, glyphs 165px
+   * tall inside a 138px box — 14px over the top, 13px under the bottom. 0.22em
+   * each way covers both with a little slack at every clamp size, since the
+   * overhang scales with the font.
+   *
+   * The equal negative margin takes the added box back out of the layout, so
+   * the heading still sits exactly where it did against the eyebrow above and
+   * the standfirst below — this fixes the painting without moving anything. */
+  margin: -0.22em 0;
+  padding: 0.22em 0;
+  background: linear-gradient(112deg, #ffffff 0%, #cfe0ff 46%, var(--rc-amber) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  font-family: "Manrope", "Inter", system-ui, sans-serif;
+  font-size: clamp(2.3rem, 5.2vw, 4.4rem);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .recommended-courses-section .rc-header h2 {
+    background: none;
+    color: var(--rc-ink) !important;
+  }
+}
+
+.recommended-courses-section .rc-header span {
+  display: block;
+  /* 540px broke this sentence as "…curated by industry / experts." — a single
+     word alone on the second line. 620px gives "industry experts." room to stay
+     together, and `pretty` asks the browser to avoid the orphan at the sizes
+     where it still would not fit. */
+  max-width: 620px;
+  margin: 20px auto 0;
+  color: var(--rc-muted) !important;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: clamp(0.98rem, 1.3vw, 1.1rem);
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+
+/* ── The bento ────────────────────────────────────────────────────────────── */
+
+/* 12 columns, rows sized by their contents. Each card declares its own span
+   through --rc-cols / --rc-rows, set in RecommendedCourses1.jsx, and placement
+   is left to normal (sparse) auto-flow — so the cards appear in the order they
+   are written and a keyboard visitor tabs through them the way they read.
+   `dense` would fill holes by pulling later cards forward and is deliberately
+   not used; the spans pack without leaving one. */
+.rc-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--rc-gap);
+  align-items: stretch;
+}
+
+.rc-card {
+  position: relative;
+  grid-column: span var(--rc-cols, 4);
+  grid-row: span var(--rc-rows, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  border: 1px solid rgba(148, 178, 255, 0.12);
+  border-radius: var(--rc-radius);
+  /* The fallback the card falls back *to*: a card whose artwork failed to load
+     removes its own .rc-media and is left with this. */
+  background:
+    radial-gradient(120% 90% at 20% 0%, rgba(37, 99, 235, 0.4), transparent 62%),
+    linear-gradient(180deg, #101836, #070c1d);
+  box-shadow: 0 18px 46px rgba(3, 7, 20, 0.42);
+  /* No `transform` in this transition, and no :hover transform below: the
+     reveal leaves framer-motion's inline transform on this element, which an
+     author-level rule cannot override. The -8px lift is framer's whileHover —
+     see the note in RecommendedCourses1.jsx. Shadow and border are free to stay
+     here; neither triggers layout.
+     will-change is left off on purpose: six promoted layers that are idle most
+     of the time cost more than the one frame of promotion at hover. */
+  transition:
+    box-shadow 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.42s ease;
+}
+
+/* The stretched link. It carries no ink of its own — it is the click target,
+   covering the whole card, so the card behaves like the single link it reads
+   as. Above the artwork and the copy; nothing else on the card is
+   interactive. */
+.rc-link {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: inherit;
+}
+
+.rc-card.is-linked {
+  cursor: pointer;
+}
+
+/* The link is invisible, so its focus ring has to be drawn on the card.
+   Without this a keyboard visitor tabbing through the bento would land on each
+   card with nothing on screen to show where they are. */
+.rc-link:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: -4px;
+}
+
+/* ── Artwork ──────────────────────────────────────────────────────────────── */
+
+/* Flush with the card. It used to be oversized by 8% on every side to give the
+   scroll parallax somewhere to travel without exposing the card's background;
+   with the parallax gone that was 17% more artwork being rasterised per card
+   than is ever on screen. */
+.rc-media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.rc-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* The scrim. Its own element rather than a pseudo-element on .rc-media,
+   because the media layer moves and zooms and the scrim must not.
+ *
+ * Two gradients, one per axis, and the horizontal one is the important half.
+ *
+ * A purely vertical scrim was not enough, and the reason is where the copy
+ * actually sits: .rc-body is bottom-LEFT aligned on every slot. On the wide
+ * slots (panel, banner, and the hero's second column) the paragraph therefore
+ * runs across the middle of the card beside the artwork rather than under the
+ * foot of it, in the band where the old gradient was still only 0.34–0.75 —
+ * and the artwork on these cards is bright, high-contrast AI/tech imagery.
+ * Measured against the rendered pixels, the worst spot behind a description
+ * fell to 1.35:1 (WCAG AA wants 4.5:1 for body text): white type over a bright
+ * neural-net render, effectively unreadable.
+ *
+ * The horizontal wash darkens the left column where the type lives and lets the
+ * right side of the picture stay vivid, which is what keeps this looking like an
+ * editorial card rather than a photo behind a grey sheet. The vertical one is
+ * correspondingly *lighter* than it was (0.7 at the foot, not 0.9), because the
+ * two multiply: stacking the old vertical values under this would have taken the
+ * bottom-left corner to ~0.99 and painted the artwork out entirely.
+ *
+ * Combined alpha at the corners: ~0.92 bottom-left (where the copy is), ~0.70
+ * bottom-right, ~0.05 top-right (artwork untouched). */
+.rc-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(4, 8, 20, 0.72) 0%,
+      rgba(4, 8, 20, 0.5) 35%,
+      rgba(4, 8, 20, 0.12) 68%,
+      rgba(4, 8, 20, 0) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(4, 8, 20, 0.05) 0%,
+      rgba(4, 8, 20, 0.25) 45%,
+      rgba(4, 8, 20, 0.55) 80%,
+      rgba(4, 8, 20, 0.7) 100%
+    );
+  transition: opacity 0.42s ease;
+}
+
+/* The hover layer: a blue wash from the bottom-left, and the drifting dot
+   field over it. Both live on one element so a hover promotes one layer rather
+   than three, and both are off until the pointer arrives. */
+.rc-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(70% 60% at 8% 100%, rgba(77, 141, 255, 0.4), transparent 70%),
+    radial-gradient(circle, rgba(190, 216, 255, 0.5) 1px, transparent 1.4px);
+  background-size:
+    auto,
+    26px 26px;
+  transition: opacity 0.42s ease;
+}
+
+/* ── Copy ─────────────────────────────────────────────────────────────────── */
+
+/* Bottom-left, always. justify-content: flex-end on the card does the vertical
+   half; this block is the horizontal one and the padding. */
+.rc-body {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: clamp(20px, 2.2vw, 34px);
+  /* The copy never takes the pointer — the whole card is one link, and a
+     selection drag inside the text would otherwise start on the paragraph
+     rather than on the card. */
+  pointer-events: none;
+}
+
+/* A scrim that belongs to the copy rather than to the card.
+ *
+ * .rc-scrim above handles the card as a whole, but it cannot win on the narrow
+ * slots: `compact` is 367px and `wide`/`tall` are 465px, and the paragraph runs
+ * to within a few pixels of the right edge on all three. A card-wide horizontal
+ * gradient dark enough to cover that last column has, by then, covered the whole
+ * picture — the choice is a readable card or a visible one.
+ *
+ * Anchoring the gradient to .rc-body instead sidesteps the trade: it darkens
+ * exactly the block the type occupies, at whatever size that block happens to
+ * be, and leaves every part of the artwork the copy does not touch alone. The
+ * bleed pushes it a little past the text on each side so the edge lands in the
+ * padding and reads as a soft foot to the card, not as a rectangle behind the
+ * words.
+ *
+ * z-index: -1 puts it behind the copy but still inside .rc-body's own stacking
+ * context (position + z-index: 3 above), so it stays above .rc-media, .rc-scrim
+ * and .rc-glow rather than falling to the bottom of the card. */
+.rc-body::before {
+  content: "";
+  position: absolute;
+  inset: -14% -6% 0 -6%;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(4, 8, 20, 0) 0%,
+    rgba(4, 8, 20, 0.55) 26%,
+    rgba(4, 8, 20, 0.82) 58%,
+    rgba(4, 8, 20, 0.9) 100%
+  );
+}
+
+.recommended-courses-section .rc-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 11px;
+  border: 1px solid rgba(255, 157, 92, 0.42);
+  border-radius: 999px;
+  /* Flat, not a backdrop blur. See the note above .rc-stat. */
+  background: rgba(249, 115, 22, 0.26);
+  color: #ffd9c2 !important;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.6rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.recommended-courses-section .rc-title {
+  margin: 0;
+  color: var(--rc-ink) !important;
+  font-family: "Manrope", "Inter", system-ui, sans-serif;
+  font-weight: 800;
+  line-height: 1.14;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.recommended-courses-section .rc-kicker {
+  margin: 0;
+  color: rgba(157, 195, 255, 0.95) !important;
+  font-family: "Manrope", "Inter", system-ui, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+/* Clamped, not truncated in the data: the whole blurb is in the DOM for search
+   and for a screen reader, and the card links to the full program page. The
+   line count is per size class below — a 4-column tile and a full-width strip
+   cannot carry the same amount of prose. */
+.recommended-courses-section .rc-desc {
+  margin: 0;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  color: var(--rc-muted) !important;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+
+/* ── Stats ────────────────────────────────────────────────────────────────── */
+
+/* A <dl>, because these are label/value pairs and that is what a description
+   list is for — a screen reader then reads "Duration, 6 Months" rather than
+   two loose strings. */
+.rc-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 0;
+  padding: 0;
+}
+
+/* Flat background, no backdrop blur. A backdrop-filter has to re-sample
+   everything behind it, and it does that again on every frame anything behind
+   it moves — which here is the parallaxing artwork, i.e. every scroll frame.
+   Six cards carry a badge and three chips each, so that was 24 re-sampling
+   layers fighting the scroll. The chips already sit on a dark card behind a
+   scrim, which is most of what the blur was producing; an opaquer fill is
+   pixel-wise close and costs nothing. */
+.rc-stat {
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  background: rgba(8, 13, 32, 0.72);
+}
+
+.recommended-courses-section .rc-stat dt {
+  margin: 0 0 3px;
+  color: rgba(203, 213, 225, 0.66) !important;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.56rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.recommended-courses-section .rc-stat dd {
+  margin: 0;
+  color: #ffffff !important;
+  font-family: "Manrope", "Inter", system-ui, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+/* ── CTA ──────────────────────────────────────────────────────────────────── */
+
+.recommended-courses-section .rc-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  color: #ffffff !important;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+
+.rc-cta svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Size classes ─────────────────────────────────────────────────────────── */
+
+/* The min-heights are what make the bento a bento: the two cards stacked to the
+   right of the hero are the same width, so their heights are the only thing
+   that can tell them apart, and the hero's height is whatever the pair beside
+   it adds up to. Everything else is content-sized from there. */
+.rc-card--hero {
+  min-height: 480px;
+}
+
+.rc-card--wide {
+  min-height: 214px;
+}
+
+.rc-card--tall {
+  min-height: 296px;
+}
+
+.rc-card--compact,
+.rc-card--panel {
+  min-height: 252px;
+}
+
+.rc-card--banner {
+  min-height: 300px;
+}
+
+.rc-card--xl .rc-title {
+  font-size: clamp(1.7rem, 2.7vw, 2.6rem);
+}
+
+.rc-card--xl .rc-desc {
+  -webkit-line-clamp: 3;
+  max-width: 34ch;
+  font-size: 0.92rem;
+}
+
+.rc-card--lg .rc-title {
+  font-size: clamp(1.35rem, 2.1vw, 1.95rem);
+}
+
+.rc-card--lg .rc-desc {
+  -webkit-line-clamp: 2;
+  max-width: 56ch;
+}
+
+.rc-card--md .rc-title {
+  font-size: clamp(1.08rem, 1.5vw, 1.32rem);
+}
+
+.rc-card--md .rc-desc {
+  -webkit-line-clamp: 2;
+  max-width: 44ch;
+}
+
+.rc-card--sm .rc-title {
+  font-size: clamp(1rem, 1.25vw, 1.14rem);
+}
+
+.rc-card--sm .rc-kicker {
+  font-size: 0.78rem;
+}
+
+/* The 5- and 4-column tiles are the smallest things in the grid and the badge,
+   title, stats and CTA already fill them. The blurb is the one part the reader
+   can get on the program page, so it is what goes. */
+.rc-card--sm .rc-desc {
+  display: none;
+}
+
+/* The full-width strip reads as a row, not a stack: copy on the left, stats
+   and CTA on the right, so the band does not become a very wide card with a
+   column of text pinned to one corner. */
+@media (min-width: 981px) {
+  .rc-card--banner .rc-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    column-gap: clamp(24px, 3vw, 56px);
+  }
+
+  /* justify-self, not just the column. A grid item stretches to its track by
+     default, and `display: inline-flex` does not stop it — the badge grew into
+     a full-width bar across the strip. */
+  .rc-card--banner .rc-badge {
+    grid-column: 1;
+    justify-self: start;
+  }
+
+  .rc-card--banner .rc-title,
+  .rc-card--banner .rc-kicker,
+  .rc-card--banner .rc-desc {
+    grid-column: 1;
+  }
+
+  .rc-card--banner .rc-stats {
+    grid-column: 2;
+    grid-row: 2 / span 3;
+    align-self: end;
+    justify-content: flex-end;
+  }
+
+  .rc-card--banner .rc-cta {
+    grid-column: 2;
+    justify-self: end;
+  }
+}
+
+/* ── Hover ────────────────────────────────────────────────────────────────── */
+
+@media (hover: hover) and (pointer: fine) {
+  /* Two shadows, not three. Every box-shadow in a transition is repainted on
+     the CPU each frame, and three stacked 70–80px blurs around a card this
+     large is the most expensive thing a pointer can trigger here. The ring and
+     the blue cast do the same job in one layer. */
+  .rc-card.is-linked:hover {
+    border-color: rgba(129, 173, 255, 0.42);
+    box-shadow:
+      0 0 0 1px rgba(77, 141, 255, 0.24),
+      0 26px 60px rgba(6, 24, 70, 0.62);
+  }
+
+  .rc-card.is-linked:hover .rc-media img {
+    transform: scale(1.06);
+  }
+
+  /* The scrim eases off, so the card the reader is pointing at shows more of
+     its artwork than its neighbours. */
+  .rc-card.is-linked:hover .rc-scrim {
+    opacity: 0.78;
+  }
+
+  /* Fades in, does not drift. The drift was an animated background-position,
+     which is a full repaint of a card-sized layer every frame for as long as
+     the pointer rests — and the pointer rests on a card for as long as anyone
+     is reading it. The dots are still there, they just hold still. */
+  .rc-card.is-linked:hover .rc-glow {
+    opacity: 1;
+  }
+
+  .rc-card.is-linked:hover .rc-cta svg {
+    transform: translateX(6px);
+  }
+
+  /* The keyboard equivalent. Without it a card reached by Tab gets the focus
+     ring and none of the state the pointer would have given it. */
+  .rc-card.is-linked:focus-within {
+    border-color: rgba(129, 173, 255, 0.42);
+  }
+
+  .rc-card.is-linked:focus-within .rc-glow {
+    opacity: 1;
+  }
+}
+
+/* ── Tablet: two-column bento ─────────────────────────────────────────────── */
+
+@media (max-width: 980px) {
+  .rc-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .rc-card--hero {
+    grid-column: span 6;
+    grid-row: span 2;
+    min-height: 430px;
+  }
+
+  .rc-card--wide,
+  .rc-card--tall {
+    grid-column: span 3;
+    grid-row: span 1;
+    min-height: 248px;
+  }
+
+  .rc-card--compact {
+    grid-column: span 6;
+    min-height: 240px;
+  }
+
+  .rc-card--panel,
+  .rc-card--banner {
+    grid-column: span 3;
+    min-height: 260px;
+  }
+
+  /* At half the width these carry as much copy as the desktop small tiles do,
+     which is none. */
+  .rc-card--panel .rc-desc,
+  .rc-card--banner .rc-desc {
+    display: none;
+  }
+}
+
+/* ── Mobile: single column, featured first ────────────────────────────────── */
+
+@media (max-width: 680px) {
+  .recommended-courses-section {
+    width: min(100% - 24px, 1240px);
+    padding: 26px 16px 30px;
+    border-radius: 26px;
+  }
+
+  .rc-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* DOM order is the running order, so the featured card is already first —
+     nothing needs reordering here, only the spans flattening. */
+  .rc-card {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    min-height: 320px;
+  }
+
+  .rc-card--hero {
+    min-height: 400px;
+  }
+
+  .rc-card--xl .rc-title {
+    font-size: clamp(1.5rem, 7vw, 2rem);
+  }
+
+  /* The blurb comes back on a phone: one card fills the screen, so there is
+     room for it and nothing beside it competing. */
+  .rc-card--sm .rc-desc,
+  .rc-card--panel .rc-desc,
+  .rc-card--banner .rc-desc {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+  }
+
+  .rc-header {
+    text-align: left;
+  }
+
+  .rc-header span {
+    margin-inline: 0;
+  }
+
+}
+
+/* ── Reduced motion ───────────────────────────────────────────────────────── */
+
+/* The component already drops the parallax and the particle field for these
+   readers; what is left is the CSS. The hover states keep their colour and
+   their shadow — those are feedback, and losing them would leave the card with
+   no response at all — and lose their movement. */
+@media (prefers-reduced-motion: reduce) {
+  .recommended-courses-section::after {
+    animation: none;
+  }
+
+  .rc-card,
+  .rc-media img,
+  .rc-cta svg {
+    transition: none;
+  }
+
+  .rc-card.is-linked:hover .rc-media img {
+    transform: none;
+  }
+
+  .rc-card.is-linked:hover .rc-cta svg {
+    transform: none;
+  }
+}

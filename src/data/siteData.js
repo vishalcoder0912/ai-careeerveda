@@ -15,16 +15,6 @@ export const stats = [
   ["200+", "Professional Mentors"],
 ];
 
-export const programs = [
-  {title: "Investment Banking"},
-  {title: "Business Analytics"},
-  {title: "Data Analytics"},
-  {title: "Data Science AI/ML with Agentic AI"},
-  {title: "CyberSecurity"},
-  {title: "Backend Development Engineering"},
-  {title: "Data Engineering with Agentic & Gen AI"},
-];
-
 export const differentiators = [
   [
     "Industry-Aligned Curriculum",
@@ -97,88 +87,25 @@ export const supportTracks = [
 export const careerSteps = [
   {
     number: "01",
+    icon: "projects",
     title: "Hands-On Project Experience",
     body: "Build real-world applications through live projects, industry case studies, and collaborative sessions with expert mentors.",
     tags: ["Live Projects", "Case Studies", "Portfolio Building"],
   },
   {
     number: "02",
+    icon: "certification",
     title: "Industry-Recognized Certifications",
     body: "Earn globally recognized, industry-aligned certifications that validate your expertise and boost your career prospects.",
     tags: ["Global Recognition", "Industry-Aligned", "Career Boost"],
   },
   {
     number: "03",
+    icon: "placement",
     title: "Career Growth & Placement",
     body: "Access placement preparation, professional interview coaching, and direct connections with 900+ hiring partners nationwide.",
     tags: ["Interview Prep", "Resume Building", "Direct Hiring"],
   },
-];
-
-export const partners = [
-  "Deloitte",
-  "Razorpay",
-  "Amazon",
-  "PepsiCo",
-  "Abbott",
-  "BlackRock",
-  "Zomato",
-  "HighRadius",
-  "Finbox",
-  "PW",
-  "Microsoft",
-  "IBM",
-  "Accenture",
-  "TCS",
-  "Infosys",
-  "Wipro",
-];
-
-export {partnerLogos} from "./partnerLogos";
-
-export const achievers = [
-  [
-    "97% Hike",
-    "Anant Shiva",
-    "Product Development, HighRadius",
-    "Transitioned into Product Management with an industry-relevant curriculum and strong placement support.",
-  ],
-  [
-    "118% Hike",
-    "Syed Arif",
-    "Product Manager at Razorpay",
-    "Built strategic product thinking and secured a high-growth fintech product role.",
-  ],
-  [
-    "220% Hike",
-    "Anjali Singh",
-    "Product Owner at Amazon",
-    "Achieved rapid professional growth from 5 LPA to 16 LPA through product leadership and execution skills.",
-  ],
-  [
-    "200% Hike",
-    "Garima Singh",
-    "Product Manager at PepsiCo",
-    "Transitioned into a global FMCG product role with strong leadership and product management capability.",
-  ],
-  [
-    "58.33% Hike",
-    "Shalini Kumari",
-    "Associate Product Manager at Abbott",
-    "Grew from 12 LPA to 19 LPA while strengthening product strategy and hands-on problem solving.",
-  ],
-  [
-    "66% Hike",
-    "Aditya Ahlawat",
-    "Associate Product Manager, BlackRock",
-    "Strengthened product strategy and problem-solving capabilities for a finance leadership role.",
-  ],
-  [
-    "150% Hike",
-    "Sneha Agarwal",
-    "Product Executive at PW",
-    "Contributed to product execution, stakeholder coordination, and user experience improvements.",
-  ],
 ];
 
 // [name, role, quote, program, photo?]. The photo is optional        a card without

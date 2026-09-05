@@ -1,26 +1,17 @@
 // The home page's hand-written content sections.
 //
-// This module re-exports partnerLogos (built from a Vite import.meta.glob that
-// Jest cannot transform), so the suite stubs that one dependency to keep the
-// file importable and asserts the hand-written sections that the re-export does
-// not affect. The sections are all fixed [name, detail] tuples or small lists,
-// so the invariants worth pinning are counts, ordering and the shape the
-// components render.
+// The sections are all fixed [name, detail] tuples or small lists, so the
+// invariants worth pinning are counts, ordering and the shape the components
+// render.
 
-import {describe, it, expect, jest} from "@jest/globals";
-
-jest.mock("../../../src/data/partnerLogos", () => ({partnerLogos: [{name: "Deloitte", logo: "/mock/deloitte.svg"}]}));
+import {describe, it, expect} from "@jest/globals";
 
 import {
   navItems,
   stats,
-  programs,
   differentiators,
   supportTracks,
   careerSteps,
-  partners,
-  partnerLogos,
-  achievers,
   reviews,
   ratings,
   faqs,
@@ -40,13 +31,6 @@ describe("siteData — hand-written home-page sections", () => {
     for (const [value, label] of stats) {
       expect(value).toMatch(/\d/);
       expect(label).toBeTruthy();
-    }
-  });
-
-  it("lists the seven programs the home page teaser advertises", () => {
-    expect(programs).toHaveLength(7);
-    for (const program of programs) {
-      expect(program.title).toBeTruthy();
     }
   });
 
@@ -76,22 +60,6 @@ describe("siteData — hand-written home-page sections", () => {
     }
   });
 
-  it("lists distinct partner names", () => {
-    expect(partners.length).toBeGreaterThanOrEqual(12);
-    expect(new Set(partners).size).toBe(partners.length);
-  });
-
-  it("keeps the achiever stories as [hike, name, role, story]", () => {
-    expect(achievers.length).toBeGreaterThanOrEqual(5);
-    for (const entry of achievers) {
-      expect(entry).toHaveLength(4);
-      expect(entry[0]).toMatch(/%/);
-      expect(entry[1]).toBeTruthy();
-      expect(entry[2]).toBeTruthy();
-      expect(entry[3].length).toBeGreaterThan(20);
-    }
-  });
-
   it("shapes every review as [name, role, quote, program, photo?]", () => {
     expect(reviews.length).toBeGreaterThanOrEqual(4);
     for (const review of reviews) {
@@ -114,9 +82,5 @@ describe("siteData — hand-written home-page sections", () => {
   it("re-exports the FAQ list without breaking its importers", () => {
     expect(Array.isArray(faqs)).toBe(true);
     expect(faqs.length).toBeGreaterThanOrEqual(10);
-  });
-
-  it("re-exports partnerLogos, stubbed here because Jest cannot transform its Vite glob", () => {
-    expect(partnerLogos).toEqual([{name: "Deloitte", logo: "/mock/deloitte.svg"}]);
   });
 });

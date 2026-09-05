@@ -59,16 +59,16 @@
 .cv-grid-layer::before {
   left: -14vw;
   background:
-    radial-gradient(closest-side circle at 44% 24%, rgba(45, 212, 191, 0.38), transparent 72%),
-    radial-gradient(closest-side circle at 58% 66%, rgba(56, 189, 248, 0.28), transparent 72%);
+    radial-gradient(closest-side circle at 44% 24%, rgba(29, 95, 211, 0.14), transparent 72%),
+    radial-gradient(closest-side circle at 58% 66%, rgba(29, 95, 211, 0.1), transparent 72%);
   animation: cv-cloud-drift-a 26s ease-in-out infinite alternate;
 }
 
 .cv-grid-layer::after {
   right: -14vw;
   background:
-    radial-gradient(closest-side circle at 56% 30%, rgba(16, 185, 129, 0.30), transparent 72%),
-    radial-gradient(closest-side circle at 42% 72%, rgba(45, 212, 191, 0.26), transparent 72%);
+    radial-gradient(closest-side circle at 56% 30%, rgba(249, 115, 22, 0.1), transparent 72%),
+    radial-gradient(closest-side circle at 42% 72%, rgba(20, 184, 166, 0.1), transparent 72%);
   animation: cv-cloud-drift-b 34s ease-in-out infinite alternate;
 }
 
@@ -130,8 +130,7 @@
 body .spline-page.spline-page--grid,
 body .spline-page--grid .faq-section,
 body .spline-page--grid .consultation-section,
-body .spline-page--grid .trusted-companies,
-body .spline-page--grid .recommended-courses-section {
+body .spline-page--grid .trusted-companies {
   background: transparent !important;
 }
 
@@ -144,7 +143,7 @@ body .spline-page--grid .recommended-courses-section {
    which measured 1.3:1. Fixed here rather than in TrustedCompanies.css because
    that band still renders over a light host when embedded on the alumni page. */
 body .spline-page--grid .tc-title {
-  color: var(--cv-light-text, #f8fafc);
+  color: var(--cv-light-text, #101828);
 }
 
 /* The hero's background layer. It no longer hosts a canvas — the site's one

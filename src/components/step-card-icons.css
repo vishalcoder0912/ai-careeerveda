@@ -1,0 +1,51 @@
+/* Career step card icons
+   The three strategy cards carry a 01/02/03 number badge in their top-left
+   corner. Each card now also gets a line glyph in a matched chip at the
+   top-right. The generic `body .strategy-section .step-list article > span`
+   rule styles every direct span child as the number badge, so every property
+   the chip needs is re-declared here with a class selector (more specific) plus
+   !important where the winning competitor already uses it. */
+
+body .strategy-section .step-list article > span.step-card__icon {
+  position: absolute !important;
+  top: 24px !important;
+  right: 26px !important;
+  display: grid !important;
+  place-items: center !important;
+  width: 46px !important;
+  height: 46px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 1px solid rgba(45, 212, 191, 0.28) !important;
+  border-radius: 14px !important;
+  color: var(--cv-teal-bright, #2dd4bf) !important;
+  background: rgba(45, 212, 191, 0.12) !important;
+  box-shadow: none !important;
+  font-size: 0 !important;
+  pointer-events: none;
+}
+
+body .strategy-section .step-list article > span.step-card__icon svg {
+  width: 24px !important;
+  height: 24px !important;
+}
+
+body .strategy-section .step-list article:hover > span.step-card__icon {
+  border-color: rgba(45, 212, 191, 0.5) !important;
+  background: rgba(45, 212, 191, 0.18) !important;
+}
+
+@media (max-width: 768px) {
+  body .strategy-section .step-list article > span.step-card__icon {
+    top: 20px !important;
+    right: 22px !important;
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 12px !important;
+  }
+
+  body .strategy-section .step-list article > span.step-card__icon svg {
+    width: 19px !important;
+    height: 19px !important;
+  }
+}

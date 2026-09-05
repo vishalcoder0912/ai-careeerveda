@@ -31,15 +31,15 @@ const CareerVedaBackground = ({children}) => (
       <div className="cv-bg-grid">
         <CursorGrid
           cellSize={GRID_SIZE}
-          color="#2dd4bf"
+          color="#38ffe8"
           radius={145}
           falloff="smooth"
           holdTime={300}
           fadeDuration={750}
           lineWidth={1}
-          maxOpacity={0.72}
-          fillOpacity={0.07}
-          gridOpacity={0.1}
+          maxOpacity={0.55}
+          fillOpacity={0.05}
+          gridOpacity={0.08}
           cellRadius={0}
           clickPulse
           pulseSpeed={600}

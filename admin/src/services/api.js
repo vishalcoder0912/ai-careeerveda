@@ -12,17 +12,15 @@ export const setSessionEndedHandler = (handler) => {
   onSessionEnded = handler;
 };
 
-export const setTokens = ({accessToken: access, csrfToken: csrf}) => {
+const setTokens = ({accessToken: access, csrfToken: csrf}) => {
   if (access !== undefined) accessToken = access;
   if (csrf !== undefined) csrfToken = csrf;
 };
 
-export const clearTokens = () => {
+const clearTokens = () => {
   accessToken = null;
   csrfToken = null;
 };
-
-export const getAccessToken = () => accessToken;
 
 export class ApiError extends Error {
   constructor(status, code, message, fields) {
@@ -233,18 +231,10 @@ export const mediaApi = {
 
 export const leadsApi = {
   list: (query) => api.get("/admin/leads", query),
-  get: (id) => api.get(`/admin/leads/${id}`),
   update: (id, body) => api.patch(`/admin/leads/${id}`, body),
   remove: (id) => api.delete(`/admin/leads/${id}`),
   addNote: (id, note) => api.post(`/admin/leads/${id}/notes`, {body: note}),
   stats: () => api.get("/admin/leads/stats"),
-  exportUrl: (query) => {
-    const url = new URL(`${BASE}/admin/leads/export`);
-    for (const [key, value] of Object.entries(query || {})) {
-      if (value) url.searchParams.set(key, value);
-    }
-    return url.toString();
-  },
   // The export is a file download, so it cannot be a plain <a href> — that
   // would be an unauthenticated request with no Bearer header. Fetched with
   // credentials, then handed to the browser as a blob.

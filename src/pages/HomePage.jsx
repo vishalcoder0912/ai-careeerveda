@@ -18,7 +18,7 @@ import "./HomePage.css";
    as the reader approaches it, so the first paint is the hero and the navigation
    rather than the whole page's worth of code. */
 const TrustedCompanies = lazy(() => import("../components/TrustedCompanies"));
-const RecommendedCourses = lazy(() => import("../components/Recommended/RecommendedCourses"));
+const RecommendedCourses = lazy(() => import("../components/Recommended/RecommendedCourses1"));
 const LearnerOutcomes = lazy(() => import("../components/LearnerOutcomes"));
 const ConsultationForm = lazy(() => import("../components/ConsultationForm"));
 const PressSection = lazy(() => import("../components/PressSection"));
@@ -84,29 +84,19 @@ const HomePage = () => {
       <div className="scroll-progress" aria-hidden="true" />
       <Hero stats={stats} />
 
-      {/* Cloud seam between the hero's stat strip and the course grid. It sits
-          above both — negative margins on either side, so the hero's bottom edge
-          and the card's top edge are inside the fog rather than either side of a
-          gap. The child is the near layer: the veil that blurs the card top and
-          the particles over it. All CSS, see SplineLanding.css. */}
-      <div className="cloud-band" aria-hidden="true">
-        <span className="cloud-band__particles" />
-        <span className="cloud-band__veil" />
-      </div>
-
-      {/* Press first, then the logo wall: both are credibility, and the reader
-          meets the named publications before the row of employer marks. */}
-
       {/* Negative margin. This section sits close enough behind the hero that a
           phone's initial viewport already intersects its placeholder — even at
           rootMargin 0 — which mounted it during the load and pulled in its
           chunk AND framer-motion (which it imports) AND five hero-card PNGs
           from ImageKit, all competing with the LCP for bandwidth. A -120px
-          margin means the reader must scroll into the section itself before
+          margin meant the reader must scroll into the section itself before
           anything is fetched; the minHeight placeholder holds the layout so
           there is nothing to shift, and the card images are loading="lazy"
-          behind it. */}
-      <DeferUntilVisible minHeight={600} margin="-120px">
+          behind it. The negative pull existed to overlap the old cloud-band
+          fog seam, which has been removed — no overlap is wanted now, and
+          pulling the cards over the stat strip would create the broken
+          stats → programs transition. */}
+      <DeferUntilVisible minHeight={600} margin="-150px">
         <RecommendedCourses />
       </DeferUntilVisible>
 

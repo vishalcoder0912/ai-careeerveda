@@ -339,8 +339,17 @@
 /* Enough top air so the header reads as a heading, not a squeezed strip, and
    a consistent gap reads through every field so the form looks evenly drawn.
    The form is the primary surface — sized to its content, never dominating
-   the left message. */
+   the left message.
+
+   Stacking contract: the form must NEVER become a global fixed/sticky overlay.
+   `position: relative !important` is the hard guarantee — it stakes the panel in
+   normal document flow (anchoring the ::after hover glow) and defeats any later
+   `fixed`/`sticky` that a future stylesheet might try. Its `z-index` is
+   deliberate but low: it only competes inside `.consultation-section`, not with
+   the navbar (1000) or the page background (0). */
 body .consultation-section .consultation-form {
+  position: relative !important;
+  z-index: 10 !important;
   gap: 16px 18px !important;
   max-width: 540px !important;
   margin-left: auto !important;
@@ -548,9 +557,12 @@ body .consultation-section .consultation-form .consultation-security svg {
   flex: 0 0 auto;
 }
 
-/* Keep these tall-enough-touch targets uniformly spaced even on phones. */
+/* Keep these tall-enough-touch targets uniformly spaced even on phones. On
+   small screens the form drops out of any positioning game entirely: static
+   flow, no sticky, no float. */
 @media (max-width: 768px) {
   body .consultation-section .consultation-form {
+    position: static !important;
     padding: 24px 20px !important;
     gap: 15px !important;
   }
@@ -572,13 +584,18 @@ body .consultation-section .consultation-form .consultation-security svg {
    ──────────────────────────────────────────────────────────────────────────── */
 
 /* Outer shell: transparent, no second giant rounded panel. It also forms its own
-   stacking context (position: relative + z-index) so the press section's
-   transformed ScrollStack cards above it can never paint over the form — the
-   form always stays on top and at its natural position as the user scrolls down
-   to it. */
+   stacking context — `position: relative` + a controlled `z-index: 5` +
+   `isolation: isolate` — so the press section's transformed ScrollStack cards
+   above it can NEVER paint over the form, no matter how their transforms stack.
+   `isolate` guarantees a fresh stacking context even if a later rule strips the
+   z-index, and 5 is chosen to sit clearly above the stack-scroll sections
+   (which live at z-index 0) while staying far below the navbar (1000). The form
+   ends visually with this section: the next section in flow simply renders
+   after it, which normal document flow already guarantees. */
 body .consultation-section {
   position: relative;
-  z-index: 1;
+  z-index: 5;
+  isolation: isolate;
   background:
     radial-gradient(120% 90% at 78% 22%, rgba(19, 128, 146, 0.12), transparent 48%),
     linear-gradient(135deg, #0b1330 0%, #0e1a3c 52%, #0a1128 100%) !important;

@@ -34,7 +34,7 @@ export const formatBatchDate = (date) =>
     year: "numeric",
   });
 
-export const updateBatchDates = async (now = new Date()) => {
+const updateBatchDates = async (now = new Date()) => {
   const nextBatch = formatBatchDate(nextSaturdayDate(now));
 
   // `$ne: "custom"` rather than `$eq: "auto"` so records created before the

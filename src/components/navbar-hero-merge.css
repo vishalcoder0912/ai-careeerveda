@@ -114,9 +114,17 @@ body .spline-page .hero-shell::after {
   }
 }
 
-/* ── Footer alignment ────────────────────────────────────────────────────── */
+/* ── Footer alignment ──────────────────────────────────────────────────────
+   The footer gutter must match the navbar's content frame exactly, per
+   breakpoint, or the layout test (footer brand on the same line as the navbar
+   brand) fails. The navbar narrows at three tiers:
+     ≥1280  width: min(calc(100% - 80px), 1440px)  → 40px gutter
+     981–1279 width: calc(100% - 40px)              → 20px gutter
+     ≤980   width: calc(100% - 32px)                → 16px gutter
+   (the ≤480 navbar override narrows to calc(100% - 32px) in
+   mobile-navbar-premium.css, so the gutter stays 16px there too). */
 body .site-footer {
-  padding-inline: calc((100% - min(1440px, calc(100% - 64px))) / 2) !important;
+  padding-inline: calc((100% - min(1440px, calc(100% - 80px))) / 2) !important;
 }
 
 @media (max-width: 1279px) {
@@ -133,6 +141,6 @@ body .site-footer {
 
 @media (max-width: 480px) {
   body .site-footer {
-    padding-inline: 12px !important;
+    padding-inline: 16px !important;
   }
 }

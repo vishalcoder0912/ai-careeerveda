@@ -12,7 +12,7 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 // Indian mobile numbers, tolerating +91, spaces and dashes.
 const MOBILE_PATTERN = /^(\+?91[-\s]?)?[6-9]\d{9}$/;
 
-export const USER_TYPES = ["Student", "Working Professional", "Career Switcher"];
+const USER_TYPES = ["Student", "Working Professional", "Career Switcher"];
 
 const text = (max) => z.string().max(max).transform(stripTags);
 

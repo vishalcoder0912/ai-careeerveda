@@ -143,7 +143,7 @@ const spotlightProfiles = [
     name: "Aarohi Khurana",
     hike: "90% Hike",
     role: "Growth Product Manager at Airbnb",
-    story: "Successfully transitioned into a Growth Product Manager role at Airbnb with an outstanding 90% salary hike, increasing from 10 LPA to 19 LPA. Demonstrated exceptional expertise in product growth strategies, user engagement, and data-driven decision-making throughout the transition journey. Secured a high-impact opportunity with one of the worldâ€™s leading technology and hospitality platforms, marking significant professional and career growth.",
+    story: "Successfully transitioned into a Growth Product Manager role at Airbnb with an outstanding 90% salary hike, increasing from 10 LPA to 19 LPA. Demonstrated exceptional expertise in product growth strategies, user engagement, and data-driven decision-making throughout the transition journey. Secured a high-impact opportunity with one of the world's leading technology and hospitality platforms, marking significant professional and career growth.",
     accent: "#9d174d",
     accentEnd: "#7c2d12",
   },

@@ -32,7 +32,7 @@ export const programCatalog = [
     duration: "6 Months",
     mentorship: "Expert Trainers",
     format: "Live Online",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/product-management-6b8b2802.jpg",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/product-management-ede8ba4a.png",
     overview: [
       "Product strategy, customer discovery, market research and UX fundamentals",
       "Agile methodologies, product roadmapping and stakeholder management",
@@ -301,8 +301,8 @@ export const programCatalog = [
     duration: "6 Months",
     mentorship: "Expert Mentor",
     format: "Live Online",
-    startingPrice: "â‚¹1,25,000",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Business_analytics_images-4145ed42.jpg",
+    startingPrice: "₹1,25,000",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/Business_analytics_images-141e26d2.png",
     overview: [
       "Excel, SQL, Python, Power BI and Generative AI workflows",
       "25+ business analytics projects and case studies",
@@ -639,8 +639,8 @@ export const programCatalog = [
     duration: "6 Months",
     mentorship: "Career Mentor",
     format: "Live Online",
-    startingPrice: "â‚¹1,35,000",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/Data_analytics-ba31dcb9.jpg",
+    startingPrice: "₹1,35,000",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/Data_analytics-19c78fb9.png",
     overview: [
       "Excel, SQL, Python, Power BI and dashboard reporting",
       "Data cleaning, visualization and business decision support",
@@ -663,7 +663,7 @@ export const programCatalog = [
     lead:
       "Learn data analysis, visualisation and reporting with the AI-assisted workflows modern analyst roles now expect, and finish with capstone projects built on real company data.",
     learners: "10,000+",
-    fee: {label: "Program Investment", amount: "â‚¹1,35,000", note: "Including GST"},
+    fee: {label: "Program Investment", amount: "₹1,35,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
     nextBatch: "August 22, 2026",
     seats: "Few seats left",
@@ -976,8 +976,8 @@ export const programCatalog = [
     duration: "6 Months",
     mentorship: "1:1 Mentorship",
     format: "Live Online",
-    startingPrice: "â‚¹1,55,000",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/investing-banking-images-59ab0040.jpg",
+    startingPrice: "₹1,55,000",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/investing-banking-images-d0cb7a99.png",
     overview: [
       "Financial modeling, valuation, M&A, IPO and equity research",
       "Build deal-ready reports, pitch books and finance dashboards",
@@ -1001,7 +1001,7 @@ export const programCatalog = [
     lead:
       "Master the world of Investment Banking with comprehensive training in financial modeling, M&A analysis, equity research, and deal execution. Learn from industry experts and build the skills needed to excel in top investment banks and financial institutions.",
     learners: "10,000+",
-    fee: {label: "Program Investment", amount: "â‚¹1,55,000", note: "Including GST"},
+    fee: {label: "Program Investment", amount: "1,55,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
     nextBatch: "August 22, 2026",
     seats: "Few seats left",
@@ -1315,8 +1315,8 @@ export const programCatalog = [
     duration: "12 Months",
     mentorship: "AI Mentor",
     format: "Live Online",
-    startingPrice: "â‚¹1,55,000",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/PG-WITH-GENAI-803ad9e9.webp",
+    startingPrice: "₹1,55,000",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/data-5283dc81.png",
     overview: [
       "Machine learning, deep learning, NLP and computer vision",
       "LLM projects, AI agents and applied generative AI workflows",
@@ -1339,7 +1339,7 @@ export const programCatalog = [
     lead:
       "Build machine learning, deep learning, NLP and generative AI skills on deployment-focused projects, and go beyond models into the agentic AI workflows teams are actually shipping.",
     learners: "10,000+",
-    fee: {label: "Program Investment", amount: "â‚¹1,55,000", note: "Including GST"},
+    fee: {label: "Program Investment", amount: "₹1,55,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
     nextBatch: "August 22, 2026",
     seats: "Few seats left",
@@ -1653,8 +1653,8 @@ export const programCatalog = [
     duration: "6 Months",
     mentorship: "AI Mentor",
     format: "Live Online",
-    startingPrice: "â‚¹1,40,000",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/ChatGPT-Image-Jul-13-2026-04_53_32-PM-fbacfde5.jpg",
+    startingPrice: "₹1,40,000",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/PG-WITH-GENAI-803ad9e9.webp",
     overview: [
       "LLMs, prompt engineering and RAG application development",
       "Embeddings, vector databases and agentic AI workflows",
@@ -1677,7 +1677,7 @@ export const programCatalog = [
     lead:
       "Master Generative AI and transform your career with cutting-edge skills. Learn to build intelligent applications using the latest AI models, LLMs, and automation technologies, through hands-on projects and a capstone application.",
     learners: "10,000+",
-    fee: {label: "Program Investment", amount: "â‚¹1,40,000", note: "Including GST"},
+    fee: {label: "Program Investment", amount: "₹1,40,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
     nextBatch: "August 22, 2026",
     seats: "Few seats left",
@@ -1934,8 +1934,8 @@ export const programCatalog = [
     duration: "8 Months",
     mentorship: "Data Mentor",
     format: "Live Online",
-    startingPrice: "â‚¹1,55,000",
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/ChatGPT-Image-Jul-13-2026-04_53_32-PM-fbacfde5.jpg",
+    startingPrice: "₹1,55,000",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/data-5283dc81.png",
     overview: [
       "Data pipelines, ETL, SQL, Python and orchestration fundamentals",
       "Analytics engineering, data quality and AI automation workflows",
@@ -1958,7 +1958,7 @@ export const programCatalog = [
     lead:
       "Learn pipelines, ETL, warehousing and orchestration for modern data teams, plus the generative and agentic AI automation now layered on top of them.",
     learners: "10,000+",
-    fee: {label: "Program Investment", amount: "â‚¹1,55,000", note: "Including GST"},
+    fee: {label: "Program Investment", amount: "₹1,55,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
     nextBatch: "August 22, 2026",
     seats: "Few seats left",
@@ -2272,8 +2272,8 @@ export const programCatalog = [
     duration: "6 Months",
     mentorship: "Engineering Mentor",
     format: "Live Online",
-    startingPrice: "â‚¹1,70,000",
-    image: "",
+    startingPrice: "₹1,70,000",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/Backend-davelopment-f9e726ea.webp",
     overview: [
       "Node.js, Express APIs, databases, authentication and deployment",
       "Backend architecture with clean routing and secure data handling",
@@ -2611,7 +2611,7 @@ export const programCatalog = [
     mentorship: "Security Mentor",
     format: "Live Online",
     startingPrice: "1,65,000",
-    image: "",
+    image: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/CyberSecurity-7e85cd39.png",
     overview: [
       "Network safety, secure systems thinking and web security fundamentals",
       "Hands-on defensive labs focused on awareness, reporting and response",

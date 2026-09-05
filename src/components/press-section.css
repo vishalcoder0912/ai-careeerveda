@@ -8,6 +8,10 @@
    "Media Coverage" label starts underneath it. */
 .press-section {
   position: relative;
+  /* Stays below the consultation section that follows it (which forms its own
+     stacking context at z-index 5), so a transforming press card can never
+     render over the form. z-index 0 is explicit and documented on purpose. */
+  z-index: 0;
   padding: clamp(116px, 13vw, 168px) max(24px, calc((100% - var(--site-measure)) / 2)) clamp(24px, 4vw, 48px);
   color: #f1f5f9;
 }

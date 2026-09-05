@@ -25,6 +25,8 @@ export default [
       ".codex/**",
       ".claude/**",
       ".agents/**",
+      // Separate sub-project with its own vite config and build tooling.
+      "_lovisual/**",
     ],
   },
 

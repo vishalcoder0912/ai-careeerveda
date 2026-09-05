@@ -10,7 +10,7 @@ import {logger} from "../config/logger.js";
 // "scheduled" for something already live. That ordering is deliberate: a cron
 // that silently stops must not take content offline.
 
-export const publishScheduled = async (now = new Date()) => {
+const publishScheduled = async (now = new Date()) => {
   let promoted = 0;
 
   for (const resource of Object.values(RESOURCES)) {

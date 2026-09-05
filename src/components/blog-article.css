@@ -21,6 +21,18 @@
   margin-inline: auto;
   padding: clamp(112px, 12vw, 168px) 0 clamp(40px, 5vw, 64px);
   color: var(--ps-ink);
+
+  /* Shared desktop geometry — the reading column, the sticky rail and the gap
+     between them. Everything (title column, breadcrumb, related grid, CTA and
+     back link) is derived from these so the whole page shares ONE left edge
+     instead of the bottom sections sprawling out to the full shell. */
+  --ba-content: 860px;
+  --ba-rail: 220px;
+  --ba-gap: clamp(44px, 5vw, 64px);
+  --ba-layout: calc(var(--ba-content) + var(--ba-rail) + var(--ba-gap));
+  /* Left offset that centres the reading+rail block inside the shell; reused by
+     the crumbs / related / CTA / back so they sit on the reading column's edge. */
+  --ba-offset: max(0px, calc((100% - var(--ba-layout)) / 2));
 }
 
 /* A soft, localised glow behind the title and cover so the reading column
@@ -50,6 +62,8 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
+  width: var(--ba-content);
+  margin-left: var(--ba-offset);
   margin-bottom: clamp(26px, 3.5vw, 40px);
   font-size: 13px;
   color: var(--ps-muted);
@@ -73,7 +87,10 @@
   position: relative;
   display: flex;
   align-items: stretch;
-  gap: clamp(44px, 5vw, 64px);
+  gap: var(--ba-gap);
+  width: 100%;
+  max-width: var(--ba-layout);
+  margin-inline: auto;
 }
 
 /* Header, cover and prose all resolve to ONE reading column (.ba-col), so
@@ -82,7 +99,7 @@
 .ba-col {
   flex: 1 1 0;
   min-width: 0;
-  max-width: 860px;
+  max-width: var(--ba-content);
 }
 
 /* ── Title block ─────────────────────────────────────────────────────────── */
@@ -245,7 +262,7 @@
 /* ── "On this page" rail ─────────────────────────────────────────────────── */
 
 .ba-toc-rail {
-  flex: 0 0 220px;
+  flex: 0 0 var(--ba-rail);
   min-width: 0;
 }
 
@@ -310,7 +327,9 @@
 /* ── Related articles → keep learning ────────────────────────────────────── */
 
 .ba-related {
+  width: var(--ba-content);
   margin-top: clamp(60px, 7vw, 90px);
+  margin-left: var(--ba-offset);
   padding-top: clamp(38px, 5vw, 60px);
   border-top: 1px solid var(--ps-border);
 }
@@ -420,7 +439,9 @@
 /* ── Closing CTA ─────────────────────────────────────────────────────────── */
 
 .ba-cta {
+  width: var(--ba-content);
   margin-top: clamp(52px, 6vw, 72px);
+  margin-left: var(--ba-offset);
   padding: clamp(28px, 4vw, 44px);
   border: 1px solid var(--ps-border-strong);
   border-radius: 22px;
@@ -468,7 +489,9 @@
 }
 
 .ba-back {
-  display: inline-block;
+  display: block;
+  width: var(--ba-content);
+  margin-left: var(--ba-offset);
   margin-top: clamp(28px, 3vw, 36px);
   color: var(--ps-muted);
   font-size: 15px;
@@ -557,18 +580,15 @@
   .blog-article {
     width: min(calc(100% - 48px), 1360px);
     padding: clamp(96px, 11vw, 140px) 0 clamp(36px, 4vw, 56px);
+
+    --ba-content: 760px;
+    --ba-rail: 200px;
+    --ba-gap: clamp(36px, 4vw, 48px);
+    --ba-layout: calc(var(--ba-content) + var(--ba-rail) + var(--ba-gap));
   }
 
   .ba-layout {
-    gap: clamp(36px, 4vw, 48px);
-  }
-
-  .ba-col {
-    max-width: 760px;
-  }
-
-  .ba-toc-rail {
-    flex-basis: 200px;
+    gap: var(--ba-gap);
   }
 
   .ba-sticky {
@@ -611,6 +631,16 @@
 
   .ba-toc-mobile {
     display: block;
+  }
+
+  /* Single reading column — drop the desktop width/offset geometry so the
+     breadcrumb, related grid, CTA and back link all flow at the shell edge. */
+  .ba-crumbs,
+  .ba-related,
+  .ba-cta,
+  .ba-back {
+    width: auto;
+    margin-left: 0;
   }
 
   .ba-head h1 {

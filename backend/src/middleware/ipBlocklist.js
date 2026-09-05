@@ -32,7 +32,7 @@ export const unblockIP = (ip) => {
   logger.info({ip}, "IP unblocked");
 };
 
-export const isBlocked = (ip) => {
+const isBlocked = (ip) => {
   const entry = blocklist.get(ip);
   if (!entry) return false;
   if (entry.until <= Date.now()) {

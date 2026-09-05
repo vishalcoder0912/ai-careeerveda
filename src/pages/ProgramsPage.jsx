@@ -13,7 +13,7 @@ import "../components/cinematic-interactions.css";
 import "../components/programs-page-responsive.css";
 
 // The explorer is the page — it stays eager. These two sit under it.
-const RecommendedCourses = lazy(() => import("../components/Recommended/RecommendedCourses"));
+const RecommendedCourses = lazy(() => import("../components/Recommended/RecommendedCourses1"));
 const LearnerOutcomes = lazy(() => import("../components/LearnerOutcomes"));
 
 const ProgramsPage = () => {
