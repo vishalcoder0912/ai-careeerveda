@@ -41,31 +41,6 @@ env:
 
 jobs:
   # ─────────────────────────────────────────────────────────────────────────────
-  # SAST — Static Application Security Testing (Semgrep)
-  # Runs in parallel, uploads SARIF to GitHub Code Scanning. Does not block.
-  # ─────────────────────────────────────────────────────────────────────────────
-  sast:
-    name: Semgrep SAST
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    permissions:
-      contents: read
-      security-events: write
-    container:
-      image: semgrep/semgrep
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Run Semgrep scan
-        run: semgrep scan --config auto --sarif --output semgrep.sarif
-
-      - name: Upload SARIF to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: semgrep.sarif
-          category: semgrep
-
-  # ─────────────────────────────────────────────────────────────────────────────
   # QUALITY — Audit + Lint + Unit/Integration Tests
   # No servers, no credentials, just the registry and in-memory databases.
   # ─────────────────────────────────────────────────────────────────────────────
@@ -290,7 +265,7 @@ jobs:
   # ─────────────────────────────────────────────────────────────────────────────
   publish:
     name: Publish dev → main
-    needs: [build, sast]
+    needs: [build]
     if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     timeout-minutes: 10

@@ -1,13 +1,13 @@
 import {useEffect,useRef,useState} from "react";
 
 const labels = [
-  "Personalized Learning",
-  "Expert Mentorship",
-  "Interview Support",
-  "Placement Focus",
-  "Verified Projects",
-  "Career Programs",
-  "Hiring Partners",
+  { title: "Personalized Learning", icon: "🎯", sub: "tailored to you" },
+  { title: "Expert Mentorship", icon: "🧭", sub: "200+ pros" },
+  { title: "Interview Support", icon: "🎤", sub: "mock + prep" },
+  { title: "Placement Focus", icon: "💼", sub: "hiring partners" },
+  { title: "Verified Projects", icon: "🛠️", sub: "proof of work" },
+  { title: "Career Programs", icon: "🚀", sub: "the outcome" },
+  { title: "Hiring Partners", icon: "🤝", sub: "300+ roles" },
 ];
 
 // Label ↔ stage-zone map, in the order labels are listed above. The stage
@@ -258,9 +258,13 @@ const SplineHeroScene = ({sceneUrl}) => {
         {labels.map((label,index) => (
           <span
             className={`ai-label label-${index + 1} hero-label ${labelZones[index]}`}
-            key={label}
+            key={label.title}
           >
-            {label}
+            <span className="ai-label-icon" aria-hidden="true">{label.icon}</span>
+            <span className="ai-label-body">
+              <span className="ai-label-title">{label.title}</span>
+              <span className="ai-label-sub">{label.sub}</span>
+            </span>
           </span>
         ))}
       </div>

@@ -289,35 +289,70 @@ body .spline-page .ai-label {
   z-index: 4;
   display: inline-flex;
   align-items: center;
-  min-height: 28px;
-  padding: 8px 13px;
-  border: 1px solid rgba(255, 255, 255, 0.11);
-  border-radius: 999px;
-  color: rgba(255, 255, 255, 0.9);
-  background: rgba(8, 31, 47, 0.82);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  font-size: 13px !important;
-  font-weight: 700;
+  gap: 9px;
+  min-height: 42px;
+  padding: 8px 14px 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.94);
+  background: linear-gradient(180deg, rgba(13, 42, 62, 0.9), rgba(6, 24, 40, 0.9));
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   line-height: 1.1;
-  letter-spacing: 0.01em;
   white-space: nowrap;
   pointer-events: none;
   transition: opacity 200ms ease;
   animation: labelFloat 5s ease-in-out infinite;
 }
 
+body .spline-page .ai-label-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  border-radius: 8px;
+  font-size: 15px;
+  background: rgba(22, 212, 208, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(22, 212, 208, 0.28);
+}
+
+body .spline-page .ai-label-body {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+body .spline-page .ai-label-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #fff;
+}
+
+body .spline-page .ai-label-sub {
+  margin-top: 2px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #16d4d0;
+  opacity: 0.85;
+}
+
 /* The six orbital zones. The top pair and middle pair share one vertical level
-   each; the bottom pair shares one baseline. The centered top label gets its
-   own keyframes so the translateX(-50%) axis pin survives the float loop. */
-body .spline-page .label-7.hero-label--hiring { top: var(--label-top); left: 50%; transform: translateX(-50%); animation: labelFloatCentered 5s ease-in-out infinite; animation-delay: -5.2s; }
-body .spline-page .label-1.hero-label--personalized { top: var(--label-top-side); left: 0; animation-delay: -1s; }
-body .spline-page .label-2.hero-label--mentorship { top: var(--label-top-side); right: 0; animation-delay: -1.7s; }
+   each; the bottom pair shares one baseline. The labels sit in a wide six-point
+   orbit around the centered robot so every pillar reads as a focus area. */
+body .spline-page .label-7.hero-label--hiring { top: var(--label-top); left: 50%; transform: translateX(-50%); animation: labelFloatCentered 5s ease-in-out infinite; animation-delay: -5.2s; font-size: 12px; min-height: 30px; padding: 5px 12px; }
+body .spline-page .label-7.hero-label--hiring .ai-label-sub { display: none; }
+body .spline-page .label-1.hero-label--personalized { top: var(--label-top-side); left: 4px; animation-delay: -1s; }
+body .spline-page .label-2.hero-label--mentorship { top: var(--label-top-side); right: 4px; animation-delay: -1.7s; }
 body .spline-page .label-3.hero-label--interview { top: var(--label-top-mid); left: 0; animation-delay: -2.4s; }
 body .spline-page .label-4.hero-label--placement { top: var(--label-top-mid); right: 0; animation-delay: -3.1s; }
-body .spline-page .label-5.hero-label--verified { bottom: var(--label-bottom); left: var(--label-bottom); animation-delay: -3.8s; }
-body .spline-page .label-6.hero-label--career { bottom: var(--label-bottom); right: var(--label-bottom); animation-delay: -4.5s; }
+body .spline-page .label-5.hero-label--verified { bottom: var(--label-bottom); left: 10px; animation-delay: -3.8s; }
+body .spline-page .label-6.hero-label--career { bottom: var(--label-bottom); right: 10px; animation-delay: -4.5s; }
 
 /* The labelFloat loop that rides on translateX(-50%) without dropping the pin. */
 @keyframes labelFloatCentered {
@@ -434,7 +469,23 @@ body .spline-page .stat-strip span {
   }
 
   body .spline-page .ai-label {
-    font-size: 11.5px !important;
+    min-height: 38px;
+    padding: 7px 12px 7px 9px;
+    gap: 7px;
+  }
+
+  body .spline-page .ai-label-icon {
+    width: 22px;
+    height: 22px;
+    font-size: 13px;
+  }
+
+  body .spline-page .ai-label-title {
+    font-size: 11.5px;
+  }
+
+  body .spline-page .ai-label-sub {
+    font-size: 9px;
   }
 
   body .spline-page .stat-strip {
@@ -469,7 +520,16 @@ body .spline-page .stat-strip span {
   }
 
   body .spline-page .ai-label {
-    font-size: 12px !important;
+    min-height: 40px;
+    padding: 7px 13px 7px 9px;
+  }
+
+  body .spline-page .ai-label-title {
+    font-size: 12px;
+  }
+
+  body .spline-page .ai-label-sub {
+    font-size: 9.5px;
   }
 }
 
@@ -521,9 +581,23 @@ body .spline-page .stat-strip span {
   }
 
   body .spline-page .ai-label {
-    font-size: 10px !important;
-    padding: 7px 10px;
-    min-height: 24px;
+    min-height: 34px;
+    padding: 6px 10px 6px 7px;
+    gap: 6px;
+  }
+
+  body .spline-page .ai-label-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+  }
+
+  body .spline-page .ai-label-title {
+    font-size: 10.5px;
+  }
+
+  body .spline-page .ai-label-sub {
+    font-size: 8.5px;
   }
 
   /* mobile-responsiveness.css:1100 hides the whole label rail below 980px;
@@ -619,9 +693,23 @@ body .spline-page .stat-strip span {
   }
 
   body .spline-page .ai-label {
-    font-size: 10.5px !important;
-    padding: 7px 10px;
-    min-height: 24px;
+    min-height: 32px;
+    padding: 6px 9px 6px 6px;
+    gap: 5px;
+  }
+
+  body .spline-page .ai-label-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 11px;
+  }
+
+  body .spline-page .ai-label-title {
+    font-size: 10px;
+  }
+
+  body .spline-page .ai-label-sub {
+    font-size: 8px;
   }
 
   /* Nudge the two right-hand labels in with the smaller stage. */
