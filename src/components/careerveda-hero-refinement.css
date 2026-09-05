@@ -20,7 +20,7 @@
    stats — so the left edge of the eyebrow, H1, description, CTA and every
    stat all share the same margin from the viewport. */
 :root {
-  --cv-rail: min(calc(100% - 80px), 1440px);
+  --cv-rail: min(calc(100% - 72px), 1280px);
 }
 
 body .spline-page .hero-layout {
@@ -67,8 +67,8 @@ body .spline-page .hero-word {
 
 /* ── 2. Desktop hero grid: two columns, balanced and natural ─────────────── */
 body .spline-page .hero-layout {
-  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
-  gap: clamp(28px, 3.5vw, 60px);
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(32px, 4vw, 56px);
   align-items: center;
   /* Natural sizing: the copy and robot decide the height; this floor only guards
      against a too-shallow hero. Leave room below for the stats proof layer so
@@ -82,8 +82,10 @@ body .spline-page .hero-layout {
    top/transform positioning anywhere. */
 body .spline-page .hero-copy {
   width: min(640px, 100%);
+  max-width: 620px;
   justify-self: start;
   align-self: center;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -95,9 +97,9 @@ body .spline-page .hero-copy .eyebrow {
   margin: 0 0 20px;
   color: rgba(255, 255, 255, 0.72) !important;
   font-size: 14px !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
   line-height: 1.35 !important;
-  letter-spacing: 0.03em !important;
+  letter-spacing: 0.10em !important;
   text-transform: uppercase;
 }
 
@@ -108,9 +110,9 @@ body .spline-page .hero-copy h1 {
   max-width: 620px;
   margin: 0;
   color: #ffffff !important;
-  font-size: clamp(50px, 4.8vw, 68px) !important;
+  font-size: clamp(48px, 5vw, 72px) !important;
   font-weight: 800 !important;
-  line-height: 1.02 !important;
+  line-height: 1.0 !important;
   letter-spacing: -0.045em !important;
   text-wrap: balance;
 }
@@ -122,12 +124,12 @@ body .spline-page .hero-title-accent {
 
 /* Description — readable, even spacing, clear gap below the H1. */
 body .spline-page .hero-copy > p {
-  max-width: 580px;
+  max-width: 610px;
   margin: 22px 0 0;
-  color: rgba(226, 232, 240, 0.68) !important;
+  color: rgba(255, 255, 255, 0.74) !important;
   font-size: clamp(16px, 1.1vw, 18px) !important;
   font-weight: 400 !important;
-  line-height: 1.66 !important;
+  line-height: 1.6 !important;
   letter-spacing: -0.01em;
 }
 
