@@ -39,7 +39,11 @@ test.describe("admin authentication", () => {
 
     await page.reload();
 
-    await expect(page.getByRole("link", {name: /programs/i}).first()).toBeVisible();
+    // After reload the access token is gone; the app must silently refresh
+    // from the httpOnly cookie and redirect back to the dashboard.  Webkit
+    // needs a longer settle time for the cookie round-trip + JS hydration.
+    const programsLink = page.getByRole("link", {name: /programs/i}).first();
+    await expect(programsLink).toBeVisible({timeout: 20_000});
     await expect(page.getByLabel(/password/i)).toHaveCount(0);
   });
 
