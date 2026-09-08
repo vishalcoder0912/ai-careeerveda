@@ -57,3 +57,9 @@ graphify-out/
 
 # Docker
 docker-compose.override.yml
+
+# Debug scratch scripts / screenshots (local only, never committed)
+dbg-deck.mjs
+debug-*.mjs
+debug-hero-*.png
+shot-full.png

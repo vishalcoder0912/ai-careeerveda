@@ -32,6 +32,10 @@ export default [
       // not Node modules. No globals set fits them, so linting them only ever
       // produced no-undef noise with zero signal.
       "**/_*.mjs",
+      // Root debug-* scratch scripts are the same kind of helper and are
+      // gitignored (local only) — they are not this project's code.
+      "debug-*.mjs",
+      "dbg-deck.mjs",
     ],
   },
 
