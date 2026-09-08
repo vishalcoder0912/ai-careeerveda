@@ -73,6 +73,7 @@
   -webkit-mask-image: radial-gradient(rgba(235, 235, 235, 0) 70%, var(--overlay-blur-color, #120f17) 90%);
   mask-image: radial-gradient(rgba(235, 235, 235, 0) 70%, var(--overlay-blur-color, #120f17) 90%);
   backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
 }
 
 .sphere-root .item {
@@ -165,6 +166,7 @@
   opacity: 0;
   transition: opacity 500ms ease;
   backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
 }
 
 .sphere-root .viewer__close {

@@ -51,6 +51,7 @@
   background: rgba(255, 255, 255, 0.76);
   box-shadow: 0 14px 42px rgba(93, 59, 238, 0.08);
   backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 #faculty .section-label::before,
@@ -101,6 +102,7 @@
     0 24px 70px rgba(93, 59, 238, 0.09),
     inset 0 0 0 1px rgba(255, 255, 255, 0.68);
   backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   transition:
     transform 260ms ease,
     border-color 260ms ease,

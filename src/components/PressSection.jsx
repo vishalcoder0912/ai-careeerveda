@@ -1,6 +1,6 @@
-import {useState} from "react";
+import {useCallback, useLayoutEffect, useRef, useState} from "react";
 import {Reveal} from "./motionPrimitives";
-import ScrollStack, {ScrollStackItem} from "./ScrollStack";
+import {useLenis} from "../lib/smoothScroll";
 import {pressArticles, pressLogos, pressOutlets} from "../data/pressArticles";
 import {cdnImage} from "../lib/imageCdn";
 import "./press-section.css";
@@ -57,118 +57,255 @@ const OutletChip = ({source}) => {
   );
 };
 
-// The coverage cards deck and pin as the page scrolls past them, so the section
-// reads as a prized stack being dealt rather than a list of clippings. This uses
-// a deliberately mild, readable stack: near-full scale, no blur, and a very small
-// per-card tilt, so the reveal stays a flourish and never makes the copy hard to
-// read. The scroll-stack-scroller is clipped (see press-section.css) so a card
-// translating as it pins can never escape the section and paint over the
-// Consultation section that follows it.
-const PressSection = () => (
-  <section id="press" className="press-section">
-    <Reveal className="press-section-heading">
-      <span className="label">Media Coverage</span>
-      <h2>CareerVeda in the News</h2>
-      <p>
-        Featured across India's leading publications for placement outcomes and
-        upskilling excellence.
-      </p>
-    </Reveal>
+// A stack card sits inside a SLOT. The slot owns the document height — real
+// layout height of `card height + pin hold` — while the card itself does the
+// `position: sticky` pinning. Separating the two is what keeps the whole stack
+// in the press section's normal document flow: a sticky card can never stray
+// outside its slot, and a slot can never stray outside the section, so no card
+// can paint below the section into the Consultation area, no matter how fast
+// the scroll. The slot is fed `--card-h` at runtime here — stories vary in
+// height and images/fonts settle late — and press-section.css turns it into
+// layout height.
+const PressCardSlot = ({children, className = ""}) => {
+  const ref = useRef(null);
 
-    <ScrollStack
-      className="press-stack"
-      useWindowScroll
-      itemDistance={90}
-      itemStackDistance={18}
-      itemScale={0.012}
-      baseScale={0.96}
-      stackPosition="22%"
-      scaleEndPosition="10%"
-      blurAmount={0}
-    >
-      {pressArticles.map((article) => (
-        <ScrollStackItem key={article.id} itemClassName="press-card">
-          {/* Head is a two-column grid: the story on the left, its artwork in the
-              top-right. An article with no `image` keeps the whole width, so the
-              layout does not depend on every story having one. */}
-          <div className={`press-card-head${article.image ? " has-media" : ""}`}>
-            <div className="press-card-copy">
-              <span className="press-eyebrow">
-                <span className="press-tag">{article.tag}</span>
-                {article.date}
-              </span>
-              <h3>{article.title}</h3>
-              <p className="press-excerpt">{article.excerpt}</p>
-            </div>
+  useLayoutEffect(() => {
+    const wrapper = ref.current;
+    if (!wrapper) return undefined;
+    const card = wrapper.firstElementChild;
+    if (!card) return undefined;
 
-            {article.image && (
-              <div className="press-card-media">
-                <img
-                  src={cdnImage(article.image, CARD_IMAGE_WIDTH)}
-                  alt=""
-                  width={CARD_IMAGE_WIDTH}
-                  height={Math.round(CARD_IMAGE_WIDTH * 0.75)}
-                  loading="lazy"
-                  decoding="async"
-                  draggable="false"
-                  // A dead URL would leave an empty framed box in the corner of the
-                  // card, so remove the frame and let the story run full width.
-                  onError={(event) => {
-                    event.currentTarget.parentElement?.remove();
-                  }}
-                />
-              </div>
-            )}
-          </div>
+    const setHeight = () => {
+      wrapper.style.setProperty("--card-h", `${Math.round(card.getBoundingClientRect().height)}px`);
+    };
+    setHeight();
 
-          {article.stats && (
-            <div className="press-stat-row">
-              {article.stats.map(([value, label]) => (
-                <div className="press-stat" key={label}>
-                  <strong>{value}</strong>
-                  <span>{label}</span>
-                </div>
-              ))}
-            </div>
-          )}
+    const resizeObserver = new ResizeObserver(setHeight);
+    resizeObserver.observe(card);
+    if (document.fonts?.ready) document.fonts.ready.then(setHeight).catch(() => {});
+    return () => resizeObserver.disconnect();
+  }, []);
 
-          {article.highlights && (
-            <div className="press-highlights">
-              {article.highlights.map((point) => (
-                <span key={point}>{point}</span>
-              ))}
-            </div>
-          )}
+  return (
+    <div ref={ref} className={`press-card-slot ${className}`.trim()}>
+      {children}
+    </div>
+  );
+};
 
-          <div className="press-sources">
-            <small>Featured in</small>
-            {article.sources.map((source) => (
-              <OutletChip key={source.name} source={source} />
-            ))}
-          </div>
-        </ScrollStackItem>
-      ))}
+// The depth cue for the deck. CSS owns the mechanics (sticky pinning); this
+// only nudges each card's `--stack-scale` / `--stack-y`, the two variables the
+// card's transform is written in terms of. It never touches position and never
+// computes a page coordinate — progress is read from *sibling* offsets
+// (this card's bottom vs. the next card's top), which is pure paint-space
+// geometry and stays correct no matter which scroll container is in charge.
+//
+// Progress for card i = how far the next card has risen over its bottom,
+// normalised across one cover window (half the card's height), clamped 0→1. So
+// as "CARD 2" approaches it visibly scales down to 0.97 and rises the tiny
+// -4px, the deck reads layered, and the final card (nothing left to cover it)
+// stays at full size. Transform stays tiny on purpose — the stack reads clean
+// rather than animated.
+const PressStackTweaks = ({stackRef}) => {
+  const sharedLenis = useLenis();
+  const rafRef = useRef(0);
+  const travelRef = useRef([]);
 
-      {/* Last card in the deck: the long tail of outlets, as a wall of names
-          rather than one card each. */}
-      <ScrollStackItem itemClassName="press-card press-card--wall">
-        <span className="press-eyebrow">
-          <span className="press-tag">Coverage</span>
-          Across India
-        </span>
-        <h3>Featured across India&apos;s media</h3>
-        <p className="press-excerpt">
-          CareerVeda&apos;s placement milestones and upskilling programs have been
-          covered by publications nationwide.
+  const measure = useCallback(() => {
+    const root = stackRef.current;
+    if (!root) return;
+    travelRef.current = Array.from(root.querySelectorAll(".press-card-slot .press-card")).map((card) =>
+      Math.max(120, card.getBoundingClientRect().height * 0.5)
+    );
+  }, [stackRef]);
+
+  const update = useCallback(() => {
+    const root = stackRef.current;
+    const cards = root?.querySelectorAll(".press-card-slot .press-card");
+    if (!cards || !cards.length) return;
+
+    const tops = Array.from(cards, (card) => card.getBoundingClientRect().top);
+    const bottoms = Array.from(cards, (card) => card.getBoundingClientRect().bottom);
+
+    for (let i = 0; i < cards.length; i += 1) {
+      const progress =
+        i < cards.length - 1
+          ? Math.min(1, Math.max(0, (bottoms[i] - tops[i + 1]) / (travelRef.current[i] || 240)))
+          : 0;
+      const scale = 1 - progress * 0.03;
+      const y = -progress * 4;
+      cards[i].style.setProperty("--stack-scale", scale.toFixed(3));
+      cards[i].style.setProperty("--stack-y", `${y.toFixed(1)}px`);
+    }
+  }, [stackRef]);
+
+  const schedule = useCallback(() => {
+    if (rafRef.current) return;
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = 0;
+      update();
+    });
+  }, [update]);
+
+  useLayoutEffect(() => {
+    const root = stackRef.current;
+    if (!root) return undefined;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
+
+    measure();
+    update();
+
+    // Layout can change (resize, font swap, images settling) independently of
+    // scroll; re-measure there. Scroll only re-applies the transforms.
+    let remeasureFrame = 0;
+    const scheduleRemeasure = () => {
+      if (remeasureFrame) return;
+      remeasureFrame = requestAnimationFrame(() => {
+        remeasureFrame = 0;
+        measure();
+        update();
+      });
+    };
+
+    // The app already runs one Lenis (SmoothScrollProvider, at the root); ask
+    // it for the scroll signal rather than constructing a rival smooth-scroller.
+    // sharedLenis is null when smooth scrolling is off, and the native listener
+    // covers that path — both fire the same rAF-batched update.
+    if (sharedLenis) sharedLenis.on("scroll", schedule);
+    window.addEventListener("scroll", schedule, {passive: true});
+    window.addEventListener("resize", scheduleRemeasure);
+
+    const resizeObserver = new ResizeObserver(scheduleRemeasure);
+    root.querySelectorAll(".press-card-slot, .press-card-slot .press-card").forEach((element) => {
+      resizeObserver.observe(element);
+    });
+    if (document.fonts?.ready) document.fonts.ready.then(scheduleRemeasure).catch(() => {});
+
+    return () => {
+      if (sharedLenis) sharedLenis.off("scroll", schedule);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", scheduleRemeasure);
+      resizeObserver.disconnect();
+      if (remeasureFrame) cancelAnimationFrame(remeasureFrame);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      travelRef.current = [];
+    };
+  }, [measure, update, schedule, sharedLenis, stackRef]);
+
+  return null;
+};
+
+const PressSection = () => {
+  const stackRef = useRef(null);
+
+  return (
+    <section id="press" className="press-section">
+      <Reveal className="press-section-heading">
+        <span className="label">Media Coverage</span>
+        <h2>CareerVeda in the News</h2>
+        <p>
+          Featured across India's leading publications for placement outcomes and
+          upskilling excellence.
         </p>
-        <div className="press-wall-grid">
-          {pressOutlets.map((source) => (
-            <OutletChip key={source.name} source={source} />
+      </Reveal>
+
+      <div className="press-stack" ref={stackRef}>
+        <div className="press-stack-inner">
+          {pressArticles.map((article) => (
+            <PressCardSlot key={article.id}>
+              <article className="press-card">
+                {/* Head is a two-column grid: the story on the left, its artwork in
+                    the top-right. An article with no `image` keeps the whole width,
+                    so the layout does not depend on every story having one. */}
+                <div className={`press-card-head${article.image ? " has-media" : ""}`}>
+                  <div className="press-card-copy">
+                    <span className="press-eyebrow">
+                      <span className="press-tag">{article.tag}</span>
+                      {article.date}
+                    </span>
+                    <h3>{article.title}</h3>
+                    <p className="press-excerpt">{article.excerpt}</p>
+                  </div>
+
+                  {article.image && (
+                    <div className="press-card-media">
+                      <img
+                        src={cdnImage(article.image, CARD_IMAGE_WIDTH)}
+                        alt=""
+                        width={CARD_IMAGE_WIDTH}
+                        height={Math.round(CARD_IMAGE_WIDTH * 0.75)}
+                        loading="lazy"
+                        decoding="async"
+                        draggable="false"
+                        // A dead URL would leave an empty framed box in the corner
+                        // of the card, so remove the frame and let the story run
+                        // full width.
+                        onError={(event) => {
+                          event.currentTarget.parentElement?.remove();
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {article.stats && (
+                  <div className="press-stat-row">
+                    {article.stats.map(([value, label]) => (
+                      <div className="press-stat" key={label}>
+                        <strong>{value}</strong>
+                        <span>{label}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {article.highlights && (
+                  <div className="press-highlights">
+                    {article.highlights.map((point) => (
+                      <span key={point}>{point}</span>
+                    ))}
+                  </div>
+                )}
+
+                <div className="press-sources">
+                  <small>Featured in</small>
+                  {article.sources.map((source) => (
+                    <OutletChip key={source.name} source={source} />
+                  ))}
+                </div>
+              </article>
+            </PressCardSlot>
           ))}
+
+          {/* Closing card in the stack: the long tail of outlets as a wall of
+              names rather than one card each. It is the final card — it pins,
+              holds briefly, then releases and the section hands off to the
+              Consultation section. */}
+          <PressCardSlot className="press-card-wall" key="press-wall">
+            <article className="press-card press-card--wall">
+              <span className="press-eyebrow">
+                <span className="press-tag">Coverage</span>
+                Across India
+              </span>
+              <h3>Featured across India&apos;s media</h3>
+              <p className="press-excerpt">
+                CareerVeda&apos;s placement milestones and upskilling programs have been
+                covered by publications nationwide.
+              </p>
+              <div className="press-wall-grid">
+                {pressOutlets.map((source) => (
+                  <OutletChip key={source.name} source={source} />
+                ))}
+              </div>
+            </article>
+          </PressCardSlot>
         </div>
-      </ScrollStackItem>
-    </ScrollStack>
-  </section>
-);
+      </div>
+
+      <PressStackTweaks stackRef={stackRef} />
+    </section>
+  );
+};
 
 export default PressSection;

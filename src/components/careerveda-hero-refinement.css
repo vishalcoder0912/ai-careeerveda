@@ -1,37 +1,15 @@
-/* ---------------------------------------------------------------------------
-   CAREERVEDA HERO — PREMIUM EDITORIAL COMPOSITION
-   -----------------------------------------------
-   One wide editorial hero: LEFT copy / RIGHT Spline / transparent proof strip.
-   The content is unchanged; this file governs layout, alignment, type scale,
-   spacing, hierarchy, floating-label anchor zones and the stats placement.
 
-   Loaded AFTER SplineLanding.css (see HomePage.jsx) and written with
-   `body .spline-page`-level specificity so it outranks every earlier hero rule
-   (real-careerveda-palette.css, site-theme.css, professional-hero-sizing.css,
-   navbar-hero-merge.css, mobile-responsiveness.css, etc.) without touching any
-   other section of the site.
-
-   The navbar merges over the hero top via navbar-hero-merge.css (margin-top +
-   padding-top), so the hero's own box here is only its content region.
----------------------------------------------------------------------------- */
-
-/* ── 0. Shared global rail ─────────────────────────────────────────────────
-   ONE horizontal alignment system for the hero content, the visual and the
-   stats — so the left edge of the eyebrow, H1, description, CTA and every
-   stat all share the same margin from the viewport. */
 :root {
   --cv-rail: min(calc(100% - 72px), 1280px);
-
-  /* The .hero-spline-stage coordinate system — one place to retune the whole
-     robot + label orbit. The stage is the fixed box; --cv-spline is the size of
-     the centered robot square; the --label-* values anchor the six orbital
-     zones in plain stage pixels. */
+  --cv-stage: 640px;
   --cv-stage-h: 540px;
-  --cv-spline: 400px;
-  --label-top: 34px;
-  --label-top-side: 148px;
-  --label-top-mid: 300px;
-  --label-bottom: 62px;
+  --cv-spline: 300px;
+  --label-gap: 1px;
+  --label-top: 90px;
+  --label-top-side: 170px;
+  --label-top-mid: 295px;
+  --label-bottom: 69px;
+  --label-side: 45px;
 }
 
 body .spline-page .hero-layout {
@@ -131,6 +109,7 @@ body .spline-page .hero-copy h1 {
 body .spline-page .hero-title-accent {
   color: #16d4d0;
   font-weight: 800;
+  white-space: nowrap;
 }
 
 /* Description — readable, even spacing, clear gap below the H1. */
@@ -196,46 +175,59 @@ body .spline-page .hero-actions .secondary-action {
 
 /* ── 5. Robot: its own centered stage ───────────────────────────────────────
    One coordinate system controls the robot and its labels together.
-   .hero-spline-stage is the fixed reference box; the Spline scene sits at its
-   exact centre in a --cv-spline square, and every label is anchored to the
-   stage in plain top/right/bottom/left pixels — never to the page, never to
-   the iframe, never with translate compensation — so the robot and the labels
-   live in two separate zones by geometry, not by masking overlap. A 400px
-   square inside a 620px stage leaves a ring around the robot that is the
-   labels' exclusive home. */
-body .spline-page .hero-visual-shell.hero-spline-stage {
+   .hero-visual-shell is the plain grid child that the responsive rules move;
+   .hero-spline-stage is the local reference box inside it. The Spline scene
+   sits at the stage's exact centre in a --cv-spline square, and every label is
+   anchored to the stage in plain top/right/bottom/left pixels — never to the
+   page, never to the iframe, never with translate compensation — so the robot
+   and the labels live in two separate zones by geometry, not by masking
+   overlap. A 300px square inside a 640px stage leaves a ring around the robot
+   that is the labels' exclusive home. */
+body .spline-page .hero-visual-shell {
   position: relative;
-  width: min(100%, 620px);
-  max-width: 620px;
-  height: var(--cv-stage-h);
+  width: 100%;
   min-height: 0 !important;
-  margin-inline: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: visible !important;
-  z-index: 1;
+  z-index: 4;
+}
+
+body .spline-page .hero-spline-stage {
+  position: relative;
+  width: min(100%, var(--cv-stage));
+  height: var(--cv-stage-h);
+  margin-inline: auto;
+  overflow: visible !important;
+  z-index: 3;
 }
 
 /* The scene's box: the live iframe, sized as an even square so the robot reads
-   centred. translate(-50%,-50%) centers it without inset arithmetic. */
-body .spline-page .spline-frame.hero-spline-scene {
+   centred. translate(-50%,-50%) centers it without inset arithmetic.
+
+   overflow is hidden so the box crops what the embed page paints below its
+   canvas: Spline's 137x36 "Built with Spline" pill, which the overhang rule in
+   image-position-fix.css (height calc(100% + 72px)) exposes in a strip just
+   under the scene. Neither a wash nor clip-path can hide that pill — the
+   composited iframe paints through both — but an overflow clip on this frame
+   reliably cuts the whole strip (nothing of the design lives there: measured
+   pixels across every breakpoint show only the pill in those rows, and the
+   frame's 420px width matches the iframe exactly, so vertical-only crop). */
+body .spline-page .spline-frame {
   position: absolute !important;
+  inset: auto !important;
   left: 50% !important;
   top: 50% !important;
-  inset: auto !important;
   width: var(--cv-spline) !important;
   height: var(--cv-spline) !important;
   transform: translate(-50%, -50%) !important;
   transform-origin: center center !important;
-  overflow: visible !important;
+  overflow: hidden !important;
+  border-radius: 0 !important;
   z-index: 2 !important;
 }
 
-/* The embed fills its square exactly — no scale, no per-axis stretch, no
-   8% camera-shift guess (that was tuned for a full-column box that no longer
-   exists). */
-body .spline-page .spline-frame.hero-spline-scene .spline-scene {
+/* The embed fills its square exactly — no scale, no per-axis stretch, no 8%
+   camera-shift guess. */
+body .spline-page .spline-frame .spline-scene {
   position: absolute !important;
   inset: 0 !important;
   width: 100% !important;
@@ -248,13 +240,13 @@ body .spline-page .spline-frame.hero-spline-scene .spline-scene {
    same way, so the swap is not a different composition. */
 body .spline-page .spline-poster {
   position: absolute !important;
+  inset: auto !important;
   left: 50% !important;
   top: 50% !important;
-  inset: auto !important;
   width: var(--cv-spline) !important;
   height: var(--cv-spline) !important;
   transform: translate(-50%, -50%) !important;
-  z-index: 1;
+  z-index: 2;
   pointer-events: none;
 }
 body .spline-page .spline-poster img {
@@ -267,10 +259,11 @@ body .spline-page .spline-poster img {
 /* Subtle local glow only — no fog, no cloud, no large blurred region. */
 body .spline-page .spline-glow {
   inset: 14% 12% 0;
-  filter: blur(40px);
+  filter: blur(20px);
   opacity: 0.5;
+  transform: none !important;
   background:
-    radial-gradient(circle at 52% 46%, rgba(22, 212, 208, 0.04), transparent 46%);
+    radial-gradient(circle, rgba(22, 212, 208, 0.04), transparent 60%);
 }
 
 /* ── 6. Floating labels: balanced orbit around the stage ────────────────────
@@ -284,91 +277,54 @@ body .spline-page .floating-labels {
   pointer-events: none;
 }
 
+/* Pill, not card: a single line of capsule text, so the old icon / body /
+   title / sub scaffolding is gone. The float rides on the inner span only —
+   the outer keeps its positional transform (translateX(-50%) on the centered
+   top label) untouched, so the pin and the animation can never fight. */
 body .spline-page .ai-label {
   position: absolute;
-  z-index: 4;
+  z-index: 5;
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  min-height: 42px;
-  padding: 8px 14px 8px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 12px;
-  color: rgba(255, 255, 255, 0.94);
-  background: linear-gradient(180deg, rgba(13, 42, 62, 0.9), rgba(6, 24, 40, 0.9));
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  min-height: 38px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  color: #ffffff;
+  background: rgba(7, 28, 44, 0.92);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.28);
+  font-size: 13.5px;
+  font-weight: 700;
   line-height: 1.1;
+  letter-spacing: 0.01em;
   white-space: nowrap;
   pointer-events: none;
   transition: opacity 200ms ease;
-  animation: labelFloat 5s ease-in-out infinite;
 }
 
-body .spline-page .ai-label-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  flex: 0 0 auto;
-  border-radius: 8px;
-  font-size: 15px;
-  background: rgba(22, 212, 208, 0.16);
-  box-shadow: inset 0 0 0 1px rgba(22, 212, 208, 0.28);
+body .spline-page .ai-label-inner {
+  display: inline-block;
+  animation: none;
 }
 
-body .spline-page .ai-label-body {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-body .spline-page .ai-label-title {
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  color: #fff;
-}
-
-body .spline-page .ai-label-sub {
-  margin-top: 2px;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #16d4d0;
-  opacity: 0.85;
-}
-
-/* The six orbital zones. The top pair and middle pair share one vertical level
-   each; the bottom pair shares one baseline. The labels sit in a wide six-point
-   orbit around the centered robot so every pillar reads as a focus area. */
-body .spline-page .label-7.hero-label--hiring { top: var(--label-top); left: 50%; transform: translateX(-50%); animation: labelFloatCentered 5s ease-in-out infinite; animation-delay: -5.2s; font-size: 12px; min-height: 30px; padding: 5px 12px; }
-body .spline-page .label-7.hero-label--hiring .ai-label-sub { display: none; }
-body .spline-page .label-1.hero-label--personalized { top: var(--label-top-side); left: 4px; animation-delay: -1s; }
-body .spline-page .label-2.hero-label--mentorship { top: var(--label-top-side); right: 4px; animation-delay: -1.7s; }
-body .spline-page .label-3.hero-label--interview { top: var(--label-top-mid); left: 0; animation-delay: -2.4s; }
-body .spline-page .label-4.hero-label--placement { top: var(--label-top-mid); right: 0; animation-delay: -3.1s; }
-body .spline-page .label-5.hero-label--verified { bottom: var(--label-bottom); left: 10px; animation-delay: -3.8s; }
-body .spline-page .label-6.hero-label--career { bottom: var(--label-bottom); right: 10px; animation-delay: -4.5s; }
-
-/* The labelFloat loop that rides on translateX(-50%) without dropping the pin. */
-@keyframes labelFloatCentered {
-  0%,
-  100% {
-    transform: translateX(-50%) translate3d(0, 0, 0);
-  }
-
-  50% {
-    transform: translateX(-50%) translate3d(0, -10px, 0);
-  }
-}
+/* The seven orbital zones. The top, middle and bottom pairs each share one
+   horizontal level; the centered top pill rides the top baseline. The side
+   pills are anchored 14px OUTSIDE the --cv-spline robot square (not to the
+   stage edges) so the pill — whatever its real width — can never sit on the
+   robot. The bottom pair is parked below the square's bottom edge and the top
+   pill above its top edge, so the whole ring lives between the robot and the
+   empty stage ring / copy instead of on the robot. */
+body .spline-page .label-hiring { top: var(--label-top); left: 50%; transform: translateX(-50%); --label-delay: -5.2s; }
+body .spline-page .label-personalized { top: var(--label-top-side); left: auto; right: calc(50% + var(--cv-spline) / 2 + var(--label-gap)); --label-delay: -1s; }
+body .spline-page .label-mentorship { top: var(--label-top-side); right: auto; left: calc(50% + var(--cv-spline) / 2 + var(--label-gap)); --label-delay: -1.7s; }
+body .spline-page .label-interview { top: var(--label-top-mid); left: auto; right: calc(50% + var(--cv-spline) / 2 + var(--label-gap)); --label-delay: -2.4s; }
+body .spline-page .label-placement { top: var(--label-top-mid); right: auto; left: calc(50% + var(--cv-spline) / 2 + var(--label-gap)); --label-delay: -3.1s; }
+body .spline-page .label-verified { bottom: var(--label-bottom); left: var(--label-side); --label-delay: -3.8s; }
+body .spline-page .label-career { bottom: var(--label-bottom); right: var(--label-side); --label-delay: -4.5s; }
 
 /* Respect reduced motion: no floating labels. */
 @media (prefers-reduced-motion: reduce) {
-  body .spline-page .ai-label {
+  body .spline-page .ai-label-inner {
     animation: none !important;
   }
 }
@@ -448,18 +404,28 @@ body .spline-page .stat-strip span {
 /* ── 8. Tablet 861–1024: 3 + 2 stat columns, tighter hero ────────────────── */
 @media (max-width: 1024px) and (min-width: 861px) {
   body .spline-page .hero-layout {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
-    gap: 28px;
-    padding-bottom: 40px;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding-bottom: 16px;
   }
 
-  body .spline-page .hero-visual-shell.hero-spline-stage {
+  /* Spline on top, copy below it on tablets. */
+  body .spline-page .hero-visual-shell {
+    grid-row: 1 !important;
+  }
+
+  body .spline-page .hero-copy {
+    grid-row: 2 !important;
+  }
+
+  body .spline-page .hero-spline-stage {
     --cv-stage-h: 470px;
     --cv-spline: 360px;
-    --label-top: 26px;
+    --label-top: 18px;
     --label-top-side: 132px;
     --label-top-mid: 260px;
-    --label-bottom: 48px;
+    --label-bottom: 16px;
+    --label-side: 38px;
     height: var(--cv-stage-h);
     width: min(100%, 560px);
   }
@@ -468,28 +434,33 @@ body .spline-page .stat-strip span {
     inset: 15% 13% 0;
   }
 
+  /* Hide the label ring on tablets — the report robot reads clean alone. */
+  body .spline-page .floating-labels {
+    display: none !important;
+  }
+
   body .spline-page .ai-label {
-    min-height: 38px;
-    padding: 7px 12px 7px 9px;
-    gap: 7px;
-  }
-
-  body .spline-page .ai-label-icon {
-    width: 22px;
-    height: 22px;
-    font-size: 13px;
-  }
-
-  body .spline-page .ai-label-title {
+    min-height: 32px;
+    padding: 0 11px;
     font-size: 11.5px;
   }
 
-  body .spline-page .ai-label-sub {
-    font-size: 9px;
-  }
+  /* No side corridors exist at this width (robot 360px in a ~473px stage), so
+     the ring folds into two horizontal bands — three pills above the robot
+     (centered + two corners), three below. "Career Programs" is withheld: four
+     ~120px pills would not fit one 473px band. */
+  body .spline-page .label-hiring { top: 14px; left: 50%; transform: translateX(-50%); }
+  body .spline-page .label-personalized { top: 14px; left: 24px; right: auto; }
+  body .spline-page .label-mentorship { top: 14px; right: 24px; left: auto; }
+  body .spline-page .label-interview { top: auto; bottom: 14px; left: 24px; right: auto; }
+  body .spline-page .label-verified { top: auto; bottom: 14px; left: 50%; right: auto; transform: translateX(-50%); }
+  body .spline-page .label-placement { top: auto; bottom: 14px; right: 24px; left: auto; }
+  body .spline-page .label-career { display: none !important; }
 
+  /* All five metrics stay on one row across every desktop-sized viewport,
+     tablets in portrait included — one horizontal strip, never a wrap. */
   body .spline-page .stat-strip {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     width: min(calc(100% - 48px), 1400px) !important;
   }
 
@@ -497,21 +468,18 @@ body .spline-page .stat-strip span {
     min-height: 72px;
     padding: 12px 14px !important;
   }
-
-  body .spline-page .stat-strip div:nth-child(3n)::after {
-    display: none;
-  }
 }
 
 /* ── 8b. Laptop 1025–1199: desktop grid, slightly tighter stage ──────────── */
 @media (min-width: 1025px) and (max-width: 1199px) {
-  body .spline-page .hero-visual-shell.hero-spline-stage {
+  body .spline-page .hero-spline-stage {
     --cv-stage-h: 500px;
-    --cv-spline: 380px;
-    --label-top: 30px;
+    --cv-spline: 390px;
+    --label-top: 18px;
     --label-top-side: 140px;
     --label-top-mid: 275px;
-    --label-bottom: 54px;
+    --label-bottom: 16px;
+    --label-side: 42px;
     height: var(--cv-stage-h);
   }
 
@@ -520,17 +488,21 @@ body .spline-page .stat-strip span {
   }
 
   body .spline-page .ai-label {
-    min-height: 40px;
-    padding: 7px 13px 7px 9px;
+    font-size: 13px;
+    min-height: 36px;
+    padding: 0 14px;
   }
 
-  body .spline-page .ai-label-title {
-    font-size: 12px;
-  }
-
-  body .spline-page .ai-label-sub {
-    font-size: 9.5px;
-  }
+  /* Same band fold as the tablet rules: a 390px robot in a ~490–500px stage
+     leaves ~50px corridors, so the side orbit cannot float between the copy
+     text and the robot. The ring sits above and below the robot instead. */
+  body .spline-page .label-hiring { top: 14px; left: 50%; transform: translateX(-50%); }
+  body .spline-page .label-personalized { top: 14px; left: 24px; right: auto; }
+  body .spline-page .label-mentorship { top: 14px; right: 24px; left: auto; }
+  body .spline-page .label-interview { top: auto; bottom: 14px; left: 24px; right: auto; }
+  body .spline-page .label-verified { top: auto; bottom: 14px; left: 50%; right: auto; transform: translateX(-50%); }
+  body .spline-page .label-placement { top: auto; bottom: 14px; right: 24px; left: auto; }
+  body .spline-page .label-career { display: none !important; }
 }
 
 /* ── 9. Mobile ≤ 860: stacked copy → robot → transparent stats ─────────────
@@ -553,24 +525,26 @@ body .spline-page .stat-strip span {
     padding-bottom: 8px;
   }
 
-  /* Copy first, robot below it — SplineLanding.css pins the shell to grid-row 1
-     and the copy to grid-row 2 for the stacked hero; undo that so the phone reads
-     heading → copy → CTA → robot → stats. */
-  body .spline-page .hero-copy {
+  /* Robot first, copy below it — reads Spline → heading → copy → CTA → stats. */
+  body .spline-page .hero-visual-shell {
     grid-row: 1 !important;
+  }
+
+  body .spline-page .hero-copy {
+    grid-row: 2 !important;
     width: 100%;
     text-align: left;
     padding-top: 0 !important;
   }
 
-  body .spline-page .hero-visual-shell.hero-spline-stage {
-    grid-row: 2 !important;
+  body .spline-page .hero-spline-stage {
     --cv-stage-h: 400px;
     --cv-spline: 300px;
-    --label-top: 18px;
+    --label-top: 11px;
     --label-top-side: 120px;
     --label-top-mid: 240px;
-    --label-bottom: 44px;
+    --label-bottom: 10px;
+    --label-side: 34px;
     width: min(100%, 360px);
     height: var(--cv-stage-h);
   }
@@ -581,48 +555,33 @@ body .spline-page .stat-strip span {
   }
 
   body .spline-page .ai-label {
-    min-height: 34px;
-    padding: 6px 10px 6px 7px;
-    gap: 6px;
+    min-height: 32px;
+    padding: 0 10px;
+    font-size: 11px;
   }
 
-  body .spline-page .ai-label-icon {
-    width: 20px;
-    height: 20px;
-    font-size: 12px;
-  }
-
-  body .spline-page .ai-label-title {
-    font-size: 10.5px;
-  }
-
-  body .spline-page .ai-label-sub {
-    font-size: 8.5px;
-  }
-
-  /* mobile-responsiveness.css:1100 hides the whole label rail below 980px;
-     the mobile stage has room for exactly three, so bring the rail back and
-     hide the rest. */
+  /* Hide the entire label rail on phones. */
   body .spline-page .floating-labels {
-    display: block !important;
+    display: none !important;
   }
 
-  body .spline-page .label-1,
-  body .spline-page .label-3,
-  body .spline-page .label-5,
-  body .spline-page .label-6 {
-    display: none;
+  body .spline-page .label-hiring {
+    top: var(--label-top);
+    left: 50%;
+    transform: translateX(-50%);
   }
 
-  body .spline-page .label-2.hero-label--mentorship {
-    top: 120px;
-    right: 6px;
+  body .spline-page .label-mentorship {
+    top: var(--label-top);
+    left: auto;
+    right: 4px;
   }
 
-  body .spline-page .label-4.hero-label--placement {
+  body .spline-page .label-placement {
     top: auto;
-    right: 6px;
-    bottom: 48px;
+    left: auto;
+    bottom: var(--label-bottom);
+    right: 4px;
   }
 
   /* Stats become normal flow below the visual with breathing room. */
@@ -685,42 +644,30 @@ body .spline-page .stat-strip span {
     font-size: 14px !important;
   }
 
-  body .spline-page .hero-visual-shell.hero-spline-stage {
-    --cv-stage-h: 360px;
+  body .spline-page .hero-spline-stage {
+    --cv-stage-h: 250px;
     --cv-spline: 270px;
+    --label-top: 11px;
+    --label-top-side: 104px;
+    --label-bottom: 10px;
+    --label-side: 30px;
     width: min(100%, 320px);
     height: var(--cv-stage-h);
   }
 
   body .spline-page .ai-label {
-    min-height: 32px;
-    padding: 6px 9px 6px 6px;
-    gap: 5px;
-  }
-
-  body .spline-page .ai-label-icon {
-    width: 18px;
-    height: 18px;
-    font-size: 11px;
-  }
-
-  body .spline-page .ai-label-title {
+    min-height: 30px;
+    padding: 0 9px;
     font-size: 10px;
   }
 
-  body .spline-page .ai-label-sub {
-    font-size: 8px;
+  /* Nudge the two surviving labels in with the smaller stage. */
+  body .spline-page .label-mentorship {
+    right: 3px;
   }
 
-  /* Nudge the two right-hand labels in with the smaller stage. */
-  body .spline-page .label-2.hero-label--mentorship {
-    top: 104px;
-    right: 4px;
-  }
-
-  body .spline-page .label-4.hero-label--placement {
-    right: 4px;
-    bottom: 40px;
+  body .spline-page .label-placement {
+    right: 3px;
   }
 
   body .spline-page .hero-actions .primary-action,

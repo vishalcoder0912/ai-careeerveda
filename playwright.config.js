@@ -56,6 +56,11 @@ export default defineConfig({
   projects: [
     {name: "chromium", use: {...devices["Desktop Chrome"]}},
     {name: "mobile-chromium", use: {...devices["Pixel 7"]}},
+    // Safari is WebKit everywhere: macOS Safari, iOS Safari and iPads all run the
+    // same engine these projects exercise, so this is the only pair needed.
+    // `npx playwright install webkit` once before the first run.
+    {name: "webkit", use: {...devices["Desktop Safari"]}},
+    {name: "mobile-webkit", use: {...devices["iPhone 13"]}},
   ],
 
   webServer: [

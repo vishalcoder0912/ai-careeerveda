@@ -1,7 +1,13 @@
 /* Small-screen layout guardrails for the public home page. */
 .spline-page--grid {
   width: 100%;
-  overflow-x: hidden;
+  /* `clip`, deliberately not `hidden`: overflow-x: hidden on this page-wide
+     element makes overflow-y compute to `auto` (a visible axis gets coerced),
+     which turns <main> into a scroll container — and a non-scrolling scroll
+     container silently swallows every position:sticky card inside the page
+     (they pin against it, and it never scrolls, so they never pin at all).
+     clip clips horizontally without creating a scroll container. */
+  overflow-x: clip;
 }
 
 @media (max-width: 1024px) {

@@ -144,6 +144,7 @@
   background: linear-gradient(135deg, rgba(92, 59, 168, 0.52), rgba(34, 17, 86, 0.42));
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 20px 64px rgba(14, 6, 44, 0.28);
   backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
   transition: transform 260ms ease, border-color 260ms ease, background 260ms ease, box-shadow 260ms ease;
 }
 
@@ -281,6 +282,7 @@
   background: linear-gradient(180deg, rgba(19, 10, 52, 0.94), rgba(7, 4, 25, 0.9));
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1) inset, 0 0 54px rgba(174, 92, 255, 0.58), 0 32px 100px rgba(7, 4, 24, 0.56);
   backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
 }
 
 .strategy-section .project-number::before {

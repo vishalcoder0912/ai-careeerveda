@@ -1,6 +1,27 @@
-/* "CareerVeda in the News" section + ScrollStack theming.
-   The base ScrollStack.css assumes an internal fixed-height scroller; these
-   overrides let it live in normal page flow driven by window scroll. */
+/* "CareerVeda in the News" — a section-contained sticky-card deck.
+ *
+ * The deck model, in one sentence: every card is `position: sticky` against ONE
+ * shared containing block (`.press-stack-inner`), so once a card parks on its
+ * pin line it STAYS while later cards rise over it from below — a genuine,
+ * persistent pile that layers card over card and releases as a cascade back
+ * into normal flow at the container's end. The window is the only scroll
+ * container; there is no nested scroller, no fixed positioning, and no
+ * overflow-based containment — containment is structural. A sticky card can
+ * never paint past the bottom of its containing block, that block sits ~96px
+ * inside the section (its padding), and the Consultation section follows the
+ * section, so no card can reach it regardless of scroll speed or direction.
+ *
+ * Cards overlap at rest by `--stack-peek` (the visible strip of the card
+ * beneath), each next card pins a little LOWER (`--stack-cascade`) so earlier
+ * cards peek above the newcomer — the classic deck silhouette. The only
+ * scroll-driven work is `PressStackTweaks` (PressSection.jsx), which nudges
+ * `--stack-scale` / `--stack-y` on a card as the next card rises over it. It
+ * never positions anything, and never moves a card toward the viewport. */
+
+:root {
+  --navbar-height: 76px;
+  --stack-top: 108px;
+}
 
 /* This is the first section on the blog route — an empty, fully commented-out
    review block used to sit above it and incidentally provided the clearance.
@@ -9,10 +30,15 @@
 .press-section {
   position: relative;
   /* Stays below the consultation section that follows it (which forms its own
-     stacking context at z-index 5), so a transforming press card can never
-     render over the form. z-index 0 is explicit and documented on purpose. */
+     stacking context at z-index 5). Explicit and documented on purpose. */
   z-index: 0;
-  padding: clamp(116px, 13vw, 168px) max(24px, calc((100% - var(--site-measure)) / 2)) clamp(24px, 4vw, 48px);
+  /* Only horizontal clipping: a card is width-capped and never translates
+     sideways, but stray wide children (logos, overflow) are trimmed without
+     creating a scroll container. Vertical containment is structural — sticky
+     cards live inside their slots, which live inside the section. */
+  overflow-x: clip;
+  overflow-y: visible;
+  padding: clamp(116px, 13vw, 168px) max(24px, calc((100% - var(--site-measure)) / 2)) clamp(40px, 6vw, 80px);
   color: #f1f5f9;
 }
 
@@ -45,27 +71,55 @@
   color: rgba(226, 232, 240, 0.68);
 }
 
-/* ---- window-scroll overrides for the ScrollStack shell ----
-   The cards pin and stack against window scroll. `overflow: clip` CONTAINS the
-   translate3d transforms: a card that translates as it pins can never escape the
-   section and paint over the Consultation section that follows it. (clip, not
-   hidden, so no new scroll container is created.) */
-.press-stack.scroll-stack-scroller {
-  height: auto;
-  overflow: clip;
-  transform: none;
-  will-change: auto;
+/* ---- stack shell ----
+   `.press-stack` is plain document flow; the page owns scrolling. Width is
+   centred on `.press-stack-inner`, not the stack, so the stack can be a plain
+   block alongside the section padding. */
+.press-stack {
+  position: relative;
+  width: 100%;
+  margin-top: clamp(20px, 3vw, 36px);
 }
 
-.press-stack .scroll-stack-inner {
-  width: min(900px, 100%);
+.press-stack-inner {
+  position: relative;
+  width: min(900px, calc(100% - 40px));
   margin-inline: auto;
-  padding: 8px 0 100px;
-  min-height: 0;
+  padding: 8px 0 96px;
 }
 
-/* ---- press card ---- */
-.press-card.scroll-stack-card {
+/* ---- card slot ----
+   `display: contents`: the slot contributes NO layout box, just markup + the
+   measured `--card-h` (so it still inherits custom properties down to the
+   card). This is load-bearing: a real box here would become each card's
+   sticky *containing block*, bounding every card to its own pocket and
+   making a layered pile structurally impossible. With the boxes removed, every
+   card's sticky containing block is the shared `.press-stack-inner`, so cards
+   pile on top of each other while they are pinned and release together at the
+   container's end. Cards keep their natural, fully-readable position in flow
+   when not pinned — the pile only exists while they are parked. */
+.press-card-slot {
+  display: contents;
+}
+
+/* Each successor card steps down a hair from the previous one's bottom, so in
+   plain flow every card is fully readable and the pile keeps a clean slit
+   between edges while pinned. */
+.press-card-slot + .press-card-slot .press-card {
+  margin-top: clamp(8px, 1vw, 18px);
+}
+
+/* ---- press card ----
+   The card pins against the shared `.press-stack-inner` containing block, so a
+   parked card stays parked while the cards below it rise over it — this is what
+   makes a pile instead of a one-at-a-time parade. Each card parks a little lower
+   than the last (`--stack-cascade`), letting the previous card's top strip peek
+   above it. The pile releases as a cascade back into flow when the container's
+   bottom passes — no jump, and never past the container, so never below the
+   section. */
+.press-card-slot .press-card {
+  position: sticky;
+  top: calc(var(--stack-top) + var(--stack-cascade, 0px));
   display: block;
   height: auto;
   min-height: 14rem;
@@ -80,15 +134,27 @@
     rgba(11, 18, 33, 0.94);
   box-shadow: 0 34px 100px rgba(2, 6, 23, 0.6);
   color: #f1f5f9;
+
+  /* Depth cue, driven entirely through CSS variables by PressStackTweaks. */
+  --stack-cascade: 0px;
+  --stack-scale: 1;
+  --stack-y: 0px;
+  transform: translate3d(0, var(--stack-y), 0) scale(var(--stack-scale));
+  transform-origin: center top;
 }
+
+/* Later cards sit above earlier ones whenever their edges cross — the deck's
+   z-order — and park progressively lower by the cascade. */
+.press-card-slot .press-card { z-index: 1; }
+.press-card-slot:nth-child(2) .press-card { z-index: 2; --stack-cascade: 36px; }
+.press-card-slot:nth-child(3) .press-card { z-index: 3; --stack-cascade: 72px; }
+.press-card-slot:nth-child(4) .press-card { z-index: 4; --stack-cascade: 108px; }
+.press-card-slot:nth-child(5) .press-card { z-index: 5; --stack-cascade: 144px; }
+.press-card-slot:nth-child(6) .press-card { z-index: 6; --stack-cascade: 180px; }
 
 /* Story on the left, artwork in the top-right. Only cards that carry an `image`
    become two columns — `.has-media` — so a story without one keeps the full width
-   rather than leaving a gap where a picture would have been.
-
-   The image column is capped as a percentage rather than a fixed width: these
-   cards scale as the deck stacks, and a fixed 300px would grow relative to the
-   text as the card shrinks. */
+   rather than leaving a gap where a picture would have been. */
 .press-card-head.has-media {
   display: grid;
   grid-template-columns: minmax(0, 1fr) clamp(160px, 26%, 300px);
@@ -189,13 +255,13 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 20px;
+  margin-top: 22px;
 }
 
 .press-highlights span {
-  padding: 7px 13px;
-  border-radius: 999px;
+  padding: 8px 14px;
   border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
   background: rgba(255, 255, 255, 0.04);
   font-size: 13px;
   color: rgba(226, 232, 240, 0.82);
@@ -300,12 +366,35 @@
   margin-top: 20px;
 }
 
-@media (max-width: 640px) {
-  .press-stack .scroll-stack-inner {
-    padding: 8px 0 72px;
+/* ---- responsive ---- */
+@media (max-width: 1024px) {
+  .press-stack-inner {
+    width: min(900px, calc(100% - 32px));
+  }
+}
+
+@media (max-width: 720px) {
+  .press-card-slot {
+    /* Pin line for phones: 88px clears the 76px navbar with a slimmer step. */
+    --stack-top: 88px;
   }
 
-  .press-card.scroll-stack-card {
+  .press-card-slot .press-card {
     border-radius: 22px;
+  }
+
+  .press-stack-inner {
+    padding: 8px 0 40px;
+  }
+}
+
+/* Reduced motion: no depth transform and no pinning flotation — cards stack in
+   plain flow. Sticky is left in place (it is layout, not motion) but the cards
+   are never parked above their natural position. */
+@media (prefers-reduced-motion: reduce) {
+  .press-card-slot .press-card {
+    --stack-scale: 1;
+    --stack-y: 0px;
+    transform: none;
   }
 }

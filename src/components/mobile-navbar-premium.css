@@ -266,6 +266,8 @@
   body .mobile-menu-panel {
     width: calc(100% - 20px) !important;
     max-width: 370px !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
     height: 100dvh !important;
     max-height: 100dvh !important;
     display: flex;

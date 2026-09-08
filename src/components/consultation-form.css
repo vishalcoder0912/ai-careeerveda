@@ -567,6 +567,14 @@ body .consultation-section .consultation-form .consultation-security svg {
     gap: 15px !important;
   }
 
+  body .consultation-section {
+    /* Guaranteed clearance above the form section: no matter how the pinned
+       news cards above it transform while the page scrolls, they end 40px
+       before the consultation section begins — nothing can ever read as the
+       form sitting on top of them. */
+    margin-top: 40px;
+  }
+
   body .consultation-section .consultation-form input[type="text"],
   body .consultation-section .consultation-form input[type="email"],
   body .consultation-section .consultation-form input[type="tel"],
@@ -594,8 +602,13 @@ body .consultation-section .consultation-form .consultation-security svg {
    after it, which normal document flow already guarantees. */
 body .consultation-section {
   position: relative;
-  z-index: 5;
-  isolation: isolate;
+  /* !important: navbar-interaction-fix.css re-declares z-index: 2 on this same
+     selector, which undercuts the intended paint order vs the press section's
+     transformed cards. The section must always form its own stacking context
+     two clear steps above the press section (z-index 0), so the form reads as
+     a surface in normal flow and press cards can never render beneath it. */
+  z-index: 5 !important;
+  isolation: isolate !important;
   background:
     radial-gradient(120% 90% at 78% 22%, rgba(19, 128, 146, 0.12), transparent 48%),
     linear-gradient(135deg, #0b1330 0%, #0e1a3c 52%, #0a1128 100%) !important;

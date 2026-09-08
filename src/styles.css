@@ -115,10 +115,17 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* iOS Safari re-inflates body text on landscape/orientation change unless it
+     is told the size already chosen. Pin it so the layout cannot zoom at the
+     moment the URL bar swaps. */
+  -webkit-text-size-adjust: 100%;
 }
 
 #root {
+  /* dvh tracks iOS Safari's collapsing URL bar; vh is the fallback for Safari
+     versions that do not know dvh yet (declarations just land in source order). */
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 button,
@@ -160,7 +167,7 @@ button,
 
 .hero-copy > p {
   font-family: "Inter", system-ui, sans-serif;
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1.72;
   letter-spacing: -0.012em;
 }

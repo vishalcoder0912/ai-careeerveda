@@ -1,26 +1,17 @@
 import {useEffect,useRef,useState} from "react";
 
+// The pillar labels that orbit the robot. Each id maps to one zone of the stage
+// coordinate system in careerveda-hero-refinement.css. Note the render order is
+// not the on-screen order: hiring is the top-centre pill, the rest pair left/
+// right down the stage.
 const labels = [
-  { title: "Personalized Learning", icon: "🎯", sub: "tailored to you" },
-  { title: "Expert Mentorship", icon: "🧭", sub: "200+ pros" },
-  { title: "Interview Support", icon: "🎤", sub: "mock + prep" },
-  { title: "Placement Focus", icon: "💼", sub: "hiring partners" },
-  { title: "Verified Projects", icon: "🛠️", sub: "proof of work" },
-  { title: "Career Programs", icon: "🚀", sub: "the outcome" },
-  { title: "Hiring Partners", icon: "🤝", sub: "300+ roles" },
-];
-
-// Label ↔ stage-zone map, in the order labels are listed above. The stage
-// (careerveda-hero-refinement.css) positions the labels around the centered
-// robot; these names hook each label to one zone of that coordinate system.
-const labelZones = [
-  "hero-label--personalized",
-  "hero-label--mentorship",
-  "hero-label--interview",
-  "hero-label--placement",
-  "hero-label--verified",
-  "hero-label--career",
-  "hero-label--hiring",
+  { id: "label-hiring", text: "Hiring Partners" },
+  { id: "label-personalized", text: "Personalized Learning" },
+  { id: "label-mentorship", text: "Expert Mentorship" },
+  { id: "label-interview", text: "Interview Support" },
+  { id: "label-placement", text: "Placement Focus" },
+  { id: "label-verified", text: "Verified Projects" },
+  { id: "label-career", text: "Career Programs" },
 ];
 
 // Shown only to the visitors listed in shouldSkipScene() below, who get no live
@@ -189,84 +180,84 @@ const SplineHeroScene = ({sceneUrl}) => {
   return (
     <div
       ref={shellRef}
-      className="hero-visual-shell hero-spline-stage"
+      className="hero-visual-shell"
       role="img"
       aria-label="CareerVeda industry-led career and placement system"
     >
-      <div className="spline-glow" aria-hidden="true" />
+      {/* The stage is the single local coordinate system: the robot is centred
+          in it and every floating label is anchored to it, so the whole
+          composition stays together whatever the grid column around it does.
+          .hero-visual-shell stays a plain full-width wrapper — the grid child
+          the responsive rules move around. */}
+      <div className="hero-spline-stage">
+        <div className="spline-glow" aria-hidden="true" />
 
-      {!isLoaded && !showPoster && (
-        <div className="spline-loader">
-          <div className="loader-orbit" />
-          <span>Loading CareerVeda Visual</span>
-        </div>
-      )}
-
-      {showPoster ? (
-        <SplineFallback />
-      ) : (
-        shouldRender && (
-          <div
-            className={`spline-frame hero-spline-scene${isInteractive ? " is-interactive" : ""}`}
-            aria-hidden="true"
-          >
-            <iframe
-              className={`spline-scene ${isLoaded ? "is-loaded" : ""}`}
-              src={sceneUrl}
-              title="CareerVeda career growth visual"
-              frameBorder="0"
-              loading="lazy"
-              // allow-scripts + allow-pointer-lock: the runtime boots, the scene renders
-              // and tracks the cursor/pointer. pointer-lock is required for the 3D scene
-              // to capture mouse movement for orbit/rotation controls.
-              // allow-same-origin is NOT granted — the scene data is inlined in the embed
-              // page, and its localStorage paths are desktop-app-only. Granting it back
-              // would hand the frame its real spline.design origin for nothing.
-              sandbox="allow-scripts allow-pointer-lock"
-              allow="autoplay; fullscreen; xr-spatial-tracking; pointer-lock"
-              onLoad={() => setIsLoaded(true)}
-              onError={() => setHasFailed(true)}
-            />
+        {!isLoaded && !showPoster && (
+          <div className="spline-loader">
+            <div className="loader-orbit" />
+            <span>Loading CareerVeda Visual</span>
           </div>
-        )
-      )}
+        )}
 
-      {/* Covers the whole robot, not just the pill. Tapping the robot is the
-          gesture people actually make, and when only the pill listened every
-          such tap landed on a frame held at pointer-events: none and did
-          nothing — the feature looked broken to anyone who did not first spot a
-          103px label. The layer is transparent and is not the iframe, so native
-          scrolling still passes through it untouched; only a tap acts.
+        {showPoster ? (
+          <SplineFallback />
+        ) : (
+          shouldRender && (
+            <div
+              className={`spline-frame${isInteractive ? " is-interactive" : ""}`}
+              aria-hidden="true"
+            >
+              <iframe
+                className={`spline-scene ${isLoaded ? "is-loaded" : ""}`}
+                src={sceneUrl}
+                title="CareerVeda career growth visual"
+                frameBorder="0"
+                loading="lazy"
+                // allow-scripts + allow-pointer-lock: the runtime boots, the scene renders
+                // and tracks the cursor/pointer. pointer-lock is required for the 3D scene
+                // to capture mouse movement for orbit/rotation controls.
+                // allow-same-origin is NOT granted — the scene data is inlined in the embed
+                // page, and its localStorage paths are desktop-app-only. Granting it back
+                // would hand the frame its real spline.design origin for nothing.
+                sandbox="allow-scripts allow-pointer-lock"
+                allow="autoplay; fullscreen; xr-spatial-tracking; pointer-lock"
+                onLoad={() => setIsLoaded(true)}
+                onError={() => setHasFailed(true)}
+              />
+            </div>
+          )
+        )}
 
-          A sibling of .spline-frame, not a child: the frame is inert until
-          activated and a child would inherit that and never be tappable. A div
-          rather than a button because .hero-visual-shell is role="img" — a
-          focusable child would be invisible to assistive tech while still
-          catching keyboard focus, and this is a touch-only affordance on
-          decoration. */}
-      {showTapHint && (
-        <div
-          className="spline-tap-layer"
-          aria-hidden="true"
-          onPointerDown={() => setIsActive(true)}
-        >
-          <span className="spline-tap-hint">Tap to rotate</span>
-        </div>
-      )}
+        {/* Covers the whole robot, not just the pill. Tapping the robot is the
+            gesture people actually make, and when only the pill listened every
+            such tap landed on a frame held at pointer-events: none and did
+            nothing — the feature looked broken to anyone who did not first spot a
+            103px label. The layer is transparent and is not the iframe, so native
+            scrolling still passes through it untouched; only a tap acts.
 
-      <div className="floating-labels" aria-hidden="true">
-        {labels.map((label,index) => (
-          <span
-            className={`ai-label label-${index + 1} hero-label ${labelZones[index]}`}
-            key={label.title}
+            A sibling of .spline-frame, not a child: the frame is inert until
+            activated and a child would inherit that and never be tappable. A div
+            rather than a button because .hero-visual-shell is role="img" — a
+            focusable child would be invisible to assistive tech while still
+            catching keyboard focus, and this is a touch-only affordance on
+            decoration. */}
+        {showTapHint && (
+          <div
+            className="spline-tap-layer"
+            aria-hidden="true"
+            onPointerDown={() => setIsActive(true)}
           >
-            <span className="ai-label-icon" aria-hidden="true">{label.icon}</span>
-            <span className="ai-label-body">
-              <span className="ai-label-title">{label.title}</span>
-              <span className="ai-label-sub">{label.sub}</span>
+            <span className="spline-tap-hint">Tap to rotate</span>
+          </div>
+        )}
+
+        <div className="floating-labels" aria-hidden="true">
+          {labels.map((label) => (
+            <span className={`ai-label ${label.id}`} key={label.id}>
+              <span className="ai-label-inner">{label.text}</span>
             </span>
-          </span>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
