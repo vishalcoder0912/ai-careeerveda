@@ -444,8 +444,6 @@ export const LaserFlow = ({
     canvas.addEventListener('webglcontextlost', onCtxLost, false);
     canvas.addEventListener('webglcontextrestored', onCtxRestored, false);
 
-    let raf = 0;
-
     const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
     const dprFloor = 0.6;
     const lowerThresh = 50;
@@ -484,7 +482,6 @@ export const LaserFlow = ({
     };
 
     const animate = () => {
-      raf = requestAnimationFrame(animate);
       if (pausedRef.current || !inViewRef.current) return;
 
       const t = clock.getElapsedTime();
@@ -519,10 +516,10 @@ export const LaserFlow = ({
       adjustDprIfNeeded(performance.now());
     };
 
-    animate();
+    renderer.setAnimationLoop(animate);
 
     return () => {
-      cancelAnimationFrame(raf);
+      renderer.setAnimationLoop(null);
       ro.disconnect();
       io.disconnect();
       document.removeEventListener('visibilitychange', onVis);

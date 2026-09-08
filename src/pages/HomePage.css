@@ -10,6 +10,23 @@
   overflow-x: clip;
 }
 
+/* Consultation → FAQ vertical rhythm.
+   The shared section rules in SplineLanding/brand-alignment/brand-priority give
+   every `.consultation-section` and every `.faq-section` 110–112px of vertical
+   padding. Stacked, the two doubled up into a ~224px dead area between the
+   consultation form and the FAQ heading. `.consultation-section` now owns a
+   64px bottom padding (see consultation-form.css); this override gives the FAQ
+   its tight 56px top / 80px bottom and a 32px heading → accordion gap, so the
+   FAQ appears right after the consultation section instead of far below it. */
+body .faq-section.faq-spacing {
+  padding-top: 56px;
+  padding-bottom: 80px;
+}
+
+.faq-spacing .section-heading {
+  margin-bottom: 32px;
+}
+
 @media (max-width: 1024px) {
   .consultation-panel {
     grid-template-columns: 1fr;
@@ -26,6 +43,15 @@
   .faq-section,
   .consultation-section {
     padding-inline: 16px;
+  }
+
+  body .faq-section.faq-spacing {
+    padding-top: 44px;
+    padding-bottom: 64px;
+  }
+
+  .faq-spacing .section-heading {
+    margin-bottom: 24px;
   }
 
   .faq-section h2,

@@ -177,6 +177,15 @@ const SplineHeroScene = ({sceneUrl}) => {
   const isInteractive = !isTouch || isActive;
   const showTapHint = isTouch && shouldRender && !showPoster && !isActive;
 
+  // Spline's embed renders its canvas at pixel ratio 1, so on a hi-DPI laptop
+  // browser upscales it to the physical pixels and the robot reads soft. Ask the
+  // embed for a 2x canvas there. Phones keep the default 1x: the bucket that
+  // already holds the scene back to idle/idle-budget keeps its 1/4 pixel count.
+  const sceneSrc =
+    typeof window !== "undefined" && window.devicePixelRatio >= 2 && !phoneResting
+      ? `${sceneUrl}${sceneUrl.includes("?") ? "&" : "?"}devicePixelRatio=2`
+      : sceneUrl;
+
   return (
     <div
       ref={shellRef}
@@ -209,7 +218,7 @@ const SplineHeroScene = ({sceneUrl}) => {
             >
               <iframe
                 className={`spline-scene ${isLoaded ? "is-loaded" : ""}`}
-                src={sceneUrl}
+                src={sceneSrc}
                 title="CareerVeda career growth visual"
                 frameBorder="0"
                 loading="lazy"

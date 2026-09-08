@@ -136,7 +136,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section className="faq-section">
+      <section className="faq-section faq-spacing">
         <Reveal className="section-heading compact">
           <p className="section-label">Everything You Need to Know</p>
           <h2>Got questions? We've got answers</h2>

@@ -273,7 +273,7 @@ export default function AboutPage() {
                   <b><i />72% ACTIVE</b>
                 </div>
 
-                <label className="about-micro-label">BUILD → APPLY → IMPROVE</label>
+                <span className="about-micro-label">BUILD → APPLY → IMPROVE</span>
 
                 <div className="about-skills">
                   <strong>Skill Progress</strong>

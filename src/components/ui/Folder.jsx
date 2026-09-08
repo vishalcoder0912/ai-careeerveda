@@ -27,7 +27,7 @@ const Folder = ({ color = '#5227FF', size = 1, items = [], className = '', onOpe
   }
 
   const [open, setOpen] = useState(false);
-  const [paperOffsets, setPaperOffsets] = useState(
+  const [paperOffsets, setPaperOffsets] = useState(() =>
     Array.from({ length: maxItems }, () => ({ x: 0, y: 0 })),
   );
 
@@ -37,11 +37,9 @@ const Folder = ({ color = '#5227FF', size = 1, items = [], className = '', onOpe
   const paper3 = '#ffffff';
 
   const handleClick = () => {
-    setOpen((prev) => {
-      const next = !prev;
-      onOpenChange?.(next);
-      return next;
-    });
+    const next = !open;
+    setOpen(next);
+    onOpenChange?.(next);
     if (open) {
       setPaperOffsets(Array.from({ length: maxItems }, () => ({ x: 0, y: 0 })));
     }

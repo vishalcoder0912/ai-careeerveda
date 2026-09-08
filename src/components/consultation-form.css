@@ -609,6 +609,13 @@ body .consultation-section {
      a surface in normal flow and press cards can never render beneath it. */
   z-index: 5 !important;
   isolation: isolate !important;
+  /* The shared section rules (SplineLanding/brand-alignment/brand-priority)
+     give every `.consultation-section` 110–112px of vertical padding. Stacked
+     with the FAQ section's own 112px top padding that opens a ~224px dead
+     area between the form and the FAQ heading. This is the source correction:
+     the consultation section only needs 64px of breathing room before the FAQ
+     begins, and the FAQ section adds its own (56px) from its side. */
+  padding-bottom: 64px !important;
   background:
     radial-gradient(120% 90% at 78% 22%, rgba(19, 128, 146, 0.12), transparent 48%),
     linear-gradient(135deg, #0b1330 0%, #0e1a3c 52%, #0a1128 100%) !important;
