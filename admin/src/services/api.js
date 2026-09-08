@@ -4,6 +4,8 @@ const BASE = import.meta.env.VITE_ADMIN_API_BASE_URL || "http://localhost:8080/a
 let accessToken = null;
 let csrfToken = null;
 
+const CSRF_STORAGE_KEY = "cv_csrf_fallback";
+
 // Fired when the session ends for good, so AuthContext can drop the user at the
 // login screen without every call site having to handle it.
 let onSessionEnded = () => {};
@@ -14,12 +16,18 @@ export const setSessionEndedHandler = (handler) => {
 
 const setTokens = ({accessToken: access, csrfToken: csrf}) => {
   if (access !== undefined) accessToken = access;
-  if (csrf !== undefined) csrfToken = csrf;
+  if (csrf !== undefined) {
+    csrfToken = csrf;
+    // Persist the CSRF token so restoreSession can find it even when the
+    // httpOnly cookie is invisible to document.cookie (WebKit cross-port).
+    try { sessionStorage.setItem(CSRF_STORAGE_KEY, csrf); } catch { /* ignored */ }
+  }
 };
 
 const clearTokens = () => {
   accessToken = null;
   csrfToken = null;
+  try { sessionStorage.removeItem(CSRF_STORAGE_KEY); } catch { /* ignored */ }
 };
 
 export class ApiError extends Error {
@@ -157,16 +165,23 @@ export const logout = async () => {
 
 // Called once on boot. The access token is gone after a page refresh, but the
 // httpOnly refresh cookie is not, so this is what makes a reload keep you
-// signed in. The CSRF token is read from its (deliberately readable) cookie.
+// signed in. The CSRF token is read from its (deliberately readable) cookie,
+// falling back to sessionStorage for WebKit which may hide cross-port cookies
+// from document.cookie.
 export const restoreSession = async () => {
   const cookieCsrf = document.cookie
     .split("; ")
     .find((entry) => entry.startsWith("cv_csrf="))
     ?.split("=")[1];
 
-  if (!cookieCsrf) return null;
+  const storedCsrf = (() => {
+    try { return sessionStorage.getItem(CSRF_STORAGE_KEY); } catch { return null; }
+  })();
 
-  csrfToken = cookieCsrf;
+  const csrf = cookieCsrf || storedCsrf;
+  if (!csrf) return null;
+
+  csrfToken = csrf;
 
   try {
     const session = await refreshSession();
