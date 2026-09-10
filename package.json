@@ -95,5 +95,8 @@
 	"allowScripts": {
 		"esbuild": true,
 		"unrs-resolver": true
+	},
+	"overrides": {
+		"js-yaml": "^3.15.2"
 	}
 }
