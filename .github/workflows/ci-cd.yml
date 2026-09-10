@@ -88,7 +88,7 @@ jobs:
           IMAGEKIT_PRIVATE_KEY: ""
           IMAGEKIT_URL_ENDPOINT: ""
           COOKIE_SECURE: "false"
-          COOKIE_DOMAIN: "localhost"
+          COOKIE_DOMAIN: ""
           LOG_LEVEL: "silent"
         run: npm run test:all
 
@@ -141,7 +141,7 @@ jobs:
           JWT_ACCESS_SECRET: e2e-access-secret-not-used-anywhere-else-0123456789
           JWT_REFRESH_SECRET: e2e-refresh-secret-not-used-anywhere-else-0123456789
           COOKIE_SECURE: "false"
-          COOKIE_DOMAIN: "localhost"
+          COOKIE_DOMAIN: ""
           LOG_LEVEL: "warn"
           IMAGEKIT_PUBLIC_KEY: ""
           IMAGEKIT_PRIVATE_KEY: ""
@@ -161,7 +161,7 @@ jobs:
           JWT_ACCESS_SECRET: e2e-access-secret-not-used-anywhere-else-0123456789
           JWT_REFRESH_SECRET: e2e-refresh-secret-not-used-anywhere-else-0123456789
           COOKIE_SECURE: "false"
-          COOKIE_DOMAIN: "localhost"
+          COOKIE_DOMAIN: ""
           LOG_LEVEL: "warn"
           IMAGEKIT_PUBLIC_KEY: ""
           IMAGEKIT_PRIVATE_KEY: ""
@@ -181,7 +181,7 @@ jobs:
           JWT_ACCESS_SECRET: e2e-access-secret-not-used-anywhere-else-0123456789
           JWT_REFRESH_SECRET: e2e-refresh-secret-not-used-anywhere-else-0123456789
           COOKIE_SECURE: "false"
-          COOKIE_DOMAIN: "localhost"
+          COOKIE_DOMAIN: ""
           LOG_LEVEL: "warn"
           IMAGEKIT_PUBLIC_KEY: ""
           IMAGEKIT_PRIVATE_KEY: ""

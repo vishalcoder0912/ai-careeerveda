@@ -36,13 +36,10 @@ const start = async () => {
   process.env.JWT_ACCESS_SECRET = "e2e-access-secret-not-used-anywhere-else-0123456789";
   process.env.JWT_REFRESH_SECRET = "e2e-refresh-secret-not-used-anywhere-else-0123456789";
   process.env.COOKIE_SECURE = "false";
-  // Both the admin SPA (port 5274) and the API (port 8081) live on localhost.
-  // Cookies set by the API must be readable from the SPA after a page reload
-  // (restoreSession reads cv_csrf via document.cookie).  WebKit strictly scopes
-  // host-only cookies to the exact host:port, so without an explicit Domain the
-  // SPA cannot see them.  Setting Domain=localhost shares the cookies across all
-  // localhost ports — safe for the throwaway E2E environment.
-  process.env.COOKIE_DOMAIN = "localhost";
+  // Leave COOKIE_DOMAIN unset/blank for localhost. An explicit Domain=localhost
+  // is rejected by WebKitGTK / libsoup on Linux runners, causing cookies to be dropped.
+  // The CSRF token is recovered via sessionStorage fallback in api.js.
+  process.env.COOKIE_DOMAIN = "";
   process.env.LOG_LEVEL = "warn";
 
   // Emptied, not merely unset: dotenv would otherwise fill them from .env and
