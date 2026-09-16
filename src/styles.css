@@ -38,6 +38,7 @@
    the hero up behind a chrome-less navbar so one grid runs through both. See
    the header comment in that file. */
 @import "./components/navbar-hero-merge.css";
+@import "./components/website-new-theme.css";
 
 /* Faculty page polishes must come last: they intentionally out-specify the
    support-section tile and the generic .section-block padding. */

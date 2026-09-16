@@ -1,0 +1,587 @@
+/* 2026 light theme — CareerVeda's "white atmosphere" skin.
+ *
+ * Intentionally the LAST-loaded sheet (styles.css imports it last) and scoped
+ * to the home page via `.spline-page--grid`. It is the single place that turns
+ * the shared background field (careerveda-background.css) into a coherent white
+ * surface system:
+ *
+ *   body           the enduring white base behind every route
+ *   .spline-page--grid  the home page reads the shared white field; every
+ *                       tinted surface below lives on that field
+ *   .site-nav      the floating glass dock (global — the navbar is white glass
+ *                  above every route, matching what ships today)
+ *   section skins  Recommended programs → white board; Learner outcomes →
+ *                  white cards on a soft blue/lavender atmosphere; FAQ → white;
+ *                  Trusted companies → white band + white logo cards
+ *   .site-footer   the existing dark-navy footer, re-affirmed (it stays dark)
+ *
+ * Consultation keeps its own deep-blue/purple CTA card exactly as designed — it
+ * is intentionally NOT listed here.
+ *
+ * Everything below needs its `body .spline-page.spline-page--grid` prefix to
+ * out-rank slate-color-system.css, which still paints these surfaces dark with
+ * `body ... !important` and would otherwise win on specificity.
+ */
+
+:root {
+  --cv-navy: #102a5c;
+  --cv-blue: #2563eb;
+  --cv-electric-blue: #1769e8;
+  --cv-soft-blue: #eaf4ff;
+  --cv-lavender: #f3f0ff;
+  --cv-white: #ffffff;
+  --cv-background: #fafcff;
+  --cv-cyan: #85c7ff;
+  --cv-purple: #7c3aed;
+  --cv-teal: #0f9f8f;
+  --cv-blue-glow: rgba(37, 99, 235, 0.1);
+  --cv-blue-glow-soft: rgba(37, 99, 235, 0.035);
+  --cv-cyan-glow: rgba(85, 199, 255, 0.08);
+  --cv-purple-glow: rgba(124, 58, 237, 0.07);
+  --cv-purple-glow-soft: rgba(124, 58, 237, 0.025);
+}
+
+body {
+  background: var(--cv-background, #fafcff) !important;
+  color: var(--cv-navy, #102a5c) !important;
+}
+
+/* Home page: one continuous white atmosphere. The heavy radials are the
+   section-level ambience; the flat base is what stays constant everywhere. */
+body .spline-page.spline-page--grid {
+  background:
+    radial-gradient(circle at 88% 4%, #e4f4ff 0, transparent 30rem),
+    radial-gradient(circle at 4% 42%, #f3f0ff 0, transparent 26rem),
+    var(--cv-background, #fafcff) !important;
+}
+
+/* ── Floating navigation: quiet at top, glass dock on scroll ─────────────── */
+body header.site-nav .nav-container {
+  width: min(calc(100% - 64px), 1320px) !important;
+}
+body header.site-nav .nav-container .brand {
+  color: var(--cv-navy) !important;
+}
+body header.site-nav .nav-container nav.site-nav-links {
+  background: rgba(255, 255, 255, 0.78) !important;
+  border-color: rgba(16, 42, 92, 0.07) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+  box-shadow: 0 10px 40px rgba(16, 42, 92, 0.05) !important;
+}
+body header.site-nav .nav-container nav.site-nav-links a {
+  color: #29436d !important;
+}
+body header.site-nav .nav-container nav.site-nav-links a:hover,
+body header.site-nav .nav-container nav.site-nav-links a:focus-visible {
+  color: var(--cv-blue) !important;
+  background: #eef5ff !important;
+}
+body header.site-nav.is-scrolled .nav-container nav.site-nav-links {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border-color: rgba(16, 42, 92, 0.08) !important;
+  box-shadow: 0 12px 34px rgba(16, 42, 92, 0.06) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+}
+body header.site-nav .nav-cta {
+  background: linear-gradient(135deg, #2563eb, #4f46e5) !important;
+  color: #ffffff !important;
+  border-radius: 999px !important;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.22) !important;
+}
+
+/* ── Hero ─────────────────────────────────────────────────────────────────── */
+body .spline-page.spline-page--grid .hero-shell {
+  min-height: 760px;
+  background:
+    radial-gradient(circle at 76% 44%, rgba(37, 99, 235, 0.09), transparent 22rem),
+    radial-gradient(circle at 58% 92%, rgba(124, 58, 237, 0.07), transparent 26rem),
+    radial-gradient(circle at 24% 18%, rgba(85, 199, 255, 0.09), transparent 24rem),
+    linear-gradient(145deg, #ffffff 0%, #f6faff 58%, #faf8ff 100%) !important;
+}
+body .spline-page.spline-page--grid .hero-word {
+  color: rgba(37, 99, 235, 0.04) !important;
+  text-shadow: none !important;
+  opacity: 1 !important;
+}
+body .spline-page.spline-page--grid .hero-layout {
+  min-height: 620px;
+  padding-top: 80px;
+  padding-bottom: 110px;
+}
+body .spline-page.spline-page--grid .hero-copy .eyebrow {
+  display: inline-flex;
+  width: fit-content;
+  padding: 8px 13px;
+  border: 1px solid #c8dcff;
+  border-radius: 999px;
+  color: var(--cv-blue) !important;
+  background: rgba(255, 255, 255, 0.72);
+  font-size: 11px !important;
+  letter-spacing: 0.08em !important;
+  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.07);
+}
+body .spline-page.spline-page--grid .hero-copy h1 {
+  color: var(--cv-navy) !important;
+  font-size: clamp(48px, 5.1vw, 76px) !important;
+  line-height: 1.04 !important;
+}
+body .spline-page.spline-page--grid .hero-title-accent {
+  background: linear-gradient(100deg, #2563eb, #7c3aed);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+}
+body .spline-page.spline-page--grid .hero-copy > p {
+  color: #526682 !important;
+  font-size: 17px !important;
+  line-height: 1.72 !important;
+}
+.hero-proof {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin: 22px 0 0;
+  padding: 0;
+  color: #29436d;
+  font-size: 13px;
+  font-weight: 700;
+  list-style: none;
+}
+.hero-proof li::before {
+  content: "✓";
+  display: inline-grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  margin-right: 7px;
+  border-radius: 50%;
+  color: #ffffff;
+  background: #0f9f8f;
+  font-size: 11px;
+}
+body .spline-page.spline-page--grid .hero-actions .primary-action {
+  background: linear-gradient(135deg, #2563eb, #4f46e5) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 16px 28px rgba(37, 99, 235, 0.25) !important;
+}
+body .spline-page.spline-page--grid .hero-actions .secondary-action {
+  color: #21416f !important;
+  border-color: #cbdcf9 !important;
+  background: rgba(255, 255, 255, 0.72) !important;
+}
+body .spline-page.spline-page--grid .hero-actions a {
+  transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+}
+body .spline-page.spline-page--grid .hero-actions a:hover {
+  transform: translateY(-3px) !important;
+}
+body .spline-page.spline-page--grid .spline-glow {
+  background: radial-gradient(circle at 50% 50%, rgba(56, 189, 248, 0.34), transparent 58%) !important;
+  filter: blur(20px) !important;
+  opacity: 0.55 !important;
+}
+body .spline-page.spline-page--grid .ai-label {
+  color: #23416c !important;
+  background: rgba(255, 255, 255, 0.78) !important;
+  border-color: rgba(37, 99, 235, 0.17) !important;
+  box-shadow: 0 15px 36px rgba(37, 99, 235, 0.12) !important;
+  border-radius: 999px !important;
+}
+
+/* Stats proof strip: a white glass rail with navy numerals and blue values. */
+body .spline-page.spline-page--grid .stat-strip {
+  width: min(1260px, calc(100% - 64px)) !important;
+  margin: -62px auto 0 !important;
+  padding: 22px !important;
+  border: 1px solid rgba(16, 42, 92, 0.07) !important;
+  border-radius: 28px !important;
+  background: rgba(255, 255, 255, 0.84) !important;
+  box-shadow: 0 24px 60px rgba(30, 64, 175, 0.12) !important;
+  backdrop-filter: blur(20px);
+}
+body .spline-page.spline-page--grid .stat-strip .stat-item,
+body .spline-page.spline-page--grid .stat-strip span {
+  color: var(--cv-navy) !important;
+}
+body .spline-page.spline-page--grid .stat-strip strong {
+  color: var(--cv-blue) !important;
+}
+
+/* ── Shared white surfaces for the page's data-backed sections ─────────────
+   Only FULL-BLEED bands are made transparent (they read the shared field).
+   The consultation section is deliberately absent: its deep blue/purple CTA
+   card is a designed surface that stays. */
+body .spline-page.spline-page--grid .recommended-courses-section {
+  border-color: rgba(16, 42, 92, 0.07) !important;
+  background:
+    radial-gradient(92% 82% at 12% 0%, rgba(37, 99, 235, 0.06), transparent 55%),
+    radial-gradient(72% 70% at 92% 16%, rgba(124, 58, 237, 0.05), transparent 55%),
+    radial-gradient(100% 82% at 50% 120%, rgba(85, 199, 255, 0.055), transparent 60%),
+    linear-gradient(180deg, #ffffff 0%, #f6faff 100%) !important;
+  box-shadow:
+    0 0 0 1px rgba(16, 42, 92, 0.03),
+    0 30px 80px rgba(30, 64, 175, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
+}
+body .spline-page.spline-page--grid .recommended-courses-section::before {
+  background-image: none !important;
+}
+body .spline-page.spline-page--grid .recommended-courses-section::after {
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.18), transparent 68%) !important;
+}
+body .spline-page.spline-page--grid .rc-header .rc-eyebrow {
+  color: var(--cv-blue) !important;
+}
+body .spline-page.spline-page--grid .rc-header h2 {
+  background: linear-gradient(112deg, #102a5c 0%, #2563eb 52%, #7c3aed 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+}
+body .spline-page.spline-page--grid .rc-header span {
+  color: rgba(16, 42, 92, 0.64) !important;
+}
+
+/* Learner outcomes: white card surfaces on a soft blue/lavender atmosphere,
+   the teal accents moved to the blue/cyan family. */
+body .spline-page.spline-page--grid .learner-outcomes {
+  color: var(--cv-navy) !important;
+  background:
+    radial-gradient(56% 48% at 90% 26%, rgba(124, 58, 237, 0.055), transparent 62%),
+    radial-gradient(48% 52% at 4% 72%, rgba(85, 199, 255, 0.055), transparent 64%),
+    transparent !important;
+}
+body .spline-page.spline-page--grid .learner-header h2 {
+  color: var(--cv-navy) !important;
+}
+body .spline-page.spline-page--grid .learner-eyebrow {
+  color: var(--cv-blue) !important;
+}
+body .spline-page.spline-page--grid .learner-highlight {
+  color: var(--cv-blue) !important;
+}
+body .spline-page.spline-page--grid .learner-lead {
+  color: rgba(16, 42, 92, 0.68) !important;
+}
+body .spline-page.spline-page--grid .learner-metrics {
+  background: rgba(255, 255, 255, 0.86) !important;
+  border-color: rgba(16, 42, 92, 0.08) !important;
+  box-shadow: 0 20px 50px rgba(30, 64, 175, 0.08) !important;
+}
+body .spline-page.spline-page--grid .learner-metric + .learner-metric {
+  border-color: rgba(16, 42, 92, 0.07) !important;
+}
+body .spline-page.spline-page--grid .learner-metric dt {
+  color: rgba(16, 42, 92, 0.58) !important;
+}
+body .spline-page.spline-page--grid .learner-metric dd {
+  color: var(--cv-electric-blue) !important;
+}
+body .spline-page.spline-page--grid .learner-story-inner {
+  background: rgba(255, 255, 255, 0.86) !important;
+  border-color: rgba(16, 42, 92, 0.08) !important;
+  box-shadow: 0 20px 50px rgba(30, 64, 175, 0.08) !important;
+}
+body .spline-page.spline-page--grid .learner-story--featured .learner-story-inner {
+  background:
+    linear-gradient(145deg, rgba(37, 99, 235, 0.05), rgba(255, 255, 255, 0.02)),
+    radial-gradient(120% 130% at 12% 0%, rgba(56, 189, 248, 0.07), transparent 58%) !important;
+  border-color: rgba(16, 42, 92, 0.08) !important;
+}
+body .spline-page.spline-page--grid .learner-story-inner::before {
+  color: rgba(37, 99, 235, 0.08) !important;
+}
+body .spline-page.spline-page--grid .learner-quote p {
+  color: rgba(16, 42, 92, 0.8) !important;
+}
+body .spline-page.spline-page--grid .learner-chip {
+  color: #1d4ed8 !important;
+  border-color: rgba(37, 99, 235, 0.28) !important;
+  background: rgba(37, 99, 235, 0.07) !important;
+}
+body .spline-page.spline-page--grid .learner-quote-mark {
+  color: rgba(16, 42, 92, 0.12) !important;
+}
+body .spline-page.spline-page--grid .learner-learner {
+  border-color: rgba(16, 42, 92, 0.07) !important;
+}
+body .spline-page.spline-page--grid .learner-learner-copy strong {
+  color: var(--cv-navy) !important;
+}
+body .spline-page.spline-page--grid .learner-learner-copy small {
+  color: rgba(16, 42, 92, 0.55) !important;
+}
+body .spline-page.spline-page--grid .learner-learner-copy em {
+  color: var(--cv-blue) !important;
+}
+
+/* Trusted companies: transparent band so the white field shows, white logo
+   cards with a quiet navy border/shadow scale. */
+body .spline-page.spline-page--grid .trusted-companies h2 {
+  color: var(--cv-navy) !important;
+}
+body .spline-page.spline-page--grid .trusted-companies .tc-card {
+  background: rgba(255, 255, 255, 0.72) !important;
+  border-color: rgba(16, 42, 92, 0.07) !important;
+  box-shadow: 0 8px 22px rgba(30, 64, 175, 0.06) !important;
+}
+
+/* FAQ: mostly white — navy headings, blue label, muted description, white
+   answer cards, quiet blue rules. */
+body .spline-page.spline-page--grid .faq-section .section-label {
+  color: var(--cv-blue) !important;
+}
+body .spline-page.spline-page--grid .faq-section .section-heading p:not(.section-label) {
+  color: rgba(16, 42, 92, 0.64) !important;
+}
+body .spline-page.spline-page--grid .faq-section .section-heading :is(h1, h2) {
+  color: var(--cv-navy) !important;
+  background: none !important;
+  -webkit-text-fill-color: var(--cv-navy) !important;
+}
+body .spline-page.spline-page--grid .faq-list details {
+  background: rgba(255, 255, 255, 0.84) !important;
+  border-color: rgba(16, 42, 92, 0.07) !important;
+  box-shadow: 0 15px 38px rgba(30, 64, 175, 0.08) !important;
+  border-radius: 22px !important;
+}
+body .spline-page.spline-page--grid .faq-list summary {
+  color: #173562 !important;
+}
+body .spline-page.spline-page--grid .faq-list details[open] {
+  border-color: #a9c8ff !important;
+}
+body .spline-page.spline-page--grid .faq-list details p {
+  color: #536a8d !important;
+}
+
+/* ── Press section heading: navy headline, blue label, muted description ──── */
+body .spline-page.spline-page--grid .press-section-heading .label {
+  color: var(--cv-blue) !important;
+}
+body .spline-page.spline-page--grid .press-section-heading h2 {
+  color: var(--cv-navy) !important;
+  background: none !important;
+  -webkit-text-fill-color: var(--cv-navy) !important;
+}
+body .spline-page.spline-page--grid .press-section-heading p {
+  color: rgba(16, 42, 92, 0.68) !important;
+}
+
+/* ── Press cards: white glass surfaces matching the homepage card system ──── */
+body .spline-page.spline-page--grid .press-card {
+  background: #ffffff !important;
+  border-color: rgba(16, 42, 92, 0.08) !important;
+  box-shadow: 0 24px 60px rgba(30, 64, 175, 0.08) !important;
+  color: var(--cv-navy) !important;
+}
+body .spline-page.spline-page--grid .press-card h3 {
+  color: var(--cv-navy) !important;
+}
+body .spline-page.spline-page--grid .press-excerpt {
+  color: rgba(16, 42, 92, 0.64) !important;
+}
+body .spline-page.spline-page--grid .press-eyebrow {
+  color: rgba(16, 42, 92, 0.72) !important;
+}
+body .spline-page.spline-page--grid .press-eyebrow .press-tag {
+  border-color: rgba(37, 99, 235, 0.28) !important;
+  background: rgba(37, 99, 235, 0.07) !important;
+  color: var(--cv-blue) !important;
+}
+body .spline-page.spline-page--grid .press-stat {
+  border-color: rgba(16, 42, 92, 0.08) !important;
+  background: rgba(16, 42, 92, 0.03) !important;
+}
+body .spline-page.spline-page--grid .press-stat span {
+  color: rgba(16, 42, 92, 0.58) !important;
+}
+body .spline-page.spline-page--grid .press-highlights span {
+  border-color: rgba(37, 99, 235, 0.16) !important;
+  background: rgba(37, 99, 235, 0.04) !important;
+  color: var(--cv-navy) !important;
+}
+body .spline-page.spline-page--grid .press-sources {
+  border-color: rgba(16, 42, 92, 0.08) !important;
+}
+body .spline-page.spline-page--grid .press-sources > small {
+  color: rgba(16, 42, 92, 0.5) !important;
+}
+body .spline-page.spline-page--grid .press-sources a,
+body .spline-page.spline-page--grid .press-wall-grid a {
+  border-color: rgba(16, 42, 92, 0.12) !important;
+  background: rgba(16, 42, 92, 0.03) !important;
+  color: var(--cv-navy) !important;
+}
+body .spline-page.spline-page--grid .press-sources a:hover,
+body .spline-page.spline-page--grid .press-wall-grid a:hover {
+  border-color: rgba(37, 99, 235, 0.3) !important;
+  background: rgba(37, 99, 235, 0.06) !important;
+}
+body .spline-page.spline-page--grid .press-card--wall {
+  background: #ffffff !important;
+}
+body .spline-page.spline-page--grid .press-card-media img {
+  border-color: rgba(16, 42, 92, 0.08) !important;
+}
+
+/* ── Consultation section: light theme matching the homepage atmosphere ──── */
+body .spline-page.spline-page--grid .consultation-section {
+  background:
+    radial-gradient(120% 90% at 78% 22%, rgba(37, 99, 235, 0.06), transparent 48%),
+    radial-gradient(80% 60% at 20% 80%, rgba(124, 58, 237, 0.04), transparent 50%),
+    var(--cv-background, #fafcff) !important;
+}
+body .spline-page.spline-page--grid .consultation-copy--panel .section-label {
+  color: var(--cv-blue) !important;
+}
+body .spline-page.spline-page--grid .consultation-copy--panel .consultation-headline {
+  color: var(--cv-navy) !important;
+  background: none !important;
+  -webkit-text-fill-color: var(--cv-navy) !important;
+}
+body .spline-page.spline-page--grid .consultation-copy--panel > p:not(.section-label) {
+  color: rgba(16, 42, 92, 0.64) !important;
+}
+body .spline-page.spline-page--grid .cv-typewriter-accent {
+  background: linear-gradient(100deg, #2563eb, #7c3aed);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+}
+/* Form: white glass card with navy inputs */
+body .spline-page.spline-page--grid .consultation-section .consultation-form {
+  background: #ffffff !important;
+  border: 1px solid rgba(16, 42, 92, 0.1) !important;
+  box-shadow: 0 24px 60px rgba(30, 64, 175, 0.1) !important;
+}
+body .spline-page.spline-page--grid .consultation-section .consultation-form__head h3 {
+  color: var(--cv-navy) !important;
+}
+body .spline-page.spline-page--grid .consultation-section .consultation-form__subtitle {
+  color: rgba(16, 42, 92, 0.6) !important;
+}
+body .spline-page.spline-page--grid .consultation-section .consultation-form__badge {
+  background: rgba(37, 99, 235, 0.08) !important;
+  border-color: rgba(37, 99, 235, 0.25) !important;
+  color: var(--cv-blue) !important;
+}
+body .spline-page.spline-page--grid .consultation-section .consultation-form__badge svg {
+  color: var(--cv-blue) !important;
+}
+body .spline-page.spline-page--grid .consultation-section .consultation-field {
+  color: rgba(16, 42, 92, 0.78) !important;
+}
+body .spline-page.spline-page--grid .consultation-section .consultation-form input[type="text"],
+body .spline-page.spline-page--grid .consultation-section .consultation-form input[type="email"],
+body .spline-page.spline-page--grid .consultation-section .consultation-form input[type="tel"],
+body .spline-page.spline-page--grid .consultation-section .consultation-form select {
+  background-color: rgba(16, 42, 92, 0.04) !important;
+  border-color: rgba(16, 42, 92, 0.12) !important;
+  color: var(--cv-navy) !important;
+}
+body .spline-page.spline-page--grid .consultation-section .consultation-form input::placeholder {
+  color: rgba(16, 42, 92, 0.4) !important;
+}
+body .spline-page.spline-page--grid .consultation-section .consultation-form input:focus,
+body .spline-page.spline-page--grid .consultation-section .consultation-form select:focus {
+  border-color: rgba(37, 99, 235, 0.4) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08) !important;
+  background: rgba(255, 255, 255, 1) !important;
+}
+body .spline-page.spline-page--grid .consultation-section .consultation-form select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23102a5c' stroke-opacity='0.5' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 14px center !important;
+  background-size: 16px 16px !important;
+  padding-right: 36px !important;
+}
+body .spline-page.spline-page--grid .consultation-section .phone-field__prefix {
+  background: rgba(16, 42, 92, 0.06) !important;
+  border-color: rgba(16, 42, 92, 0.12) !important;
+  color: rgba(16, 42, 92, 0.75) !important;
+}
+body .spline-page.spline-page--grid .consultation-section .phone-field input {
+  border-left-color: rgba(16, 42, 92, 0.1) !important;
+}
+body .spline-page.spline-page--grid .consultation-section .consultation-form button[type="submit"] {
+  background: linear-gradient(135deg, #2563eb, #4f46e5) !important;
+  box-shadow: 0 10px 26px rgba(37, 99, 235, 0.22) !important;
+}
+body .spline-page.spline-page--grid .consultation-section .consultation-form button[type="submit"]:hover:not(:disabled) {
+  box-shadow: 0 14px 32px rgba(37, 99, 235, 0.3) !important;
+}
+body .spline-page.spline-page--grid .consultation-section .consultation-security {
+  color: rgba(16, 42, 92, 0.5) !important;
+}
+body .spline-page.spline-page--grid .consultation-section .consultation-security svg {
+  color: var(--cv-blue) !important;
+}
+
+/* ── Footer: the existing dark-navy footer stays dark ────────────────────── */
+body .site-footer {
+  background: linear-gradient(135deg, #102a5c, #172e64) !important;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  body .spline-page.spline-page--grid .hero-shell {
+    min-height: auto !important;
+  }
+  body .spline-page.spline-page--grid .hero-layout {
+    padding-top: 110px !important;
+  }
+  body .spline-page.spline-page--grid .stat-strip {
+    width: min(100% - 32px, 620px) !important;
+  }
+  .hero-proof {
+    gap: 9px;
+  }
+}
+
+/* Tablet 861–900: the glass rail still floats against the hero floor. These
+   widths keep the desktop-ish bottom padding, so the pull-up overlaps only
+   empty space — never the CTAs. */
+@media (min-width: 861px) and (max-width: 900px) {
+  body .spline-page.spline-page--grid .stat-strip {
+    margin: -30px auto 0 !important;
+  }
+}
+
+/* Under 861px the hero bottom padding collapses to ~8px, so a negative margin
+   would drag the rail up over the CTA buttons. Push it fully in-flow and soften
+   the glass so it reads as a clean card on small screens. */
+@media (max-width: 860px) {
+  body .spline-page.spline-page--grid .stat-strip {
+    margin: 26px auto 0 !important;
+    padding: 16px !important;
+    border-radius: 18px !important;
+  }
+}
+
+/* Small phones: keep the four benefit pills from hugging edge-to-edge and let
+   the stat labels breathe inside the narrower rail. */
+@media (max-width: 480px) {
+  .hero-proof {
+    gap: 8px 10px;
+    font-size: 12.5px;
+  }
+  body .spline-page.spline-page--grid .hero-actions {
+    margin-top: 22px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

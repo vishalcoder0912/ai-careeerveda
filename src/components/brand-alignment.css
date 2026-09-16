@@ -414,7 +414,7 @@
 .consultation-section {
   align-items: center;
   background:
-    radial-gradient(circle at 72% 20%, rgba(217, 70, 239, 0.22), transparent 32%),
+    radial-gradient(circle at 72% 20%, rgba(254, 251, 255, 0.22), transparent 32%),
     linear-gradient(135deg, #151143 0%, #0f172a 100%);
 }
 

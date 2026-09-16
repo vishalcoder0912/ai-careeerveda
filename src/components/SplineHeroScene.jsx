@@ -9,9 +9,9 @@ const labels = [
   { id: "label-personalized", text: "Personalized Learning" },
   { id: "label-mentorship", text: "Expert Mentorship" },
   { id: "label-interview", text: "Interview Support" },
-  { id: "label-placement", text: "Placement Focus" },
+  { id: "label-placement", text: "Placement Support" },
   { id: "label-verified", text: "Verified Projects" },
-  { id: "label-career", text: "Career Programs" },
+  { id: "label-career", text: "Industry-Led Programs" },
 ];
 
 // Shown only to the visitors listed in shouldSkipScene() below, who get no live
@@ -56,10 +56,10 @@ const SplineHeroScene = ({sceneUrl}) => {
   const [isLoaded,setIsLoaded] = useState(false);
   const [hasFailed,setHasFailed] = useState(false);
   // Both initializers run during the first render, not in a mount effect —
-  // setting these from the effect painted a loader frame that was never shown
-  // (the still replaced it) and forced a second render for values that were
-  // known before the first paint. matchMedia is idempotent, so reading it in
-  // the initializer and again in the effect below costs nothing.
+  // setting these from the effect painted a loader frame and forced a second
+  // render for values that were known before the first paint. matchMedia is
+  // idempotent, so reading it in the initializer and again in the effect below
+  // costs nothing.
   const [shouldRender,setShouldRender] = useState(false);
   const [useFallback] = useState(() => shouldSkipScene());
   // A finger has no hover, so over the iframe a phone must choose: either the
@@ -75,11 +75,7 @@ const SplineHeroScene = ({sceneUrl}) => {
     () => typeof window !== "undefined" && window.matchMedia("(hover: none)").matches,
   );
   const [isActive,setIsActive] = useState(false);
-  // On a phone the still poster is the resting hero until the scene is asked for.
-  // Kept separate from useFallback (which is the permanent still for
-  // reduced-motion / save-data / 2g): here the poster is only a stand-in that the
-  // first gesture upgrades to the live robot.
-  const [phoneResting] = useState(() => isPhone());
+  const [isMobile] = useState(() => isPhone());
 
   useEffect(() => {
     if (shouldSkipScene()) {
@@ -93,29 +89,8 @@ const SplineHeroScene = ({sceneUrl}) => {
       if (cancelled) return;
       idle(() => {
         if (!cancelled) setShouldRender(true);
-      },{timeout: phoneResting ? 3000 : 2000});
+      },{timeout: isMobile ? 1200 : 600});
     };
-
-    // Phones: the live scene is a ~1 MB WebGL app on its own thread, and booting
-    // it during the first seconds of the load is what pins the mobile score down —
-    // it contends for a CPU the page is still painting on and for the bandwidth
-    // the hero needs. So on a phone the still poster stands in until the visitor's
-    // first gesture (scroll/tap — which happens within a second on a landing page)
-    // and only then does the identical live robot boot, into a page that is
-    // already up. Nothing is withheld: every phone visitor still gets the scene,
-    // just after the page rather than racing it.
-    if (phoneResting) {
-      const events = ["pointerdown","touchstart","wheel","scroll","keydown"];
-      const onFirst = () => {
-        events.forEach((e) => window.removeEventListener(e,onFirst));
-        start();
-      };
-      events.forEach((e) => window.addEventListener(e,onFirst,{once: true,passive: true}));
-      return () => {
-        cancelled = true;
-        events.forEach((e) => window.removeEventListener(e,onFirst));
-      };
-    }
 
     // Two gates, in order. The scene may only start downloading once
     //   1. the hero is actually on screen (an IntersectionObserver, so a visitor
@@ -143,7 +118,7 @@ const SplineHeroScene = ({sceneUrl}) => {
       cancelled = true;
       observer.disconnect();
     };
-  },[phoneResting]);
+  },[isMobile]);
 
   // Hand the gestures back. While the robot is active it eats every swipe that
   // starts on it, so a scroll event can only mean the visitor swiped somewhere
@@ -168,9 +143,13 @@ const SplineHeroScene = ({sceneUrl}) => {
   },[isActive]);
 
   const showFallback = useFallback || hasFailed;
-  // The phone poster shows only while the scene has not been requested yet; the
-  // first gesture flips shouldRender and the live iframe takes over from there.
-  const showPoster = showFallback || (phoneResting && !shouldRender);
+  // The still is only for the visitors who can never get the live scene —
+  // reduced-motion / save-data / 2g / an iframe that failed to boot. Everyone
+  // else gets the real robot: the frame starts downloading as soon as it can and
+  // the loader ring stands in while it boots. No static stand-in is interposed
+  // on the default path, so the still robot this app ships with can never be the
+  // robot someone sees on a working device.
+  const showPoster = showFallback;
   // Desktop drives the robot with a cursor, which can hover over the scene without
   // committing to it, so there the frame takes pointer events as normal. On touch
   // it takes them only once the visitor has asked for it.
@@ -182,7 +161,7 @@ const SplineHeroScene = ({sceneUrl}) => {
   // embed for a 2x canvas there. Phones keep the default 1x: the bucket that
   // already holds the scene back to idle/idle-budget keeps its 1/4 pixel count.
   const sceneSrc =
-    typeof window !== "undefined" && window.devicePixelRatio >= 2 && !phoneResting
+    typeof window !== "undefined" && window.devicePixelRatio >= 2 && !isMobile
       ? `${sceneUrl}${sceneUrl.includes("?") ? "&" : "?"}devicePixelRatio=2`
       : sceneUrl;
 
@@ -208,34 +187,34 @@ const SplineHeroScene = ({sceneUrl}) => {
           </div>
         )}
 
-        {showPoster ? (
-          <SplineFallback />
-        ) : (
-          shouldRender && (
-            <div
-              className={`spline-frame${isInteractive ? " is-interactive" : ""}`}
-              aria-hidden="true"
-            >
-              <iframe
-                className={`spline-scene ${isLoaded ? "is-loaded" : ""}`}
-                src={sceneSrc}
-                title="CareerVeda career growth visual"
-                frameBorder="0"
-                loading="lazy"
-                // allow-scripts + allow-pointer-lock: the runtime boots, the scene renders
-                // and tracks the cursor/pointer. pointer-lock is required for the 3D scene
-                // to capture mouse movement for orbit/rotation controls.
-                // allow-same-origin is NOT granted — the scene data is inlined in the embed
-                // page, and its localStorage paths are desktop-app-only. Granting it back
-                // would hand the frame its real spline.design origin for nothing.
-                sandbox="allow-scripts allow-pointer-lock"
-                allow="autoplay; fullscreen; xr-spatial-tracking; pointer-lock"
-                onLoad={() => setIsLoaded(true)}
-                onError={() => setHasFailed(true)}
-              />
-            </div>
-          )
+        {shouldRender && (
+          <div
+            className={`spline-frame${isInteractive ? " is-interactive" : ""}`}
+            aria-hidden="true"
+          >
+            <iframe
+              className={`spline-scene ${isLoaded ? "is-loaded" : ""}`}
+              src={sceneSrc}
+              title="CareerVeda career growth visual"
+              frameBorder="0"
+              loading="lazy"
+              // allow-scripts + allow-pointer-lock: the runtime boots, the scene renders
+              // and tracks the cursor/pointer. pointer-lock is required for the 3D scene
+              // to capture mouse movement for orbit/rotation controls.
+              // allow-same-origin is NOT granted — the scene data is inlined in the embed
+              // page, and its localStorage paths are desktop-app-only. Granting it back
+              // would hand the frame its real spline.design origin for nothing.
+              sandbox="allow-scripts allow-pointer-lock"
+              allow="autoplay; fullscreen; xr-spatial-tracking; pointer-lock"
+              onLoad={() => setIsLoaded(true)}
+              onError={() => setHasFailed(true)}
+            />
+          </div>
         )}
+
+        {/* The still is the scene for the fallback visitors above, who get no live
+            frame; it is never interposed on anyone else's view. */}
+        {showPoster && <SplineFallback />}
 
         {/* Covers the whole robot, not just the pill. Tapping the robot is the
             gesture people actually make, and when only the pill listened every

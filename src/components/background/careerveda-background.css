@@ -2,14 +2,13 @@
  *
  * Layer order inside .cv-bg-fixed (all pointer-inert, all fixed inset 0):
  *
- *   .cv-bg-base   z 0 — the dark ramp every section reads against
- *   .cv-bg-grid   z 1 — the one CursorGrid canvas (90px lattice)
- *   .cv-bg-glow   z 2 — atmospheric teal light, ABOVE the grid lines so the
- *                       illumination reads as lit haze rather than raw strokes
+ *   .cv-bg-base   z 0 — the WHITE base, gently deepened with three fixed,
+ *                       ambient radial glows (blue / lavender / cyan)
+ *   .cv-bg-glow   z 2 — atmospheric light, soft blurred haze for depth
  *
  * .cv-bg-fixed itself is z-index 0 among Layout's children; the content
  * wrapper below is z-index 10, the sticky navbar 1000 (navbar-hero-merge.css).
- * Nothing here intercepts a pointer — CursorGrid listens on window.
+ * Nothing here intercepts a pointer.
  */
 
 .cv-bg-root {
@@ -27,15 +26,33 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  /* The hero's own ramp (slate-color-system.css), promoted to the shared
-     field: same slate family, deepened toward the bottom edge so long pages
-     settle darker instead of looping back to the top tone. */
-  background: linear-gradient(
-    135deg,
-    var(--cv-slate, #34445c) 0%,
-    var(--cv-slate-dark, #263447) 48%,
-    var(--cv-slate-deep, #1f2b3a) 100%
-  );
+  /* The one continuous WHITE atmosphere every home-page section reads against.
+     The white base stays constant across breakpoints; only the glow radii
+     shrink (see the media queries below). The tone never loops back to dark. */
+  background:
+    radial-gradient(
+      circle at 10% 15%,
+      var(--cv-blue-glow, rgba(37, 99, 235, 0.09)) 0,
+      var(--cv-blue-glow-soft, rgba(37, 99, 235, 0.035)) 25%,
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 90% 20%,
+      var(--cv-purple-glow, rgba(124, 58, 237, 0.065)) 0,
+      var(--cv-purple-glow-soft, rgba(124, 58, 237, 0.025)) 30%,
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 15% 75%,
+      var(--cv-cyan-glow, rgba(85, 199, 255, 0.055)) 0,
+      transparent 55%
+    ),
+    linear-gradient(
+      180deg,
+      var(--cv-white, #ffffff) 0%,
+      var(--cv-background, #fafcff) 55%,
+      #fbfdff 100%
+    );
 }
 
 .cv-bg-grid {
@@ -48,15 +65,35 @@
   position: absolute;
   inset: 0;
   z-index: 2;
-  /* The hero's corner radials, kept at their old strengths and positions but
-     now viewport-wide — the ambience no longer stops where a section begins.
-     Deliberately fainter than the side clouds (.cv-grid-layer::before/after),
-     which stay the loudest colour on the page margins. */
+  /* A second, even softer layer of ambient light so the atmosphere has depth
+     rather than a single flat wash — one floating layer each for blue, lavender
+     and cyan, blurred once and then stationary. Kept fainter than the side
+     clouds (.cv-grid-layer::before/after), which stay the loudest colour on the
+     page margins. */
   background:
-    radial-gradient(circle at 84% 18%, rgba(45, 212, 191, 0.14), transparent 35%),
-    radial-gradient(circle at 12% 14%, rgba(16, 185, 129, 0.09), transparent 28%),
-    radial-gradient(circle at 72% 58%, rgba(56, 189, 248, 0.05), transparent 32%);
-  opacity: 0.72;
+    radial-gradient(52% 44% at 84% 8%, rgba(85, 199, 255, 0.09), transparent 68%),
+    radial-gradient(40% 38% at 6% 22%, rgba(124, 58, 237, 0.06), transparent 68%),
+    radial-gradient(54% 48% at 50% 104%, rgba(37, 99, 235, 0.05), transparent 70%);
+  filter: blur(110px);
+  opacity: 1;
+}
+
+/* Ambient glows breathe slightly outward on large canvases and contract on
+   phone viewports — the enduring white base itself never changes. */
+@media (min-width: 1281px) {
+  .cv-bg-base {
+    background:
+      radial-gradient(circle at 10% 15%, rgba(37, 99, 235, 0.1), rgba(37, 99, 235, 0.04) 25%, transparent 58%),
+      radial-gradient(circle at 90% 20%, rgba(124, 58, 237, 0.07), rgba(124, 58, 237, 0.028) 30%, transparent 62%),
+      radial-gradient(circle at 14% 78%, rgba(85, 199, 255, 0.06), transparent 58%),
+      linear-gradient(180deg, #ffffff 0%, var(--cv-background, #fafcff) 58%, #fbfdff 100%);
+  }
+}
+
+@media (max-width: 900px) {
+  .cv-bg-glow {
+    filter: blur(90px);
+  }
 }
 
 /* Foreground. A plain static div paints its background BEFORE positioned
@@ -85,50 +122,4 @@
    heroes (if any ever exist) keep whatever they declare. */
 body .spline-page.spline-page--grid .hero-shell {
   background: none !important;
-}
-
-/* ── Every route reads the shared field ───────────────────────────────────────
-   The home page handed its fills back to this background (shape-grid.css and
-   the hero rule above); these rules do the same for every other route, so the
-   CursorGrid lattice shows site-wide instead of stopping at the landing page.
-
-   What goes transparent: the page-wide shell fills (.spline-page on every
-   non-home main, .jobs-page) and slate-color-system.css's full-bleed section
-   bands (.light-section, .support-section, #faculty.dark-section, …), which
-   currently win those routes and paint an opaque ramp over the grid. What
-   deliberately does NOT: floating panels and cards — course explorer, mentor
-   cards, blog cards, form fields — they keep their surfaces to hold text
-   legible over a moving grid, the exact trade the home page made (see
-   shape-grid.css's panel note). Form fields additionally stay opaque for OS
-   <select> popup rendering; page-shell.css and jobs-page.css document that.
-
-   Readability is preserved because slate-color-system.css already wins these
-   surfaces today: every one of them renders dark-slate right now with its text
-   tuned light-on-dark. Transparent swaps that opaque dark ramp for the shared
-   dark field behind it — near-identical tone, plus the lattice and glow.
-
-   Cascade mechanics: the sheets being overridden declare the same surfaces
-   with `body ` prefixes and !important, so matching specificity and racing
-   import order would work until someone reordered an import. Out-ranking them
-   outright instead: :not() counts its argument toward specificity, lifting the
-   shell rule to three classes; #faculty is spelled out because an ID beats any
-   number of classes; .cv-bg-content does the same job for the footer. */
-body .spline-page:not(.spline-page--grid),
-body .jobs-page {
-  background: transparent !important;
-}
-
-body .spline-page:not(.spline-page--grid) .light-section,
-body .spline-page:not(.spline-page--grid) .section-block,
-body .spline-page:not(.spline-page--grid) .support-section,
-body .spline-page:not(.spline-page--grid) .review-section,
-body .spline-page:not(.spline-page--grid) .faq-section,
-body .spline-page:not(.spline-page--grid) .partner-band,
-body .spline-page:not(.spline-page--grid) .program-showcase-section,
-body .spline-page:not(.spline-page--grid) .dark-section,
-body .spline-page:not(.spline-page--grid) .strategy-section,
-body .spline-page:not(.spline-page--grid) .consultation-section,
-body .spline-page:not(.spline-page--grid) #faculty.dark-section,
-body .cv-bg-content .site-footer {
-  background: transparent !important;
 }

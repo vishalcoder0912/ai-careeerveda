@@ -62,21 +62,28 @@ afterEach(() => {
 });
 
 describe("SplineHeroScene touch gate", () => {
-  it("rests on the poster until the visitor's first gesture", () => {
+  it("boots the live scene on a phone without waiting for a gesture, inert until tapped", () => {
     asPhone();
     render(<SplineHeroScene sceneUrl="https://example.test/scene" />);
 
-    // Nothing has been asked for yet: no iframe, and so nothing to tap.
-    expect(document.querySelector(".spline-poster")).not.toBeNull();
-    expect(frame()).toBeNull();
-    expect(hint()).toBeNull();
+    // The frame mounts once the hero is on screen and the browser is idle — a
+    // phone needs no gesture to ask for it. The still is never interposed on the
+    // default path, so its robot cannot be the one a visitor sees.
+    expect(document.querySelector(".spline-poster")).toBeNull();
+    expect(frame()).not.toBeNull();
+    // Inert until tapped: a swipe meant to scroll the page must not drag the robot.
+    expect(frame().className).not.toContain("is-interactive");
+    // The hint asks for the tap, since the robot is live and inert.
+    expect(hint()).not.toBeNull();
   });
 
-  it("offers the tap hint once the scene is live, with the frame still inert", () => {
+  it("offers the tap hint once the scene has loaded, with the frame still inert", () => {
     asPhone();
     render(<SplineHeroScene sceneUrl="https://example.test/scene" />);
 
-    fireEvent.scroll(window);
+    // Nothing else in jsdom can signal the scene booting, so dispatch the load
+    // event the iframe will fire when its embed has finished.
+    fireEvent.load(frame().querySelector("iframe"));
 
     expect(frame()).not.toBeNull();
     // Inert is the whole point — the page must still scroll off the robot.
@@ -90,7 +97,7 @@ describe("SplineHeroScene touch gate", () => {
   it("hands the robot the gestures when the robot itself is tapped", () => {
     asPhone();
     render(<SplineHeroScene sceneUrl="https://example.test/scene" />);
-    fireEvent.scroll(window);
+    fireEvent.load(document.querySelector("iframe"));
 
     // The layer covers the frame, so this is a tap anywhere on the robot.
     expect(tapLayer()).not.toBeNull();
@@ -106,7 +113,7 @@ describe("SplineHeroScene touch gate", () => {
   it("takes the gestures back when the visitor scrolls elsewhere", () => {
     asPhone();
     render(<SplineHeroScene sceneUrl="https://example.test/scene" />);
-    fireEvent.scroll(window);
+    fireEvent.load(document.querySelector("iframe"));
     fireEvent.pointerDown(tapLayer());
 
     // A scroll can only have started off the robot — while active it eats its own.

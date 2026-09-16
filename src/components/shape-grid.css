@@ -59,16 +59,16 @@
 .cv-grid-layer::before {
   left: -14vw;
   background:
-    radial-gradient(closest-side circle at 44% 24%, rgba(29, 95, 211, 0.14), transparent 72%),
-    radial-gradient(closest-side circle at 58% 66%, rgba(29, 95, 211, 0.1), transparent 72%);
+    radial-gradient(closest-side circle at 44% 24%, rgba(37, 99, 235, 0.11), transparent 72%),
+    radial-gradient(closest-side circle at 58% 66%, rgba(37, 99, 235, 0.08), transparent 72%);
   animation: cv-cloud-drift-a 26s ease-in-out infinite alternate;
 }
 
 .cv-grid-layer::after {
   right: -14vw;
   background:
-    radial-gradient(closest-side circle at 56% 30%, rgba(249, 115, 22, 0.1), transparent 72%),
-    radial-gradient(closest-side circle at 42% 72%, rgba(20, 184, 166, 0.1), transparent 72%);
+    radial-gradient(closest-side circle at 56% 30%, rgba(124, 58, 237, 0.08), transparent 72%),
+    radial-gradient(closest-side circle at 42% 72%, rgba(85, 199, 255, 0.09), transparent 72%);
   animation: cv-cloud-drift-b 34s ease-in-out infinite alternate;
 }
 
@@ -129,10 +129,13 @@
  * are what hold the text legible over a moving grid. */
 body .spline-page.spline-page--grid,
 body .spline-page--grid .faq-section,
-body .spline-page--grid .consultation-section,
 body .spline-page--grid .trusted-companies {
   background: transparent !important;
 }
+
+/* The consultation section is NOT on this list: it keeps its own deep
+   blue/purple CTA card (consultation-form.css) instead of handing back to the
+   white field. */
 
 /* The floating panels — the course explorer, the outcome strip, the press cards
    — deliberately keep their own surfaces, and are not listed above.

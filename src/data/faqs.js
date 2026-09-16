@@ -29,6 +29,10 @@ export const faqs = [
     "Yes — the schedule is designed for working professionals. Choose weekday or weekend batches, catch up through recordings, and continue at a pace that fits around your job.",
   ],
   [
+    "Will AI replace humans?",
+    "AI automates tasks, not careers — the people getting hired are the ones who know how to direct it. Every CareerVeda program now teaches you to build with and alongside AI and Agentic tools, so you graduate on the right side of that change rather than competing with it.",
+  ],
+  [
     "What kind of projects will I work on?",
     "You build portfolio-ready projects and work through case studies drawn from real business challenges at leading companies — the kind of problems you'd face in the role, not textbook exercises.",
   ],
@@ -39,5 +43,9 @@ export const faqs = [
   [
     "What support is available during the program?",
     "You're assigned a personal mentor matched to your goals, with weekly guidance sessions, a career roadmap, and progress tracking. Live classes, doubt clearing, and skill workshops run throughout, and career support continues after you graduate.",
+  ],
+  [
+    "Will I get 100% placement through CareerVeda?",
+    "No honest program can guarantee an interview outcome — hiring decisions belong to employers. What CareerVeda commits to is the full placement machinery: resume and LinkedIn polish, mock interviews, soft-skill training, referrals, and direct access to our 900+ hiring partners, with career support that continues after you graduate.",
   ],
 ];

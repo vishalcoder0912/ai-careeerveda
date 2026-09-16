@@ -1,7 +1,6 @@
-import { lazy, useRef } from "react";
+import { lazy } from "react";
 import Hero from "../components/Hero";
 import DeferUntilVisible from "../components/DeferUntilVisible";
-import ConsultationAtmosphere from "../components/ConsultationAtmosphere";
 import { Reveal, StaggerGroup, StaggerItem } from "../components/motionPrimitives";
 import { useCinematicInteractions } from "../hooks/useCinematicInteractions";
 import { stats, faqs as staticFaqs } from "../data/siteData";
@@ -13,6 +12,7 @@ import "../components/careerveda-hero-refinement.css";
 import "../components/cinematic-interactions.css";
 import "../components/shape-grid.css";
 import "./HomePage.css";
+import "../components/website-new-theme.css";
 
 /* Only the hero is above the fold. Everything below it is split out and fetched
    as the reader approaches it, so the first paint is the hero and the navigation
@@ -22,6 +22,7 @@ const RecommendedCourses = lazy(() => import("../components/Recommended/Recommen
 const LearnerOutcomes = lazy(() => import("../components/LearnerOutcomes"));
 const ConsultationForm = lazy(() => import("../components/ConsultationForm"));
 const PressSection = lazy(() => import("../components/PressSection"));
+const FaqAnimatedList = lazy(() => import("../components/FaqAnimatedList"));
 
 const HomePage = () => {
   const pageRef = useCinematicInteractions();
@@ -63,9 +64,6 @@ const HomePage = () => {
     adapt: adaptAlumniReview,
     params: { featured: true },
   });
-  // The consultation heading is the pointer eventSource for the particle field
-  // behind it, so the cursor lines up with the effect's focal point.
-  const consultationCopyRef = useRef(null);
 
   return (
     <main ref={pageRef} className="spline-page spline-page--grid">
@@ -115,11 +113,7 @@ const HomePage = () => {
         {/* Copy and form now share a single unified panel/background instead of
             floating as two separate cards. */}
         <div className="consultation-panel">
-          <Reveal
-            className="consultation-copy consultation-copy--panel"
-            ref={consultationCopyRef}
-          >
-            <ConsultationAtmosphere eventSource={consultationCopyRef} />
+          <Reveal className="consultation-copy consultation-copy--panel">
             <p className="section-label">ISO Certified Career Platform</p>
             <h2 className="consultation-headline">
               Transform Your Career with{" "}
@@ -142,14 +136,28 @@ const HomePage = () => {
           <h2>Got questions? We've got answers</h2>
           <p>Find everything you need to know about programs, projects, placement support, and learning experience</p>
         </Reveal>
-        <StaggerGroup className="faq-list" stagger={0.06}>
-          {faqs.map(([question, answer]) => (
-            <StaggerItem as="details" key={question}>
-              <summary>{question}</summary>
-              <p>{answer}</p>
-            </StaggerItem>
-          ))}
-        </StaggerGroup>
+        <div className="faq-accordion">
+          <StaggerGroup className="faq-list" stagger={0.06}>
+            {faqs.map(([question, answer]) => (
+              <StaggerItem as="details" key={question}>
+                <summary>{question}</summary>
+                <p>{answer}</p>
+              </StaggerItem>
+            ))}
+          </StaggerGroup>
+        </div>
+
+        {/* Phone companion to the accordion above. Narrow screens swap the
+            stacked <details> wall for an animated question list (React Bits'
+            AnimatedList) — the questions ride in as they scroll and a tap opens
+            the answer in a card below. The accordion stays in the DOM, hidden,
+            so the prerendered markup is unchanged for hydration; and the whole
+            phone list is deferred by DeferUntilVisible, so its framer-motion
+            chunk is only fetched once a phone reader is heading towards the FAQ
+            — the same treatment TrustedCompanies gets. */}
+        <DeferUntilVisible className="faq-mobile-animated-list" minHeight={420}>
+          <FaqAnimatedList faqs={faqs} />
+        </DeferUntilVisible>
       </section>
     </main>
   );

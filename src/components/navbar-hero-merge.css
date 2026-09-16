@@ -98,9 +98,9 @@ body .spline-page .hero-shell::after {
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(42% 62% at 24% 32%, rgba(45, 212, 191, 0.15), transparent 70%),
-    radial-gradient(38% 58% at 76% 28%, rgba(56, 189, 248, 0.1), transparent 70%),
-    radial-gradient(52% 68% at 50% 42%, rgba(16, 185, 129, 0.08), transparent 72%);
+    radial-gradient(42% 62% at 24% 32%, rgba(56, 189, 248, 0.12), transparent 70%),
+    radial-gradient(38% 58% at 76% 28%, rgba(124, 58, 237, 0.08), transparent 70%),
+    radial-gradient(52% 68% at 50% 42%, rgba(37, 99, 235, 0.06), transparent 72%);
   filter: blur(28px);
 }
 

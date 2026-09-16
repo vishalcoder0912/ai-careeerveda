@@ -75,3 +75,58 @@ body .faq-section.faq-spacing {
     min-width: 0;
   }
 }
+
+/* FAQ: the stacked <details> accordion on wide screens, the animated question
+   list (React Bits' AnimatedList) on a phone. The desktop accordion stays
+   mounted but hidden — it keeps the prerendered markup stable for hydration and
+   gives crawlers the full Q&A — while the phone list is deferred in
+   DeferUntilVisible, so its framer-motion chunk is only fetched when a phone
+   reader is actually heading towards the FAQ. */
+.faq-accordion {
+  display: block;
+}
+
+.faq-mobile-animated-list {
+  display: none;
+}
+
+@media (max-width: 680px) {
+  .faq-accordion {
+    display: none;
+  }
+
+  .faq-mobile-animated-list {
+    display: block;
+  }
+
+  .faq-animated-hint {
+    margin: 10px 6px 0;
+    color: #8aa1c4;
+    font-size: 13px;
+    text-align: center;
+  }
+
+  .faq-animated-answer {
+    margin-top: 14px;
+    padding: 18px 20px;
+    background: #ffffff;
+    border: 1px solid #dfe7f5;
+    border-left: 4px solid #2563eb;
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.08);
+  }
+
+  .faq-animated-answer h3 {
+    margin: 0 0 8px;
+    color: #102a5c;
+    font-size: 16px;
+    line-height: 1.35;
+  }
+
+  .faq-animated-answer p {
+    margin: 0;
+    color: #3f5378;
+    font-size: 15px;
+    line-height: 1.65;
+  }
+}

@@ -20,15 +20,15 @@ const Hero = ({stats}) => {
             through live classes, hands-on projects, expert mentorship, and dedicated
             placement support designed to help you become job-ready.
           </p>
-          <p className="trust-line text-sm font-semibold text-slate-200/80">
-            Personalized learning, expert mentorship, interview support and 100% placement focus
-          </p>
+          <ul className="hero-proof" aria-label="CareerVeda benefits">
+            {['Personalized Learning', 'Expert Mentorship', 'Placement Support', 'Verified Projects'].map((item) => <li key={item}>{item}</li>)}
+          </ul>
           <div className="hero-actions">
-            <Link className="primary-action" to="/#consultation">
-              Get in Touch
+            <Link className="primary-action" to="/programs">
+              Explore Programs <span aria-hidden="true">→</span>
             </Link>
-            <Link className="secondary-action" to="/programs">
-              Explore Programs
+            <Link className="secondary-action" to="/#consultation">
+              Get in Touch <span aria-hidden="true">↗</span>
             </Link>
           </div>
         </div>
@@ -38,7 +38,7 @@ const Hero = ({stats}) => {
 
       <div className="stat-strip">
         {stats.map(([value,label]) => (
-          <div key={label}>
+          <div key={label} className="stat-item">
             <strong>{value}</strong>
             <span>{label}</span>
           </div>
