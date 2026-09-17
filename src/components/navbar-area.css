@@ -350,21 +350,21 @@ body header.site-nav .nav-container .hamburger-btn {
   }
 }
 
-/* ══ MOBILE ≤980px — logo | CTA + hamburger (drawer carries the links) ══════
-   980px, not 768px: mobile-responsiveness.css + useViewportTier switch the
-   whole system (hamburger, drawer, hero paddings) at 980 — keeping the pill
-   visible past that would reopen the dead zone those files exist to close. */
+/* ══ MOBILE ≤1023px — logo | CTA + hamburger (drawer carries the links) ════
+   Tablet (768-1023) uses the same compact bar as a phone: Logo + Enroll Now +
+   Menu. The full pill only appears at >= 1024px, per the responsive tier
+   system (tablet 768-1023 / desktop >= 1024). */
 
-@media (max-width: 980px) {
+@media (max-width: 1023px) {
   body header.site-nav,
   body header.site-nav.is-scrolled,
   body header.site-nav.is-compact {
-    min-height: var(--navbar-height, 64px) !important;
+    min-height: var(--navbar-height, 70px) !important;
     padding: 0 !important;
   }
 
   body header.site-nav .nav-container {
-    height: var(--navbar-height, 64px);
+    height: var(--navbar-height, 70px);
     width: calc(100% - 32px) !important;
     display: flex !important;
     justify-content: flex-start !important;
@@ -409,7 +409,7 @@ body header.site-nav .nav-container .hamburger-btn {
    document space, so the shorter scrolled bar (56px) simply frees a strip of
    the shared page background — no layout shift, no covered content. */
 
-@media (max-width: 980px) {
+@media (max-width: 1023px) {
   body header.site-nav.is-scrolled .nav-container,
   body header.site-nav.is-compact .nav-container {
     width: calc(100% - 20px) !important;
@@ -606,7 +606,7 @@ body header.site-nav .nav-container a.nav-cta:focus-visible {
   box-shadow: 0 10px 30px rgba(20, 200, 180, 0.22) !important;
 }
 
-@media (min-width: 981px) {
+@media (min-width: 1024px) {
   body header.site-nav.is-scrolled,
   body header.site-nav.is-compact {
     background: transparent !important;

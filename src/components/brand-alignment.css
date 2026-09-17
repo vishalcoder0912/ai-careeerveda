@@ -177,7 +177,7 @@
   border-radius: 24px;
   border-color: rgba(255, 255, 255, 0.16);
   background: transparent;
-  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.24);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
 }
 
 .stat-strip div {

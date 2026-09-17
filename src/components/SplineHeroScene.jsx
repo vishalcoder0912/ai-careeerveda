@@ -1,17 +1,17 @@
 import {useEffect,useRef,useState} from "react";
 
 // The pillar labels that orbit the robot. Each id maps to one zone of the stage
-// coordinate system in careerveda-hero-refinement.css. Note the render order is
-// not the on-screen order: hiring is the top-centre pill, the rest pair left/
-// right down the stage.
+// coordinate system in careerveda-hero-refinement.css: the desktop ring uses all
+// seven zones, the laptop ring (1025-1199px) folds to six and hides "career",
+// and the whole ring is hidden at <=1024px.
 const labels = [
   { id: "label-hiring", text: "Hiring Partners" },
   { id: "label-personalized", text: "Personalized Learning" },
   { id: "label-mentorship", text: "Expert Mentorship" },
   { id: "label-interview", text: "Interview Support" },
-  { id: "label-placement", text: "Placement Support" },
+  { id: "label-placement", text: "Placement Focus" },
   { id: "label-verified", text: "Verified Projects" },
-  { id: "label-career", text: "Industry-Led Programs" },
+  { id: "label-career", text: "Career Programs" },
 ];
 
 // Shown only to the visitors listed in shouldSkipScene() below, who get no live

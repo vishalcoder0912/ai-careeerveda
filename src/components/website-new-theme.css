@@ -124,7 +124,7 @@ body .spline-page.spline-page--grid .hero-copy .eyebrow {
 }
 body .spline-page.spline-page--grid .hero-copy h1 {
   color: var(--cv-navy) !important;
-  font-size: clamp(48px, 5.1vw, 76px) !important;
+  font-size: clamp(42px, 4.4vw, 64px) !important;
   line-height: 1.04 !important;
 }
 body .spline-page.spline-page--grid .hero-title-accent {
@@ -137,6 +137,34 @@ body .spline-page.spline-page--grid .hero-copy > p {
   color: #526682 !important;
   font-size: 17px !important;
   line-height: 1.72 !important;
+}
+
+/* Soft floating panel behind the hero story: a translucent blue-white glass
+   card that frames the eyebrow → CTAs block against the atmospheric field.
+   Rendered as a pseudo-element so the copy's own typography metrics (H1 wrap,
+   leading, widths) stay exactly as tuned. */
+body .spline-page.spline-page--grid .hero-copy {
+  position: relative;
+  z-index: 1;
+  padding: 0;
+}
+body .spline-page.spline-page--grid .hero-copy::before {
+  content: "";
+  position: absolute;
+  top: -18px;
+  right: -22px;
+  bottom: -18px;
+  left: -22px;
+  z-index: -1;
+  border: 1px solid rgba(37, 99, 235, 0.10);
+  border-radius: 24px;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.72), rgba(246, 249, 255, 0.55));
+  box-shadow:
+    0 24px 60px rgba(30, 64, 175, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 .hero-proof {
   display: flex;
@@ -182,12 +210,56 @@ body .spline-page.spline-page--grid .spline-glow {
   filter: blur(20px) !important;
   opacity: 0.55 !important;
 }
+/* Soft floating panel behind the whole Spline composition: a translucent
+   blue-white glass card that frames the robot and its orbiting labels. The
+   left/right orbit labels float a little past the stage's own box, so the
+   panel uses negative horizontal insets to enclose the full ring. It sits at
+   the stage's z-0 so glow, loader, robot and labels all paint above it and
+   none of the interaction layers are blocked.
+
+   The vertical insets are tuned so the panel renders at exactly the same size
+   and vertical band as the hero story panel beside it (the two read as a
+   matched pair of cards). */
+body .spline-page.spline-page--grid .hero-spline-stage::before {
+  content: "";
+  position: absolute;
+  top: -40px;
+  bottom: -41px;
+  left: -28px;
+  right: -28px;
+  z-index: 0;
+  pointer-events: none;
+  border: 1px solid rgba(37, 99, 235, 0.12);
+  border-radius: 30px;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.5), rgba(229, 241, 255, 0.4));
+  box-shadow:
+    0 26px 60px rgba(30, 64, 175, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* Phones: the label rail is hidden, so a full-stage card behind the robot is
+   extra weight — the hero story panel already carries the glass language. */
+@media (max-width: 860px) {
+  body .spline-page.spline-page--grid .hero-spline-stage::before {
+    content: none;
+  }
+}
 body .spline-page.spline-page--grid .ai-label {
-  color: #23416c !important;
-  background: rgba(255, 255, 255, 0.78) !important;
-  border-color: rgba(37, 99, 235, 0.17) !important;
-  box-shadow: 0 15px 36px rgba(37, 99, 235, 0.12) !important;
-  border-radius: 999px !important;
+  color: #1e3a8a !important;
+  background:
+    linear-gradient(165deg, rgba(255, 255, 255, 1), rgba(238, 246, 255, 0.96)) !important;
+  border-color: rgba(37, 99, 235, 0.42) !important;
+  box-shadow:
+    0 14px 30px rgba(30, 64, 175, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+  border-radius: 14px !important;
+  min-height: 42px;
+  padding: 0 17px;
+  font-size: 13.5px;
+  font-weight: 800;
 }
 
 /* Stats proof strip: a white glass rail with navy numerals and blue values. */
@@ -198,7 +270,7 @@ body .spline-page.spline-page--grid .stat-strip {
   border: 1px solid rgba(16, 42, 92, 0.07) !important;
   border-radius: 28px !important;
   background: rgba(255, 255, 255, 0.84) !important;
-  box-shadow: 0 24px 60px rgba(30, 64, 175, 0.12) !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04) !important;
   backdrop-filter: blur(20px);
 }
 body .spline-page.spline-page--grid .stat-strip .stat-item,
@@ -529,12 +601,90 @@ body .site-footer {
 }
 
 /* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (min-width: 1025px) and (max-width: 1199px) {
+  /* The label ring folds into two horizontal bands above and below the robot
+     at this width, so the floating cards come back to band-friendly sizing. */
+  body .spline-page.spline-page--grid .ai-label {
+    min-height: 38px;
+    padding: 0 14px;
+    font-size: 12.5px;
+    border-radius: 14px;
+  }
+}
+
+/* ── Desktop equal hero panels (≥1024) ─────────────────────────────────────
+   The two hero columns read as one matched pair of cards. The grid stretches
+   both cells to the same band (a shared 620px grid-row floor via
+   grid-auto-rows, so the height grows naturally if the copy needs more — no
+   fixed height on either panel). Each card is the existing glass ::before,
+   now inset 0 on its own cell, so both draw EXACTLY the same bounding box:
+   equal height, aligned top and bottom, same 30px radius, same hairline
+   border, the same soft shadow, a clean 24px gap between them.
+
+   The Spline stage grows to fill its cell too (height 100%); the robot stays
+   its own 300px square, centred, untouched — only the container changed. The
+   floating chips are anchored to the stage, which is now the panel, so they
+   can never leave it. */
+@media (min-width: 1025px) {
+  body .spline-page.spline-page--grid .hero-layout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    align-items: stretch;
+    min-height: 0 !important;
+    padding-top: 0 !important;
+    grid-auto-rows: minmax(620px, auto);
+  }
+
+  body .spline-page.spline-page--grid .hero-copy {
+    height: 100%;
+    width: 100%;
+    max-width: none;
+    justify-self: stretch;
+    align-self: stretch;
+    padding: clamp(44px, 5vw, 56px);
+  }
+
+  body .spline-page.spline-page--grid .hero-copy::before {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border: 1px solid rgba(37, 99, 235, 0.12);
+    border-radius: 30px;
+    box-shadow: 0 16px 50px rgba(16, 42, 92, 0.06);
+  }
+
+  body .spline-page.spline-page--grid .hero-visual-shell {
+    height: 100%;
+  }
+
+  body .spline-page.spline-page--grid .hero-spline-stage {
+    height: 100% !important;
+    width: 100%;
+  }
+
+  body .spline-page.spline-page--grid .hero-spline-stage::before {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border: 1px solid rgba(37, 99, 235, 0.12);
+    border-radius: 30px;
+    box-shadow: 0 16px 50px rgba(16, 42, 92, 0.06);
+  }
+}
+
 @media (max-width: 900px) {
   body .spline-page.spline-page--grid .hero-shell {
     min-height: auto !important;
   }
+  /* The 110px desktop bottom padding exists so the stats rail can pull up
+     (-62px) beneath a two-column hero. Once the hero stacks (<=1024), the stats
+     sit in normal flow and that padding becomes 80-136px of dead space between
+     the CTAs and the rail. Drop it to the mobile value here. Top padding is
+     handled by the <=1023 collapse below (the shell already clears the nav). */
   body .spline-page.spline-page--grid .hero-layout {
-    padding-top: 110px !important;
+    padding-bottom: 24px !important;
   }
   body .spline-page.spline-page--grid .stat-strip {
     width: min(100% - 32px, 620px) !important;
@@ -544,23 +694,48 @@ body .site-footer {
   }
 }
 
-/* Tablet 861–900: the glass rail still floats against the hero floor. These
-   widths keep the desktop-ish bottom padding, so the pull-up overlaps only
-   empty space — never the CTAs. */
-@media (min-width: 861px) and (max-width: 900px) {
-  body .spline-page.spline-page--grid .stat-strip {
-    margin: -30px auto 0 !important;
+/* The hero story keeps a slimmer glass box once the columns collapse. */
+@media (max-width: 1024px) {
+  body .spline-page.spline-page--grid .hero-copy {
+    padding: 0 !important;
+  }
+  body .spline-page.spline-page--grid .hero-copy::before {
+    top: -14px;
+    right: -16px;
+    bottom: -14px;
+    left: -16px;
+    border-radius: 18px;
   }
 }
 
-/* Under 861px the hero bottom padding collapses to ~8px, so a negative margin
-   would drag the rail up over the CTA buttons. Push it fully in-flow and soften
-   the glass so it reads as a clean card on small screens. */
+/* Tablet 861–900: the hero now stacks and its bottom padding is collapsed to
+   24px (see the <=900 block), so the rail simply follows in flow with a small,
+   even gap — no negative pull-up. */
+@media (min-width: 861px) and (max-width: 900px) {
+  body .spline-page.spline-page--grid .stat-strip {
+    margin: 16px auto 0 !important;
+  }
+}
+
+/* Under 861px the hero bottom padding is 24px, so the rail follows in flow
+   with the same even gap and softens into a clean card on small screens. */
 @media (max-width: 860px) {
   body .spline-page.spline-page--grid .stat-strip {
-    margin: 26px auto 0 !important;
+    margin: 16px auto 0 !important;
     padding: 16px !important;
     border-radius: 18px !important;
+  }
+}
+
+/* Stacked hero (<=1023): .hero-shell already clears the fixed nav
+   (72px + nav height) via navbar-hero-merge.css, so this layout's own top
+   padding stacks a second gap — ~185px of dead space under the nav at both
+   tablet and mobile. mobile-responsiveness.css intends padding-top: 0 on
+   mobile but is only two classes deep, so it loses to the three-class base
+   rule above. Collapse it for the whole stacked band. */
+@media (max-width: 1023px) {
+  body .spline-page.spline-page--grid .hero-layout {
+    padding-top: 0 !important;
   }
 }
 

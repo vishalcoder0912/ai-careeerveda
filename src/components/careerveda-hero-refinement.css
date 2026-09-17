@@ -4,12 +4,16 @@
   --cv-stage: 640px;
   --cv-stage-h: 540px;
   --cv-spline: 300px;
+  /* Circular orbit radius for the floating label ring. The seven chips are
+     placed on a circle centred on the robot; each breakpoint below may resize
+     it, and the ring is squeezed / folded when the stage gets narrow. */
+  --orbit-r: 212px;
   --label-gap: 1px;
-  --label-top: 90px;
-  --label-top-side: 170px;
-  --label-top-mid: 332px;
-  --label-bottom: 69px;
-  --label-side: 45px;
+  --label-top: 38px;
+  --label-top-side: 92px;
+  --label-top-mid: 248px;
+  --label-bottom: 62px;
+  --label-side: 34px;
 }
 
 body .spline-page .hero-layout {
@@ -307,20 +311,66 @@ body .spline-page .ai-label-inner {
   animation: none;
 }
 
-/* The seven orbital zones. The top, middle and bottom pairs each share one
-   horizontal level; the centered top pill rides the top baseline. The side
-   pills are anchored 14px OUTSIDE the --cv-spline robot square (not to the
-   stage edges) so the pill — whatever its real width — can never sit on the
-   robot. The bottom pair is parked below the square's bottom edge and the top
-   pill above its top edge, so the whole ring lives between the robot and the
-   empty stage ring / copy instead of on the robot. */
-body .spline-page .label-hiring { top: var(--label-top); left: 50%; transform: translateX(-50%); --label-delay: -5.2s; }
-body .spline-page .label-personalized { top: var(--label-top-side); left: auto; right: calc(50% + var(--cv-spline) / 2 + var(--label-gap)); --label-delay: -1s; }
-body .spline-page .label-mentorship { top: var(--label-top-side); right: auto; left: calc(50% + var(--cv-spline) / 2 + var(--label-gap)); --label-delay: -1.7s; }
-body .spline-page .label-interview { top: var(--label-top-mid); left: auto; right: calc(50% + var(--cv-spline) / 2 + var(--label-gap)); --label-delay: -2.4s; }
-body .spline-page .label-placement { top: var(--label-top-mid); right: auto; left: calc(50% + var(--cv-spline) / 2 + var(--label-gap)); --label-delay: -3.1s; }
-body .spline-page .label-verified { bottom: var(--label-bottom); left: var(--label-side); --label-delay: -3.8s; }
-body .spline-page .label-career { bottom: var(--label-bottom); right: var(--label-side); --label-delay: -4.5s; }
+/* The seven orbital zones — an even circular ring around the robot. Each chip
+   is anchored by its top/left to a point on a circle of radius --orbit-r
+   centred on the stage (the robot's box), then translate(-50%,-50%) puts the
+   chip's centre exactly on that point. Rewriting the circle as sin/cos offsets
+   of the radius keeps it truly circular regardless of label width, and the
+   whole ring retunes from --orbit-r. All anchors are measured from the stage
+   centre so the chips orbit the robot area, never the stage borders. The
+   assignment goes clockwise from the top in the A→G order of the orbit. */
+body .spline-page .label-hiring {
+  top: calc(50% - var(--orbit-r));
+  left: 50%;
+  transform: translate(-50%, -50%);
+  --label-delay: -5.2s;
+}
+body .spline-page .label-mentorship {
+  top: calc(50% - 0.623 * var(--orbit-r));
+  left: calc(50% + 0.782 * var(--orbit-r));
+  transform: translate(-50%, -50%);
+  --label-delay: -1.7s;
+}
+body .spline-page .label-personalized {
+  top: calc(50% + 0.223 * var(--orbit-r));
+  left: calc(50% + 0.975 * var(--orbit-r));
+  transform: translate(-50%, -50%);
+  --label-delay: -1s;
+}
+body .spline-page .label-placement {
+  top: calc(50% + 0.901 * var(--orbit-r));
+  left: calc(50% + 0.434 * var(--orbit-r));
+  transform: translate(-50%, -50%);
+  --label-delay: -3.1s;
+}
+body .spline-page .label-interview {
+  top: calc(50% + 0.901 * var(--orbit-r));
+  left: calc(50% - 0.434 * var(--orbit-r));
+  transform: translate(-50%, -50%);
+  --label-delay: -2.4s;
+}
+body .spline-page .label-verified {
+  top: calc(50% + 0.223 * var(--orbit-r));
+  left: calc(50% - 0.975 * var(--orbit-r));
+  transform: translate(-50%, -50%);
+  --label-delay: -3.8s;
+}
+body .spline-page .label-career {
+  top: calc(50% - 0.623 * var(--orbit-r));
+  left: calc(50% - 0.782 * var(--orbit-r));
+  transform: translate(-50%, -50%);
+  --label-delay: -4.5s;
+}
+
+/* Just above the laptop band the stage is still narrow (~552px against the
+   full rail), so the widest chip (Personalized Learning) would brush the right
+   edge of the viewport at the heavy desktop radius. Keep the same circle but
+   pull the ring in a little until the rail reaches its cap. */
+@media (min-width: 1200px) and (max-width: 1351px) {
+  body .spline-page .hero-spline-stage {
+    --orbit-r: 196px;
+  }
+}
 
 /* Respect reduced motion: no floating labels. */
 @media (prefers-reduced-motion: reduce) {
@@ -450,18 +500,19 @@ body .spline-page .stat-strip span {
      (centered + two corners), three below. "Career Programs" is withheld: four
      ~120px pills would not fit one 473px band. */
   body .spline-page .label-hiring { top: 14px; left: 50%; transform: translateX(-50%); }
-  body .spline-page .label-personalized { top: 14px; left: 24px; right: auto; }
-  body .spline-page .label-mentorship { top: 14px; right: 24px; left: auto; }
-  body .spline-page .label-interview { top: auto; bottom: 14px; left: 24px; right: auto; }
+  body .spline-page .label-personalized { top: 14px; left: 28px; right: auto; transform: none; }
+  body .spline-page .label-mentorship { top: 14px; right: 28px; left: auto; transform: none; }
+  body .spline-page .label-interview { top: auto; bottom: 14px; left: 28px; right: auto; transform: none; }
   body .spline-page .label-verified { top: auto; bottom: 14px; left: 50%; right: auto; transform: translateX(-50%); }
-  body .spline-page .label-placement { top: auto; bottom: 14px; right: 24px; left: auto; }
+  body .spline-page .label-placement { top: auto; bottom: 14px; right: 28px; left: auto; transform: none; }
   body .spline-page .label-career { display: none !important; }
 
-  /* All five metrics stay on one row across every desktop-sized viewport,
-     tablets in portrait included — one horizontal strip, never a wrap. */
+  /* Tablet proof strip: three metrics on the first row and two on the second
+     (3 + 2). Five on one row would crush each cell to ~114px at 900px, so the
+     strip stops tracking the desktop rail here and becomes a wrapped grid. */
   body .spline-page .stat-strip {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    width: min(calc(100% - 48px), 1400px) !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: min(calc(100% - 48px), 720px) !important;
   }
 
   body .spline-page .stat-strip div {
@@ -475,11 +526,11 @@ body .spline-page .stat-strip span {
   body .spline-page .hero-spline-stage {
     --cv-stage-h: 500px;
     --cv-spline: 390px;
-    --label-top: 18px;
-    --label-top-side: 140px;
-    --label-top-mid: 275px;
-    --label-bottom: 16px;
-    --label-side: 42px;
+    --label-top: 14px;
+    --label-top-side: 105px;
+    --label-top-mid: 218px;
+    --label-bottom: 12px;
+    --label-side: 32px;
     height: var(--cv-stage-h);
   }
 
@@ -496,12 +547,12 @@ body .spline-page .stat-strip span {
   /* Same band fold as the tablet rules: a 390px robot in a ~490–500px stage
      leaves ~50px corridors, so the side orbit cannot float between the copy
      text and the robot. The ring sits above and below the robot instead. */
-  body .spline-page .label-hiring { top: 14px; left: 50%; transform: translateX(-50%); }
-  body .spline-page .label-personalized { top: 14px; left: 24px; right: auto; }
-  body .spline-page .label-mentorship { top: 14px; right: 24px; left: auto; }
-  body .spline-page .label-interview { top: auto; bottom: 14px; left: 24px; right: auto; }
-  body .spline-page .label-verified { top: auto; bottom: 14px; left: 50%; right: auto; transform: translateX(-50%); }
-  body .spline-page .label-placement { top: auto; bottom: 14px; right: 24px; left: auto; }
+  body .spline-page .label-hiring { top: 10px; left: 50%; transform: translateX(-50%); }
+  body .spline-page .label-personalized { top: 10px; left: 28px; right: auto; transform: none; }
+  body .spline-page .label-mentorship { top: 10px; right: 28px; left: auto; transform: none; }
+  body .spline-page .label-interview { top: auto; bottom: 10px; left: 28px; right: auto; transform: none; }
+  body .spline-page .label-verified { top: auto; bottom: 10px; left: 50%; right: auto; transform: translateX(-50%); }
+  body .spline-page .label-placement { top: auto; bottom: 10px; right: 28px; left: auto; transform: none; }
   body .spline-page .label-career { display: none !important; }
 }
 
@@ -575,6 +626,7 @@ body .spline-page .stat-strip span {
     top: var(--label-top);
     left: auto;
     right: 4px;
+    transform: none;
   }
 
   body .spline-page .label-placement {
@@ -582,6 +634,7 @@ body .spline-page .stat-strip span {
     left: auto;
     bottom: var(--label-bottom);
     right: 4px;
+    transform: none;
   }
 
   /* Stats become normal flow below the visual with breathing room. */

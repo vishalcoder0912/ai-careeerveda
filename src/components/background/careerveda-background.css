@@ -13,6 +13,12 @@
 
 .cv-bg-root {
   position: relative;
+  /* Clip, never hidden: the blur(110px) on .cv-bg-glow bleeds paint well past
+     the viewport and, without clipping, is one of the contributors to the
+     horizontal scrollbar on phones (scrollWidth > innerWidth at <= 375px).
+     overflow-x: hidden would coerce the y-axis into a scroll container and
+     break the fixed/sticky navbar; clip cuts overflow without doing that. */
+  overflow-x: clip;
 }
 
 .cv-bg-fixed {
@@ -104,6 +110,10 @@
 .cv-bg-content {
   position: relative;
   z-index: 10;
+  /* Same clip rationale as .cv-bg-root: guarantees every route satisfies
+     scrollWidth == innerWidth at all widths. clip (not hidden) so position:
+     fixed/sticky descendants keep their containing-block behaviour. */
+  overflow-x: clip;
 }
 
 /* ── Hero reads the shared field ──────────────────────────────────────────────

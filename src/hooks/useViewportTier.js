@@ -1,15 +1,16 @@
 import {useEffect, useState} from "react";
 
 // Reports which breakpoint the viewport is in, so a component can scale its own
-// cost down on smaller screens. The breakpoints deliberately match the ones the
-// stylesheets already use (1024px / 980px / 680px) rather than inventing new ones.
+// cost down on smaller screens. The breakpoints match the responsive tier system
+// the stylesheets use: mobile <= 767, tablet 768-1023, laptop 1024-1199,
+// desktop >= 1200.
 //
 // Written against matchMedia instead of a resize listener: the browser only
 // notifies us when a boundary is actually crossed, so scrolling and resizing
 // don't trigger a render per pixel.
-const LAPTOP_QUERY = "(max-width: 1024px)";
-const TABLET_QUERY = "(max-width: 980px)";
-const MOBILE_QUERY = "(max-width: 680px)";
+const LAPTOP_QUERY = "(max-width: 1199px)";
+const TABLET_QUERY = "(max-width: 1023px)";
+const MOBILE_QUERY = "(max-width: 767px)";
 
 const readTier = () => {
   if (typeof window === "undefined" || !window.matchMedia) return "desktop";
