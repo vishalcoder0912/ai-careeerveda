@@ -16,7 +16,7 @@ import {ContentRevision, REVISION_LIMIT} from "../src/models/ContentRevision.js"
 import {Faculty} from "../src/models/Faculty.js";
 import {Faq} from "../src/models/Faq.js";
 import {Job} from "../src/models/Job.js";
-import {Lead, LEAD_TYPES, LEAD_STATUSES, MAX_ENROLLMENTS_PER_USER} from "../src/models/Lead.js";
+import {Lead, LEAD_TYPES, LEAD_STATUSES, MAX_SUBMISSIONS_PER_PHONE} from "../src/models/Lead.js";
 import {Media} from "../src/models/Media.js";
 import {Policy} from "../src/models/Policy.js";
 import {Program} from "../src/models/Program.js";
@@ -498,16 +498,24 @@ describe("Lead", () => {
     await expect(makeLead({spamScore: -1})).rejects.toThrow(/spamScore/i);
   });
 
-  it("does not constrain a repeated key at the database — Firestore cannot express partial unique indexes, so the controller's idempotency-key pre-check carries the guarantee", async () => {
+  it("does not constrain a repeated idempotency key at the database — Firestore cannot express partial unique indexes, so the controller's key pre-check carries that guarantee", async () => {
     await makeLead({idempotencyKey: "key-1"});
 
-    await expect(makeLead({idempotencyKey: "key-1"})).resolves.toBeTruthy();
+    await expect(
+      makeLead({idempotencyKey: "key-1", mobileKey: "9876543210", mobile: "9876543210"}),
+    ).resolves.toBeTruthy();
   });
 
-  it("does not constrain submissions that supply no key", async () => {
+  it("does not constrain submissions that supply no idempotency key", async () => {
     await makeLead();
 
-    await expect(makeLead()).resolves.toBeTruthy();
+    await expect(makeLead({mobileKey: "9876543210", mobile: "9876543210"})).resolves.toBeTruthy();
+  });
+
+  it("enforces the phone number as a unique primary key at the database", async () => {
+    await makeLead();
+
+    await expect(makeLead()).rejects.toThrow(/duplicate key/i);
   });
 
   it("timestamps a note without needing an author", async () => {
@@ -523,16 +531,17 @@ describe("Lead", () => {
     await expect(makeLead({notes: [{}]})).rejects.toThrow(/body/i);
   });
 
-  it("indexes the inbox and the enrollment cap check", () => {
+  it("indexes the inbox, the phone primary key and the admin lookups", () => {
     const names = indexNames(Lead);
 
     expect(names).toContain("archived,createdAt");
     expect(names).toContain("type,status,createdAt");
     expect(names).toContain("emailKey,mobileKey");
+    expect(names).toContain("mobileKey");
   });
 
-  it("allows a real applicant to correct one mistake before it counts as spam", () => {
-    expect(MAX_ENROLLMENTS_PER_USER).toBe(2);
+  it("allows exactly one submission per phone number", () => {
+    expect(MAX_SUBMISSIONS_PER_PHONE).toBe(1);
   });
 });
 
