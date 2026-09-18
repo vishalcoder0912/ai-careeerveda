@@ -63,11 +63,14 @@ export const programCatalog = [
     // simply being skipped. Figures taken from the live careerveda.in page.
     //
     // nextBatch is stored WITHOUT the quote marks the live site currently shows
-    // around it ('July 11, 2026'). Those quotes are inside the string there, so
-    // they print on the page; every other program here stores the bare date.
+    // around it ('September 19, 2026'). Those quotes are inside the string
+    // there, so they print on the page; every other program here stores the
+    // bare date. The date moves weekly in the backend (see
+    // backend/src/jobs/updateBatchDates.js); keep this static fallback pointed
+    // at the same next Saturday so an API outage never advertises a past date.
     fee: {label: "Program Investment", amount: "1,45,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)· Zero hidden charges",
-    nextBatch: "August 22, 2026",
+    nextBatch: "September 19, 2026",
     seats: "Few seats left",
     internship: [
       "Real-world Product Management Projects",
@@ -327,7 +330,7 @@ export const programCatalog = [
     learners: "10,000+",
     fee: {label: "Program Investment", amount: "1,25,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
-    nextBatch: "August 22, 2026",
+    nextBatch: "September 19, 2026",
     seats: "Few seats left",
     projects: "30+",
     eligibility: "Freshers, Graduates, Experienced",
@@ -665,7 +668,7 @@ export const programCatalog = [
     learners: "10,000+",
     fee: {label: "Program Investment", amount: "₹1,35,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
-    nextBatch: "August 22, 2026",
+    nextBatch: "September 19, 2026",
     seats: "Few seats left",
     projects: "30+",
     eligibility: "Freshers, Graduates, Experienced",
@@ -1003,7 +1006,7 @@ export const programCatalog = [
     learners: "10,000+",
     fee: {label: "Program Investment", amount: "1,55,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
-    nextBatch: "August 22, 2026",
+    nextBatch: "September 19, 2026",
     seats: "Few seats left",
     projects: "30+",
     eligibility: "Freshers, Graduates, Experienced",
@@ -1341,7 +1344,7 @@ export const programCatalog = [
     learners: "10,000+",
     fee: {label: "Program Investment", amount: "₹1,55,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
-    nextBatch: "August 22, 2026",
+    nextBatch: "September 19, 2026",
     seats: "Few seats left",
     projects: "30+",
     eligibility: "Freshers, Graduates, Experienced",
@@ -1679,7 +1682,7 @@ export const programCatalog = [
     learners: "10,000+",
     fee: {label: "Program Investment", amount: "₹1,40,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
-    nextBatch: "August 22, 2026",
+    nextBatch: "September 19, 2026",
     seats: "Few seats left",
     projects: "30+",
     eligibility: "Freshers, Graduates, Experienced",
@@ -1960,7 +1963,7 @@ export const programCatalog = [
     learners: "10,000+",
     fee: {label: "Program Investment", amount: "₹1,55,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
-    nextBatch: "August 22, 2026",
+    nextBatch: "September 19, 2026",
     seats: "Few seats left",
     projects: "30+",
     eligibility: "Freshers, Graduates, Experienced",
@@ -2298,7 +2301,7 @@ export const programCatalog = [
     learners: "10,000+",
     fee: {label: "Program Investment", amount: "1,70,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
-    nextBatch: "August 22, 2026",
+    nextBatch: "September 19, 2026",
     seats: "Few seats left",
     projects: "30+",
     eligibility: "Freshers, Graduates, Experienced",
@@ -2636,7 +2639,7 @@ export const programCatalog = [
     learners: "10,000+",
     fee: {label: "Program Investment", amount: "1,65,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
-    nextBatch: "August 22, 2026",
+    nextBatch: "September 19, 2026",
     seats: "Few seats left",
     projects: "30+",
     eligibility: "Freshers, Graduates, Experienced",
