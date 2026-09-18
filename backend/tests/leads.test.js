@@ -118,19 +118,18 @@ describe("honeypot", () => {
   });
 });
 
-describe("enrollment cap", () => {
-  it("allows two enrollments and refuses the third", async () => {
+describe("one submission per phone number", () => {
+  it("allows one submission and refuses the second on the same phone", async () => {
     await publishedProgram();
     const payload = {type: "enrollment", program: "PG Program in Product Management"};
 
     expect((await submit(payload)).status).toBe(201);
-    expect((await submit(payload)).status).toBe(201);
 
-    const third = await submit(payload);
-    expect(third.status).toBe(429);
-    expect(third.body.error.code).toBe("ALREADY_APPLIED");
+    const second = await submit(payload);
+    expect(second.status).toBe(409);
+    expect(second.body.error.code).toBe("ALREADY_SUBMITTED");
 
-    expect(await Lead.countDocuments({type: "enrollment"})).toBe(2);
+    expect(await Lead.countDocuments({})).toBe(1);
   });
 
   it("counts a different email with the same mobile as the same person", async () => {
@@ -138,30 +137,40 @@ describe("enrollment cap", () => {
     const payload = {type: "enrollment", program: "PG Program in Product Management"};
 
     await submit(payload);
-    await submit({...payload, email: "second@example.com"});
 
-    const third = await submit({...payload, email: "third@example.com"});
-    expect(third.status).toBe(429);
+    const second = await submit({...payload, email: "second@example.com"});
+    expect(second.status).toBe(409);
+    expect(await Lead.countDocuments({})).toBe(1);
   });
 
-  it("counts a different mobile with the same email as the same person", async () => {
+  it("treats a different mobile with the same email as a different person", async () => {
     await publishedProgram();
     const payload = {type: "enrollment", program: "PG Program in Product Management"};
 
-    await submit(payload);
-    await submit({...payload, mobile: "9876543210"});
+    expect((await submit(payload)).status).toBe(201);
+    expect((await submit({...payload, mobile: "9876543210"})).status).toBe(201);
 
-    const third = await submit({...payload, mobile: "9876543211"});
-    expect(third.status).toBe(429);
+    expect(await Lead.countDocuments({})).toBe(2);
   });
 
-  it("does not apply the cap to consultations", async () => {
-    for (let attempt = 0; attempt < 4; attempt += 1) {
-      const response = await submit({type: "consultation"});
-      expect(response.status).toBe(201);
-    }
+  it("refuses a consultation when the phone already submitted an enrollment", async () => {
+    await publishedProgram();
+    const payload = {type: "enrollment", program: "PG Program in Product Management"};
 
-    expect(await Lead.countDocuments({type: "consultation"})).toBe(4);
+    expect((await submit(payload)).status).toBe(201);
+
+    const consultation = await submit({type: "consultation"});
+    expect(consultation.status).toBe(409);
+    expect(consultation.body.error.code).toBe("ALREADY_SUBMITTED");
+    expect(await Lead.countDocuments({})).toBe(1);
+  });
+
+  it("is not fooled by +91 formatting differences", async () => {
+    expect((await submit({mobile: "9217801191"})).status).toBe(201);
+
+    const second = await submit({mobile: "+91 92178 01191"});
+    expect(second.status).toBe(409);
+    expect(await Lead.countDocuments({})).toBe(1);
   });
 });
 
@@ -203,19 +212,22 @@ describe("idempotency", () => {
 
   it("treats different keys as different submissions", async () => {
     await submit({}, {"Idempotency-Key": "key-one"});
-    await submit({}, {"Idempotency-Key": "key-two"});
+    await submit({mobile: "9876543210"}, {"Idempotency-Key": "key-two"});
 
     expect(await Lead.countDocuments({})).toBe(2);
   });
 
-  it("flags a rapid repeat of the same form as possible spam", async () => {
-    await submit();
-    await submit();
+  it("refuses a rapid repeat of the same form outright rather than flagging it", async () => {
+    expect((await submit()).status).toBe(201);
+
+    const second = await submit();
+    expect(second.status).toBe(409);
 
     const leads = await Lead.find().sort({createdAt: 1});
+    expect(leads).toHaveLength(1);
+    // Nothing was stored second time around, so nothing gets a spam flag — the
+    // refusal is the spam control.
     expect(leads[0].spamScore).toBe(0);
-    // Flagged, not refused — refusing a genuine correction is worse.
-    expect(leads[1].spamScore).toBeGreaterThan(0);
   });
 });
 
