@@ -48,10 +48,14 @@ body main.page-shell.program-detail {
      position:sticky for the two side columns. This page owns its background
      and its own overflow-safe surfaces, so unclip only here. */
   overflow: visible;
-  background:
-    radial-gradient(1100px 560px at 96% -6%, rgba(37, 99, 235, 0.06), transparent 60%),
-    radial-gradient(900px 480px at 4% 8%, rgba(37, 99, 235, 0.06), transparent 58%),
-    linear-gradient(180deg, #f8fafd 0%, #ffffff 46%, #f4f7fb 100%) !important;
+  /* The gutter around .pd-layout is a flat solid matching the navbar/body
+     canvas exactly — no radial or linear gradient, no subtle tint shift that
+     could read as a faint strip on calibrated screens. The hero and the inner
+     sections paint their own gradients inside .pd-layout, so the outer canvas
+     is a single flat colour, the same colour that sits behind the transparent
+     navbar, and the page reads as one continuous light field. */
+  background-color: #fafcff !important;
+  background-image: none !important;
 }
 
 /* ---------- Page layout: single full-width content column ---------- */
