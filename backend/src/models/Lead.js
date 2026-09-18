@@ -6,8 +6,10 @@ import mongoose from "mongoose";
 //
 // The de-duplication keys are carried over from api/enroll.js unchanged:
 // emailKey is the lowercased email, mobileKey the last ten digits. That is what
-// makes "+91 92178 01191" and "9217801191" count as the same person, and it is
-// what the two-submission cap counts on.
+// makes "+91 92178 01191" and "9217801191" count as the same person.
+//
+// The phone number is the primary key: it is unique across every lead, so the
+// same person can never fill in any form a second time.
 
 export const LEAD_TYPES = ["consultation", "enrollment", "contact", "newsletter"];
 export const LEAD_STATUSES = ["new", "contacted", "qualified", "converted", "closed", "spam"];
@@ -36,7 +38,9 @@ const leadSchema = new mongoose.Schema(
     // Normalised lookup keys. Indexed together because the cap check queries
     // them with $or on every enrollment submission.
     emailKey: {type: String, required: true, index: true},
-    mobileKey: {type: String, required: true, index: true},
+    // mobileKey gets no field-level index of its own: the unique index below is
+    // the only one it needs, and two indexes on the same key are pure waste.
+    mobileKey: {type: String, required: true},
 
     // Which page the form was on, e.g. "enroll-page".
     source: {type: String, default: "", maxlength: 120},
@@ -80,7 +84,12 @@ const leadSchema = new mongoose.Schema(
 // The inbox: newest first, filtered by status or type.
 leadSchema.index({archived: 1, createdAt: -1});
 leadSchema.index({type: 1, status: 1, createdAt: -1});
-// Supports the enrollment cap check, which is an $or over both keys.
+// The phone number is a unique primary key. Every lead carries a mobileKey, so
+// unlike idempotencyKey there is never an absent-field collision — the plain
+// unique index is expressible even on Firestore compatibility, where partial
+// unique indexes are not.
+leadSchema.index({mobileKey: 1}, {unique: true});
+// Admin inbox lookups: search by email and phone together goes through here.
 leadSchema.index({emailKey: 1, mobileKey: 1});
 // Idempotency lookups. The controller checks the key before writing (and still
 // maps a duplicate-key write error), so idempotency is enforced at the app
@@ -95,7 +104,6 @@ leadSchema.index({idempotencyKey: 1});
 
 export const Lead = mongoose.model("Lead", leadSchema);
 
-// Carried over from api/enroll.js verbatim. A real applicant might legitimately
-// re-submit once — wrong program, a typo they wanted to fix — so a small number
-// of tries is allowed. Beyond that it is spam, and nothing is written.
-export const MAX_ENROLLMENTS_PER_USER = 2;
+// The phone number is the primary key, so this is the cap the controller
+// enforces on every submission before anything is written.
+export const MAX_SUBMISSIONS_PER_PHONE = 1;
