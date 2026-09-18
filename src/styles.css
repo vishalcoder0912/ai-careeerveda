@@ -44,6 +44,11 @@
    support-section tile and the generic .section-block padding. */
 @import "./components/faculty-page-polish.css";
 
+/* CareerVeda light theme must come after EVERY other layer: it re-declares the
+   page-shell/jobs-page tokens (winning those files by cascade order) and beats
+   slate-color-system.css's dark !important rules by specificity. */
+@import "./components/careerveda-light-theme.css";
+
 /* Shared route-level contract: page chunks may load their own styles after the
    layout. Keep the shell and outer header transparent; the compact nav links
    pill remains the only navbar surface. */
