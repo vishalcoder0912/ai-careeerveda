@@ -6,6 +6,7 @@ import {getProgram, programCatalog} from "../data/programCatalog";
 import {useContentList} from "../hooks/useContent";
 import {adaptProgram} from "../lib/contentAdapters";
 import {submitLead} from "../lib/publicApi";
+import {hasSubmittedPhone, rememberSubmittedPhone} from "../lib/submittedPhones";
 // Carries .consultation-honeypot and .consultation-status. The honeypot import is
 // load-bearing: without it the "company" field is a visible input, not a trap.
 import "../components/consultation-form.css";
@@ -95,6 +96,16 @@ const EnrollPage = () => {
       return;
     }
 
+    // This browser has already sent this phone through. The server enforces the
+    // same rule, so this just saves the round trip.
+    if (hasSubmittedPhone(values.mobile)) {
+      setStatus("error");
+      setMessage(
+        "You've already shared your details with us. Our team has them and will reach out — no need to submit again.",
+      );
+      return;
+    }
+
     setStatus("submitting");
     setMessage("");
 
@@ -115,6 +126,7 @@ const EnrollPage = () => {
         return;
       }
 
+      rememberSubmittedPhone(values.mobile);
       setStatus("success");
       setMessage("Thanks — a career expert will confirm your batch and payment options shortly.");
       setValues({
