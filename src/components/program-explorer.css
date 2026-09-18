@@ -18,36 +18,37 @@
   pointer-events: none;
 }
 
+/* ── Explorer shell ──────────────────────── */
+
+/* The studio frame: rail + detail card + highlights panel, softened to the
+   reference's quiet panels — a hairline border, a light card and a very subtle
+   shadow instead of glass and a 34px ring. */
 .program-explorer {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 280px minmax(0, 1fr) clamp(242px, 18vw, 288px);
   gap: clamp(18px, 3vw, 34px);
   width: min(1400px, calc(100% - 40px));
   margin: 48px auto 0;
   padding: clamp(14px, 2vw, 20px);
-  border: 1px solid rgba(15, 118, 110, 0.12);
-  border-radius: 34px;
-  background: rgba(255, 255, 255, 0.74);
-  box-shadow: 0 34px 100px rgba(15, 23, 42, 0.1);
-  backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 20px rgba(7, 59, 102, 0.06);
   isolation: isolate;
   transform: translateZ(0);
 }
 
-/* ── Sidebar ────────────────────────────── */
+/* ── Sidebar (rail) ──────────────────────── */
 
 .program-sidebar {
   min-height: 780px;
   padding: 18px;
-  border: 1px solid rgba(15, 23, 42, 0.07);
-  border-radius: 26px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(243, 250, 247, 0.92)),
-    repeating-linear-gradient(90deg, rgba(15, 118, 110, 0.03) 0 1px, transparent 1px 42px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 4px 20px rgba(7, 59, 102, 0.06);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -99,7 +100,7 @@
   min-height: 62px;
   padding: 12px;
   border: 1px solid transparent;
-  border-radius: 18px;
+  border-radius: 14px;
   background: transparent;
   color: #475569;
   text-align: left;
@@ -143,8 +144,8 @@
   inset: 10px auto 10px -16px;
   width: 3px;
   border-radius: 999px;
-  background: #10b981;
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+  background: #0e9488;
+  box-shadow: 0 0 8px rgba(14, 148, 136, 0.4);
 }
 
 .track-number {
@@ -207,11 +208,11 @@
   flex-direction: column;
   padding: clamp(24px, 3.5vw, 42px);
   border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 30px;
+  border-radius: 18px;
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(247, 253, 250, 0.9)),
-    radial-gradient(circle at 86% 18%, rgba(16, 185, 129, 0.14), transparent 26%);
-  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(247, 253, 250, 0.92)),
+    radial-gradient(circle at 86% 18%, rgba(16, 185, 129, 0.12), transparent 26%);
+  box-shadow: 0 4px 20px rgba(7, 59, 102, 0.06);
   transition: box-shadow 0.3s ease;
   overflow: hidden;
 }
@@ -283,6 +284,7 @@
   gap: 20px;
   align-items: start;
   flex-shrink: 0;
+  margin-bottom: 22px;
 }
 
 .section-label {
@@ -303,6 +305,13 @@
   letter-spacing: -0.03em;
   word-wrap: break-word;
   overflow-wrap: break-word;
+}
+
+/* Two-tone accent — "PG Program in <teal>Product Management</teal>". The rule
+   targets the span itself, so it wins over the parent h2's colour even when a
+   theme layer forces that colour with !important. */
+.program-accent {
+  color: #0e9488;
 }
 
 .program-subtitle {
@@ -337,11 +346,7 @@
 
 /* ── Description ─────────────────────────── */
 
-/* Lives in the head's text column, alongside the artwork. The margin closes the
-   gap to the subtitle above it and holds the head off the meta grid below. */
 .program-description {
-  /* A readable measure. The column itself is wider than this at desktop sizes,
-     and prose set the full width of it would be a tiring line length. */
   max-width: 62ch;
   margin: 14px 0 0;
   color: #475569;
@@ -349,25 +354,15 @@
   line-height: 1.7;
 }
 
-/* The head's text column. `min-width: 0` lets it shrink beside the image rather
-   than forcing the grid wider than the card (grid items default to min-content). */
 .program-head-text {
   min-width: 0;
 }
 
-.program-detail-head {
-  margin-bottom: 22px;
-}
-
 /* ── Program artwork ─────────────────────── */
 
-/* Optional per-program image, sitting in the head's right-hand column in place
-   of the status orb. Programs without an `image` keep the orb, so the card has
-   to look right either way. */
 .program-head-media {
   width: clamp(150px, 20vw, 240px);
-  border-radius: 22px;
-  /* Clips the image to the rounded corners. */
+  border-radius: 16px;
   overflow: hidden;
   background: #ffffff;
   box-shadow: inset 0 0 0 1px rgba(15, 118, 110, 0.12), 0 20px 48px rgba(15, 118, 110, 0.14);
@@ -377,22 +372,17 @@
 .program-head-media img {
   display: block;
   width: 100%;
-  /* A fixed 4:3 frame rather than the image's own proportions: the card swaps
-     through AnimatePresence, and artwork of arbitrary height would make it jump
-     as you move between programs. */
   aspect-ratio: 4 / 3;
   object-fit: cover;
   object-position: center;
 }
 
-/* The head is a fixed 1fr/auto pair at every width, which is fine for the small
-   orb but would squeeze the title against a 240px image on a phone. Stack them
-   and let the artwork run full width. */
 @media (max-width: 720px) {
   .program-detail-head {
     grid-template-columns: 1fr;
   }
 
+  .program-head-visual,
   .program-head-media {
     width: 100%;
   }
@@ -400,77 +390,117 @@
   .program-head-media img {
     aspect-ratio: 16 / 9;
   }
+
+  .program-media-chips {
+    display: none;
+  }
 }
 
-/* ── Meta grid ───────────────────────────── */
+/* ── Meta strip ──────────────────────────── */
 
-.program-meta-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 20px;
+/* Flat facts under the description, mirroring the programme detail page's meta
+   rule: one line, hairline separators, no cards. */
+.program-meta-strip {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0 24px;
+  margin-bottom: 22px;
+  padding: 14px 0;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
   flex-shrink: 0;
 }
 
-.meta-card {
-  padding: 14px 16px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.72);
+.program-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.meta-value,
-.meta-label {
+.program-meta-item + .program-meta-item {
+  border-left: 1px solid rgba(15, 23, 42, 0.08);
+  padding-left: 24px;
+}
+
+.program-meta-icon {
+  color: #0e9488;
+  flex-shrink: 0;
+}
+
+.program-meta-item strong,
+.program-meta-item small {
   display: block;
 }
 
-.meta-value {
-  color: #0f172a;
+.program-meta-item strong {
+  color: #071a18;
+  font-size: 0.86rem;
   font-weight: 800;
-  font-size: 0.92rem;
+  line-height: 1.3;
 }
 
-.meta-label {
-  margin-top: 3px;
+.program-meta-item small {
+  margin-top: 2px;
   color: #64748b;
-  font-size: 0.7rem;
+  font-size: 0.66rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
 
+@media (max-width: 640px) {
+  .program-meta-strip {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .program-meta-item + .program-meta-item {
+    border-left: 0;
+    padding-left: 0;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(15, 23, 42, 0.1);
+  }
+}
+
 /* ── Tabs ────────────────────────────────── */
 
+/* Underline tab bar, the reference's control of choice: a 44px hit target, a
+   teal 2px underline on the active tab, hairline rule along the bottom. The row
+   scrolls horizontally on touch screens rather than wrapping. */
 .program-tabs {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  padding: 5px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
   margin-bottom: 18px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 999px;
-  background: rgba(248, 250, 252, 0.86);
+  overflow-x: auto;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.1);
+  scrollbar-width: none;
   flex-shrink: 0;
 }
 
+.program-tabs::-webkit-scrollbar {
+  display: none;
+}
+
 .tab-pill {
-  /* 44px floor — the Overview / Curriculum / Outcomes tabs were 28px tall, which
-     is a hard thing to hit with a thumb. */
+  position: relative;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   min-height: 44px;
   border: 0;
-  border-radius: 999px;
-  padding: 8px 16px;
+  border-radius: 0;
+  padding: 6px 16px;
   background: transparent;
   color: #64748b;
   font-weight: 800;
   font-size: 0.78rem;
+  white-space: nowrap;
   cursor: pointer;
-  transition:
-    background 0.2s ease,
-    color 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: color 0.2s ease;
   font-family: inherit;
 }
 
@@ -479,12 +509,28 @@
 }
 
 .tab-pill.is-active {
-  background: #042f2e;
-  color: #ffffff;
-  box-shadow: 0 8px 20px rgba(4, 47, 46, 0.18);
+  color: #0e9488;
 }
 
-/* ── Content list ────────────────────────── */
+.tab-pill::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 -1px 0;
+  height: 2px;
+  border-radius: 2px;
+  background: transparent;
+  transition: background 0.2s ease;
+}
+
+.tab-pill.is-active::after {
+  background: #0e9488;
+}
+
+/* ── Tab panes ───────────────────────────── */
+
+.program-tab-pane {
+  min-width: 0;
+}
 
 .program-detail-list {
   display: grid;
@@ -492,7 +538,6 @@
   margin: 0 0 18px;
   padding: 0;
   list-style: none;
-  flex-shrink: 0;
 }
 
 .program-detail-list li {
@@ -519,6 +564,207 @@
   box-shadow: 0 0 0 5px rgba(16, 185, 129, 0.1);
 }
 
+/* Jobs tab — real openings that match the track, each with its apply link. */
+.program-jobs-list {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 18px;
+  padding: 0;
+  list-style: none;
+}
+
+.program-job {
+  padding: 14px 16px;
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.program-job__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.program-job__title {
+  color: #0f172a;
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.program-job__apply {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #ecfdf5;
+  color: #0e9488;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.program-job__apply:hover {
+  background: #0e9488;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.program-job__meta {
+  display: block;
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+/* Fees tab — the published investment, not a made-up number. */
+.program-fees-tab {
+  margin-bottom: 18px;
+  padding: 22px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.program-fees-tab__label {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.program-fees-tab__amount {
+  margin: 8px 0 0;
+  color: #062f56;
+  font-size: clamp(1.7rem, 3vw, 2.2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.program-fees-tab__note {
+  margin: 8px 0 0;
+  color: #475569;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.program-fees-tab__rows {
+  display: grid;
+  gap: 0;
+  margin: 18px 0 0;
+  padding-top: 4px;
+}
+
+.program-fees-tab__rows div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px dashed rgba(15, 23, 42, 0.1);
+}
+
+.program-fees-tab__rows dt {
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.program-fees-tab__rows dd {
+  margin: 0;
+  color: #0f172a;
+  font-size: 0.86rem;
+  font-weight: 800;
+  text-align: right;
+}
+
+.program-fees-tab__link {
+  display: inline-block;
+  margin-top: 18px;
+  color: #0e9488;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(14, 148, 136, 0.3);
+  transition: border-color 0.2s ease;
+}
+
+.program-fees-tab__link:hover {
+  border-color: #0e9488;
+}
+
+/* FAQs tab — the site's real Q&A, first four. */
+.program-faq-mini {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 18px;
+  padding: 0;
+  list-style: none;
+}
+
+.program-faq-mini details {
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.program-faq-mini summary {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 46px 13px 16px;
+  color: #0f172a;
+  font-size: 0.88rem;
+  font-weight: 800;
+  line-height: 1.45;
+  cursor: pointer;
+  list-style: none;
+}
+
+.program-faq-mini summary::-webkit-details-marker {
+  display: none;
+}
+
+.program-faq-mini summary::after {
+  content: "+";
+  position: absolute;
+  right: 14px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #ecfdf5;
+  color: #0e9488;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.program-faq-mini details[open] summary::after {
+  transform: rotate(45deg);
+  background: #0e9488;
+  color: #ffffff;
+}
+
+.program-faq-mini details p {
+  margin: 0;
+  padding: 0 16px 16px 42px;
+  color: #475569;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.65;
+}
+
 /* ── Skills / chips ──────────────────────── */
 
 .program-tool-row {
@@ -530,6 +776,9 @@
 }
 
 .skill-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 7px 12px;
   border: 1px solid rgba(15, 118, 110, 0.12);
   border-radius: 999px;
@@ -579,6 +828,7 @@
   flex-wrap: wrap;
 }
 
+/* Pills, teal→blue like the detail page's primary action. */
 .cta-primary {
   display: inline-flex;
   align-items: center;
@@ -586,20 +836,18 @@
   min-height: 48px;
   padding: 0 22px;
   border-radius: 999px;
-  background: #062f56;
+  background: linear-gradient(135deg, #0e9488, #0b6bcb);
   color: #ffffff;
   font-size: 0.85rem;
   font-weight: 900;
   text-decoration: none;
-  box-shadow: 0 14px 34px rgba(6, 47, 86, 0.2);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  box-shadow: 0 12px 28px rgba(14, 148, 136, 0.24);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .cta-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 20px 44px rgba(6, 47, 86, 0.28);
+  box-shadow: 0 18px 38px rgba(14, 148, 136, 0.3);
 }
 
 .cta-secondary {
@@ -609,22 +857,235 @@
   min-height: 48px;
   padding: 0 18px;
   border-radius: 999px;
-  border: 1px solid rgba(15, 118, 110, 0.18);
+  border: 1px solid rgba(14, 148, 136, 0.25);
   background: transparent;
-  color: #0f766e;
+  color: #0e9488;
   font-size: 0.82rem;
   font-weight: 800;
   text-decoration: none;
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease,
-    transform 0.2s ease;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
 .cta-secondary:hover {
   background: rgba(236, 253, 245, 0.5);
-  border-color: rgba(15, 118, 110, 0.3);
+  border-color: rgba(14, 148, 136, 0.4);
   transform: translateY(-1px);
+}
+
+/* ── Media visual & floating chips ──────── */
+
+.program-head-visual {
+  position: relative;
+  width: clamp(150px, 20vw, 240px);
+  align-self: start;
+  flex-shrink: 0;
+}
+
+.program-media-parallax,
+.program-media-chips {
+  will-change: transform;
+}
+
+.program-media-chips {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.media-chip {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  border: 1px solid rgba(15, 118, 110, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #0f766e;
+  font-size: 0.7rem;
+  font-weight: 800;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  white-space: nowrap;
+}
+
+.media-chip::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
+}
+
+/* A real brand logo replaces the little status dot. */
+.media-chip:has(.skill-mark)::before {
+  display: none;
+}
+
+.media-chip--1 {
+  top: -14px;
+  left: -20px;
+}
+
+.media-chip--2 {
+  top: 34%;
+  right: -26px;
+}
+
+.media-chip--3 {
+  bottom: 12%;
+  left: -30px;
+}
+
+.media-chip--4 {
+  right: -14px;
+  bottom: -14px;
+}
+
+/* ── Highlights panel ────────────────────── */
+
+.program-highlights {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 780px;
+  padding: 18px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 4px 20px rgba(7, 59, 102, 0.06);
+}
+
+.program-highlights-head {
+  padding: 8px 8px 4px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  padding-bottom: 12px;
+}
+
+.program-highlights-eyebrow {
+  margin: 0;
+  color: #0e9488;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.program-highlight-list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.program-highlight-row {
+  display: grid;
+  gap: 4px;
+  padding: 12px 8px;
+}
+
+.program-highlight-row + .program-highlight-row {
+  border-top: 1px dashed rgba(15, 23, 42, 0.1);
+}
+
+.program-highlight-row .hl-label,
+.program-highlight-row .hl-value {
+  display: block;
+}
+
+.program-highlight-row .hl-label {
+  color: #64748b;
+  font-size: 0.66rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.program-highlight-row .hl-value {
+  color: #071a18;
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.program-highlight-fee {
+  padding: 16px;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.program-highlight-fee small,
+.program-highlight-fee strong,
+.program-highlight-fee span {
+  display: block;
+}
+
+.program-highlight-fee small {
+  color: #64748b;
+  font-size: 0.66rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.program-highlight-fee strong {
+  margin: 6px 0 4px;
+  color: #062f56;
+  font-size: clamp(1.6rem, 2.6vw, 2rem);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.program-highlight-fee span {
+  color: #0e9488;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.program-highlight-emi {
+  padding: 12px 8px;
+}
+
+.emi-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #047857;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.emi-badge::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
+}
+
+.program-highlight-emi p {
+  margin: 8px 0 0;
+  color: #475569;
+  font-size: 0.74rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.program-highlights-cta {
+  display: grid;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.program-highlights-cta .cta-primary,
+.program-highlights-cta .cta-secondary {
+  width: 100%;
 }
 
 /* ── Keyframes ───────────────────────────── */
@@ -642,6 +1103,38 @@
 }
 
 /* ── Responsive ──────────────────────────── */
+
+@media (max-width: 1199px) {
+  .program-explorer {
+    grid-template-columns: 240px minmax(0, 1fr);
+  }
+
+  .program-highlights {
+    grid-column: 1 / -1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap: 12px;
+    align-content: start;
+  }
+
+  .program-highlights-head {
+    grid-column: 1 / -1;
+  }
+
+  .program-highlights-cta {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 12px;
+    margin-top: 4px;
+  }
+
+  .program-highlights-cta .cta-primary,
+  .program-highlights-cta .cta-secondary {
+    flex: 1;
+    text-align: center;
+  }
+}
 
 @media (max-width: 1024px) {
   .program-explorer {
@@ -693,7 +1186,17 @@
   }
 
   .program-track-item.is-active::after {
-    display: none;
+    content: "→";
+    inset: 0 6px auto auto;
+    display: flex;
+    align-items: center;
+    width: auto;
+    background: none;
+    box-shadow: none;
+    border-radius: 0;
+    color: #10b981;
+    font-size: 1.05rem;
+    font-weight: 800;
   }
 
   .track-number {
@@ -738,18 +1241,26 @@
   .program-status-orb {
     display: none;
   }
+
+  .program-highlights {
+    grid-template-columns: 1fr;
+  }
+
+  .program-highlights-cta {
+    flex-direction: column;
+  }
 }
 
 @media (max-width: 520px) {
   .program-explorer {
     width: min(100% - 16px, 1180px);
     padding: 10px;
-    border-radius: 22px;
+    border-radius: 16px;
   }
 
   .program-detail-card {
     padding: 18px;
-    border-radius: 22px;
+    border-radius: 16px;
   }
 
   .program-track-item {
@@ -763,44 +1274,18 @@
     gap: 8px;
   }
 
-  .program-detail-head {
-    grid-template-columns: 1fr;
-  }
-
-  .program-meta-grid {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-
-  /* Three tabs, three equal columns. As a wrapping flex row they broke 2 + 1 and
-     left "Outcomes" stranded on its own centred line; a grid keeps them on one
-     row and lets each pill fill its share, so the group reads as one control. */
+  /* The underline tab bar keeps its 44px targets on phones; overflow just
+     scrolls. */
   .program-tabs {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
-    width: 100%;
-    padding: 4px;
-    border-radius: 18px;
+    margin-inline: -18px;
+    padding-inline: 18px;
+    width: calc(100% + 36px);
   }
 
-  /* The desktop pill (16px of side padding at 0.78rem) is wider than a third of a
-     phone, so "Curriculum" and "Outcomes" were cut off mid-word. Shrink the pill
-     to its column instead of letting the column crop it: min-width lets the grid
-     cell actually govern the width, and the type scales with the viewport so all
-     three labels stay whole down to the narrowest phone. */
-  .tab-pill {
-    justify-content: center;
-    min-width: 0;
-    padding: 8px 4px;
-    font-size: clamp(0.62rem, 2.6vw, 0.78rem);
-    white-space: nowrap;
+  .program-detail-head :is(h3, h2) {
+    letter-spacing: -0.02em;
   }
 
-  /* Stacked, and stretched to the card's width. `align-items: center` (inherited
-     from the row layout) collapsed these to their text width once the direction
-     turned vertical, so they floated in the middle while the price sat flush
-     left. Both edges now line up with the rest of the card. */
   .program-cta-group {
     flex-direction: column;
     align-items: stretch;
@@ -811,8 +1296,8 @@
     flex: 0 0 auto;
   }
 
-  .program-detail-head :is(h3, h2) {
-    letter-spacing: -0.02em;
+  .program-highlight-fee strong {
+    font-size: 1.6rem;
   }
 }
 
