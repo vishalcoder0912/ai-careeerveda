@@ -460,7 +460,7 @@ erDiagram
         varchar program "STRING copy, validated against published programs"
         varchar message
         text    email_key "indexed - lowercased email"
-        text    mobile_key "indexed - LAST TEN DIGITS only"
+        text    mobile_key "UNIQUE - LAST TEN DIGITS only"
         varchar source "which form"
         varchar source_page
         jsonb   utm "source, medium, campaign, term, content"
@@ -491,10 +491,12 @@ erDiagram
 
 `email_key` / `mobile_key` are the whole de-duplication story. `mobile_key` is
 the **last ten digits**, which is what makes `+91 92178 01191` and `9217801191`
-the same person. The two-enrollment cap counts matches with `OR` across both
-keys, so a different email with the same phone still counts as one applicant.
-Both are candidates for `GENERATED ALWAYS AS` columns in Postgres — Mongo had to
-compute them in application code.
+the same person. The phone number is the **primary key**: `mobile_key` is
+UNIQUE across `leads`, so one person can never fill in any form twice — a
+second submission from the same number is refused with `409 ALREADY_SUBMITTED`
+regardless of which form it came from. Both are candidates for
+`GENERATED ALWAYS AS` columns in Postgres — Mongo had to compute them in
+application code.
 
 `lead_notes` is the **only** embedded array in the whole schema that becomes a
 real child table. The signal: in the source it is the one subdocument declared
