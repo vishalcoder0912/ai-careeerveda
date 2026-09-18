@@ -36,6 +36,7 @@ const fillValid = () => {
 const submit = () => fireEvent.click(screen.getByRole("button", {name: /submit/i}));
 
 beforeEach(() => {
+  localStorage.clear();
   submitLead.mockReset();
   submitLead.mockResolvedValue({ok: true});
   render(<ConsultationForm />);
@@ -124,6 +125,21 @@ describe("consultation form submission", () => {
 
     expect(await screen.findByText(/admissions team will reach out/i)).toBeTruthy();
     expect(screen.getByLabelText("Name*").value).toBe("");
+  });
+
+  // The phone is the primary key, so a second submission of the same number
+  // must never reach the server, even from the same browser.
+  it("refuses to send the same phone a second time on this browser", async () => {
+    fillValid();
+    submit();
+    await screen.findByText(/admissions team will reach out/i);
+
+    fillValid();
+    submit();
+
+    expect(await screen.findByText(/already shared your details/i)).toBeTruthy();
+    expect(screen.queryByText(/admissions team will reach out/i)).toBeNull();
+    expect(submitLead).toHaveBeenCalledTimes(1);
   });
 
   it("shows the server's own message when it rejects the lead", async () => {
