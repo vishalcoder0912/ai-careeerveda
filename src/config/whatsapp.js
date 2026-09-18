@@ -23,7 +23,7 @@ export const WHATSAPP_ARIA_LABEL = "Chat with CareerVeda on WhatsApp";
 
 // The little text bubble beside the icon on desktop. Set to "" to show the icon
 // alone.
-export const WHATSAPP_TOOLTIP = "Need help? Chat with us";
+export const WHATSAPP_TOOLTIP = "Need help? Chat with us now";
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  THE MESSAGES
