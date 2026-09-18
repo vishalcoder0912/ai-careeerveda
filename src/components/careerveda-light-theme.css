@@ -1,0 +1,652 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   CareerVeda Light Theme — sitewide re-theme
+   -----------------------------------------------------------------------------
+   Converts every non-home page from the old dark slate/navy shells to the
+   homepage's CareerVeda light theme: navy ink (#102a5c), blue accent (#2563eb),
+   indigo (#4f46e5), white/soft-blue canvas (#fafcff), orange kept only for
+   emphasis (Enroll / Featured).
+
+   Strategy
+   --------
+   · Re-declare the two shell token sets (.page-shell → --ps-*, .jobs-page →
+     --jp-*) with light values. Same specificity, later in the cascade, so they
+     win over page-shell.css / jobs-page.css without !important. Every component
+     that already consumes those tokens follows automatically (About, Alumni,
+     Blog, BlogArticle, Contact, Enroll, Policy share --ps-*).
+   · Beat slate-color-system.css, which forced dark with !important, by using
+     strictly higher specificity + !important (body .spline-page …).
+   · Replace hardcoded teal rgba(20,184,166,…) tints and heavy dark shadows with
+     blue-family equivalents so the accent is CareerVeda blue everywhere.
+   · Deliberately dark panels stay dark (MagicBento on Faculty, the photo
+     gallery stage on Alumni, the About "Career Learning System" product window,
+     footer) — they read as premium contrast accents on a light site.
+   Imported LAST in styles.css.                                                    */
+
+/* ── Shells: token remap (light) ─────────────────────────────────────────── */
+body .page-shell,
+body .blog-article {
+  color-scheme: light;
+  --ps-bg: #fafcff;
+  --ps-panel: #ffffff;
+  --ps-panel-strong: #f8fafd;
+  --ps-border: rgba(16, 42, 92, 0.1);
+  --ps-border-strong: rgba(16, 42, 92, 0.18);
+  --ps-ink: #102a5c;
+  --ps-muted: #526682;
+  --ps-blue: #2563eb;
+  --ps-teal: #2563eb;
+  --ps-orange: #f97316;
+  color: var(--ps-ink);
+}
+
+body .jobs-page {
+  color-scheme: light;
+  --jp-bg: #fafcff;
+  --jp-panel: #ffffff;
+  --jp-panel-hover: #f8fafd;
+  --jp-border: rgba(16, 42, 92, 0.1);
+  --jp-border-active: rgba(16, 42, 92, 0.18);
+  --jp-ink: #102a5c;
+  --jp-muted: #526682;
+  --jp-primary: #2563eb;
+  --jp-primary-dark: #1d4ed8;
+  --jp-pink: #f97316;
+  --jp-secondary: #4f46e5;
+  --jp-field: #ffffff;
+  --jp-field-hover: #f8fafd;
+  color: var(--jp-ink);
+}
+
+/* ── Canvas: light background for every non-home, non-grid spline page ──────
+   Beats slate-color-system's `body .spline-page` dark !important.
+   .program-detail keeps its own (already light) canvas. */
+body .spline-page:not(.spline-page--grid):not(.program-detail) {
+  color: #102a5c !important;
+  background:
+    radial-gradient(1200px 620px at 82% -6%, rgba(37, 99, 235, 0.06), transparent 60%),
+    radial-gradient(900px 520px at 6% 12%, rgba(79, 70, 229, 0.05), transparent 58%),
+    linear-gradient(180deg, #ffffff 0%, #fafcff 46%, #ffffff 100%) !important;
+}
+
+/* Scroll progress: blue→indigo instead of teal/mint. */
+body .scroll-progress {
+  background: linear-gradient(90deg, #2563eb, #4f46e5, #7c3aed) !important;
+  box-shadow: 0 0 28px rgba(79, 70, 229, 0.42) !important;
+}
+
+/* ── Page shell: hero, buttons, cards, stats, CTA ────────────────────────── */
+body .page-hero__title .accent {
+  background: linear-gradient(120deg, #2563eb, #4f46e5 55%, #f97316);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+body .page-btn--primary {
+  color: #ffffff;
+  background: linear-gradient(120deg, #2563eb, #4f46e5);
+  box-shadow: 0 18px 44px rgba(37, 99, 235, 0.28);
+}
+
+body .page-btn--primary:hover {
+  box-shadow: 0 22px 60px rgba(79, 70, 229, 0.34);
+}
+
+body .page-btn--ghost:hover {
+  border-color: #2563eb;
+}
+
+body .page-card:hover {
+  box-shadow: 0 24px 60px rgba(16, 24, 64, 0.1);
+}
+
+body .page-card .card-icon,
+body .review-card__avatar,
+body .contact-line .ic {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(79, 70, 229, 0.12));
+}
+
+body .review-card__program {
+  background: #f1f5f9;
+  color: #526682;
+}
+
+body .page-card .card-index {
+  color: rgba(16, 42, 92, 0.12);
+}
+
+body .page-stat strong {
+  background: linear-gradient(120deg, #2563eb, #4f46e5);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+body .page-cta {
+  background:
+    radial-gradient(700px 300px at 12% -20%, rgba(37, 99, 235, 0.12), transparent 60%),
+    radial-gradient(700px 300px at 88% 120%, rgba(79, 70, 229, 0.12), transparent 60%),
+    #ffffff;
+  box-shadow: 0 24px 70px rgba(16, 24, 64, 0.08);
+}
+
+/* ── Page shell: forms ───────────────────────────────────────────────────── */
+body .form-field input,
+body .form-field select,
+body .form-field textarea {
+  color: #102a5c;
+  background: #ffffff;
+  border-color: rgba(16, 42, 92, 0.16);
+}
+
+body .form-field select option {
+  background-color: #ffffff;
+  color: #102a5c;
+}
+
+body .form-field input:focus,
+body .form-field select:focus,
+body .form-field textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+}
+
+/* ── Page shell: legal / policy ──────────────────────────────────────────── */
+body .legal-callout {
+  border-left-color: #2563eb;
+  background: rgba(37, 99, 235, 0.07);
+  color: #102a5c !important;
+}
+
+body .legal-stat strong,
+body .legal-article .legal-group h4 {
+  color: #2563eb;
+}
+
+body .placeholder-note {
+  color: #9a3412;
+}
+
+/* ── Blog list ───────────────────────────────────────────────────────────── */
+body .blog-filter-chip.is-active {
+  border-color: #2563eb;
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+}
+
+body .blog-card:hover {
+  box-shadow: 0 24px 60px rgba(16, 24, 64, 0.1);
+}
+
+body .blog-card-media {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.06), rgba(79, 70, 229, 0.06));
+}
+
+body .blog-card-tag {
+  border-color: rgba(37, 99, 235, 0.24);
+  background: rgba(37, 99, 235, 0.08);
+  color: #2563eb;
+}
+
+/* ── Blog article ────────────────────────────────────────────────────────── */
+body .blog-article::before {
+  background:
+    radial-gradient(46% 58% at 24% 14%, rgba(37, 99, 235, 0.07), transparent 63%),
+    radial-gradient(54% 64% at 74% 8%, rgba(79, 70, 229, 0.08), transparent 63%);
+}
+
+body .ba-tag {
+  border-color: rgba(37, 99, 235, 0.24);
+  background: rgba(37, 99, 235, 0.08);
+  color: #2563eb;
+}
+
+body .ba-cover img {
+  box-shadow: 0 24px 60px rgba(16, 24, 64, 0.12);
+}
+
+body .ba-prose a {
+  color: #2563eb;
+  text-decoration-color: rgba(37, 99, 235, 0.35);
+}
+
+body .ba-prose a:hover {
+  color: #1d4ed8;
+}
+
+body .ba-check {
+  background: rgba(37, 99, 235, 0.12);
+  color: #2563eb;
+}
+
+body .ba-toc a:hover,
+body .ba-toc-mobile a:hover {
+  background: #eef2f7;
+}
+
+body .ba-related-card:hover {
+  box-shadow: 0 22px 50px rgba(16, 24, 64, 0.1);
+}
+
+body .ba-related-media {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.06), rgba(79, 70, 229, 0.06));
+}
+
+body .ba-cta {
+  background:
+    radial-gradient(560px 260px at 12% -20%, rgba(37, 99, 235, 0.12), transparent 60%),
+    radial-gradient(560px 260px at 88% 120%, rgba(79, 70, 229, 0.12), transparent 60%),
+    #ffffff;
+}
+
+body .ba-cta-btn {
+  color: #ffffff;
+  background: linear-gradient(120deg, #2563eb, #4f46e5);
+  box-shadow: 0 14px 34px rgba(37, 99, 235, 0.28);
+}
+
+/* ── Jobs ────────────────────────────────────────────────────────────────── */
+body .jobs-hero__title .accent {
+  background: linear-gradient(120deg, #2563eb, #4f46e5 55%, #f97316);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+body .jobs-search__input:focus,
+body .jobs-filters__select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+}
+
+body .jobs-filters__select option {
+  background-color: #ffffff;
+  color: #102a5c;
+}
+
+body .jobs-filters__select option:checked {
+  background-color: #f8fafd;
+}
+
+body .job-card:hover {
+  box-shadow: 0 24px 60px rgba(16, 24, 64, 0.1);
+}
+
+body .job-card__salary {
+  color: #2563eb;
+}
+
+body .job-card__apply {
+  color: #ffffff;
+  background: linear-gradient(120deg, #2563eb, #4f46e5);
+  box-shadow: 0 14px 34px rgba(37, 99, 235, 0.28);
+}
+
+body .job-card__apply:hover {
+  box-shadow: 0 22px 60px rgba(79, 70, 229, 0.34);
+}
+
+body .jobs-empty__action:hover {
+  border-color: #2563eb;
+  background: rgba(37, 99, 235, 0.08);
+}
+
+/* ── Programs page ─────────────────────────────────────────────────────────
+   Beats slate-color-system which forces every section dark with !important;
+   these selectors are scoped under body .spline-page so they win. */
+body .spline-page .program-showcase-section {
+  background: linear-gradient(180deg, #ffffff 0%, #fafcff 48%, #ffffff 100%) !important;
+}
+
+body .spline-page .program-showcase-section > .section-heading :is(h1, h2) {
+  color: #102a5c !important;
+  background: none !important;
+  -webkit-text-fill-color: #102a5c !important;
+}
+
+body .spline-page .program-showcase-section > .section-heading p:not(.section-label) {
+  color: #526682 !important;
+}
+
+body .spline-page .program-showcase-section > .section-heading .section-label {
+  color: #2563eb !important;
+}
+
+/* Unify the already-light explorer accent (green → CareerVeda blue). */
+body .spline-page .program-explorer .section-label {
+  color: #2563eb !important;
+}
+
+body .spline-page .program-explorer .program-subtitle,
+body .spline-page .program-explorer .cta-secondary,
+body .spline-page .program-explorer .program-track-item.is-active {
+  color: #2563eb !important;
+}
+
+body .spline-page .program-explorer .cta-primary {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #2563eb, #4f46e5) !important;
+  box-shadow: 0 18px 44px rgba(37, 99, 235, 0.24) !important;
+}
+
+body .spline-page .program-explorer .tab-pill.is-active {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #2563eb, #4f46e5) !important;
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.22) !important;
+}
+
+/* ── Faculty page: #faculty (MagicBento stage) ───────────────────────────── */
+body .spline-page #faculty.dark-section {
+  background:
+    radial-gradient(circle at 14% 12%, rgba(37, 99, 235, 0.08), transparent 30%),
+    linear-gradient(180deg, #f8fafc 0%, #fafcff 100%) !important;
+}
+
+body .spline-page #faculty .section-heading :is(h1, h2) {
+  color: #102a5c !important;
+  background: none !important;
+  -webkit-text-fill-color: #102a5c !important;
+}
+
+body .spline-page #faculty .section-heading p:last-child {
+  color: #526682 !important;
+}
+
+body .spline-page #faculty .section-label {
+  color: #2563eb !important;
+  border-color: rgba(37, 99, 235, 0.2) !important;
+  background: rgba(37, 99, 235, 0.06) !important;
+  box-shadow: none !important;
+}
+
+body .spline-page #faculty .section-label::before,
+body .spline-page #faculty .section-label::after {
+  color: #2563eb !important;
+}
+
+body .spline-page #faculty.dark-section::before {
+  opacity: 1 !important;
+  background-image: radial-gradient(rgba(37, 99, 235, 0.14) 1px, transparent 1px) !important;
+}
+
+body .spline-page #faculty.dark-section::after {
+  color: rgba(16, 42, 92, 0.08) !important;
+  border-color: rgba(37, 99, 235, 0.14) !important;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.9)) padding-box,
+    conic-gradient(from 120deg, rgba(37, 99, 235, 0.3), rgba(79, 70, 229, 0.2), rgba(37, 99, 235, 0.12), rgba(37, 99, 235, 0.3)) border-box !important;
+  box-shadow: 0 28px 90px rgba(16, 24, 64, 0.08) !important;
+}
+
+/* MagicBento cards: keep them a deliberate dark stage on the now-light
+   section, or their rgba-white surfaces would vanish (light text on white). */
+body .spline-page .magic-bento-card {
+  border-color: rgba(148, 163, 184, 0.24);
+  background: rgba(15, 23, 42, 0.88);
+}
+
+body .spline-page .magic-bento-card:hover {
+  border-color: rgba(148, 163, 184, 0.36);
+  background: rgba(15, 23, 42, 0.94);
+}
+
+body .spline-page .magic-bento-card__label {
+  background: linear-gradient(120deg, #60a5fa, #2563eb);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* ── Faculty page: support section (mentors) ─────────────────────────────── */
+body .spline-page .support-section {
+  background: linear-gradient(180deg, #fafcff 0%, #ffffff 100%) !important;
+}
+
+body .spline-page .support-section .section-heading :is(h1, h2) {
+  color: #102a5c !important;
+  background: none !important;
+  -webkit-text-fill-color: #102a5c !important;
+}
+
+body .spline-page .support-section .section-heading p:not(.section-label) {
+  color: #526682 !important;
+}
+
+body .spline-page .support-section .section-label {
+  color: #2563eb !important;
+}
+
+body .spline-page .support-section .section-label::before,
+body .spline-page .support-section .section-label::after {
+  background: #2563eb !important;
+}
+
+body .spline-page .support-grid article {
+  border-color: rgba(16, 42, 92, 0.1) !important;
+  background: #ffffff !important;
+  box-shadow: 0 18px 50px rgba(16, 24, 64, 0.06) !important;
+}
+
+body .spline-page .support-grid article:hover {
+  border-color: rgba(37, 99, 235, 0.35) !important;
+}
+
+body .spline-page .support-section .support-grid article .support-card__icon {
+  color: #2563eb;
+}
+
+body .spline-page .support-section .support-grid article::before {
+  color: #2563eb !important;
+  border-color: rgba(37, 99, 235, 0.2) !important;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.12) !important;
+}
+
+body .spline-page .support-section .support-grid article::after {
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.14), transparent 68%) !important;
+}
+
+body .spline-page .support-section .support-grid article:nth-child(2)::after {
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.12), transparent 68%) !important;
+}
+
+body .spline-page .support-section .support-grid article li::before {
+  background: #2563eb !important;
+}
+
+body .spline-page .support-section .support-grid article ul::after {
+  color: #2563eb !important;
+  background: rgba(37, 99, 235, 0.08) !important;
+}
+
+body .spline-page .support-section .support-grid article:hover ul::after {
+  color: #ffffff !important;
+  background: #2563eb !important;
+}
+
+/* ── Faculty page: strategy / outcome section ────────────────────────────── */
+body .spline-page .strategy-section {
+  color: #102a5c !important;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+}
+
+body .spline-page .strategy-section .section-heading :is(h1, h2) {
+  color: #102a5c !important;
+  background: none !important;
+  -webkit-text-fill-color: #102a5c !important;
+}
+
+body .spline-page .strategy-section .section-heading p:not(.section-label) {
+  color: #526682 !important;
+}
+
+body .spline-page .strategy-section .section-label {
+  color: #2563eb !important;
+}
+
+body .spline-page .strategy-section .section-label::before {
+  color: #2563eb !important;
+}
+
+body .spline-page .strategy-section .section-label::after {
+  background: linear-gradient(90deg, #2563eb, transparent) !important;
+}
+
+body .spline-page .strategy-section .step-list::before {
+  background: linear-gradient(180deg, rgba(37, 99, 235, 0.4), rgba(79, 70, 229, 0.12)) !important;
+}
+
+body .spline-page .strategy-section .step-list article {
+  border-color: rgba(16, 42, 92, 0.1) !important;
+  background: #ffffff !important;
+  box-shadow: 0 18px 50px rgba(16, 24, 64, 0.06) !important;
+}
+
+body .spline-page .step-list article h3 {
+  color: #102a5c !important;
+}
+
+body .spline-page .step-list article p {
+  color: #526682 !important;
+}
+
+body .spline-page .step-list article > span {
+  color: #2563eb !important;
+}
+
+body .spline-page .step-list small {
+  color: #2563eb !important;
+  background: rgba(37, 99, 235, 0.08) !important;
+  border-color: rgba(37, 99, 235, 0.2) !important;
+}
+
+body .spline-page .step-list article::after {
+  color: #2563eb !important;
+  border-color: rgba(37, 99, 235, 0.3) !important;
+  background:
+    radial-gradient(circle, rgba(37, 99, 235, 0.1), transparent 60%),
+    #ffffff !important;
+  box-shadow: 0 0 24px rgba(37, 99, 235, 0.12) !important;
+}
+
+body .spline-page .strategy-section .project-number {
+  color: #102a5c !important;
+  border-color: rgba(16, 42, 92, 0.12) !important;
+  background: linear-gradient(180deg, #ffffff, #f8fafd) !important;
+  box-shadow: 0 24px 70px rgba(16, 24, 64, 0.08) !important;
+}
+
+body .spline-page .strategy-section .project-number strong {
+  color: #102a5c !important;
+}
+
+body .spline-page .strategy-section .project-number span {
+  color: #2563eb !important;
+}
+
+body .spline-page .strategy-section .project-number p {
+  color: #526682 !important;
+}
+
+body .spline-page .strategy-section .project-number p::before {
+  color: #526682 !important;
+}
+
+body .spline-page .strategy-section .project-number p::after {
+  color: #526682 !important;
+  border-left-color: rgba(16, 42, 92, 0.14) !important;
+}
+
+body .spline-page .strategy-section .project-number::before {
+  color: #2563eb !important;
+  border-color: rgba(37, 99, 235, 0.2) !important;
+  background: rgba(37, 99, 235, 0.06) !important;
+}
+
+body .spline-page .strategy-section .project-number .outcome-cta {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #2563eb, #4f46e5) !important;
+  box-shadow: 0 18px 44px rgba(37, 99, 235, 0.24) !important;
+}
+
+body .spline-page .strategy-section .project-number .outcome-cta:hover {
+  box-shadow: 0 24px 54px rgba(79, 70, 229, 0.32) !important;
+}
+
+/* ── Alumni spotlight ──────────────────────────────────────────────────────
+   The photo-gallery stage stays dark (it is a real photo carousel); the
+   profile/experience card beside it goes light like the rest of the site. */
+body .alumni-spotlight__gallery-wrap {
+  background:
+    radial-gradient(circle at 50% 46%, rgba(37, 99, 235, 0.2), transparent 37%),
+    radial-gradient(circle at 70% 78%, rgba(79, 70, 229, 0.18), transparent 42%),
+    rgba(15, 23, 42, 0.8);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 26px 70px rgba(16, 24, 64, 0.14);
+}
+
+body .alumni-spotlight__gallery-wrap::before {
+  box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.14), 0 0 20px rgba(37, 99, 235, 0.7);
+}
+
+body .alumni-spotlight__caption strong {
+  color: #f1f5f9;
+}
+
+body .alumni-spotlight__caption span {
+  color: #60a5fa;
+}
+
+body .alumni-spotlight__profile {
+  color: #102a5c;
+  background:
+    radial-gradient(420px 280px at 100% 0%, rgba(79, 70, 229, 0.08), transparent 70%),
+    linear-gradient(145deg, #ffffff, #f8fafd);
+  border-color: rgba(16, 42, 92, 0.12);
+  box-shadow: 0 26px 70px rgba(16, 24, 64, 0.1);
+}
+
+body .alumni-spotlight__photo-wrap {
+  border-color: rgba(16, 42, 92, 0.14);
+  background: #eef2f7;
+}
+
+body .alumni-spotlight__profile h3 {
+  color: #102a5c;
+}
+
+body .alumni-spotlight__role {
+  color: #2563eb;
+}
+
+body .alumni-spotlight__story {
+  color: #526682;
+}
+
+/* ── About page ────────────────────────────────────────────────────────────
+   About's whole bespoke stylesheet derives its surfaces from --about-* aliases
+   of --ps-*, so the shell remap above already flips most of it. The few
+   hardcoded dark/cyan values are corrected here. The Career Learning System
+   product window stays dark on purpose. */
+body .page-shell .about-page {
+  --about-text: #102a5c;
+  --about-muted: #526682;
+  --about-cyan: #2563eb;
+  --about-panel: #ffffff;
+  --about-panel-strong: #f8fafd;
+}
+
+body .about-eyebrow {
+  color: #2563eb !important;
+}
+
+body .about-btn {
+  color: #102a5c;
+  background: #ffffff;
+}
+
+body .about-btn:hover {
+  background: #f8fafd;
+  border-color: rgba(37, 99, 235, 0.4);
+}
+
+body .about-btn-primary {
+  color: #ffffff !important;
+  border: 0;
+  background: linear-gradient(135deg, #2563eb, #4f46e5) !important;
+  box-shadow: 0 14px 38px rgba(37, 99, 235, 0.2) !important;
+}
