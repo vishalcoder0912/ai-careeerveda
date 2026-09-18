@@ -648,3 +648,129 @@ body header.site-nav .nav-container a.nav-cta:focus-visible {
     content: none !important;
   }
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   PROGRAM-STUDIO CHROME — solid light bar, logo + CTA always visible.
+
+   Reconstruction override: the old design floated a detached glass capsule and
+   faded the logo/CTA away once scrolled. The reference language for the whole
+   site is a **full-width bar**: brand left, nav centered, Enroll right, at
+   every scroll depth, on a near-white surface with a hairline + quiet shadow.
+
+   These rules sit at the END of this file so they out-specify every earlier
+   chrome-less state with equal or longer selectors plus !important. They do
+   not touch the CSP/link sets, the mobile drawer, or the spotlight mechanics —
+   only the bar's surface, its ink colors, and the scrolled fade-out. */
+body header.site-nav,
+body header.site-nav.is-scrolled,
+body header.site-nav.is-compact {
+  min-height: var(--navbar-height, 78px) !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+  background-color: rgba(255, 255, 255, 0.88) !important;
+  border-bottom: 1px solid rgba(7, 59, 102, 0.08) !important;
+  backdrop-filter: blur(14px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(160%) !important;
+  box-shadow: 0 4px 20px rgba(7, 59, 102, 0.04) !important;
+}
+
+body header.site-nav.is-scrolled,
+body header.site-nav.is-compact {
+  min-height: var(--navbar-height-scrolled, 70px) !important;
+  box-shadow: 0 6px 24px rgba(7, 59, 102, 0.07) !important;
+}
+
+body header.site-nav .nav-container nav.site-nav-links {
+  background: transparent !important;
+  border-color: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+}
+
+body header.site-nav .nav-container nav.site-nav-links a {
+  color: rgba(15, 23, 42, 0.74) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+body header.site-nav .nav-container nav.site-nav-links a:hover,
+body header.site-nav .nav-container nav.site-nav-links a:focus-visible {
+  color: #0f172a !important;
+  background: rgba(14, 148, 136, 0.09) !important;
+  box-shadow: none !important;
+}
+
+body header.site-nav .nav-container nav.site-nav-links a.is-active {
+  color: #0e9488 !important;
+  background: rgba(14, 148, 136, 0.1) !important;
+  box-shadow: inset 0 0 0 1px rgba(14, 148, 136, 0.14) !important;
+}
+
+body header.site-nav .nav-container .brand,
+body header.site-nav .nav-container .site-nav-brand {
+  color: #0f172a !important;
+}
+
+body header.site-nav .nav-container .brand .brand-name .cv-career,
+body header.site-nav .nav-container .site-nav-brand .brand-name .cv-career {
+  color: #0f172a !important;
+}
+
+body header.site-nav .nav-container .brand .brand-tagline,
+body header.site-nav .nav-container .site-nav-brand .brand-tagline {
+  color: #0e9488 !important;
+}
+
+/* Desktop scrolled: cancel the legacy fade-to-pill completely and keep the
+   three-zone grid doing its job — brand and CTA stay put, the pill stays a
+   quiet transparent track on the same light bar. */
+@media (min-width: 1024px) {
+  body header.site-nav.is-scrolled .nav-container,
+  body header.site-nav.is-compact .nav-container {
+    padding-top: 0 !important;
+    height: var(--navbar-height-scrolled, 70px) !important;
+  }
+
+  body header.site-nav.is-scrolled .nav-container .brand,
+  body header.site-nav.is-scrolled .nav-container .site-nav-brand,
+  body header.site-nav.is-scrolled .nav-container a.nav-cta,
+  body header.site-nav.is-compact .nav-container .brand,
+  body header.site-nav.is-compact .nav-container .site-nav-brand,
+  body header.site-nav.is-compact .nav-container a.nav-cta {
+    opacity: 1 !important;
+    transform: none !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transition: none !important;
+  }
+
+  body header.site-nav.is-scrolled .nav-container nav.site-nav-links,
+  body header.site-nav.is-compact .nav-container nav.site-nav-links {
+    height: 50px !important;
+    padding: 4px 6px !important;
+    background: transparent !important;
+    border-color: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+  }
+
+  body header.site-nav.is-scrolled .nav-container nav.site-nav-links::after,
+  body header.site-nav.is-compact .nav-container nav.site-nav-links::after {
+    content: none !important;
+    display: none !important;
+  }
+}
+
+/* Mobile scrolled: keep the compact glass pill, but light — the dark capsule
+   belongs to the old dark-hero language, not this light one. */
+@media (max-width: 1023px) {
+  body header.site-nav.is-scrolled .nav-container,
+  body header.site-nav.is-compact .nav-container {
+    background: rgba(255, 255, 255, 0.9) !important;
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid rgba(7, 59, 102, 0.1) !important;
+    box-shadow: 0 6px 24px rgba(7, 59, 102, 0.08) !important;
+  }
+}
