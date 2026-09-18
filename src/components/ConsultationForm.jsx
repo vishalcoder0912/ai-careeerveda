@@ -4,6 +4,7 @@ import {programCatalog} from "../data/programCatalog";
 import {useContentList} from "../hooks/useContent";
 import {adaptProgram} from "../lib/contentAdapters";
 import {submitLead} from "../lib/publicApi";
+import {hasSubmittedPhone, rememberSubmittedPhone} from "../lib/submittedPhones";
 import "./consultation-form.css";
 
 const USER_TYPES = ["Student", "Working Professional", "Career Switcher"];
@@ -74,6 +75,16 @@ const ConsultationForm = () => {
       return;
     }
 
+    // This browser has already sent this phone through. The server enforces the
+    // same rule, so this just saves the round trip.
+    if (hasSubmittedPhone(values.mobile)) {
+      setStatus("error");
+      setMessage(
+        "You've already shared your details with us. Our team has them and will reach out — no need to submit again.",
+      );
+      return;
+    }
+
     setStatus("submitting");
     setMessage("");
 
@@ -94,6 +105,7 @@ const ConsultationForm = () => {
         return;
       }
 
+      rememberSubmittedPhone(values.mobile);
       setStatus("success");
       setMessage("Thanks — our admissions team will reach out to you shortly.");
       setValues(EMPTY);
