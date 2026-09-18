@@ -1,798 +1,2032 @@
-/* /programs/:slug — built on the page-shell tokens (--ps-*), so it inherits the
-   same surfaces, accents and buttons as every other standalone route. */
+/*
+ * Program Detail — full rebuild.
+ *
+ * The route wears .page-shell, which paints a dark navy canvas and near-white ink
+ * for the standalone routes. This page deliberately breaks from that to match the
+ * product-page reference: a light, airy, editorial page from hero straight down to
+ * the closing CTA panel. Every section therefore declares its own background so it
+ * covers the dark canvas, and the dark CTA panel at the end hands back to the dark
+ * footer instead of ending abruptly.
+ *
+ * Everything is scoped under .program-detail with --pd-* tokens, importing after
+ * page-shell.css so the page's own rules win.
+ */
 
-.program-detail .pd-hero {
-  /* Tight, controlled top spacing. The page sits under a fixed navbar whose
-     shell already reserves var(--navbar-height) (~78px), so a large padding-top
-     here stacks on top of that and pushes "-- All programs" far down the
-     viewport. The content is what defines the hero's height — start it right
-     beneath the bar with a small deliberate gap instead. */
-  padding: clamp(20px, 3vw, 40px) 0 clamp(32px, 5vw, 56px);
-  /* Anchors the laser canvas, which is absolutely positioned inside.
-     Deliberately NOT `overflow: hidden` (the price card here is position:sticky,
-     and any clipping ancestor silently kills sticky) and deliberately NOT
-     `isolation: isolate`. Isolating looks harmless but breaks the whole effect:
-     the beam's `mix-blend-mode: screen` needs the page's gradient — painted by
-     an ancestor, .spline-page — as its backdrop. Isolate the group and the
-     canvas has only transparency to blend against, so it composites as the
-     near-black layer it really is and *darkens* the hero instead of lighting it.
-     Measured: -4 luma where the beam should have been brightest. */
-  position: relative;
+.program-detail {
+  --site-measure: 1440px;
+  --pd-ink: #0f172a;
+  --pd-muted: #5a6474;
+  --pd-soft: #f4f7fb;
+  --pd-canvas: #ffffff;
+  --pd-line: #e3e9f1;
+  --pd-line-strong: #cdd7e4;
+  --pd-teal: #2563eb;
+  --pd-blue: #2563eb;
+  --pd-orange: #ea7308;
+  --pd-grad: linear-gradient(120deg, #3b82f6, #1d4ed8);
+  --pd-fine: 0.45px;
+  color: var(--pd-ink);
 }
 
-/* The LaserFlow canvas. It renders OPAQUE BLACK behind the beam (the component
-   clears to #000 with alpha off), so it cannot simply be laid over the page.
-   `screen` composites it: black contributes nothing, and only the beam's light
-   is added to the gradient underneath. */
-.pd-hero__laser {
-  position: absolute;
-  z-index: 0;
-  inset: 0;
-  /* Load-bearing — without it the canvas would be an opaque black rectangle
-     sitting on the hero. */
-  mix-blend-mode: screen;
-  /* Confines the canvas to the right of the hero, and this is not cosmetic.
-     `screen` lifts the page by whatever the shader outputs, and the beam carries
-     a wide, low halo well beyond the visible shaft — unmasked it raised the
-     black behind the headline by 16/255 (measured), washing the copy out. Masked,
-     the copy side receives nothing at all and the beam keeps its glow. */
-  -webkit-mask-image: linear-gradient(
-    100deg,
-    transparent 0%,
-    transparent 42%,
-    rgba(0, 0, 0, 0.45) 56%,
-    #000 72%
-  );
-  mask-image: linear-gradient(
-    100deg,
-    transparent 0%,
-    transparent 42%,
-    rgba(0, 0, 0, 0.45) 56%,
-    #000 72%
-  );
-  /* Belt and braces: LaserFlow.css already sets this on its own container, but
-     the hero's links and Apply button sit under this layer and must stay
-     clickable. */
-  pointer-events: none;
+/* The route wears .page-shell, which paints a dark navy canvas (--ps-bg) and
+   nearby-white ink intended for the standalone routes. This page breaks from
+   that on purpose: from hero to footer it lives on a clean, light CareerVeda
+   canvas, so at wide viewports the white layout never sits as a "document" on
+   a dark app frame. Everything below is scoped to .program-detail; the other
+   .page-shell pages keep their dark shell untouched.
+
+   The background MUST be declared with `body ... !important`: slate-color-
+   system.css paints every .spline-page dark with `body .spline-page { … !important }`,
+   and without the same importance this page's light override (same class
+   count) loses to it. When that happens the whole <main> paints dark behind
+   the content and the gutters show as ~40px dark strips at each screen edge,
+   even though .pd-layout's own sections are already white. */
+body main.page-shell.program-detail {
+  color-scheme: light;
+  /* page-shell.css clips .page-shell to hide its decorative fades; the clip
+     turns <main> into the nearest scroll container and silently disables
+     position:sticky for the two side columns. This page owns its background
+     and its own overflow-safe surfaces, so unclip only here. */
+  overflow: visible;
+  background:
+    radial-gradient(1100px 560px at 96% -6%, rgba(37, 99, 235, 0.06), transparent 60%),
+    radial-gradient(900px 480px at 4% 8%, rgba(37, 99, 235, 0.06), transparent 58%),
+    linear-gradient(180deg, #f8fafd 0%, #ffffff 46%, #f4f7fb 100%) !important;
 }
 
-/* No veil on desktop: the mask above already keeps the canvas off the copy, so
-   the two columns render exactly as they did before the beam existed. A veil
-   here would darken the hero below its designed value for no reason. The stacked
-   layout does need one — see the 900px block at the bottom of this file. */
+/* ---------- Page layout: single full-width content column ---------- */
 
-/* Everything the visitor came to read sits above the beam. */
-.program-detail .pd-hero .ps-inner {
-  position: relative;
-  z-index: 2;
-  /* Wide detail-page hero: matches the new 1440px site-measure so the
-     two-column hero has room for a prominent title AND a ~400px investment
-     card without cramping either. The sections below keep the standard
-     measure. */
-  width: min(1400px, calc(100% - 48px));
+.pd-layout {
+  /* Full viewport width with breathing-room gutters on both sides. The page
+     background (owning <main>) stays full-bleed white edge to edge; only the
+     content is inset, clamped so it never touches the screen edges on wide
+     screens or phones. */
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+  padding-inline: clamp(16px, 2vw, 40px);
+  box-sizing: border-box;
+  background: transparent;
 }
 
-.pd-back {
-  /* inline-flex with a 44px floor: as an inline-block this was a 21px-tall tap
-     target on a phone. */
+/* ---------- All Programs rail (desktop column) / strip (tablet & phone) ---------- */
+
+.pd-rail {
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--pd-line);
+  border-radius: 16px;
+  background: var(--pd-canvas);
+  box-shadow: 0 4px 20px rgba(7, 59, 102, 0.05);
+}
+
+.pd-rail__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--pd-line);
+}
+
+.pd-rail__head strong {
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--pd-ink);
+}
+
+.pd-rail__count {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--pd-muted);
+}
+
+.pd-rail__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+}
+
+.pd-rail__link {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 10px;
+  border-radius: 11px;
+  text-decoration: none;
+  transition: background 180ms ease, box-shadow 180ms ease;
+}
+
+.pd-rail__link:hover {
+  background: var(--pd-soft);
+}
+
+.pd-rail__link.is-active {
+  background: linear-gradient(120deg, rgba(37, 99, 235, 0.09), rgba(37, 99, 235, 0.03));
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.28);
+}
+
+.pd-rail__n {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--pd-muted);
+  background: var(--pd-soft);
+}
+
+.pd-rail__link.is-active .pd-rail__n {
+  color: #ffffff;
+  background: var(--pd-grad);
+}
+
+.pd-rail__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.pd-rail__text strong {
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--pd-ink);
+}
+
+.pd-rail__text small {
+  margin-top: 1px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--pd-muted);
+}
+
+/* Horizontal strip replacement shown only below desktop: numbered chips of the
+   same program list, scrolled on touch. */
+.pd-strip {
+  display: none;
+}
+
+.pd-strip__in {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px;
+  scrollbar-width: none;
+}
+
+.pd-strip__in::-webkit-scrollbar {
+  display: none;
+}
+
+.pd-strip__chip {
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
-  margin-bottom: clamp(16px, 2vw, 28px);
-  color: var(--ps-muted);
-  font-size: 14px;
-  font-weight: 600;
+  gap: 7px;
+  padding: 9px 14px;
+  border: 1px solid var(--pd-line);
+  border-radius: 999px;
+  background: var(--pd-canvas);
+  font-size: 12.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--pd-muted);
   text-decoration: none;
+  transition: color 180ms ease, background 180ms ease, border-color 180ms ease;
 }
 
-.pd-back:hover {
-  color: var(--ps-ink);
+.pd-strip__chip span {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--pd-teal);
+}
+
+.pd-strip__chip:hover {
+  border-color: var(--pd-line-strong);
+}
+
+.pd-strip__chip.is-active {
+  color: #ffffff;
+  border-color: transparent;
+  background: var(--pd-grad);
+}
+
+.pd-strip__chip.is-active span {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.pd-layout__main,
+.pd-layout__rail,
+.pd-layout__aside {
+  min-width: 0;
+}
+
+.pd-layout__main {
+  width: 100%;
+}
+
+.pd-inner {
+  /* The layout already owns the shared container and its gutters, so every
+     section body simply fills its column — no second auto-centering, no extra
+     max-width. Left edges stay identical from the hero to the closing CTA. */
+  width: 100%;
+}
+
+[class*="pd-section"],
+.pd-hero,
+.pd-cta {
+  scroll-margin-top: calc(var(--navbar-height, 78px) + 78px);
+}
+
+/* ---------- Shared building blocks ---------- */
+
+.pd-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pd-teal);
+}
+
+.pd-eyebrow::before {
+  content: "";
+  width: 22px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--pd-teal), transparent);
+}
+
+.pd-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 50px;
+  padding: 0 26px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 200ms ease, box-shadow 220ms ease, background 220ms ease, border-color 220ms ease;
+}
+
+.pd-btn--primary {
+  color: #ffffff;
+  background: var(--pd-grad);
+  box-shadow: 0 16px 38px rgba(37, 99, 235, 0.26);
+}
+
+.pd-btn--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 50px rgba(37, 99, 235, 0.34);
+}
+
+.pd-btn--ghost {
+  color: var(--pd-ink);
+  border-color: var(--pd-line-strong);
+  background: var(--pd-canvas);
+}
+
+.pd-btn--ghost:hover {
+  transform: translateY(-2px);
+  border-color: var(--pd-teal);
+  background: var(--pd-soft);
+}
+
+.pd-btn--block {
+  width: 100%;
+}
+
+.pd-btn--lg {
+  min-height: 58px;
+  padding: 0 34px;
+  border-radius: 14px;
+  font-size: 16px;
+}
+
+.pd-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pd-tags li {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 15px;
+  border-radius: 999px;
+  border: 1px solid var(--pd-line);
+  background: var(--pd-soft);
+  color: var(--pd-ink);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.pd-tags li::before {
+  content: "✦";
+  color: var(--pd-teal);
+  font-size: 12px;
+}
+
+/* When a real brand logo (`.skill-mark`) is present, it replaces the
+   decorative gem entirely. */
+.skill-mark {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  border-radius: 3px;
+}
+
+.pd-tags li:has(.skill-mark)::before {
+  display: none;
+}
+
+/* ---------- Hero ---------- */
+
+.pd-hero {
+  position: relative;
+  overflow: hidden;
+  /* Simple breathing room. The old +navbar-height term doubled the header
+     already in flow above <main>, which pushed the hero copy half a page down
+     and made the page read as a floating card. The three grid columns below
+     share this same top edge, so hero, rail and info panel start together. */
+  padding: clamp(28px, 4vw, 56px) 0 clamp(36px, 4vw, 56px);
+  background:
+    radial-gradient(820px 440px at 96% -8%, rgba(37, 99, 235, 0.12), transparent 62%),
+    radial-gradient(720px 420px at -6% 20%, rgba(37, 99, 235, 0.14), transparent 60%),
+    linear-gradient(180deg, #f7fafd 0%, #ffffff 44%);
+}
+
+.pd-crumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: clamp(30px, 4vw, 48px);
+  font-size: 13px;
+  color: var(--pd-muted);
+}
+
+.pd-crumbs a {
+  color: var(--pd-muted);
+  text-decoration: none;
+  transition: color 180ms ease;
+}
+
+.pd-crumbs a:hover {
+  color: var(--pd-teal);
+}
+
+.pd-crumbs__sep {
+  color: var(--pd-line-strong);
+}
+
+.pd-crumbs__now {
+  font-weight: 600;
+  color: var(--pd-ink);
+}
+
+.pd-crumbs__back {
+  margin-left: auto;
+  padding: 7px 13px;
+  border-radius: 999px;
+  border: 1px solid var(--pd-line);
+  background: var(--pd-canvas);
+  font-weight: 600;
+}
+
+.pd-crumbs__back:hover {
+  border-color: var(--pd-teal);
 }
 
 .pd-hero__grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(360px, 0.75fr);
-  gap: clamp(28px, 3.5vw, 48px);
-  align-items: start;
+  /* Reference ratio: roughly 55% copy, 45% visual. */
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: clamp(28px, 4vw, 56px);
+  align-items: center;
+  grid-template-areas: "copy visual";
+}
+
+.pd-hero__copy {
+  grid-area: copy;
 }
 
 .pd-badges {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: clamp(14px, 2vw, 24px);
+  gap: 9px;
+  margin-bottom: 18px;
 }
 
-.pd-badges span {
-  padding: 6px 13px;
-  border: 1px solid var(--ps-border-strong);
+.pd-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 14px;
   border-radius: 999px;
-  background: rgba(20, 184, 166, 0.1);
-  color: var(--ps-teal);
+  border: 1px solid var(--pd-line);
+  background: var(--pd-canvas);
+  color: var(--pd-muted);
   font-size: 12.5px;
   font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
-.program-detail h1 {
+.pd-badge--category {
+  color: var(--pd-teal);
+  border-color: rgba(37, 99, 235, 0.35);
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.pd-badge--status {
+  color: var(--pd-orange);
+  border-color: rgba(234, 115, 8, 0.35);
+  background: rgba(234, 115, 8, 0.08);
+}
+
+.pd-hero__copy h1 {
   margin: 0;
-  /* Prominent but contained: tight letter-spacing and line-height keep a long
-     program title from ballooning into vertical space the hero does not have.
-     The 1280px container (see .pd-hero .ps-inner below) gives the heading a
-     wide left column to breathe in without pushing the card off-screen. */
-  font-size: clamp(34px, 3.8vw, 58px);
+  font-size: clamp(28px, 3.4vw, 46px);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
   font-weight: 800;
-  letter-spacing: -0.045em;
-  line-height: 1.03;
+  text-wrap: balance;
+}
+
+.pd-accent {
+  color: var(--pd-teal);
+}
+
+.pd-subtitle {
+  margin: 14px 0 0;
+  font-size: clamp(16.5px, 1.6vw, 19.5px);
+  line-height: 1.45;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--pd-ink);
+  text-wrap: balance;
 }
 
 .pd-lead {
-  max-width: 62ch;
-  margin: 16px 0 0;
-  color: var(--ps-muted);
-  font-size: clamp(15px, 1.25vw, 17px);
-  line-height: 1.66;
+  max-width: 60ch;
+  margin: 18px 0 0;
+  font-size: clamp(15px, 1.3vw, 17.5px);
+  line-height: 1.72;
+  color: var(--pd-muted);
 }
 
 .pd-meta {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(20px, 3vw, 32px);
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid var(--ps-border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 0;
+  margin-top: clamp(26px, 3vw, 38px);
+  padding: 18px 0;
+  border-top: 1px solid var(--pd-line);
+  border-bottom: 1px solid var(--pd-line);
 }
 
-.pd-meta small {
-  display: block;
-  color: var(--ps-muted);
-  font-size: 12.5px;
+.pd-meta__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 0 22px;
+  border-left: 1px solid var(--pd-line);
 }
 
-.pd-meta strong {
-  display: block;
-  margin-top: 4px;
-  font-size: 18px;
-  font-weight: 750;
+.pd-meta__item:first-child {
+  padding-left: 4px;
+  border-left: 0;
+}
+
+.pd-meta__icon {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  padding: 8px;
+  border-radius: 10px;
+  color: var(--pd-teal);
+  background: rgba(37, 99, 235, 0.1);
+}
+
+.pd-meta__item span {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.pd-meta__item strong {
+  font-size: 14.5px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--pd-ink);
+}
+
+.pd-meta__item small {
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--pd-muted);
+}
+
+.pd-hero__copy .pd-tags {
+  margin-top: 26px;
 }
 
 .pd-hero__actions {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  align-items: center;
-  margin-top: 24px;
+  margin-top: 32px;
 }
 
-/* ---------- price card ---------- */
-.pd-price {
-  position: sticky;
-  top: 84px;
-  padding: clamp(22px, 2vw, 30px);
-  border: 1px solid var(--ps-border-strong);
-  border-radius: 24px;
-  background:
-    radial-gradient(420px 260px at 100% 0%, rgba(20, 184, 166, 0.14), transparent 68%),
-    var(--ps-panel-strong, rgba(255, 255, 255, 0.07));
-  box-shadow: 0 30px 80px rgba(2, 6, 23, 0.4);
+.pd-hero__visual {
+  grid-area: visual;
 }
 
-.pd-price__amount small {
+.pd-visual-frame {
+  position: relative;
+  aspect-ratio: 5 / 4;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--pd-line);
+  background: var(--pd-soft);
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.1);
+}
+
+.pd-visual-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   display: block;
-  color: var(--ps-muted);
-  font-size: 12.5px;
+}
+
+.pd-visual-frame--empty {
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(420px 260px at 80% 10%, rgba(37, 99, 235, 0.18), transparent 68%),
+    radial-gradient(380px 240px at 12% 88%, rgba(37, 99, 235, 0.2), transparent 66%),
+    var(--pd-soft);
+}
+
+.pd-visual-frame--empty span {
+  font-size: clamp(22px, 3vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: transparent;
+  background: var(--pd-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.pd-visual-chips {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.pd-visual-chip {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 15px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.18);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--pd-ink);
+  animation: pd-float 5.5s ease-in-out infinite alternate;
+}
+
+.pd-visual-chip--1 {
+  top: 9%;
+  left: -7%;
+}
+
+.pd-visual-chip--2 {
+  top: 44%;
+  right: -6%;
+  animation-delay: -2.2s;
+  animation-duration: 6.5s;
+}
+
+.pd-visual-chip--3 {
+  bottom: 7%;
+  left: 10%;
+  animation-delay: -4s;
+  animation-duration: 5s;
+}
+
+@keyframes pd-float {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: 0 -7px;
+  }
+}
+
+/* ---------- Info panel (right-hand column / mobile inline block) ---------- */
+
+.pd-panel {
+  position: sticky;
+  top: calc(var(--navbar-height, 78px) + 10px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 22px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 16px;
+  background: var(--pd-canvas);
+  box-shadow: 0 4px 20px rgba(7, 59, 102, 0.06);
+}
+
+.pd-panel__block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pd-panel__title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pd-muted);
+}
+
+.pd-panel__highlights {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+.pd-panel__highlights > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 9px 0;
+  border-top: 1px dashed var(--pd-line);
+}
+
+.pd-panel__highlights > div:first-child {
+  border-top: 0;
+}
+
+.pd-panel__icon {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  padding: 8px;
+  border-radius: 10px;
+  color: var(--pd-teal);
+  background: rgba(37, 99, 235, 0.1);
+}
+
+.pd-panel__highlights span {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.pd-panel__highlights small {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pd-muted);
+}
+
+.pd-panel__highlights strong {
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--pd-ink);
+}
+
+.pd-panel__pricing {
+  padding-top: 4px;
+  border-top: 1px solid var(--pd-line);
+}
+
+.pd-panel__label {
+  margin: 0;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: var(--pd-muted);
 }
 
-.pd-price__amount strong {
-  display: block;
-  margin-top: 8px;
-  font-size: clamp(30px, 3.6vw, 40px);
+.pd-panel__amount {
+  margin: 4px 0 0;
+  font-size: clamp(27px, 2.6vw, 34px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
   font-weight: 800;
-  letter-spacing: -0.04em;
-  background: linear-gradient(120deg, var(--ps-teal), var(--ps-blue));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--pd-ink);
 }
 
-.pd-price__amount span {
-  display: block;
-  margin-top: 4px;
-  color: var(--ps-muted);
+.pd-panel__note {
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--pd-muted);
+}
+
+.pd-panel__rows {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 0 0;
+  padding: 0;
+}
+
+.pd-panel__rows > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 6px 0;
+}
+
+.pd-panel__rows dt {
   font-size: 13px;
+  color: var(--pd-muted);
 }
 
-.pd-price__rows {
-  margin: 20px 0 0;
-  padding: 18px 0 0;
-  border-top: 1px solid var(--ps-border);
-}
-
-.pd-price__rows > div + div {
-  margin-top: 14px;
-}
-
-.pd-price__rows dt {
-  color: var(--ps-muted);
-  font-size: 12.5px;
+.pd-panel__rows dd {
+  margin: 0;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  color: var(--pd-ink);
+  text-align: right;
 }
 
-.pd-price__rows dd {
-  margin: 5px 0 0;
-  font-size: 15px;
-  font-weight: 650;
+.pd-panel__cta {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.pd-price__cta {
-  width: 100%;
-  margin-top: 22px;
+.pd-panel__cta .pd-btn {
+  min-height: 46px;
+  border-radius: 999px;
+}
+
+.pd-panel-inline {
+  display: none;
+}
+
+/* ---------- Section navigation ---------- */
+
+.program-detail .pd-section-nav {
+  position: sticky;
+  top: var(--navbar-height, 78px);
+  z-index: 30;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--pd-line);
+}
+
+.pd-section-nav__inner {
+  display: flex;
+  gap: 26px;
+  overflow-x: auto;
+  padding-block: 0;
+  scrollbar-width: none;
+}
+
+.pd-section-nav__inner::-webkit-scrollbar {
+  display: none;
+}
+
+.pd-section-nav a {
+  position: relative;
+  flex: 0 0 auto;
+  padding: 15px 2px 13px;
+  border: 0;
+  background: none;
+  color: var(--pd-muted);
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 180ms ease;
+}
+
+.pd-section-nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 2px;
+  background: transparent;
+  transition: background 180ms ease;
+}
+
+.pd-section-nav a:hover {
+  color: var(--pd-ink);
+}
+
+.pd-section-nav a.is-active {
+  color: var(--pd-teal);
+  font-weight: 700;
+}
+
+.pd-section-nav a.is-active::after {
+  background: var(--pd-teal);
+}
+
+.pd-btn {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
+  gap: 9px;
+  min-height: 50px;
+  padding: 0 26px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 200ms ease, box-shadow 220ms ease, background 220ms ease, border-color 220ms ease;
 }
 
-.pd-price__note {
-  margin: 12px 0 0;
-  color: var(--ps-muted);
-  font-size: 12.5px;
-  text-align: center;
+.pd-btn--sm {
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 10px;
+  font-size: 13.5px;
 }
 
-/* ---------- highlights ---------- */
-.pd-highlights {
-  display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+/* ---------- Sections ---------- */
+
+.pd-section {
+  padding: clamp(48px, 5.5vw, 84px) 0;
+  background: var(--pd-canvas);
 }
 
-.pd-highlight {
-  padding: 22px;
-  border: 1px solid var(--ps-border);
-  border-radius: 18px;
-  background: var(--ps-panel);
+.pd-section--alt {
+  background: var(--pd-soft);
 }
 
-.pd-highlight small {
-  display: block;
-  color: var(--ps-muted);
-  font-size: 12.5px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.pd-highlight strong {
-  display: block;
-  margin-top: 8px;
-  font-size: 17px;
-  font-weight: 750;
-  line-height: 1.4;
-}
-
-/* ---------- headings ---------- */
 .pd-heading {
-  max-width: 68ch;
-  margin-bottom: clamp(22px, 3vw, 34px);
+  /* Full column width: the heading, the description and the cards below all
+     share one left edge. A narrow cap here read as a heading that lined up
+     with nothing else on the page. */
+  width: 100%;
 }
 
 .pd-heading h2 {
   margin: 0;
-  font-size: clamp(24px, 3vw, 36px);
-  font-weight: 800;
-  letter-spacing: -0.04em;
+  font-size: clamp(27px, 3.1vw, 40px);
   line-height: 1.12;
+  letter-spacing: -0.03em;
+  font-weight: 800;
+  text-wrap: balance;
 }
 
-.pd-heading p {
-  margin: 14px 0 0;
-  color: var(--ps-muted);
-  font-size: clamp(14.5px, 1.2vw, 16px);
-  line-height: 1.72;
+.pd-heading > p {
+  margin: 16px 0 0;
+  font-size: 15.5px;
+  line-height: 1.7;
+  color: var(--pd-muted);
 }
 
-/* ---------- gains ---------- */
+/* ---------- Overview ---------- */
+
 .pd-gains {
   display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 14px;
+  margin-top: 38px;
 }
 
 .pd-gain {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  padding: 15px 18px;
-  border: 1px solid var(--ps-border);
-  border-radius: 14px;
-  background: var(--ps-panel);
-  font-size: 14.5px;
+  gap: 13px;
+  padding: 18px;
+  border: 1px solid var(--pd-line);
+  border-radius: 15px;
+  background: var(--pd-canvas);
+  font-size: 15px;
+  font-weight: 600;
   line-height: 1.5;
+  color: var(--pd-ink);
 }
 
-.pd-gain span {
-  flex: 0 0 auto;
-  color: var(--ps-teal);
-  font-weight: 800;
+.pd-section--alt .pd-gain {
+  background: var(--pd-canvas);
 }
 
-.pd-skills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 22px;
-}
-
-.pd-skills span {
-  padding: 7px 14px;
-  border: 1px solid var(--ps-border-strong);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--ps-muted);
-  font-size: 13px;
-  font-weight: 650;
-}
-
-/* ---------- curriculum ---------- */
-.pd-module-count {
-  margin: 0 0 18px;
-  color: var(--ps-teal);
-  font-size: 14px;
-  font-weight: 750;
-}
-
-.pd-modules {
-  display: grid;
-  gap: 12px;
-}
-
-.pd-module {
-  border: 1px solid var(--ps-border);
-  border-radius: 16px;
-  background: var(--ps-panel);
-  overflow: hidden;
-}
-
-.pd-module[open] {
-  border-color: var(--ps-border-strong);
-  background: var(--ps-panel-strong, rgba(255, 255, 255, 0.07));
-}
-
-.pd-module summary {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 18px 20px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 700;
-  list-style: none;
-}
-
-.pd-module summary::-webkit-details-marker {
-  display: none;
-}
-
-/* The disclosure caret the list-style reset above removed. */
-.pd-module summary::after {
-  margin-left: auto;
-  color: var(--ps-muted);
-  content: "+";
-  font-size: 20px;
-  font-weight: 700;
-}
-
-.pd-module[open] summary::after {
-  content: "–";
-}
-
-.pd-module summary:focus-visible {
-  outline: 2px solid var(--ps-teal);
-  outline-offset: -2px;
-}
-
-.pd-module__n {
+.pd-gain__check {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
   display: grid;
   place-items: center;
-  flex: 0 0 auto;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, rgba(20, 184, 166, 0.22), rgba(59, 130, 246, 0.22));
-  border: 1px solid var(--ps-border-strong);
-  font-size: 13px;
-  font-weight: 800;
+  border-radius: 50%;
+  font-size: 12px;
+  color: #ffffff;
+  background: var(--pd-grad);
 }
 
-.pd-module ul {
-  margin: 0;
-  padding: 0 22px 20px 70px;
-  list-style: none;
+.pd-overview .pd-tags {
+  margin-top: 30px;
 }
 
-.pd-module li {
-  position: relative;
-  padding-left: 18px;
-  color: var(--ps-muted);
-  font-size: 14.5px;
-  line-height: 1.75;
-}
-
-.pd-module li::before {
-  position: absolute;
-  left: 0;
-  color: var(--ps-teal);
-  content: "•";
-}
-
-.pd-outline {
-  display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-}
-
-.pd-outline ul {
-  margin: 12px 0 0;
-  padding-left: 18px;
-  color: var(--ps-muted);
-  font-size: 14.5px;
-  line-height: 1.7;
-}
-
-/* ---------- internship / soft skills ---------- */
 .pd-tracks {
   display: grid;
-  gap: 16px;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 18px;
+  margin-top: 46px;
 }
 
 .pd-track {
-  padding: clamp(22px, 2.6vw, 30px);
-  border: 1px solid var(--ps-border-strong);
-  border-radius: 24px;
-  background:
-    radial-gradient(420px 280px at 100% 0%, rgba(59, 130, 246, 0.14), transparent 70%),
-    var(--ps-panel);
+  position: relative;
+  padding: 26px;
+  border: 1px solid var(--pd-line);
+  border-radius: 18px;
+  background: var(--pd-soft);
+  overflow: hidden;
 }
 
-.pd-track__icon {
-  display: block;
-  font-size: 26px;
+.pd-track__n {
+  position: absolute;
+  top: 8px;
+  right: 18px;
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: rgba(15, 23, 42, 0.07);
 }
 
 .pd-track h3 {
-  margin: 12px 0 0;
-  font-size: 20px;
-  font-weight: 750;
-  letter-spacing: -0.02em;
+  position: relative;
+  margin: 0 0 14px;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
 }
 
 .pd-track ul {
-  margin: 16px 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .pd-track li {
   position: relative;
-  padding: 9px 0 9px 22px;
-  color: var(--ps-muted);
-  font-size: 14.5px;
+  padding: 6px 0 6px 22px;
+  font-size: 14px;
   line-height: 1.55;
-  border-top: 1px solid var(--ps-border);
-}
-
-.pd-track li:first-child {
-  border-top: 0;
+  color: var(--pd-muted);
 }
 
 .pd-track li::before {
+  content: "";
   position: absolute;
+  left: 4px;
+  top: 13px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--pd-teal);
+}
+
+/* ---------- Curriculum ---------- */
+
+.pd-module-count {
+  margin: 30px 0 16px;
+  font-size: 14px;
+  color: var(--pd-muted);
+}
+
+.pd-modules {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pd-modules summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.pd-modules summary::-webkit-details-marker {
+  display: none;
+}
+
+.pd-module {
+  border: 1px solid var(--pd-line);
+  border-radius: 14px;
+  background: var(--pd-canvas);
+  overflow: hidden;
+}
+
+.pd-module summary {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 64px;
+  padding: 14px 18px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--pd-ink);
+}
+
+.pd-module summary::after {
+  content: "+";
+  margin-left: auto;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--pd-teal);
+  transition: transform 220ms ease;
+}
+
+.pd-module[open] summary::after {
+  transform: rotate(45deg);
+}
+
+.pd-module__n {
+  flex: 0 0 auto;
+  min-width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--pd-teal);
+  background: rgba(37, 99, 235, 0.1);
+}
+
+.pd-module ul {
+  margin: 0;
+  padding: 2px 18px 18px 62px;
+  list-style: none;
+}
+
+.pd-module li {
+  position: relative;
+  padding: 6px 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--pd-muted);
+}
+
+.pd-module li::before {
+  content: "✓";
+  position: absolute;
+  left: -20px;
   top: 9px;
-  left: 0;
-  color: var(--ps-teal);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--pd-teal);
+}
+
+.pd-outline {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 34px;
+}
+
+.pd-outline__card {
+  padding: 24px;
+  border: 1px solid var(--pd-line);
+  border-radius: 16px;
+  background: var(--pd-canvas);
+}
+
+.pd-outline__card h3 {
+  margin: 0 0 14px;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.pd-outline__card ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pd-outline__card li {
+  position: relative;
+  padding: 6px 0 6px 20px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--pd-muted);
+}
+
+.pd-outline__card li::before {
   content: "→";
+  position: absolute;
+  left: 0;
+  color: var(--pd-teal);
 }
 
-/* ── Wide detail-page composition ────────────────────────────────────────── */
-.program-detail .ps-inner {
-  width: min(1440px, calc(100% - 64px));
+/* ---------- Careers ---------- */
+
+.pd-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-top: 38px;
 }
 
-.program-detail .pd-hero__grid {
-  grid-template-columns: minmax(0, 1fr) 400px;
-  column-gap: 48px;
+.pd-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 28px 18px;
+  border: 1px solid var(--pd-line);
+  border-radius: 18px;
+  background: var(--pd-soft);
+  text-align: center;
 }
 
-.program-detail .pd-hero__copy {
+.pd-metric strong {
+  font-size: clamp(32px, 3.4vw, 44px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: transparent;
+  background: var(--pd-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.pd-metric small {
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--pd-muted);
+}
+
+.pd-outcomes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 46px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pd-outcome {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  padding: 22px;
+  border: 1px solid var(--pd-line);
+  border-radius: 16px;
+  background: var(--pd-canvas);
+}
+
+.pd-outcome__n {
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--pd-teal);
+  padding-top: 3px;
+}
+
+.pd-outcome p {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.55;
+  color: var(--pd-ink);
+}
+
+/* ---------- Careers social proof ---------- */
+
+.pd-careers__split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(24px, 4vw, 52px);
+  margin-top: 38px;
+  align-items: stretch;
+}
+
+.pd-careers__split--has-proof {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+}
+
+.pd-metrics--compact {
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  margin-top: 0;
+}
+
+.pd-careers__split--has-proof .pd-metrics--compact {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pd-careers__proof {
+  display: flex;
+  min-width: 0;
+}
+
+.pd-proof {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
   width: 100%;
-  max-width: 860px;
+  margin: 0;
+  padding: clamp(22px, 3vw, 30px);
+  border: 1px solid var(--pd-line);
+  border-radius: 20px;
+  background:
+    radial-gradient(320px 200px at 94% -8%, rgba(37, 99, 235, 0.1), transparent 66%),
+    var(--pd-canvas);
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.07);
 }
 
-.program-detail .pd-lead {
-  max-width: 840px;
+.pd-proof__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
-.program-detail .pd-price {
+.pd-proof__quote {
+  position: relative;
+  margin: 0;
+}
+
+.pd-proof__mark {
+  display: block;
+  height: 42px;
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--pd-teal);
+}
+
+.pd-proof__quote p {
+  margin: 6px 0 0;
+  font-size: 16.5px;
+  font-weight: 500;
+  line-height: 1.66;
+  color: var(--pd-ink);
+  text-wrap: pretty;
+}
+
+.pd-proof__meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pd-proof__avatar {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--pd-line);
+}
+
+.pd-proof__avatar--mono {
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+  background: var(--pd-grad);
+  border-color: transparent;
+}
+
+.pd-proof__name {
+  display: block;
+  font-size: 14.5px;
+  font-weight: 700;
+}
+
+.pd-proof__role {
+  margin-top: 2px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--pd-muted);
+}
+
+.pd-proof__controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 2px;
+}
+
+.pd-carousel-btn {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--pd-line-strong);
+  background: var(--pd-canvas);
+  color: var(--pd-ink);
+  font-size: 19px;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.pd-carousel-btn:hover {
+  border-color: var(--pd-teal);
+  color: var(--pd-teal);
+  transform: translateY(-1px);
+}
+
+.pd-proof__dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-inline: auto;
+}
+
+.pd-dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--pd-line-strong);
+  cursor: pointer;
+  transition: background 180ms ease, transform 180ms ease;
+}
+
+.pd-dot:hover {
+  background: var(--pd-teal);
+}
+
+.pd-dot--active,
+.pd-dot.is-active {
+  background: var(--pd-teal);
+  transform: scale(1.3);
+}
+
+/* ---------- Careers: live roles ---------- */
+
+.pd-jobs {
+  margin-top: 46px;
+}
+
+.pd-jobs__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.pd-jobs__head .pd-eyebrow {
+  margin-bottom: 8px;
+}
+
+.pd-jobs__head h3 {
+  margin: 0;
+  font-size: clamp(20px, 2vw, 24px);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.pd-jobs__list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pd-job {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border: 1px solid var(--pd-line);
+  border-radius: 16px;
+  background: var(--pd-canvas);
+  transition: border-color 200ms ease, transform 200ms ease, box-shadow 220ms ease;
+}
+
+.pd-job:hover {
+  transform: translateY(-3px);
+  border-color: var(--pd-line-strong);
+  box-shadow: 0 16px 38px rgba(15, 23, 42, 0.09);
+}
+
+.pd-job__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.pd-job__company {
+  display: block;
+  margin-top: 3px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--pd-teal);
+}
+
+.pd-job__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--pd-muted);
+}
+
+.pd-job__salary {
+  font-weight: 700;
+  color: var(--pd-ink);
+}
+
+.pd-job__skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pd-job__skills li {
+  padding: 4px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--pd-line);
+  background: var(--pd-soft);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--pd-muted);
+}
+
+.pd-job .pd-btn {
+  margin-top: auto;
+}
+
+/* ---------- Mentors ---------- */
+
+.pd-mentors {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.pd-mentor {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--pd-line);
+  border-radius: 16px;
+  background: var(--pd-canvas);
+  padding: 0 0 18px;
+}
+
+.pd-mentor__photo {
   width: 100%;
-  max-width: 410px;
-  justify-self: end;
-  margin-top: 8px;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+  border-bottom: 1px solid var(--pd-line);
 }
 
-.program-detail .pd-heading {
-  max-width: 850px;
+.pd-mentor__photo--initials {
+  display: grid;
+  place-items: center;
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--pd-teal);
+  background:
+    radial-gradient(260px 180px at 80% 10%, rgba(37, 99, 235, 0.14), transparent 68%),
+    var(--pd-soft);
 }
 
-.program-detail .pd-gains {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+.pd-mentor h3 {
+  margin: 16px 18px 3px;
+  font-size: 16.5px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.pd-mentor__role {
+  margin: 0 18px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--pd-teal);
+}
+
+.pd-mentor__discipline,
+.pd-mentor__experience {
+  margin: 5px 18px 0;
+  font-size: 12.5px;
+  color: var(--pd-muted);
+}
+
+/* Details column flexes so the facts rail pins to the bottom line, keeping
+   every card's face aligned on one row regardless of name/wrap height. */
+.pd-mentor__facts {
+  margin: 12px 18px 0;
+  margin-top: auto;
+  padding: 12px 0 0;
+  border-top: 1px dashed var(--pd-line-strong);
+  list-style: none;
+}
+
+.pd-mentor__facts li {
+  position: relative;
+  padding: 3px 0 3px 18px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--pd-muted);
+}
+
+.pd-mentor__facts li::before {
+  content: "•";
+  position: absolute;
+  left: 3px;
+  color: var(--pd-teal);
+  font-weight: 700;
+}
+
+.pd-mentor + .pd-btn,
+.pd-mentors__more {
+  margin-top: 30px;
+  justify-self: center;
+}
+
+.pd-heading ~ .pd-mentors__more {
+  display: inline-flex;
+}
+
+/* ---------- Fees ---------- */
+
+.pd-fee-total {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  margin-top: 40px;
+  padding: clamp(30px, 4vw, 44px);
+  border: 1px solid var(--pd-line);
+  border-radius: 24px;
+  background: var(--pd-soft);
+  text-align: center;
+}
+
+.pd-fee-total__amount {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pd-fee-total__amount small {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pd-muted);
+}
+
+.pd-fee-total__amount strong {
+  font-size: clamp(40px, 5vw, 58px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  color: transparent;
+  background: var(--pd-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.pd-fee-total__amount span {
+  font-size: 14px;
+  color: var(--pd-muted);
+}
+
+.pd-fee-total__rows {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+}
+
+.pd-fee-total__rows > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 160px;
+  padding: 14px 20px;
+  border: 1px solid var(--pd-line);
+  border-radius: 14px;
+  background: var(--pd-canvas);
+}
+
+.pd-fee-total__rows dt {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--pd-muted);
+}
+
+.pd-fee-total__rows dd {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--pd-ink);
+}
+
+.pd-fees__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 14px;
 }
 
-.program-detail .pd-gain {
+.pd-fee-trust {
+  margin: 0;
+  font-size: 13px;
+  color: var(--pd-muted);
+}
+
+/* ---------- FAQ ---------- */
+
+.pd-faq {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 36px;
+  max-width: none;
+}
+
+.pd-faq__item {
+  border: 1px solid var(--pd-line);
+  border-radius: 15px;
+  background: var(--pd-canvas);
+  overflow: hidden;
+}
+
+.pd-faq__item summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 14px;
   padding: 18px 20px;
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--pd-ink);
 }
 
-.program-detail .pd-modules,
-.program-detail .pd-outline,
-.program-detail .pd-tracks {
-  max-width: 1380px;
+.pd-faq__item summary::-webkit-details-marker {
+  display: none;
 }
 
-@media (min-width: 901px) and (max-width: 1279px) {
-  .program-detail .ps-inner {
-    width: min(100% - 48px, 1320px);
+.pd-faq__item summary::after {
+  content: "+";
+  margin-left: auto;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--pd-teal);
+  transition: transform 220ms ease;
+}
+
+.pd-faq__item[open] summary::after {
+  transform: rotate(45deg);
+}
+
+.pd-faq__item p {
+  margin: 0;
+  padding: 0 20px 20px 34px;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--pd-muted);
+}
+
+/* ---------- Closing CTA ---------- */
+
+.pd-cta {
+  padding: clamp(56px, 7vw, 96px) 0 clamp(72px, 9vw, 120px);
+}
+
+.pd-cta__panel {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: clamp(44px, 6vw, 72px);
+  border: 1px solid var(--pd-line);
+  border-radius: 28px;
+  text-align: center;
+  color: var(--pd-ink);
+  background:
+    radial-gradient(620px 320px at 18% 0%, rgba(37, 99, 235, 0.08), transparent 62%),
+    radial-gradient(560px 300px at 92% 100%, rgba(79, 70, 229, 0.09), transparent 62%),
+    var(--pd-canvas);
+  box-shadow: 0 40px 90px rgba(15, 23, 42, 0.12);
+}
+
+.pd-cta__panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(1px 1px at 25% 20%, rgba(15, 23, 42, 0.08) 25%, transparent 26%);
+  background-size: 26px 26px;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.pd-cta__panel h2,
+.pd-cta__panel p,
+.pd-cta__actions {
+  position: relative;
+}
+
+.pd-cta__panel h2 {
+  margin: 0;
+  font-size: clamp(26px, 3.4vw, 42px);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-weight: 800;
+  text-wrap: balance;
+}
+
+.pd-cta__panel p {
+  max-width: 52ch;
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 1.7;
+  color: var(--pd-muted);
+}
+
+.pd-cta__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.pd-cta .pd-btn--primary {
+  color: #ffffff;
+  background: linear-gradient(120deg, #3b82f6, #1d4ed8);
+  box-shadow: 0 18px 44px rgba(37, 99, 235, 0.35);
+}
+
+.pd-cta .pd-btn--ghost {
+  color: var(--pd-ink);
+  border-color: var(--pd-line-strong);
+  background: var(--pd-canvas);
+}
+
+.pd-cta .pd-btn--ghost:hover {
+  border-color: var(--pd-blue);
+  background: var(--pd-soft);
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1199px) {
+  /* Tablet and phone share one column: the horizontal program strip leads,
+     the content follows, and the highlights/fee panel lands after the
+     overview as an inline block. No squeezing three desktop columns here. */
+  .pd-layout {
+    display: block;
   }
 
-  .program-detail .pd-hero__copy {
-    opacity: 1;
-    transform: none;
+  .pd-layout__rail {
+    display: none;
   }
 
-  .program-detail .pd-hero__grid {
-    grid-template-columns: minmax(0, 1fr) 360px;
-    column-gap: 32px;
+  .pd-layout__aside {
+    display: none;
+  }
+
+  .pd-panel-inline {
+    display: block;
+  }
+
+  .pd-strip {
+    display: block;
+    margin-bottom: 18px;
+  }
+
+  .pd-careers__split--has-proof {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-careers__split--has-proof .pd-metrics--compact {
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  }
+
+  .pd-jobs__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 900px) {
-  .program-detail .ps-inner {
-    width: calc(100% - 40px);
+  .pd-hero {
+    padding-top: clamp(24px, 4vw, 40px);
   }
 
-  .program-detail .pd-hero__copy {
-    opacity: 1;
-    transform: none;
+  .pd-hero__grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "visual"
+      "copy";
+    gap: clamp(24px, 4vw, 36px) 0;
   }
 
-  .program-detail .pd-hero__grid {
-    grid-template-columns: minmax(0, 1fr);
-    column-gap: 0;
+  .pd-visual-frame {
+    max-width: 560px;
   }
 
-  .program-detail .pd-price {
-    max-width: none;
-    margin-top: 24px;
+  .pd-crumbs__back {
+    margin-left: 0;
   }
 
-  .program-detail .pd-gains {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .pd-outcomes {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767px) {
+  /* Single column: the inline highlights/fee panel from inside the main
+     content replaces the right-hand sticky aside, which hides here. */
+  .pd-layout {
+    display: block;
+    padding-inline: 16px;
+  }
+
+  .pd-layout__aside {
+    display: none;
+  }
+
+  .pd-panel-inline {
+    display: block;
+  }
+
+  .pd-panel {
+    position: static;
+  }
+
+  .pd-meta {
+    flex-direction: column;
+    gap: 14px;
+    border-bottom: 0;
+    padding: 18px 0 0;
+  }
+
+  .pd-meta__item {
+    padding: 0;
+    border-left: 0;
   }
 }
 
 @media (max-width: 640px) {
-  .program-detail .ps-inner {
-    width: calc(100% - 32px);
-  }
-
-  .program-detail .pd-gains {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ── Laptop (1024px - 1280px): tighter hero grid, scaled type ─────────────── */
-@media (min-width: 1025px) and (max-width: 1280px) {
-  .pd-hero {
-    padding: clamp(20px, 3vw, 36px) 0 clamp(28px, 4vw, 44px);
-  }
-
-  .pd-hero__grid {
-    grid-template-columns: minmax(0, 1.4fr) minmax(300px, 0.7fr);
-    gap: clamp(24px, 3vw, 40px);
-  }
-
-  .program-detail h1 {
-    font-size: clamp(32px, 4vw, 46px);
-  }
-
-  .pd-lead {
-    font-size: clamp(15px, 1.3vw, 17px);
-  }
-
-  .pd-meta {
-    gap: clamp(16px, 2.5vw, 36px);
-  }
-
-  .pd-meta strong {
-    font-size: 17px;
+  .pd-crumbs__back {
+    display: none;
   }
 
   .pd-hero__actions {
-    gap: 10px;
+    flex-direction: column;
   }
 
-  .pd-price {
-    top: 88px;
-    padding: 24px;
-  }
-
-  .pd-price__amount strong {
-    font-size: clamp(28px, 3.2vw, 36px);
-  }
-
-  .pd-highlights {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
-  }
-
-  .pd-highlight {
-    padding: 20px;
-  }
-
-  .pd-highlight strong {
-    font-size: 16px;
-  }
-
-  .pd-gains {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-  }
-
-  .pd-gain {
-    padding: 14px 16px;
-    font-size: 14px;
-  }
-
-  .pd-modules {
-    gap: 10px;
-  }
-
-  .pd-module summary {
-    padding: 16px 18px;
-    font-size: 15px;
-  }
-
-  .pd-module__n {
-    width: 32px;
-    height: 32px;
-    font-size: 12px;
-  }
-
-  .pd-module ul {
-    padding: 0 20px 18px 66px;
-  }
-
-  .pd-module li {
-    font-size: 14px;
-  }
-
-  .pd-track {
-    padding: 24px;
-  }
-
-  .pd-track h3 {
-    font-size: 19px;
-  }
-
-  .pd-track li {
-    font-size: 14px;
-    padding: 8px 0 8px 20px;
-  }
-}
-
-/* ── Tablet (901px - 1024px): keeps two columns but scales everything down so
-     the card never crowds the copy and the heading never blows the column. ── */
-@media (min-width: 901px) and (max-width: 1024px) {
-  .pd-hero {
-    padding: clamp(20px, 3vw, 32px) 0 clamp(28px, 4vw, 40px);
-  }
-
-  .pd-hero__grid {
-    grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
-    gap: 24px;
-  }
-
-  .program-detail h1 {
-    font-size: clamp(30px, 3.6vw, 40px);
-  }
-
-  .pd-price {
-    top: 80px;
-    padding: 22px;
-  }
-}
-
-@media (max-width: 900px) {
-  .pd-hero__grid {
-    grid-template-columns: 1fr;
-  }
-
-  .pd-price {
-    position: static;
-    margin-top: 24px;
-  }
-
-  /* Once the hero stacks to one column the copy runs the full width, straight
-     across the masked band where the beam lives — so here, and only here, a veil
-     goes between the two. It must be a SIBLING of the canvas, never a child:
-     anything inside a `screen` layer is screened too, and screening a dark
-     gradient does nothing at all.
-     It sits between the canvas (z-index 0) and the copy (z-index 2), so the beam
-     still shows through it — dimmed, which is the point. Applies to phones and
-     tablets alike: both stack. */
-  .program-detail .pd-hero::after {
-    content: "";
-    position: absolute;
-    z-index: 1;
-    inset: 0;
-    background: rgba(7, 11, 24, 0.62);
-    pointer-events: none;
-  }
-}
-
-@media (max-width: 560px) {
-  .pd-hero {
-    padding: 14px 0 clamp(20px, 5vw, 28px);
-  }
-
-  .pd-hero__grid {
-    gap: 24px;
-  }
-
-  .program-detail h1 {
-    font-size: clamp(36px, 10vw, 46px);
-  }
-
-  .pd-back {
-    margin-bottom: 14px;
-  }
-
-  .pd-badges {
-    gap: 8px;
-  }
-
-  .pd-hero__actions .page-btn,
-  .pd-module ul {
+  .pd-hero__actions .pd-btn,
+  .pd-fees__actions .pd-btn,
+  .pd-jobs__head .pd-btn {
     width: 100%;
   }
 
-  .pd-hero__actions .page-btn {
-    justify-content: center;
+  .pd-fee-total {
+    padding: 26px 18px;
   }
 
-  .pd-module ul {
-    padding-left: 26px;
+  .pd-fee-total__rows {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .pd-fee-total__rows > div {
+    min-width: 0;
   }
 
   .pd-module summary {
-    font-size: 15px;
+    padding: 16px;
+  }
+
+  .pd-module ul {
+    padding: 2px 16px 18px 62px;
+  }
+
+  .pd-gains {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-careers__split {
+    margin-top: 30px;
+  }
+
+  .pd-jobs__list {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-jobs__head {
+    align-items: flex-start;
   }
 }
 
-/* Final detail-page width contract: keep legacy breakpoint rules from
-   re-expanding the hero gap after the shared wide composition is applied. */
-@media (min-width: 1280px) {
-  .program-detail .pd-hero__grid {
-    grid-template-columns: minmax(0, 1fr) 400px;
-    column-gap: 48px;
+@media (max-width: 480px) {
+  .pd-metrics--compact {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .pd-section-nav__inner {
+    gap: 20px;
   }
 }
 
-@media (min-width: 901px) and (max-width: 1279px) {
-  .program-detail .pd-hero__grid {
-    grid-template-columns: minmax(0, 1fr) 360px;
-    column-gap: 32px;
+@media (prefers-reduced-motion: reduce) {
+  .pd-visual-chip {
+    animation: none;
   }
+
+  .pd-proof__quote p,
+  .pd-job {
+    transition: none;
+  }
+}
+
+/* ---------- Accessibility ---------- */
+
+.pd-btn:focus-visible,
+.pd-section-nav a:focus-visible,
+.pd-carousel-btn:focus-visible,
+.pd-dot:focus-visible,
+.pd-module summary:focus-visible,
+.pd-faq__item summary:focus-visible {
+  outline: 2px solid var(--pd-blue);
+  outline-offset: 2px;
 }
