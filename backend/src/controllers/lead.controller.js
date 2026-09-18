@@ -1,6 +1,6 @@
 import {createHmac} from "node:crypto";
 
-import {Lead, LEAD_TYPES, LEAD_STATUSES, MAX_ENROLLMENTS_PER_USER} from "../models/Lead.js";
+import {Lead, LEAD_TYPES, LEAD_STATUSES} from "../models/Lead.js";
 import {Program} from "../models/Program.js";
 import {publishedFilter} from "../models/plugins/contentPlugin.js";
 import {AUDIT_ACTIONS} from "../models/AuditLog.js";
@@ -72,6 +72,22 @@ export const submit = async (request, response, next) => {
       if (existing) return created(response, {ok: true, id: existing._id, deduplicated: true});
     }
 
+    // The phone number is the primary key: one submission per phone, ever. Any
+    // second attempt — the same form again, a different form, even an attempted
+    // correction — is refused as this same person. The unique index on mobileKey
+    // is what actually carries this guarantee; the check here just answers fast
+    // with a human message instead of a database error.
+    const existingByPhone = await Lead.findOne({mobileKey}).select("_id");
+    if (existingByPhone) {
+      return next(
+        new ApiError(
+          409,
+          "ALREADY_SUBMITTED",
+          "You've already shared your details with us. Our team has them and will reach out — no need to submit again.",
+        ),
+      );
+    }
+
     // The program must be one that actually exists and is published. Reading
     // from the database rather than a second hard-coded list means a program
     // cannot be valid on the form and rejected by the API.
@@ -93,35 +109,6 @@ export const submit = async (request, response, next) => {
       }
     }
 
-    // The two-submission cap, preserved from api/enroll.js. Counts matches on
-    // either key, so a different email with the same phone still counts as the
-    // same person. Enrollments only — a consultation is not an application.
-    if (type === "enrollment") {
-      const priorCount = await Lead.countDocuments({
-        type: "enrollment",
-        $or: [{emailKey}, {mobileKey}],
-      });
-
-      if (priorCount >= MAX_ENROLLMENTS_PER_USER) {
-        return next(
-          new ApiError(
-            429,
-            "ALREADY_APPLIED",
-            "You've already applied. Our team has your details and will reach out — no need to submit again.",
-          ),
-        );
-      }
-    }
-
-    // A repeat of the identical form within a few minutes is a double-click or
-    // an impatient retry, not a second enquiry. Flagged rather than refused,
-    // because refusing a genuine correction is worse than one duplicate row.
-    const recentDuplicate = await Lead.findOne({
-      type: {$eq: type},
-      emailKey: {$eq: emailKey},
-      createdAt: {$gt: new Date(Date.now() - 5 * 60 * 1000)},
-    }).select("_id");
-
     const lead = await Lead.create({
       type,
       name: body.name,
@@ -136,7 +123,6 @@ export const submit = async (request, response, next) => {
       sourcePage: body.sourcePage || "",
       utm: body.utm || {},
       consent: Boolean(body.consent),
-      spamScore: recentDuplicate ? 30 : 0,
       ipHash: hashIp(request.ip),
       userAgent: String(request.get("user-agent") || "").slice(0, 400),
       idempotencyKey,
@@ -151,6 +137,19 @@ export const submit = async (request, response, next) => {
     // is a success from the caller's point of view, not an error.
     if (error && error.code === 11000 && error.keyPattern && error.keyPattern.idempotencyKey) {
       return created(response, {ok: true, deduplicated: true});
+    }
+    // A duplicate mobileKey is the same person racing themselves: two retries
+    // of the same phone arrived simultaneously and both passed the check above.
+    // The first won the write; the second gets the same refusal the sequential
+    // path gave, not a database error.
+    if (error && error.code === 11000 && error.keyPattern && error.keyPattern.mobileKey) {
+      return next(
+        new ApiError(
+          409,
+          "ALREADY_SUBMITTED",
+          "You've already shared your details with us. Our team has them and will reach out — no need to submit again.",
+        ),
+      );
     }
     return next(error);
   }
