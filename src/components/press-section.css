@@ -1,50 +1,66 @@
-/* "CareerVeda in the News" — a section-contained sticky-card deck.
+/* "CareerVeda in the News" — a scroll-driven editorial storytelling section.
  *
- * The deck model, in one sentence: every card is `position: sticky` against ONE
- * shared containing block (`.press-stack-inner`), so once a card parks on its
- * pin line it STAYS while later cards rise over it from below — a genuine,
- * persistent pile that layers card over card and releases as a cascade back
- * into normal flow at the container's end. The window is the only scroll
- * container; there is no nested scroller, no fixed positioning, and no
- * overflow-based containment — containment is structural. A sticky card can
- * never paint past the bottom of its containing block, that block sits ~96px
- * inside the section (its padding), and the Consultation section follows the
- * section, so no card can reach it regardless of scroll speed or direction.
+ * The section pin: a tall wrapper (`.press-scroll`) holds a `position: sticky`
+ * stage that parks at the top of the viewport while the wrapper scrolls past —
+ * the classic pinned-stage pattern. The stage owns ~430–480vh of scroll
+ * distance during which framer-motion scrubs one translateX over a horizontal
+ * lane of three story cards (PressSection.jsx). Each card is a pre-computed
+ * stop on that lane: card 1 at rest, card 2 after the first step, card 3 after
+ * the second. The grid lines behind the cards are fixed coordinates; the cards
+ * and their glow travel across the grid, so the grid reads as the media
+ * timeline's underlying structure.
  *
- * Cards overlap at rest by `--stack-peek` (the visible strip of the card
- * beneath), each next card pins a little LOWER (`--stack-cascade`) so earlier
- * cards peek above the newcomer — the classic deck silhouette. The only
- * scroll-driven work is `PressStackTweaks` (PressSection.jsx), which nudges
- * `--stack-scale` / `--stack-y` on a card as the next card rises over it. It
- * never positions anything, and never moves a card toward the viewport. */
+ * The lane is the storytelling on EVERY screen — mobile, tablet and desktop all
+ * ride the same pinned stage scrubbed by ordinary vertical scroll; nothing ever
+ * switches to a vertical stack. Only geometry and type adapt below: the card
+ * width (`.press-track`'s `--card-w`), the rail placement, interior columns and
+ * the statistics/media grid. The base rules are mobile-first, and the
+ * breakpoint blocks retune them:
+ *   >= 1200px   desktop: wide 72vw two-column cards (max 1200px), oversized
+ *               editorial type, right-edge progress rail
+ *   768–1199px  tablet: 86vw lane (max ~1050px), right-edge rail, 2–3 column
+ *               statistics / media grids, single- or two-column interiors
+ *   <= 767px    phones: `100vw - 32px` card with 16px side margins, single
+ *               column reading order, 2-column statistics + media grid,
+ *               top-right rail clear of the notch and safe areas
+ *
+ * Safe-by-default base styles: `.press-scroll` / `.press-stage` / `.press-track`
+ * start out as plain flow — the vertical narrative used for reduced-motion
+ * visitors. Only the `.press-storytelling--lane` class — applied only when the
+ * pinned lane is actually running — promotes them to the pinned horizontal
+ * stage, so no mode can ever trap a visitor in a broken layout.
+ */
 
 :root {
   --navbar-height: 76px;
-  --stack-top: 108px;
+  --press-ink: #102a5c;
+  --press-ink-soft: rgba(16, 42, 92, 0.64);
+  --press-line: rgba(16, 42, 92, 0.06);
+  /* Structural grid visibility by tier: very subtle on phones, stronger as the
+     viewport widens. Overridden inside the lane's breakpoint blocks, which set
+     the same token on `.press-grid`. */
+  --press-grid-alpha: 0.028;
 }
 
-/* This is the first section on the blog route — an empty, fully commented-out
-   review block used to sit above it and incidentally provided the clearance.
-   With that gone, the top padding has to clear the 76px navbar itself, or the
-   "Media Coverage" label starts underneath it. */
 .press-section {
   position: relative;
   /* Stays below the consultation section that follows it (which forms its own
      stacking context at z-index 5). Explicit and documented on purpose. */
   z-index: 0;
-  /* Only horizontal clipping: a card is width-capped and never translates
-     sideways, but stray wide children (logos, overflow) are trimmed without
-     creating a scroll container. Vertical containment is structural — sticky
-     cards live inside their slots, which live inside the section. */
+  /* Only horizontal clipping: mode-sensitive handles can carry a card beyond
+     the section box in the lane, and stray wide children are trimmed without
+     creating a scroll container. Vertical containment is structural — the
+     stage is sticky inside its wrapper, never fixed. */
   overflow-x: clip;
   overflow-y: visible;
-  padding: clamp(116px, 13vw, 168px) max(24px, calc((100% - var(--site-measure)) / 2)) clamp(40px, 6vw, 80px);
-  color: #f1f5f9;
+  padding: clamp(104px, 12vw, 168px) max(24px, calc((100% - var(--site-measure)) / 2)) clamp(72px, 9vw, 128px);
+  color: var(--press-ink);
 }
 
+/* ---- heading ---- */
 .press-section-heading {
   max-width: 60ch;
-  margin: 0 auto clamp(8px, 2vw, 20px);
+  margin: 0 auto clamp(10px, 2vw, 24px);
   text-align: center;
 }
 
@@ -53,298 +69,276 @@
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #2dd4bf;
+  color: #2563eb;
 }
 
 .press-section-heading h2 {
   margin-top: 12px;
-  font-size: clamp(26px, 3.4vw, 40px);
-  line-height: 1.14;
+  font-size: clamp(28px, 3.4vw, 44px);
+  line-height: 1.12;
   letter-spacing: -0.03em;
-  font-weight: 700;
+  font-weight: 800;
+  color: var(--press-ink);
 }
 
 .press-section-heading p {
-  margin-top: 12px;
+  margin-top: 14px;
   font-size: clamp(15px, 1.2vw, 17px);
   line-height: 1.65;
-  color: rgba(226, 232, 240, 0.68);
+  color: rgba(16, 42, 92, 0.62);
 }
 
-/* ---- stack shell ----
-   `.press-stack` is plain document flow; the page owns scrolling. Width is
-   centred on `.press-stack-inner`, not the stack, so the stack can be a plain
-   block alongside the section padding. */
-.press-stack {
+/* ---- scroll wrapper + pinned stage ---- */
+.press-scroll {
   position: relative;
   width: 100%;
-  margin-top: clamp(20px, 3vw, 36px);
+  margin-top: clamp(16px, 3vw, 36px);
 }
 
-.press-stack-inner {
+.press-stage {
+  position: static;
+  display: flex;
+  align-items: center;
+  overflow: visible;
+  isolation: isolate;
+}
+
+/* ---- lane / track: BASE = vertical narrative ---- */
+.press-track {
   position: relative;
-  width: min(900px, calc(100% - 40px));
+  width: min(980px, 100%);
   margin-inline: auto;
-  padding: 8px 0 96px;
 }
 
-/* ---- card slot ----
-   `display: contents`: the slot contributes NO layout box, just markup + the
-   measured `--card-h` (so it still inherits custom properties down to the
-   card). This is load-bearing: a real box here would become each card's
-   sticky *containing block*, bounding every card to its own pocket and
-   making a layered pile structurally impossible. With the boxes removed, every
-   card's sticky containing block is the shared `.press-stack-inner`, so cards
-   pile on top of each other while they are pinned and release together at the
-   container's end. Cards keep their natural, fully-readable position in flow
-   when not pinned — the pile only exists while they are parked. */
-.press-card-slot {
-  display: contents;
+.press-track .press-story-slot {
+  margin: 0 0 clamp(20px, 3vw, 34px);
 }
 
-/* Each successor card steps down a hair from the previous one's bottom, so in
-   plain flow every card is fully readable and the pile keeps a clean slit
-   between edges while pinned. */
-.press-card-slot + .press-card-slot .press-card {
-  margin-top: clamp(8px, 1vw, 18px);
+.press-track .press-story-slot:last-child {
+  margin-bottom: 0;
 }
 
-/* ---- press card ----
-   The card pins against the shared `.press-stack-inner` containing block, so a
-   parked card stays parked while the cards below it rise over it — this is what
-   makes a pile instead of a one-at-a-time parade. Each card parks a little lower
-   than the last (`--stack-cascade`), letting the previous card's top strip peek
-   above it. The pile releases as a cascade back into flow when the container's
-   bottom passes — no jump, and never past the container, so never below the
-   section. */
-.press-card-slot .press-card {
-  position: sticky;
-  top: calc(var(--stack-top) + var(--stack-cascade, 0px));
-  display: block;
-  height: auto;
-  min-height: 14rem;
+/* ---- story card surface ---- */
+.press-story {
+  position: relative;
   width: 100%;
-  margin: 0;
-  padding: clamp(26px, 4vw, 46px);
   border-radius: 28px;
-  border: 1px solid rgba(148, 163, 184, 0.18);
+  border: 1px solid rgba(16, 42, 92, 0.09);
   background:
-    radial-gradient(640px 260px at 10% -20%, rgba(20, 184, 166, 0.16), transparent 62%),
-    radial-gradient(640px 260px at 100% 120%, rgba(59, 130, 246, 0.2), transparent 60%),
-    rgba(11, 18, 33, 0.94);
-  box-shadow: 0 34px 100px rgba(2, 6, 23, 0.6);
-  color: #f1f5f9;
-
-  /* Depth cue, driven entirely through CSS variables by PressStackTweaks. */
-  --stack-cascade: 0px;
-  --stack-scale: 1;
-  --stack-y: 0px;
-  transform: translate3d(0, var(--stack-y), 0) scale(var(--stack-scale));
-  transform-origin: center top;
+    radial-gradient(640px 300px at 10% -14%, var(--accent-soft, rgba(37, 99, 235, 0.07)), transparent 60%),
+    radial-gradient(560px 280px at 108% 120%, var(--accent-soft, rgba(37, 99, 235, 0.07)), transparent 58%),
+    #ffffff;
+  box-shadow: 0 34px 90px rgba(30, 64, 175, 0.09), 0 2px 10px rgba(30, 64, 175, 0.04);
+  overflow: hidden;
+  color: var(--press-ink);
+  /* The card is its own flex column so a constrained stage height (mode
+     `max-height`) can hand the inner content an emergency scroll rather than
+     ever clipping a line of copy on short viewports. */
+  display: flex;
+  flex-direction: column;
 }
 
-/* Later cards sit above earlier ones whenever their edges cross — the deck's
-   z-order — and park progressively lower by the cascade. */
-.press-card-slot .press-card { z-index: 1; }
-.press-card-slot:nth-child(2) .press-card { z-index: 2; --stack-cascade: 36px; }
-.press-card-slot:nth-child(3) .press-card { z-index: 3; --stack-cascade: 72px; }
-.press-card-slot:nth-child(4) .press-card { z-index: 4; --stack-cascade: 108px; }
-.press-card-slot:nth-child(5) .press-card { z-index: 5; --stack-cascade: 144px; }
-.press-card-slot:nth-child(6) .press-card { z-index: 6; --stack-cascade: 180px; }
-
-/* Story on the left, artwork in the top-right. Only cards that carry an `image`
-   become two columns — `.has-media` — so a story without one keeps the full width
-   rather than leaving a gap where a picture would have been. */
-.press-card-head.has-media {
+.press-story__inner {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+  padding: clamp(26px, 3.2vw, 48px);
+  border-radius: inherit;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(160px, 26%, 300px);
-  gap: clamp(18px, 2.5vw, 32px);
-  align-items: start;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  grid-template-areas:
+    "copy visual"
+    "sources sources";
+  column-gap: clamp(24px, 3vw, 46px);
+  row-gap: clamp(18px, 2.2vw, 30px);
 }
 
-.press-card-media img {
-  display: block;
-  width: 100%;
-  /* A fixed frame, not the picture's own proportions: press art arrives at every
-     shape, and letting each set its own height would make the cards ragged. */
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  object-position: center;
-  border-radius: 16px;
-  border: 1px solid rgba(148, 163, 184, 0.22);
-}
-
-/* Below ~720px there is no room for a side-by-side; the picture drops under the
-   story rather than squeezing the headline into a column two words wide. */
-@media (max-width: 720px) {
-  .press-card-head.has-media {
-    grid-template-columns: 1fr;
-  }
-
-  .press-card-media img {
-    aspect-ratio: 16 / 9;
-  }
-}
-
-.press-eyebrow {
+/* ---- editorial copy (left column) ---- */
+.press-story__eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   font-size: 13px;
   font-weight: 600;
-  color: rgba(226, 232, 240, 0.72);
+  letter-spacing: 0.04em;
+  color: rgba(16, 42, 92, 0.72);
 }
 
-.press-eyebrow .press-tag {
-  padding: 5px 12px;
+.press-story__tag {
+  padding: 5px 13px;
   border-radius: 999px;
-  border: 1px solid rgba(45, 212, 191, 0.4);
-  background: rgba(20, 184, 166, 0.12);
-  color: #5eead4;
-  letter-spacing: 0.02em;
-}
-
-.press-card h3 {
-  margin-top: 16px;
-  font-size: clamp(20px, 2.4vw, 28px);
-  line-height: 1.24;
-  letter-spacing: -0.025em;
+  border: 1px solid color-mix(in srgb, var(--accent, #2563eb) 30%, transparent);
+  background: color-mix(in srgb, var(--accent, #2563eb) 8%, transparent);
+  color: var(--accent, #2563eb);
   font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
-.press-excerpt {
-  margin-top: 12px;
-  font-size: clamp(14.5px, 1.2vw, 16px);
-  line-height: 1.7;
-  color: rgba(226, 232, 240, 0.78);
-}
-
-.press-stat-row {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  margin-top: 22px;
-}
-
-.press-stat {
-  padding: 14px 16px;
-  border: 1px solid rgba(148, 163, 184, 0.16);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.press-stat strong {
-  display: block;
-  font-size: clamp(20px, 2.2vw, 26px);
+.press-story__title {
+  margin-top: 16px;
+  font-size: clamp(21px, 2.2vw, 32px);
+  line-height: 1.22;
+  letter-spacing: -0.025em;
   font-weight: 800;
-  letter-spacing: -0.03em;
-  background: linear-gradient(120deg, #2dd4bf, #3b82f6);
+  color: var(--press-ink);
+  text-wrap: balance;
+}
+
+.press-story__excerpt {
+  margin-top: 14px;
+  font-size: clamp(14.5px, 1.15vw, 16.5px);
+  line-height: 1.72;
+  color: rgba(16, 42, 92, 0.64);
+}
+
+/* ---- statistics + highlights (right column) ---- */
+.press-story__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.press-story__stat {
+  padding: clamp(12px, 1.4vw, 18px) clamp(12px, 1.4vw, 18px);
+  border: 1px solid rgba(16, 42, 92, 0.08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.press-story__stat strong {
+  display: block;
+  font-size: clamp(24px, 2.7vw, 36px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  background: linear-gradient(110deg, var(--accent, #2563eb), var(--accent-deep, #1d4ed8));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-.press-stat span {
+.press-story__stat span {
   display: block;
-  margin-top: 4px;
-  font-size: 12.5px;
-  color: rgba(226, 232, 240, 0.66);
+  margin-top: 6px;
+  font-size: clamp(12px, 1vw, 13.5px);
+  line-height: 1.4;
+  color: rgba(16, 42, 92, 0.58);
 }
 
-.press-highlights {
+.press-story__highlights {
+  list-style: none;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 22px;
+  margin-top: 16px;
 }
 
-.press-highlights span {
-  padding: 8px 14px;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.04);
+.press-story__highlights li {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(16, 42, 92, 0.09);
+  background: rgba(255, 255, 255, 0.8);
   font-size: 13px;
-  color: rgba(226, 232, 240, 0.82);
+  font-weight: 500;
+  color: rgba(16, 42, 92, 0.82);
 }
 
-.press-sources {
+.press-story__check {
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent, #2563eb);
+  color: #ffffff;
+}
+
+.press-story__check svg {
+  width: 10px;
+  height: 10px;
+  fill: currentColor;
+  display: block;
+}
+
+/* ---- sources bar (bottom, full width) ---- */
+.press-story__sources {
+  grid-area: sources;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid rgba(148, 163, 184, 0.14);
+  padding-top: clamp(16px, 1.8vw, 22px);
+  border-top: 1px solid rgba(16, 42, 92, 0.09);
 }
 
-.press-sources > small {
+.press-story__sources > small {
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgba(226, 232, 240, 0.5);
+  color: rgba(16, 42, 92, 0.46);
 }
 
-.press-sources a,
-.press-wall-grid a {
+.press-story__sources a,
+.press-story--coverage .press-wall-grid a {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 6px 13px;
   border-radius: 10px;
-  border: 1px solid rgba(148, 163, 184, 0.22);
-  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(16, 42, 92, 0.12);
+  background: rgba(16, 42, 92, 0.03);
   font-size: 13px;
   font-weight: 500;
-  color: #e2e8f0;
+  color: var(--press-ink);
   text-decoration: none;
-  transition: border-color 200ms ease, background 200ms ease, transform 200ms ease;
+  transition: border-color 200ms ease, background 200ms ease, transform 200ms ease, box-shadow 200ms ease;
 }
 
-.press-sources a:hover,
-.press-wall-grid a:hover {
-  border-color: rgba(45, 212, 191, 0.5);
-  background: rgba(20, 184, 166, 0.12);
+.press-story__sources a:hover,
+.press-story--coverage .press-wall-grid a:hover {
+  border-color: color-mix(in srgb, var(--accent, #2563eb) 42%, rgba(16, 42, 92, 0.12));
+  background: color-mix(in srgb, var(--accent, #2563eb) 7%, #ffffff);
   transform: translateY(-2px);
 }
 
-.press-sources a::after,
-.press-wall-grid a::after {
+.press-story__sources a::after,
+.press-story--coverage .press-wall-grid a::after {
   content: "↗";
   font-size: 12px;
-  opacity: 0.7;
+  opacity: 0.55;
+  transition: opacity 200ms ease, transform 200ms ease;
 }
 
-/* Outlet logo, when one is set in pressLogos. Optional by design — a chip
-   without one is just the name, and the flex gap closes up on its own.
+.press-story__sources a:hover::after,
+.press-story--coverage .press-wall-grid a:hover::after {
+  opacity: 0.9;
+  transform: translate(1px, -1px);
+}
 
-   Sized by HEIGHT with `width: auto`, because press logos arrive at every aspect
-   ratio there is: a square mark and a long wordmark both need to read as the same
-   weight in the row, and that is a matter of matching their cap height, not their
-   box. max-width stops a very wide wordmark from pushing the chip across the card.
-
-   The plate is load-bearing. Outlets ship their logo as dark artwork on a
-   transparent background — that is what a press kit is for, a white page — and on
-   this dark chip that artwork is very close to invisible. The near-white plate
-   gives it the background it was drawn for. If your logos are already light or
-   single-colour white, delete the background/padding here and they will sit
-   directly on the chip. */
+/* Outlet logo mark. Sized by HEIGHT with `width: auto`, because press logos
+   arrive at every aspect ratio: a square mark and a long wordmark both need to
+   read as the same weight. The near-white plate gives dark press-kit artwork
+   the background it was drawn for. */
 .press-logo {
   height: 18px;
   width: auto;
   max-width: 76px;
-  /* Letterboxes rather than crops: a logo is the one image you must never cut. */
   object-fit: contain;
   padding: 2px 4px;
   border-radius: 5px;
   background: rgba(255, 255, 255, 0.92);
 }
 
-/* A chip with a logo shows the logo alone — no name beside it — so the logo is
-   the whole chip and can afford to be read at a glance rather than tucked in
-   next to a word. */
-.press-sources a.has-logo,
-.press-wall-grid a.has-logo {
+.press-story__sources a.has-logo,
+.press-story--coverage .press-wall-grid a.has-logo {
   padding: 8px 12px;
 }
 
@@ -353,48 +347,565 @@
   max-width: 132px;
 }
 
-/* ---- closing media-wall card ---- */
-.press-card--wall {
+/* ---- coverage card: centered media wall ---- */
+.press-story__inner--center {
+  display: block;
   text-align: center;
 }
 
-.press-card--wall .press-wall-grid {
-  display: flex;
-  flex-wrap: wrap;
+.press-story__inner--center .press-story__eyebrow {
   justify-content: center;
+}
+
+.press-story--coverage .press-story__title {
+  margin-top: 18px;
+}
+
+.press-story--coverage .press-story__excerpt {
+  max-width: 52ch;
+  margin-inline: auto;
+}
+
+.press-story--coverage .press-wall-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
   gap: 10px;
-  margin-top: 20px;
+  margin-top: clamp(22px, 2.6vw, 34px);
 }
 
-/* ---- responsive ---- */
-@media (max-width: 1024px) {
-  .press-stack-inner {
-    width: min(900px, calc(100% - 32px));
+.press-story--coverage .press-wall-grid a {
+  justify-content: center;
+  padding: 14px 10px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+/* ---- entrance micro-interaction ----
+   The card's content rises in one gentle beat when it takes the stage — the
+   eyebrow first, then the headline, the copy, the statistics and finally the
+   sources bar. `.is-entered` (set once in PressSection.jsx when the card first
+   becomes active) rather than `.is-active`, so the beat plays a single time
+   per story and never repeats when the story is handed back the stage — a
+   repeated `is-active` re-raise reads as the whole card re-rendering. `both`
+   keeps it finished when the story hands the stage over. */
+@keyframes press-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@media (max-width: 720px) {
-  .press-card-slot {
-    /* Pin line for phones: 88px clears the 76px navbar with a slimmer step. */
-    --stack-top: 88px;
+.press-story.is-entered :is(.press-story__eyebrow, .press-story__title, .press-story__excerpt),
+.press-story.is-entered .press-story__stat,
+.press-story.is-entered .press-story__highlights li,
+.press-story.is-entered .press-story__sources {
+  animation: press-rise 0.7s cubic-bezier(0.22, 0.7, 0.22, 1) both;
+}
+
+.press-story.is-entered .press-story__eyebrow { animation-delay: 0.04s; }
+.press-story.is-entered .press-story__title { animation-delay: 0.12s; }
+.press-story.is-entered .press-story__excerpt { animation-delay: 0.22s; }
+.press-story.is-entered .press-story__stat:nth-child(1), .press-story.is-entered .press-story__highlights li:nth-child(1) { animation-delay: 0.3s; }
+.press-story.is-entered .press-story__stat:nth-child(2), .press-story.is-entered .press-story__highlights li:nth-child(2) { animation-delay: 0.37s; }
+.press-story.is-entered .press-story__stat:nth-child(3), .press-story.is-entered .press-story__highlights li:nth-child(3) { animation-delay: 0.44s; }
+.press-story.is-entered .press-story__stat:nth-child(4) { animation-delay: 0.51s; }
+.press-story.is-entered .press-story__sources { animation-delay: 0.58s; }
+
+/* ================================================================
+   RADIO-STATIC FALLBACK (reduced motion)
+   -----------------------------------------------
+   The `.press-storytelling--static` class (chosen by framer's reduced-motion
+   lane) simply applies nothing: the base styles above are already the vertical
+   narrative in normal flow, and no `press-storytelling` promotion is requested.
+   The removal of the animated decorations is structural (the grid and rail are
+   only rendered for animated visitors), so nothing here is strictly required —
+   only defended, in case a static build ever emits the class mid-hydration. */
+.press-storytelling--static .press-scroll {
+  height: auto;
+}
+
+.press-storytelling--static .press-grid,
+.press-storytelling--static .press-rail {
+  display: none;
+}
+
+/* ================================================================
+   LANE MODE — the pinned journey (EVERY screen, mobile-first)
+   ================================================================ */
+.press-storytelling--lane .press-scroll {
+  /* Full-bleed: the section keeps its 24px gutter for the heading, but the
+     stage spans the whole viewport so a phone card (`100vw - 32px`) that is
+     wider than the padded content box can never be clipped by the gutter. On
+     wide screens the same symmetric expansion is harmless — the lane stays
+     centred on the content column. */
+  width: calc(100% + 48px);
+  margin-left: -24px;
+  height: 480vh;
+}
+
+.press-storytelling--lane .press-stage {
+  position: sticky;
+  top: var(--navbar-height, 76px);
+  height: calc(100vh - var(--navbar-height, 76px));
+  height: calc(100svh - var(--navbar-height, 76px));
+  height: calc(100dvh - var(--navbar-height, 76px));
+  overflow: hidden;
+}
+
+/* ---- the stationary coordinate grid ---- */
+.press-storytelling--lane .press-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(16, 42, 92, var(--press-grid-alpha, 0.028)) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16, 42, 92, var(--press-grid-alpha, 0.028)) 1px, transparent 1px);
+  background-size: clamp(34px, 9vw, 52px) clamp(34px, 9vw, 52px);
+}
+
+/* A soft pool of accent light that rides behind the active story, travelling
+   with the lane. The Gaussian keeps it a film of colour rather than a spot —
+   the grid lines stay the legible structure. */
+.press-storytelling--lane .press-grid__glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(108vw, 560px);
+  height: 60%;
+  translate: -50% -50%;
+  border-radius: 50%;
+  filter: blur(52px);
+  background: radial-gradient(closest-side, var(--glow, rgba(37, 99, 235, 0.11)), transparent 72%);
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+
+.press-storytelling--lane .press-grid__glow.is-active {
+  opacity: 1;
+}
+
+/* ---- the moving lane ---- */
+.press-storytelling--lane .press-track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  width: auto;
+  margin-inline: 0;
+  display: flex;
+  align-items: center;
+  /* One card-width of horizontal runway either side is dedicated to the
+     stationing maths: the lane's left edge sits `--card-w / 2` short of the
+     stage centre, so slide stop 0 lands dead-centre and each −step slide
+     lands the next. */
+  --card-w: calc(100vw - 32px);
+  margin-left: calc(50% - var(--card-w) / 2);
+  gap: 18px;
+}
+
+.press-storytelling--lane .press-track .press-story-slot {
+  margin: 0;
+}
+
+.press-storytelling--lane .press-story {
+  width: var(--card-w);
+  flex: 0 0 auto;
+  max-height: calc(100vh - var(--navbar-height, 76px) - 112px);
+  max-height: calc(100svh - var(--navbar-height, 76px) - 112px);
+  max-height: calc(100dvh - var(--navbar-height, 76px) - 112px);
+}
+
+/* ---- progress rail (base: mobile top-right strip) ---- */
+.press-storytelling--lane .press-rail {
+  position: absolute;
+  right: calc(16px + env(safe-area-inset-right, 0px));
+  top: calc(12px + env(safe-area-inset-top, 0px));
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  z-index: 30;
+  font-family: Poppins, Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+.press-storytelling--lane .press-rail__count {
+  padding-bottom: 0;
+  border-bottom: none;
+  margin: 0;
+}
+
+/* ================================================================
+   LANE — PHONES (≤767px)
+   ================================================================ */
+@media (max-width: 767.98px) {
+  .press-storytelling--lane .press-story__inner {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "copy"
+      "visual"
+      "sources";
+    padding: 16px;
+    column-gap: 0;
+    row-gap: 10px;
   }
 
-  .press-card-slot .press-card {
-    border-radius: 22px;
+  .press-storytelling--lane .press-story__title {
+    margin-top: 10px;
+    font-size: clamp(24px, 6.8vw, 32px);
+    line-height: 1.18;
+    /* Shorten the headline on a phone so the stats, proof and outlet row below
+       it stay on screen instead of the card scrolling internally. */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
   }
 
-  .press-stack-inner {
-    padding: 8px 0 40px;
+  .press-storytelling--lane .press-story__excerpt {
+    margin-top: 8px;
+    font-size: clamp(14px, 3.7vw, 15.5px);
+    line-height: 1.55;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+
+  .press-storytelling--lane .press-story__stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .press-storytelling--lane .press-story__stat {
+    padding: 10px 11px;
+    border-radius: 13px;
+  }
+
+  .press-storytelling--lane .press-story__stat strong {
+    font-size: clamp(18px, 5.2vw, 24px);
+  }
+
+  .press-storytelling--lane .press-story__stat span {
+    font-size: 11px;
+  }
+
+  /* The check-marked proof bullets re-theme as stat tiles, so a phone reads
+     one clean 2-column grid of numbers (4 stat tiles + 3 proof tiles) with no
+     microscopic text anywhere. */
+  .press-storytelling--lane .press-story__highlights {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .press-storytelling--lane .press-story__highlights li {
+    align-items: flex-start;
+    padding: 11px 10px;
+    border-radius: 13px;
+    border: 1px solid rgba(16, 42, 92, 0.09);
+    background: rgba(255, 255, 255, 0.8);
+    font-size: 12px;
+    line-height: 1.4;
+    color: rgba(16, 42, 92, 0.82);
+  }
+
+  .press-storytelling--lane .press-story__sources {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding-top: clamp(12px, 2.4vw, 16px);
+  }
+
+  .press-storytelling--lane .press-story__sources > small {
+    grid-column: 1 / -1;
+    font-size: 11px;
+  }
+
+  .press-storytelling--lane .press-story__sources a {
+    justify-content: flex-start;
+    padding: 7px 9px;
+  }
+
+  .press-storytelling--lane .press-story__sources .has-logo,
+  .press-storytelling--lane .press-story--coverage .press-wall-grid a.has-logo {
+    padding: 7px 9px;
+  }
+
+  .press-storytelling--lane .has-logo .press-logo {
+    height: 24px;
+    max-width: 118px;
+  }
+
+  /* Closing media wall: three compact columns so all twelve outlets fit in
+     four short rows rather than six tall ones, keeping the whole card on
+     screen (the wall's intro copy clamps like every story's on mobile). */
+  .press-storytelling--lane .press-story--coverage .press-wall-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-top: clamp(14px, 3.2vw, 20px);
+  }
+
+  .press-storytelling--lane .press-story--coverage .press-wall-grid a {
+    justify-content: center;
+    padding: 10px 6px;
+    border-radius: 10px;
+  }
+
+  .press-storytelling--lane .press-story--coverage .press-wall-grid a.has-logo {
+    padding: 7px 6px;
+  }
+
+  .press-storytelling--lane .press-story--coverage .has-logo .press-logo {
+    height: 20px;
+    max-width: 92px;
+  }
+
+  .press-storytelling--lane .press-rail__dot::before {
+    display: none;
   }
 }
 
-/* Reduced motion: no depth transform and no pinning flotation — cards stack in
-   plain flow. Sticky is left in place (it is layout, not motion) but the cards
-   are never parked above their natural position. */
+/* ================================================================
+   LANE — TABLET (768–1199px)
+   ================================================================ */
+@media (min-width: 768px) and (max-width: 1199.98px) {
+  .press-storytelling--lane .press-scroll {
+    height: 440vh;
+  }
+
+  .press-storytelling--lane .press-grid {
+    --press-grid-alpha: 0.04;
+    background-size: clamp(44px, 6vw, 60px) clamp(44px, 6vw, 60px);
+  }
+
+  .press-storytelling--lane .press-track {
+    --card-w: min(86vw, 1050px);
+    gap: clamp(24px, 4vw, 48px);
+  }
+
+  .press-storytelling--lane .press-story {
+    max-height: calc(100vh - var(--navbar-height, 76px) - clamp(100px, 14svh, 156px));
+    max-height: calc(100svh - var(--navbar-height, 76px) - clamp(100px, 14svh, 156px));
+    max-height: calc(100dvh - var(--navbar-height, 76px) - clamp(100px, 14svh, 156px));
+  }
+
+  .press-storytelling--lane .press-story__inner {
+    padding: clamp(24px, 3vw, 34px);
+    row-gap: clamp(16px, 2vw, 24px);
+  }
+
+  .press-storytelling--lane .press-story__title {
+    font-size: clamp(23px, 2.7vw, 30px);
+  }
+
+  .press-storytelling--lane .press-story__excerpt {
+    font-size: clamp(14.5px, 1.5vw, 16px);
+  }
+
+  .press-storytelling--lane .press-story__stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .press-storytelling--lane .press-story__stat strong {
+    font-size: clamp(22px, 2.6vw, 30px);
+  }
+
+  .press-storytelling--lane .press-rail {
+    right: clamp(14px, 2vw, 28px);
+    top: 50%;
+    translate: 0 -50%;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+  }
+
+  .press-storytelling--lane .press-rail__count {
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(16, 42, 92, 0.12);
+    margin-bottom: 2px;
+  }
+}
+
+/* Tablet interiors: a lone 86vw card is wide enough for the two-column
+   editorial spread from 900px up; below that the story reads single-column
+   with the evidence beneath the headline. */
+@media (min-width: 900px) and (max-width: 1199.98px) {
+  .press-storytelling--lane .press-story__inner {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: clamp(20px, 2.4vw, 32px);
+  }
+
+  .press-storytelling--lane .press-story--coverage .press-wall-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 899.98px) {
+  .press-storytelling--lane .press-story__inner {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "copy"
+      "visual"
+      "sources";
+  }
+
+  .press-storytelling--lane .press-story--coverage .press-wall-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ================================================================
+   LANE — DESKTOP (≥1200px)
+   ================================================================ */
+@media (min-width: 1200px) {
+  .press-storytelling--lane .press-scroll {
+    height: 430vh;
+  }
+
+  .press-storytelling--lane .press-stage {
+    top: 0;
+    height: 100vh;
+    height: 100svh;
+    height: 100dvh;
+  }
+
+  .press-storytelling--lane .press-grid {
+    --press-grid-alpha: 0.05;
+    background-size: clamp(48px, 5vw, 72px) clamp(48px, 5vw, 72px);
+  }
+
+  .press-storytelling--lane .press-grid__glow {
+    width: min(52vw, 820px);
+    height: min(74vh, 660px);
+  }
+
+  .press-storytelling--lane .press-track {
+    --card-w: min(72vw, 1200px);
+    gap: clamp(36px, 5vw, 88px);
+  }
+
+  .press-storytelling--lane .press-story {
+    max-height: calc(100vh - clamp(88px, 12vh, 168px));
+    max-height: calc(100svh - clamp(88px, 12vh, 168px));
+    max-height: calc(100dvh - clamp(88px, 12vh, 168px));
+  }
+
+  .press-storytelling--lane .press-story__inner {
+    padding: clamp(28px, 3.2vw, 48px);
+  }
+
+  .press-storytelling--lane .press-story__title {
+    font-size: clamp(26px, 2.4vw, 36px);
+  }
+
+  .press-storytelling--lane .press-story__excerpt {
+    font-size: clamp(15px, 1.15vw, 17px);
+  }
+
+  .press-storytelling--lane .press-story__stat strong {
+    font-size: clamp(26px, 2.7vw, 38px);
+  }
+
+  /* ---- progress rail (right edge) ---- */
+  .press-storytelling--lane .press-rail {
+    right: clamp(16px, 3vw, 44px);
+    top: 50%;
+    translate: 0 -50%;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+  }
+
+  .press-storytelling--lane .press-rail__count {
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(16, 42, 92, 0.12);
+    margin-bottom: 2px;
+  }
+}
+
+/* ---- rail internals (shared; their positioning lives in the lane blocks above) ---- */
+.press-rail__count {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: rgba(16, 42, 92, 0.5);
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(16, 42, 92, 0.12);
+  margin-bottom: 2px;
+}
+
+.press-rail__dot {
+  position: relative;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(16, 42, 92, 0.32);
+  transition: color 0.4s ease, transform 0.4s cubic-bezier(0.22, 0.7, 0.22, 1);
+}
+
+.press-rail__dot::before {
+  content: "";
+  position: absolute;
+  right: calc(100% + 9px);
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0;
+  transform: translateY(-50%) scale(0.3);
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.22, 0.7, 0.22, 1);
+}
+
+.press-rail__dot.is-active {
+  color: var(--accent, #2563eb);
+  transform: scale(1.16);
+}
+
+.press-rail__dot.is-active::before {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+/* ================================================================
+   RESPONSIVE + REDUCED MOTION
+   ================================================================ */
+
+/* Static (reduced-motion) cards in a plain column: keep statistics in a clean
+   2-column grid — never a 1-wide dash of tiny numbers — until the very narrowest
+   phones, where a single column is all the room there is. */
+@media (max-width: 560px) {
+  .press-story__inner {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "copy"
+      "visual"
+      "sources";
+  }
+}
+
+/* Reduced motion: no entrance beats, no scrubbed movement. The section simply
+   sits in flow (`.press-storytelling--static` — see above) and the shows that
+   would have animated never run. */
 @media (prefers-reduced-motion: reduce) {
-  .press-card-slot .press-card {
-    --stack-scale: 1;
-    --stack-y: 0px;
-    transform: none;
+  .press-story.is-entered :is(.press-story__eyebrow, .press-story__title, .press-story__excerpt),
+  .press-story.is-entered .press-story__stat,
+  .press-story.is-entered .press-story__highlights li,
+  .press-story.is-entered .press-story__sources {
+    animation: none;
+  }
+
+  .press-story__sources a::after,
+  .press-story--coverage .press-wall-grid a::after {
+    content: none;
   }
 }
