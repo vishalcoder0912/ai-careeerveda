@@ -105,11 +105,12 @@ export const programCatalog = [
       "Hiring Preparation Support",
     ],
     curriculumIntro:
-      "A structured roadmap from aspiring product manager to product leader. Twelve modules take you from product thinking and customer obsession through research, strategy, roadmaps, UX, agile delivery, analytics and AI, to growth, leadership and a full capstone each one leaving you a portfolio deliverable you keep.",
+      "A structured roadmap from aspiring product manager to product leader. Thirteen modules take you from product thinking and customer obsession through research, strategy, roadmaps, UX, agile delivery, analytics and AI, to growth, leadership and a full capstone — each one leaving you a portfolio deliverable you keep.",
     modules: [
       {
         n: 1,
         title: "Preparatory Foundation",
+        image: "/images/pm/m1-foundation.jpg",
         points: [
           "Introduction to Product Thinking",
           "Understanding Digital Products and Platforms",
@@ -118,170 +119,174 @@ export const programCatalog = [
           "Business and Technology Basics",
           "Product Management Terminology and Frameworks",
         ],
+        deliverable: "Foundation notes & key concepts",
       },
       {
         n: 2,
         title: "Product Thinking & Customer Obsession",
+        image: "/images/pm/m2-customer.jpg",
         points: [
-          "Evolution of Product Management",
-          "Product Mindset vs Project Mindset",
-          "Understanding Customer Needs",
-          "Customer Journey Mapping",
-          "Problem Identification Techniques",
-          "Opportunity Discovery Frameworks",
-          "Introduction to Design Thinking",
+          "Customer Needs & Problem Solving",
+          "Jobs to Be Done (JTBD)",
+          "Customer Segmentation & Personas",
+          "Value Proposition Design",
+          "Design Thinking Frameworks",
+          "Product Mindset & Leadership",
         ],
+        deliverable: "Customer insight canvas",
       },
       {
         n: 3,
         title: "Market Research & Competitive Intelligence",
+        image: "/images/pm/m3-market.jpg",
         points: [
-          "Market Sizing Fundamentals",
-          "Industry Analysis Frameworks",
-          "Competitive Benchmarking",
-          "SWOT and Opportunity Analysis",
-          "Emerging Technology Trends",
-          "AI-Based Market Research Techniques",
-          "Product Positioning Strategy",
-          "Portfolio deliverable: Market Opportunity Assessment",
+          "Market Sizing & Opportunity Analysis",
+          "Industry & Trend Analysis",
+          "Competitor Benchmarking",
+          "SWOT & PESTLE Analysis",
+          "Customer & Market Insights",
+          "Competitive Positioning",
         ],
+        deliverable: "Market research report",
       },
       {
         n: 4,
         title: "User Research & Product Discovery",
+        image: "/images/pm/m4-userresearch.jpg",
         points: [
-          "User Interviews",
-          "Surveys and Feedback Collection",
-          "Persona Development",
-          "Jobs-To-Be-Done Framework",
+          "User Interviews & Surveys",
+          "Usability Testing",
           "Behavioral Analysis",
-          "Customer Pain Point Mapping",
-          "Research Synthesis",
-          "Portfolio deliverable: User Research Repository and Personas",
+          "Journey Mapping",
+          "Problem Validation",
+          "Discovery & Ideation Techniques",
         ],
+        deliverable: "User research summary",
       },
       {
         n: 5,
         title: "Product Strategy & Vision Development",
+        image: "/images/pm/m5-strategy.jpg",
         points: [
-          "Product Vision Creation",
-          "Strategic Planning",
-          "Business Model Fundamentals",
-          "Value Proposition Design",
-          "Product Portfolio Management",
-          "Product Positioning",
-          "Strategic Decision Frameworks",
-          "Portfolio deliverable: Product Vision and Strategy Document",
+          "Product Vision & Mission",
+          "Goal Setting & OKRs",
+          "Product Strategy Frameworks",
+          "Business Model & Monetization",
+          "Prioritization (RICE, MoSCoW)",
+          "Strategic Roadmap Planning",
         ],
+        deliverable: "Product strategy deck",
       },
       {
         n: 6,
         title: "Product Requirements & Roadmap Management",
+        image: "/images/pm/m6-roadmap.jpg",
         points: [
-          "Product Requirement Documents (PRDs)",
-          "User Stories and Acceptance Criteria",
-          "Product Backlogs",
-          "Prioritization Frameworks",
-          "Product Roadmapping",
-          "Feature Planning",
-          "Release Planning",
-          "Portfolio deliverable: End-to-End Product Requirement Document",
+          "PRD Writing & Documentation",
+          "User Stories & Acceptance Criteria",
+          "Backlog & Sprint Planning",
+          "Roadmap Creation & Prioritization",
+          "Stakeholder Communication",
+          "Change Management",
         ],
+        deliverable: "PRD + roadmap",
       },
       {
         n: 7,
         title: "UX, Wireframing & Product Design",
+        image: "/images/pm/m7-ux.jpg",
         points: [
-          "UX Principles",
+          "UX Fundamentals & Heuristics",
+          "Wireframing & Prototyping",
           "Information Architecture",
-          "Wireframing Fundamentals",
-          "User Flows",
-          "Prototyping Concepts",
-          "Design Reviews",
-          "Accessibility Considerations",
-          "Portfolio deliverable: Interactive Product Prototype",
+          "UI/UX Design Principles",
+          "Design Systems",
+          "Usability Testing",
         ],
+        deliverable: "Wireframes / prototype",
       },
       {
         n: 8,
         title: "Agile Product Development",
+        image: "/images/pm/m8-agile.jpg",
         points: [
-          "Agile Frameworks",
-          "Scrum Fundamentals",
-          "Sprint Planning",
-          "Product Ownership",
-          "Engineering Collaboration",
+          "Agile Principles & Scrum",
+          "Sprint Planning & Execution",
+          "Daily Standups & Retrospectives",
+          "Cross-functional Collaboration",
           "Release Management",
-          "Risk and Dependency Management",
-          "Portfolio deliverable: Sprint Planning Simulation",
+          "Agile Tools (Jira, Confluence, etc.)",
         ],
+        deliverable: "Sprint plan & user story board",
       },
       {
         n: 9,
         title: "Product Analytics & Decision Science",
+        image: "/images/pm/m9-analytics.jpg",
         points: [
-          "Product Metrics Frameworks",
-          "North Star Metrics",
-          "Funnel Analysis",
-          "Cohort Analysis",
-          "Retention Metrics",
-          "Experimentation Design and A/B Testing",
+          "Key Product Metrics (DAU, MAU, LTV)",
+          "Data Analysis & SQL Basics",
+          "A/B Testing",
+          "Cohort & Funnel Analysis",
+          "Data Visualization (Tableau/Looker)",
           "Data-Driven Decision Making",
-          "Portfolio deliverable: Product Analytics Dashboard",
         ],
+        deliverable: "Analytics dashboard",
       },
       {
         n: 10,
         title: "AI for Product Managers",
+        image: "/images/pm/m10-ai.jpg",
         points: [
-          "Generative AI Applications",
-          "AI Product Lifecycle",
+          "Generative AI Fundamentals",
+          "AI Use Cases in Product",
           "Prompt Engineering",
-          "AI-Assisted Research",
-          "AI-Based User Analysis",
-          "Building AI Features into Products",
-          "Responsible AI Practices",
-          "Portfolio deliverable: AI Feature Design Blueprint",
+          "Building AI-Powered Features",
+          "Ethics & Responsible AI",
+          "Future of Work with AI",
         ],
+        deliverable: "AI product use case",
       },
       {
         n: 11,
         title: "Product Growth & Go-to-Market Strategy",
+        image: "/images/pm/m11-gtm.jpg",
         points: [
-          "Product Launch Planning",
-          "Growth Frameworks",
-          "Product-Led Growth",
-          "User Acquisition",
-          "Activation and Retention",
-          "Pricing and Monetization",
-          "Growth Experimentation",
-          "Portfolio deliverable: Go-to-Market Strategy Plan",
+          "Growth Mindset & Metrics",
+          "Customer Acquisition & Retention",
+          "Pricing & Packaging",
+          "Go-to-Market Planning",
+          "Growth Channels & Partnerships",
+          "Performance Tracking",
         ],
+        deliverable: "GTM plan",
       },
       {
         n: 12,
         title: "Product Leadership & Stakeholder Management",
+        image: "/images/pm/m12-leadership.jpg",
         points: [
-          "Stakeholder Communication",
-          "Executive Presentations",
+          "Leadership Styles & Mindset",
+          "Influencing & Negotiation",
+          "Cross-functional Teams",
           "Conflict Resolution",
-          "Influence Without Authority",
-          "Decision-Making Under Uncertainty",
-          "Team Leadership",
-          "Product Governance",
-          "Portfolio deliverable: Executive Product Review Deck",
+          "Building High-Performing Teams",
+          "Career Growth & Personal Branding",
         ],
+        deliverable: "Leadership action plan",
       },
       {
         n: 13,
         title: "Capstone Project",
+        image: "/images/pm/m13-capstone.jpg",
         points: [
-          "Product discovery, market research and user validation",
-          "Product strategy and PRD creation",
-          "Wireframing and analytics planning",
-          "Go-to-market strategy",
-          "Final deliverable: strategy document, PRD, wireframes, analytics framework, GTM plan and executive presentation",
+          "Real-world Product Challenge",
+          "End-to-End Execution",
+          "Build, Analyze, Iterate",
+          "Final Presentation",
+          "Portfolio Showcase",
         ],
+        deliverable: "Complete product portfolio",
       },
     ],
     softSkills: [
@@ -364,6 +369,7 @@ export const programCatalog = [
       {
         n: 1,
         title: "Introduction to Business Analytics",
+        image: "/images/business-analytics/ba1-intro.jpg",
         points: [
           "What business analytics is and where it sits in a company",
           "Descriptive, diagnostic, predictive and prescriptive analysis",
@@ -376,6 +382,7 @@ export const programCatalog = [
       {
         n: 2,
         title: "Excel for Business Analysis",
+        image: "/images/business-analytics/ba2-excel.jpg",
         points: [
           "Spreadsheet structure and clean data entry",
           "Core formulas: logical, text and date functions",
@@ -388,6 +395,7 @@ export const programCatalog = [
       {
         n: 3,
         title: "Advanced Excel & Spreadsheet Modeling",
+        image: "/images/business-analytics/ba3-modeling.jpg",
         points: [
           "Dynamic arrays and modern Excel functions",
           "Power Query for repeatable data cleaning",
@@ -400,6 +408,7 @@ export const programCatalog = [
       {
         n: 4,
         title: "Business Statistics Foundations",
+        image: "/images/business-analytics/ba4-stats.jpg",
         points: [
           "Descriptive statistics and distributions",
           "Sampling, variance and confidence intervals",
@@ -412,6 +421,7 @@ export const programCatalog = [
       {
         n: 5,
         title: "Data Cleaning & Preparation",
+        image: "/images/business-analytics/ba5-cleaning.jpg",
         points: [
           "Profiling a raw dataset before analysis",
           "Handling missing values and duplicates",
@@ -424,6 +434,7 @@ export const programCatalog = [
       {
         n: 6,
         title: "SQL Fundamentals for Analysts",
+        image: "/images/business-analytics/ba6-sql.jpg",
         points: [
           "Relational database concepts",
           "SELECT, WHERE, ORDER BY and LIMIT",
@@ -436,6 +447,7 @@ export const programCatalog = [
       {
         n: 7,
         title: "Advanced SQL & Query Optimisation",
+        image: "/images/business-analytics/ba7-sql-adv.jpg",
         points: [
           "Window functions for running and ranked metrics",
           "Cohort and retention queries",
@@ -448,6 +460,7 @@ export const programCatalog = [
       {
         n: 8,
         title: "Data Modeling for Reporting",
+        image: "/images/business-analytics/ba8-modeling.jpg",
         points: [
           "Star and snowflake schema concepts",
           "Facts, dimensions and grain",
@@ -460,6 +473,7 @@ export const programCatalog = [
       {
         n: 9,
         title: "Power BI Fundamentals",
+        image: "/images/business-analytics/ba9-powerbi.jpg",
         points: [
           "Connecting and transforming data sources",
           "The Power BI data model",
@@ -472,6 +486,7 @@ export const programCatalog = [
       {
         n: 10,
         title: "Advanced Power BI & DAX",
+        image: "/images/business-analytics/ba10-dax.jpg",
         points: [
           "DAX calculated columns versus measures",
           "Filter context and row context",
@@ -484,6 +499,7 @@ export const programCatalog = [
       {
         n: 11,
         title: "Tableau for Visual Analytics",
+        image: "/images/business-analytics/ba11-tableau.jpg",
         points: [
           "Tableau workspace and data connections",
           "Dimensions, measures and calculated fields",
@@ -496,6 +512,7 @@ export const programCatalog = [
       {
         n: 12,
         title: "Dashboard Design & Data Storytelling",
+        image: "/images/business-analytics/ba12-storytelling.jpg",
         points: [
           "Choosing the right chart for the question",
           "Visual hierarchy and dashboard layout",
@@ -508,6 +525,7 @@ export const programCatalog = [
       {
         n: 13,
         title: "Python for Business Analytics",
+        image: "/images/business-analytics/ba13-python.jpg",
         points: [
           "Python essentials for analysts",
           "pandas DataFrames and data manipulation",
@@ -520,6 +538,7 @@ export const programCatalog = [
       {
         n: 14,
         title: "Exploratory Data Analysis",
+        image: "/images/business-analytics/ba14-eda.jpg",
         points: [
           "Framing an exploratory question",
           "Univariate and bivariate exploration",
@@ -532,6 +551,7 @@ export const programCatalog = [
       {
         n: 15,
         title: "Business Metrics & KPI Frameworks",
+        image: "/images/business-analytics/ba15-kpi.jpg",
         points: [
           "Defining metrics that map to business goals",
           "Leading versus lagging indicators",
@@ -544,6 +564,7 @@ export const programCatalog = [
       {
         n: 16,
         title: "Marketing & Sales Analytics",
+        image: "/images/business-analytics/ba16-marketing.jpg",
         points: [
           "Acquisition funnel and channel analysis",
           "Campaign performance and attribution basics",
@@ -556,6 +577,7 @@ export const programCatalog = [
       {
         n: 17,
         title: "Finance & Operations Analytics",
+        image: "/images/business-analytics/ba17-finance.jpg",
         points: [
           "Revenue, cost and margin analysis",
           "Budget versus actual variance reporting",
@@ -568,6 +590,7 @@ export const programCatalog = [
       {
         n: 18,
         title: "Predictive Analytics for Business",
+        image: "/images/business-analytics/ba18-predictive.jpg",
         points: [
           "When prediction helps a business decision",
           "Regression for forecasting and driver analysis",
@@ -580,6 +603,7 @@ export const programCatalog = [
       {
         n: 19,
         title: "Generative AI for Analysts",
+        image: "/images/business-analytics/ba19-genai.jpg",
         points: [
           "Where GenAI genuinely speeds up analysis",
           "Prompting for SQL, formulas and code",
@@ -592,6 +616,7 @@ export const programCatalog = [
       {
         n: 20,
         title: "Business Analytics Capstone Project",
+        image: "/images/business-analytics/ba20-capstone.jpg",
         points: [
           "End-to-end project on a real business dataset",
           "Problem framing and metric definition",
@@ -604,6 +629,7 @@ export const programCatalog = [
       {
         n: 21,
         title: "Analytics Career Readiness & Interview Prep",
+        image: "/images/business-analytics/ba21-career.jpg",
         points: [
           "Analyst resume creation and optimization",
           "SQL and case-study interview preparation",
@@ -1673,13 +1699,15 @@ export const programCatalog = [
       "Readiness for AI Engineer, LLM Developer and Gen AI Specialist roles",
       "Practical confidence with modern Gen AI tools and workflows",
     ],
-    skills: ["Python", "LLMs", "Prompt Engineering", "RAG", "Agentic AI"],
+    skills: ["Python", "LLMs", "Prompt Engineering", "RAG", "Vector Databases", "Fine-Tuning", "Agentic AI", "LLMOps"],
 
     fullTitle: "PG Program in GEN AI",
     badges: ["Industry-Aligned", "Enrolling Now", "100% Placement Assurance"],
     lead:
       "Master Generative AI and transform your career with cutting-edge skills. Learn to build intelligent applications using the latest AI models, LLMs, and automation technologies, through hands-on projects and a capstone application.",
     learners: "10,000+",
+    roadFrom: "From AI Enthusiast",
+    roadTo: "to AI Engineer",
     fee: {label: "Program Investment", amount: "₹1,40,000", note: "Including GST"},
     emi: "3, 6, 9 & 12 months (No Cost EMIs)",
     nextBatch: "September 19, 2026",
@@ -1687,8 +1715,12 @@ export const programCatalog = [
     projects: "30+",
     eligibility: "Freshers, Graduates, Experienced",
     gainsIntro:
-      "Our PG Program in GEN AI equips you with cutting-edge AI skills through hands-on projects and expert guidance.",
+      "Six months of mentor-led learning from AI practitioners: live classes, GPU-accelerated labs, 21 projects and 3 hackathons, agentic and MCP frameworks, and end-to-end placement support — so you finish with a portfolio employers can see and a capstone you can demo.",
     gains: [
+      "Live Mentor-Guided Classes",
+      "GPU-Accelerated Hands-On Labs",
+      "21 Projects, 3 Hackathons & Flagship Capstones",
+      "Agentic AI & MCP Frameworks",
       "Doubt Resolution",
       "AI Hackathons & Challenges",
       "Career Guidance & Mentorship",
@@ -1710,7 +1742,7 @@ export const programCatalog = [
       "Advanced LMS Platform",
     ],
     curriculumIntro:
-      "A comprehensive curriculum designed by AI experts to make you job-ready. Master Generative AI, Large Language Models, prompt engineering, and AI application development with hands-on projects.",
+      "A comprehensive curriculum designed by AI experts to make you job-ready. Master Generative AI, Large Language Models, prompt engineering, RAG, fine-tuning, and agentic AI application development with 16 modules of hands-on projects — from Python foundations and embeddings to MCP agents, LLMOps and an end-to-end capstone.",
     // The live brochure details only the End-to-End GenAI Application capstone
     // (kept verbatim as the final module below). The remaining modules were
     // authored in the same house style as the other programs so the page reads
@@ -1727,6 +1759,7 @@ export const programCatalog = [
           "Gen AI roles and career paths",
           "Industry trends and outlook",
         ],
+        deliverable: "A Gen AI landscape report mapping models, use cases and career paths",
       },
       {
         n: 2,
@@ -1739,6 +1772,7 @@ export const programCatalog = [
           "Keys, environment variables and configuration",
           "Python foundations exercise set",
         ],
+        deliverable: "A Python coding environment with a foundation exercise set",
       },
       {
         n: 3,
@@ -1751,6 +1785,7 @@ export const programCatalog = [
           "PyTorch essentials",
           "First neural network project",
         ],
+        deliverable: "A trained first neural network project",
       },
       {
         n: 4,
@@ -1763,6 +1798,7 @@ export const programCatalog = [
           "Named entity recognition",
           "NLP foundations project",
         ],
+        deliverable: "An NLP classification pipeline",
       },
       {
         n: 5,
@@ -1775,6 +1811,7 @@ export const programCatalog = [
           "Open versus closed models compared",
           "LLM exploration exercise",
         ],
+        deliverable: "An LLM comparison exercise on open and closed models",
       },
       {
         n: 6,
@@ -1787,6 +1824,7 @@ export const programCatalog = [
           "Prompt evaluation and iteration",
           "Prompt engineering project",
         ],
+        deliverable: "A reusable prompt library with evaluation notes",
       },
       {
         n: 7,
@@ -1799,6 +1837,7 @@ export const programCatalog = [
           "Cost tracking and token budgeting",
           "LLM-powered application component",
         ],
+        deliverable: "An LLM-powered app component with token cost tracking",
       },
       {
         n: 8,
@@ -1811,6 +1850,7 @@ export const programCatalog = [
           "Keeping embeddings fresh as data changes",
           "Embedding pipeline project",
         ],
+        deliverable: "An embeddings and semantic search pipeline",
       },
       {
         n: 9,
@@ -1823,6 +1863,7 @@ export const programCatalog = [
           "Evaluating RAG answer quality",
           "RAG application project",
         ],
+        deliverable: "A grounded RAG application with evaluation results",
       },
       {
         n: 10,
@@ -1835,6 +1876,7 @@ export const programCatalog = [
           "Deploying a customised model",
           "Fine-tuning project",
         ],
+        deliverable: "A fine-tuned model with a deployment demo",
       },
       {
         n: 11,
@@ -1847,6 +1889,7 @@ export const programCatalog = [
           "Responsible use of generated media",
           "Multimodal generation project",
         ],
+        deliverable: "A multimodal generation project",
       },
       {
         n: 12,
@@ -1859,6 +1902,7 @@ export const programCatalog = [
           "Guardrails and human-in-the-loop",
           "Agentic AI build project",
         ],
+        deliverable: "An agentic AI build with tool use and guardrails",
       },
       {
         n: 13,
@@ -1871,6 +1915,7 @@ export const programCatalog = [
           "Safety, guardrails and content filtering",
           "Deployment project",
         ],
+        deliverable: "A packaged Gen AI API with monitoring and logs",
       },
       {
         n: 14,
@@ -1883,6 +1928,7 @@ export const programCatalog = [
           "Governance, documentation and model cards",
           "Responsible AI review exercise",
         ],
+        deliverable: "A model risk review with safety guardrails",
       },
       {
         n: 15,
@@ -1895,6 +1941,7 @@ export const programCatalog = [
           "End-to-End GenAI Application Demo",
           "Portfolio packaging of the capstone",
         ],
+        deliverable: "A production-ready capstone application demo",
       },
       {
         n: 16,
@@ -1907,6 +1954,7 @@ export const programCatalog = [
           "GitHub and LinkedIn portfolio for AI roles",
           "1 year Placement Support for Top Fellows",
         ],
+        deliverable: "A job-ready AI portfolio and interview roadmap",
       },
     ],
     internship: [
@@ -2685,6 +2733,7 @@ export const programCatalog = [
       {
         n: 2,
         title: "Networking Fundamentals",
+        image: "/images/cybersecurity/networking.jpg",
         points: [
           "The OSI and TCP/IP models",
           "IP addressing, subnetting and routing",
@@ -2697,6 +2746,7 @@ export const programCatalog = [
       {
         n: 3,
         title: "Linux Essentials for Security",
+        image: "/images/cybersecurity/linux.jpg",
         points: [
           "The Linux filesystem and shell",
           "Users, groups and permissions",
@@ -2757,6 +2807,7 @@ export const programCatalog = [
       {
         n: 8,
         title: "Web Application Security",
+        image: "/images/cybersecurity/web-safety.webp",
         points: [
           "How web applications work end to end",
           "The OWASP Top 10 explained",
@@ -2781,6 +2832,7 @@ export const programCatalog = [
       {
         n: 10,
         title: "Vulnerability Management",
+        image: "/images/cybersecurity/reports.jpg",
         points: [
           "The vulnerability management lifecycle",
           "Scanning and asset discovery",
@@ -2817,6 +2869,7 @@ export const programCatalog = [
       {
         n: 13,
         title: "SIEM & Security Monitoring",
+        image: "/images/cybersecurity/monitoring.jpg",
         points: [
           "SIEM architecture and data flow",
           "Writing detection rules and correlation logic",
