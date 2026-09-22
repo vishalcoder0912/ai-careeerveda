@@ -160,8 +160,187 @@
   }
 
   .program-detail-head :is(h3, h2) {
-    font-size: clamp(1.7rem, 4.5vw, 2.2rem);
+    font-size: clamp(1.4rem, 3.2vw, 2rem);
   }
+}
+
+/* ── Short / landscape viewports — phone on its side, tablet on its side, and
+   small laptops with ≤ 620px of usable height ────────────────────────────────
+   Nothing else on this route deals with height. The explorer's sidebar and
+   detail card each carry 640–780px of min-height, so on any viewport that is
+   actually short both halves stack into a scroll the owner never sees the
+   bottom of. There is nothing desktop-specific to protect here — these devices
+   are all handheld — so the rules are intentionally not duplicated at the
+   980px width breakpoint. */
+@media (orientation: landscape) and (max-height: 620px) {
+  .program-explorer {
+    grid-template-columns: minmax(220px, 240px) minmax(0, 1fr);
+  }
+
+  .program-sidebar {
+    min-height: 0;
+    max-height: calc(100svh - 128px);
+  }
+
+  .program-track-list {
+    gap: 6px;
+  }
+
+  .program-track-item {
+    min-height: 54px;
+    padding: 7px 10px;
+  }
+
+  .program-detail-card {
+    min-height: 0;
+    max-height: calc(100svh - 96px);
+  }
+
+  .program-detail-card .program-card-body {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .program-meta-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .meta-card {
+    min-height: 84px;
+    padding: 10px 8px;
+  }
+
+  .meta-value {
+    font-size: 0.78rem;
+    overflow-wrap: anywhere;
+  }
+
+  .program-detail-head :is(h3, h2) {
+    font-size: clamp(1.2rem, 3vw, 1.6rem);
+  }
+
+  .program-description {
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .program-card-body {
+    gap: 10px;
+  }
+
+  .program-action-row {
+    padding-top: 12px;
+  }
+
+  .skill-chip {
+    padding: 5px 9px;
+    font-size: 0.68rem;
+  }
+
+  .recommended-courses-section .rc-header h2 {
+    font-size: clamp(1.7rem, 8vh, 3.4rem);
+  }
+
+  .sit-footer {
+    padding-bottom: 60px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 480px) {
+  .program-track-item {
+    min-height: 50px;
+  }
+
+  .program-meta-strip {
+    gap: 10px;
+  }
+
+  .program-cta-group .cta-primary,
+  .program-cta-group .cta-secondary {
+    min-height: 42px;
+    padding: 0 14px;
+  }
+}
+
+/* ── Ultra-narrow foldables / legacy 360-368px handsets ───────────────────── */
+@media (max-width: 379px) {
+  .program-showcase-section {
+    padding-top: 84px !important;
+  }
+
+  .program-showcase-section > .section-heading :is(h1, h2) {
+    font-size: clamp(1.72rem, 9.2vw, 2.1rem);
+  }
+
+  .program-title-badges {
+    gap: 4px 6px;
+  }
+
+  .program-meta-grid {
+    gap: 6px;
+  }
+
+  .meta-card {
+    padding: 9px 7px;
+  }
+
+  .meta-value {
+    font-size: 0.7rem;
+  }
+
+  .meta-label {
+    font-size: 0.56rem;
+    letter-spacing: 0.04em;
+  }
+
+  .program-detail-list li {
+    padding: 10px 11px 10px 32px;
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+
+  .program-detail-list li::before {
+    left: 12px;
+  }
+
+  .program-tabs {
+    margin-bottom: 14px;
+  }
+
+  .tab-pill {
+    font-size: 0.7rem;
+    min-height: 42px;
+    padding: 6px 11px;
+  }
+
+  .skill-chip {
+    font-size: 0.65rem;
+    padding: 5px 8px;
+  }
+
+  .program-cta-group :is(.cta-primary, .cta-secondary) {
+    min-height: 46px;
+    padding-inline: 12px;
+    font-size: 0.78rem;
+  }
+
+  .program-highlights {
+    padding: 10px;
+    border-radius: 18px;
+  }
+
+  .program-highlight-row {
+    padding: 10px 6px;
+  }
+
+  .recommended-courses-section .rc-card {
+    flex-basis: 88vw;
+    padding-inline: 8px;
+  }
+}
 
   .program-description {
     margin-top: 12px;
@@ -334,7 +513,7 @@
   .site-footer {
     padding-bottom: 80px;
   }
-}
+
 
 @media (max-width: 680px) {
   .program-showcase-section {
@@ -555,5 +734,171 @@
     flex-direction: row;
     justify-content: space-between;
     padding: 14px 16px !important;
+  }
+}
+
+/* ── Short / landscape viewports ────────────────────────────────────────────
+   Landscape phones (812×375, 844×390), split-screen, and side-held tablets all
+   land here. The explorer sidebar and detail card normally carry a 640–780px
+   min-height each; with only ~375px of height available that is two full
+   screens of vertical scroll before either panel's content fits. This tier
+   lets the media slot collapse, drops the non-visual meta rail to a single
+   flush row, and (in the tightest cases) gives the sidebar's own track list
+   the rail treatment instead of a tall column. Everything here is additive —
+   it only frees space; nothing below it had a max-height rule. */
+
+@media (orientation: landscape) and (max-height: 560px) {
+  .program-showcase-section {
+    padding-top: 96px !important;
+  }
+
+  .program-explorer {
+    min-height: 0;
+  }
+
+  .program-sidebar {
+    min-height: 0;
+    max-height: calc(100svh - 136px);
+  }
+
+  .program-detail-card {
+    min-height: 0;
+    max-height: calc(100svh - 136px);
+  }
+
+  .program-card-topline {
+    margin-bottom: 8px;
+  }
+
+  .program-detail-list {
+    max-height: none;
+  }
+
+  .program-head-media {
+    display: none;
+  }
+
+  .program-head-visual {
+    min-height: 0;
+  }
+
+  .program-meta-strip {
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    margin-bottom: 10px;
+  }
+
+  .program-meta-item + .program-meta-item {
+    border-left: 0 !important;
+    padding-left: 0 !important;
+  }
+
+  .program-meta-item strong,
+  .program-meta-item small {
+    display: inline;
+  }
+
+  .program-track-list {
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-wrap: nowrap;
+    gap: 8px;
+    padding-bottom: 8px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .program-track-item {
+    min-width: min(58vw, 280px);
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
+  .program-track-item.is-active,
+  .program-track-item.is-previewed {
+    transform: none;
+  }
+
+  .site-footer {
+    padding-bottom: 96px;
+  }
+}
+
+/* ── Three-inch / fold-tier (360px and under) ───────────────────────────────
+   The smallest breakpoint this route had was 420px *= 360px phones (older
+   360×640 Android and the Pixel Fold cover display at 344px) lost the final
+   notch of breathing room the rest of the range gets. These are narrow-only
+   squeezes of the same selectors — no layout flips, no duplicated rules. */
+
+@media (max-width: 360px) {
+  .program-showcase-section {
+    padding-top: 86px !important;
+  }
+
+  .program-explorer {
+    width: min(100% - 12px, 1180px);
+    padding: 8px;
+    border-radius: 18px;
+  }
+
+  .program-detail-card {
+    padding: 14px;
+    border-radius: 18px;
+  }
+
+  .program-meta-grid {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  .meta-card {
+    min-height: 0;
+    padding: 9px 10px;
+  }
+
+  .meta-value {
+    font-size: 0.74rem;
+  }
+
+  .meta-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.04em;
+  }
+
+  .program-detail-list li {
+    padding: 9px 10px 9px 32px;
+    font-size: 0.82rem;
+  }
+
+  .skill-chip {
+    padding: 5px 8px;
+    font-size: 0.66rem;
+  }
+
+  .program-tabs {
+    margin-bottom: 12px;
+  }
+
+  .tab-pill {
+    padding: 5px 10px;
+    font-size: 0.7rem;
+  }
+
+  .recommended-courses-section {
+    margin-top: 36px;
+  }
+
+  .outcome-stories-heading h2 {
+    font-size: clamp(1.9rem, 8vw, 2.4rem);
+  }
+
+  .outcome-stories-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .site-footer {
+    padding-bottom: 92px;
   }
 }

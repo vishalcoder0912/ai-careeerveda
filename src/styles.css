@@ -71,6 +71,39 @@ body header.site-nav > .nav-container {
   --font-heading: "Manrope", "Inter", system-ui, sans-serif;
 }
 
+/* ── Shared design tokens ───────────────────────────────────────────────────
+   The page drifted to 13 font sizes, 15 text colours and 8 corner radii
+   because values were hard-coded per component instead of read from one
+   source. These tokens are that one source. Prefer them over raw px/hex in
+   new UI; the token is the system, the value is just its current reading. */
+:root {
+  /* Type scale — small labels compose up to display headings. */
+  --t-xs: 12px;   /* flags, stats, badges */
+  --t-sm: 13px;   /* compact supporting labels */
+  --t-md: 14px;   /* buttons, pills */
+  --t-base: 16px; /* body copy */
+  --t-lg: 18px;   /* lead copy */
+  --t-xl: 22px;   /* card headings */
+  --t-2xl: 28px;  /* section sub-headings */
+  --t-3xl: 36px;  /* section headings */
+  --t-4xl: 44px;
+  --t-5xl: 56px;
+
+  /* Text colour ramp (CareerVeda light theme). */
+  --ink-primary: #102a5c;                                  /* headings, card titles */
+  --ink-secondary: #29436d;                                /* nav links, strong body */
+  --ink-muted: #526682;                                    /* body copy */
+  --ink-soft: rgba(16, 42, 92, 0.64);                      /* eyebrows, secondary body */
+  --accent: #2563eb;                                       /* the single action colour */
+
+  /* Corner radii — three radii plus the pill. */
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 22px;
+  --r-xl: 28px;
+  --r-pill: 999px;
+}
+
 * {
   box-sizing: border-box;
 }

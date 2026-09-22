@@ -46,7 +46,7 @@ export const SITE_TAGLINE = "AI-Powered Career Platform";
 // WhatsApp and X all want an absolute URL        a relative path silently renders no
 // preview at all        so this is a full ImageKit URL rather than a /public asset.
 // 1200x630 is the ratio every one of those platforms crops to.
-export const OG_IMAGE = "https://ik.imagekit.io/q7ucn1rfni/careerveda/brand/cvfavicon-039eb18e.jpg?tr=w-1200,h-630,cm-pad_resize,bg-0B1220";
+export const OG_IMAGE = "https://ik.imagekit.io/q7ucn1rfni/careerveda/brand/cvfavicon-039eb18e_jpg.webp?tr=w-1200,h-630,cm-pad_resize,bg-0B1220";
 export const OG_IMAGE_WIDTH = 1200;
 export const OG_IMAGE_HEIGHT = 630;
 
@@ -55,7 +55,7 @@ export const OG_IMAGE_HEIGHT = 630;
 export const ORGANISATION = {
   email: "Info@careerveda.in",
   telephone: "+91 9217801191",
-  logo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/brand/cvfavicon-039eb18e.jpg?tr=w-512",
+  logo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/brand/cvfavicon-039eb18e_jpg.webp?tr=w-512",
   // Spellings a person plausibly types for this brand. Only real variants       
   // padding this with keywords ("data science course") is the classic way to
   // get structured data ignored site-wide, and it would not match a brand query

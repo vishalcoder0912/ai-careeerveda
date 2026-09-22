@@ -62,4 +62,4 @@ docker-compose.override.yml
 dbg-deck.mjs
 debug-*.mjs
 debug-hero-*.png
-shot-full.png
+shot-*.png

@@ -642,10 +642,16 @@ body .consultation-section .consultation-copy--panel {
   justify-self: center;
 }
 
+/* Left copy: constrained width so it never extends beneath the form, and
+   optically centered within its own column. The section-label normally ships
+   uppercase (good for two-or-three-word labels); "ISO Certified Career
+   Platform" is a 29-character sentence, so it keeps a regular case and a
+   normal tracking instead of shouting. */
 body .consultation-section .consultation-copy--panel .section-label {
   margin-bottom: 18px !important;
-  font-size: 12px !important;
-  letter-spacing: 0.13em !important;
+  font-size: var(--t-xs) !important;
+  letter-spacing: 0.05em !important;
+  text-transform: none !important;
 }
 
 /* Headline: dominant but controlled — not larger than the form. */

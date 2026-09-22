@@ -30,6 +30,7 @@ const moduleSchema = new mongoose.Schema(
     title: {type: String, default: "", maxlength: 300},
     duration: {type: String, default: "", maxlength: 60},
     points: {type: [String], default: []},
+    deliverable: {type: String, default: "", maxlength: 300},
   },
   {_id: false},
 );

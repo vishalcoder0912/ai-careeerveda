@@ -22,6 +22,7 @@ const BootMarker = () => {
 };
 
 const ProgramsPage = lazy(routeChunks.loadProgramsPage);
+const GenerativeAIPage = lazy(routeChunks.loadGenerativeAIPage);
 const ProgramDetailPage = lazy(routeChunks.loadProgramDetailPage);
 const JobsPage = lazy(routeChunks.loadJobsPage);
 const FacultyPage = lazy(routeChunks.loadFacultyPage);
@@ -178,6 +179,7 @@ const App = () => {
         <ScrollToHash />
         <RouteMeta />
         <Routes>
+        <Route path="/generative-ai" element={<GenerativeAIPage />} />
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/programs" element={<ProgramsPage />} />

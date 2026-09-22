@@ -1,8 +1,10 @@
 import {useEffect, useState, useRef} from "react";
 import {Link} from "react-router-dom";
 import {Reveal, StaggerGroup, StaggerItem} from "../motionPrimitives";
-import {stats, reviews} from "../../data/siteData";
+import {useContentList} from "../../hooks/useContent";
+import {adaptAlumniReview} from "../../lib/contentAdapters";
 import {matchJobs} from "./jobTracks";
+import {careerStats, careerReviews} from "./careerOutcomes";
 
 const AUTOCYCLE_MS = 6000;
 
@@ -155,9 +157,20 @@ const JobCard = ({job}) => (
 const ProgramCareers = ({program}) => {
   const outcomes = program.outcomes || [];
 
+  // Only alumni the admin has approved (published + "Show in program Career
+  // Outcomes" ticked) feed this carousel. The static `reviews` list stands in
+  // until the API answers — and forever when it cannot be reached — so the
+  // section still renders the same testimonials today and offline, then swaps
+  // to exactly what was approved in the panel the moment the backend is live.
+  const {items: approvedReviews} = useContentList("alumni", {
+    fallback: careerReviews,
+    adapt: adaptAlumniReview,
+    params: {showOnCareerPage: true},
+  });
+
   // Honest review matching: only renders a testimonial if the alumni's tag
   // genuinely relates to the program being viewed.
-  const matchedReviews = reviews.filter(MATCH_RE(program));
+  const matchedReviews = approvedReviews.filter(MATCH_RE(program));
 
   const matchedJobs = matchJobs(program, 3);
 
@@ -181,9 +194,9 @@ const ProgramCareers = ({program}) => {
               : "pd-careers__split"
           }
         >
-          {stats.length > 0 && (
+          {careerStats.length > 0 && (
             <StaggerGroup as="ul" className="pd-metrics pd-metrics--compact" stagger={0.04}>
-              {stats.map(([value, label]) => (
+              {careerStats.map(([value, label]) => (
                 <StaggerItem as="li" className="pd-metric" key={label}>
                   <strong>{value}</strong>
                   <small>{label}</small>

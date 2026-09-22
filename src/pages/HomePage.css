@@ -84,6 +84,11 @@ body .faq-section.faq-spacing {
    reader is actually heading towards the FAQ. */
 .faq-accordion {
   display: block;
+  /* The section spans the full --site-measure rail; a question that wide
+     separates the text from its chevron trigger and sets a line length nobody
+     can scan. Cap the accordion to a readable measure and centre it. */
+  max-width: min(920px, 100%);
+  margin-inline: auto;
 }
 
 .faq-mobile-animated-list {

@@ -40,7 +40,7 @@ export const buildSort = (sort, order = "desc") => {
 
 const buildFilter = (
   Model,
-  {search, status, category, featured, showOnAlumniPage, includeDeleted = false, deleted = false, extra = {}},
+  {search, status, category, featured, showOnAlumniPage, showOnCareerPage, includeDeleted = false, deleted = false, extra = {}},
 ) => {
   const filter = {...extra};
 
@@ -54,6 +54,7 @@ const buildFilter = (
   if (category) filter.category = category;
   if (typeof featured === "boolean") filter.featured = featured;
   if (typeof showOnAlumniPage === "boolean") filter.showOnAlumniPage = showOnAlumniPage;
+  if (typeof showOnCareerPage === "boolean") filter.showOnCareerPage = showOnCareerPage;
 
   if (search) {
     // A regex OR across the model's declared searchable fields rather than

@@ -3,7 +3,7 @@
 export const mentors = [
   {
     id: "aditya-sharma",
-    photo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/faculty1-de594e86.jpg?updatedAt=1784010443438",
+    photo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/faculty1-de594e86_jpg.webp?updatedAt=1784010443438",
     discipline: "Product Management",
     name: "Aditya Sharma",
     description: "senior developer",
@@ -28,7 +28,7 @@ export const mentors = [
   },
   {
     id: "antriksh-kumar",
-    photo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/faculty2-93539455.jpg?updatedAt=1784010443180",
+    photo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/faculty2-93539455_jpg.webp?updatedAt=1784010443180",
     discipline: "Analytics",
     name: "Antriksh Kumar",
     role: "Sr. Data Analyst at Capgemini",
@@ -45,7 +45,7 @@ export const mentors = [
   },
   {
     id: "prateek-singh",
-    photo:  "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/faculty3-1fbba623.jpg?updatedAt=1784010442857",
+    photo:  "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/faculty3-1fbba623_jpg.webp?updatedAt=1784010442857",
     discipline: "Product Management",
     name: "Prateek Singh",
     role: "Product Manager at Deloitte",
@@ -71,7 +71,7 @@ export const mentors = [
   },
   {
     id: "gagan-chaudhary",
-    photo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/faculty4-856a91e8.jpg?updatedAt=1784010443568",
+    photo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/faculty4-856a91e8_jpg.webp?updatedAt=1784010443568",
     discipline: "Data Science",
     name: "Gagan Chaudhary",
     role: "Sr. Data Scientist & GEN AI Expert at Accenture",
@@ -96,10 +96,11 @@ export const mentors = [
       "NLP",
     ],
     courseSlug: "data-science-ai",
+    courseSlugs: ["data-science-ai", "gen-ai"],
   },
   {
     id: "surya-deepta-mazumdaar",
-    photo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/faculty5-2429702b.jpg?updatedAt=1784010442770",
+    photo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/faculty5-2429702b_jpg.webp?updatedAt=1784010442770",
     discipline: "Data Science",
     name: "Surya Deepta Mazumdaar",
     role: "Decision Scientist at Mu Sigma Inc.",
@@ -124,7 +125,7 @@ export const mentors = [
   },
   {
     id: "ashwani-jain",
-    photo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/faculty6-d366f6dd.jpg?updatedAt=1784010442986",
+    photo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/faculty6-d366f6dd_jpg.webp?updatedAt=1784010442986",
     discipline: "Product Management",
     name: "Ashwani Jain",
     role: "Senior Product Manager",
@@ -150,7 +151,7 @@ export const mentors = [
   
   {
     id: "geetanjali-adhikari",
-    photo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/faculty7-0548a4b9.jpg?updatedAt=1784010443376",
+    photo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/faculty7-0548a4b9_jpg.webp?updatedAt=1784010443376",
     discipline: "Product Management",
     name: "Geetanjali Adhikari",
     role: "Deputy Manager at Tata AIG",
@@ -175,7 +176,7 @@ export const mentors = [
   },
   {
     id: "Pankaj Kumar",
-    photo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/faculty8-65907da2.jpg",
+    photo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/faculty8-65907da2_jpg.webp",
     discipline: "Product Management",
     name: "Pankaj Kumar",
     role: "Senior Product Manager",
@@ -200,7 +201,7 @@ export const mentors = [
   },
   {
     id: "Awantika Sinha",
-    photo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/Screenshot-2026-07-16-171225-596ad29f.jpg",
+    photo: "https://ik.imagekit.io/q7ucn1rfni/careerveda/faculty/Screenshot-2026-07-16-171225-596ad29f_jpg.webp",
     discipline: "Business Analytics",
     name: "Awantika Sinha",
     role: "Senior Business Analyst",

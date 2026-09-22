@@ -10,9 +10,10 @@
  *                       tinted surface below lives on that field
  *   .site-nav      the floating glass dock (global — the navbar is white glass
  *                  above every route, matching what ships today)
- *   section skins  Recommended programs → white board; Learner outcomes →
- *                  white cards on a soft blue/lavender atmosphere; FAQ → white;
- *                  Trusted companies → white band + white logo cards
+ *   section skins  FAQ → white; Trusted companies → white band + white logo
+ *                  cards. (The Recommended programs and Learner outcomes strips
+ *                  now live in their own stylesheets — RecommendedCourses1.css
+ *                  and learner-outcomes.css — not here.)
  *   .site-footer   the existing dark-navy footer, re-affirmed (it stays dark)
  *
  * Consultation keeps its own deep-blue/purple CTA card exactly as designed — it
@@ -118,7 +119,7 @@ body .spline-page.spline-page--grid .hero-copy .eyebrow {
   border-radius: 999px;
   color: var(--cv-blue) !important;
   background: rgba(255, 255, 255, 0.72);
-  font-size: 11px !important;
+  font-size: var(--t-xs) !important;
   letter-spacing: 0.08em !important;
   box-shadow: 0 8px 22px rgba(37, 99, 235, 0.07);
 }
@@ -249,17 +250,15 @@ body .spline-page.spline-page--grid .hero-spline-stage::before {
 }
 body .spline-page.spline-page--grid .ai-label {
   color: #1e3a8a !important;
-  background:
-    linear-gradient(165deg, rgba(255, 255, 255, 1), rgba(238, 246, 255, 0.96)) !important;
-  border-color: rgba(37, 99, 235, 0.42) !important;
-  box-shadow:
-    0 14px 30px rgba(30, 64, 175, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
-  border-radius: 14px !important;
-  min-height: 42px;
-  padding: 0 17px;
-  font-size: 13.5px;
-  font-weight: 800;
+  background: transparent !important;
+  border-color: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  min-height: 0 !important;
+  padding: 0 4px !important;
+  font-size: var(--t-sm) !important;
+  font-weight: 700 !important;
 }
 
 /* Stats proof strip: a white glass rail with navy numerals and blue values. */
@@ -281,115 +280,7 @@ body .spline-page.spline-page--grid .stat-strip strong {
   color: var(--cv-blue) !important;
 }
 
-/* ── Shared white surfaces for the page's data-backed sections ─────────────
-   Only FULL-BLEED bands are made transparent (they read the shared field).
-   The consultation section is deliberately absent: its deep blue/purple CTA
-   card is a designed surface that stays. */
-body .spline-page.spline-page--grid .recommended-courses-section {
-  border-color: rgba(16, 42, 92, 0.07) !important;
-  background:
-    radial-gradient(92% 82% at 12% 0%, rgba(37, 99, 235, 0.06), transparent 55%),
-    radial-gradient(72% 70% at 92% 16%, rgba(124, 58, 237, 0.05), transparent 55%),
-    radial-gradient(100% 82% at 50% 120%, rgba(85, 199, 255, 0.055), transparent 60%),
-    linear-gradient(180deg, #ffffff 0%, #f6faff 100%) !important;
-  box-shadow:
-    0 0 0 1px rgba(16, 42, 92, 0.03),
-    0 30px 80px rgba(30, 64, 175, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
-}
-body .spline-page.spline-page--grid .recommended-courses-section::before {
-  background-image: none !important;
-}
-body .spline-page.spline-page--grid .recommended-courses-section::after {
-  background: radial-gradient(circle, rgba(37, 99, 235, 0.18), transparent 68%) !important;
-}
-body .spline-page.spline-page--grid .rc-header .rc-eyebrow {
-  color: var(--cv-blue) !important;
-}
-body .spline-page.spline-page--grid .rc-header h2 {
-  background: linear-gradient(112deg, #102a5c 0%, #2563eb 52%, #7c3aed 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent !important;
-}
-body .spline-page.spline-page--grid .rc-header span {
-  color: rgba(16, 42, 92, 0.64) !important;
-}
-
-/* Learner outcomes: white card surfaces on a soft blue/lavender atmosphere,
-   the teal accents moved to the blue/cyan family. */
-body .spline-page.spline-page--grid .learner-outcomes {
-  color: var(--cv-navy) !important;
-  background:
-    radial-gradient(56% 48% at 90% 26%, rgba(124, 58, 237, 0.055), transparent 62%),
-    radial-gradient(48% 52% at 4% 72%, rgba(85, 199, 255, 0.055), transparent 64%),
-    transparent !important;
-}
-body .spline-page.spline-page--grid .learner-header h2 {
-  color: var(--cv-navy) !important;
-}
-body .spline-page.spline-page--grid .learner-eyebrow {
-  color: var(--cv-blue) !important;
-}
-body .spline-page.spline-page--grid .learner-highlight {
-  color: var(--cv-blue) !important;
-}
-body .spline-page.spline-page--grid .learner-lead {
-  color: rgba(16, 42, 92, 0.68) !important;
-}
-body .spline-page.spline-page--grid .learner-metrics {
-  background: rgba(255, 255, 255, 0.86) !important;
-  border-color: rgba(16, 42, 92, 0.08) !important;
-  box-shadow: 0 20px 50px rgba(30, 64, 175, 0.08) !important;
-}
-body .spline-page.spline-page--grid .learner-metric + .learner-metric {
-  border-color: rgba(16, 42, 92, 0.07) !important;
-}
-body .spline-page.spline-page--grid .learner-metric dt {
-  color: rgba(16, 42, 92, 0.58) !important;
-}
-body .spline-page.spline-page--grid .learner-metric dd {
-  color: var(--cv-electric-blue) !important;
-}
-body .spline-page.spline-page--grid .learner-story-inner {
-  background: rgba(255, 255, 255, 0.86) !important;
-  border-color: rgba(16, 42, 92, 0.08) !important;
-  box-shadow: 0 20px 50px rgba(30, 64, 175, 0.08) !important;
-}
-body .spline-page.spline-page--grid .learner-story--featured .learner-story-inner {
-  background:
-    linear-gradient(145deg, rgba(37, 99, 235, 0.05), rgba(255, 255, 255, 0.02)),
-    radial-gradient(120% 130% at 12% 0%, rgba(56, 189, 248, 0.07), transparent 58%) !important;
-  border-color: rgba(16, 42, 92, 0.08) !important;
-}
-body .spline-page.spline-page--grid .learner-story-inner::before {
-  color: rgba(37, 99, 235, 0.08) !important;
-}
-body .spline-page.spline-page--grid .learner-quote p {
-  color: rgba(16, 42, 92, 0.8) !important;
-}
-body .spline-page.spline-page--grid .learner-chip {
-  color: #1d4ed8 !important;
-  border-color: rgba(37, 99, 235, 0.28) !important;
-  background: rgba(37, 99, 235, 0.07) !important;
-}
-body .spline-page.spline-page--grid .learner-quote-mark {
-  color: rgba(16, 42, 92, 0.12) !important;
-}
-body .spline-page.spline-page--grid .learner-learner {
-  border-color: rgba(16, 42, 92, 0.07) !important;
-}
-body .spline-page.spline-page--grid .learner-learner-copy strong {
-  color: var(--cv-navy) !important;
-}
-body .spline-page.spline-page--grid .learner-learner-copy small {
-  color: rgba(16, 42, 92, 0.55) !important;
-}
-body .spline-page.spline-page--grid .learner-learner-copy em {
-  color: var(--cv-blue) !important;
-}
-
-/* Trusted companies: transparent band so the white field shows, white logo
+/* ── Trusted companies: transparent band so the white field shows, white logo
    cards with a quiet navy border/shadow scale. */
 body .spline-page.spline-page--grid .trusted-companies h2 {
   color: var(--cv-navy) !important;
@@ -603,12 +494,12 @@ body .site-footer {
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 @media (min-width: 1025px) and (max-width: 1199px) {
   /* The label ring folds into two horizontal bands above and below the robot
-     at this width, so the floating cards come back to band-friendly sizing. */
+     at this width, so the labels come back to band-friendly sizing. They stay
+     plain text — no pill surface. */
   body .spline-page.spline-page--grid .ai-label {
-    min-height: 38px;
-    padding: 0 14px;
-    font-size: 12.5px;
-    border-radius: 14px;
+    min-height: 0 !important;
+    padding: 0 4px !important;
+    font-size: var(--t-sm) !important;
   }
 }
 

@@ -1,29 +1,35 @@
-/* ── Recommended Programs — editorial bento ────────────────────────────────
+/* ── Recommended Programs — editorial bento (light theme) ──────────────────
  *
- * The section is a dark panel, not a white one. The page behind it is the slate
- * body plus the ShapeGrid layer, and the cards are photographs under a heavy
- * scrim: a white surface between the two put a bright band in the middle of a
- * dark page and forced the card artwork to fight it. Dark also settles the
- * contrast problem the old white panel had — light ink on a dark field is one
- * decision for every card, rather than a `:has()` rule per element switching
- * the copy from dark to light depending on whether an image loaded.
+ * This strip is part of CareerVeda's light theme. It used to be a dark navy
+ * panel with light ink; the rest of the site moved to the white atmosphere
+ * (#fafcff canvas, navy #102a5c ink, blue #2563eb accents, white glass
+ * cards), and the bento now matches that system:
+ *
+ *   · the strip is a soft white board (hairline navy border, blue/purple glow
+ *     washes, gentle shadow) sitting on the page's shared light field;
+ *   · every card is a white glass surface with the program artwork fading out
+ *     through a light scrim so the dark ink underneath stays readable to WCAG
+ *     AA on every contact point;
+ *   · ink/muted/blue map to the theme tokens, so "Most Popular", the badges
+ *     and the stat chips all read in the CareerVeda blue family.
  *
  * Layers, back to front:
- *   ::before   the very subtle grid, faded out at the edges
- *   ::after    one large blurred orb
+ *   ::after    one large blurred orb behind the heading
  *   everything else at z-index 1
  *
- * Both decorative layers are CSS. The three.js particle field that used to sit
- * between them is gone — see the note at the top of RecommendedCourses1.jsx.
+ * The decorative layer is CSS. The three.js particle field and scroll parallax
+ * that used to run here are gone — see the note at the top of
+ * RecommendedCourses1.jsx.
  */
 
 .recommended-courses-section {
   --rc-radius: 28px;
-  --rc-blue: #4d8dff;
-  --rc-blue-deep: #1d5fd3;
-  --rc-amber: #ff9d5c;
-  --rc-ink: #f8fafc;
-  --rc-muted: rgba(226, 232, 240, 0.72);
+  --rc-blue: #2563eb;
+  --rc-blue-deep: #1d4ed8;
+  --rc-indigo: #7c3aed;
+  --rc-ink: #102a5c;
+  --rc-muted: #526682;
+  --rc-border: rgba(16, 42, 92, 0.08);
   --rc-gap: clamp(14px, 1.5vw, 22px);
 
   position: relative;
@@ -31,36 +37,20 @@
   margin: clamp(42px, 6vw, 76px) auto 0;
   padding: clamp(28px, 4.2vw, 64px) clamp(20px, 3vw, 46px) clamp(34px, 4.5vw, 68px);
   overflow: hidden;
-  border: 1px solid rgba(148, 178, 255, 0.14);
+  border: 1px solid var(--rc-border);
   border-radius: clamp(28px, 3vw, 40px);
   background:
-    radial-gradient(120% 90% at 12% -10%, rgba(37, 99, 235, 0.34), transparent 58%),
-    radial-gradient(90% 70% at 92% 4%, rgba(249, 115, 22, 0.16), transparent 55%),
-    radial-gradient(120% 120% at 50% 120%, rgba(13, 148, 136, 0.14), transparent 60%),
-    linear-gradient(180deg, #080d20 0%, #05081a 55%, #070b1c 100%);
+    radial-gradient(92% 82% at 12% 0%, rgba(37, 99, 235, 0.06), transparent 55%),
+    radial-gradient(72% 70% at 92% 16%, rgba(124, 58, 237, 0.05), transparent 55%),
+    radial-gradient(100% 82% at 50% 120%, rgba(85, 199, 255, 0.055), transparent 60%),
+    linear-gradient(180deg, #ffffff 0%, #f6faff 100%);
   box-shadow:
-    0 40px 120px rgba(3, 7, 20, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    0 0 0 1px rgba(16, 42, 92, 0.03),
+    0 30px 80px rgba(30, 64, 175, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
   /* The card hover glows and the blurred orb resolve against this panel rather
      than against the page's own stacking context. */
   isolation: isolate;
-}
-
-/* The very subtle grid. Two repeating gradients rather than an image or a
-   second canvas, and masked so the lines dissolve before they reach the panel's
-   rounded edge instead of stopping at it. */
-.recommended-courses-section::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(to right, rgba(148, 178, 255, 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(148, 178, 255, 0.06) 1px, transparent 1px);
-  background-size: 72px 72px;
-  -webkit-mask-image: radial-gradient(120% 100% at 50% 0%, #000 30%, transparent 78%);
-  mask-image: radial-gradient(120% 100% at 50% 0%, #000 30%, transparent 78%);
 }
 
 /* One large blurred orb behind the heading. Blurred once and then only moved,
@@ -75,7 +65,7 @@
   width: min(620px, 70%);
   aspect-ratio: 1;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.42), transparent 68%);
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.18), transparent 68%);
   filter: blur(80px);
   pointer-events: none;
   animation: rc-orb-drift 28s ease-in-out infinite alternate;
@@ -94,7 +84,7 @@
   }
 }
 
-/* The heading and the bento sit above the two decorative layers. */
+/* The heading and the bento sit above the decorative layers. */
 .recommended-courses-section > * {
   position: relative;
   z-index: 1;
@@ -110,7 +100,7 @@
 
 .rc-header .rc-eyebrow {
   margin: 0 0 16px;
-  color: rgba(157, 195, 255, 0.9);
+  color: var(--rc-blue);
   font-family: "Inter", system-ui, sans-serif;
   font-size: 0.72rem;
   font-weight: 800;
@@ -143,7 +133,7 @@
    * the standfirst below — this fixes the painting without moving anything. */
   margin: -0.22em 0;
   padding: 0.22em 0;
-  background: linear-gradient(112deg, #ffffff 0%, #cfe0ff 46%, var(--rc-amber) 100%);
+  background: linear-gradient(112deg, #102a5c 0%, #2563eb 52%, var(--rc-indigo) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent !important;
@@ -170,7 +160,7 @@
      where it still would not fit. */
   max-width: 620px;
   margin: 20px auto 0;
-  color: var(--rc-muted) !important;
+  color: rgba(16, 42, 92, 0.64) !important;
   font-family: "Inter", system-ui, sans-serif;
   font-size: clamp(0.98rem, 1.3vw, 1.1rem);
   line-height: 1.7;
@@ -200,14 +190,14 @@
   flex-direction: column;
   justify-content: flex-end;
   overflow: hidden;
-  border: 1px solid rgba(148, 178, 255, 0.12);
+  border: 1px solid var(--rc-border);
   border-radius: var(--rc-radius);
   /* The fallback the card falls back *to*: a card whose artwork failed to load
      removes its own .rc-media and is left with this. */
   background:
-    radial-gradient(120% 90% at 20% 0%, rgba(37, 99, 235, 0.4), transparent 62%),
-    linear-gradient(180deg, #101836, #070c1d);
-  box-shadow: 0 18px 46px rgba(3, 7, 20, 0.42);
+    radial-gradient(120% 90% at 20% 0%, rgba(37, 99, 235, 0.08), transparent 62%),
+    linear-gradient(180deg, #ffffff 0%, #f4f8ff 100%);
+  box-shadow: 0 18px 46px rgba(30, 64, 175, 0.08);
   /* No `transform` in this transition, and no :hover transform below: the
      reveal leaves framer-motion's inline transform on this element, which an
      author-level rule cannot override. The -8px lift is framer's whileHover —
@@ -239,7 +229,7 @@
    Without this a keyboard visitor tabbing through the bento would land on each
    card with nothing on screen to show where they are. */
 .rc-link:focus-visible {
-  outline: 2px solid #ffffff;
+  outline: 3px solid rgba(37, 99, 235, 0.55);
   outline-offset: -4px;
 }
 
@@ -268,51 +258,31 @@
 /* The scrim. Its own element rather than a pseudo-element on .rc-media,
    because the media layer moves and zooms and the scrim must not.
  *
- * Two gradients, one per axis, and the horizontal one is the important half.
- *
- * A purely vertical scrim was not enough, and the reason is where the copy
- * actually sits: .rc-body is bottom-LEFT aligned on every slot. On the wide
- * slots (panel, banner, and the hero's second column) the paragraph therefore
- * runs across the middle of the card beside the artwork rather than under the
- * foot of it, in the band where the old gradient was still only 0.34–0.75 —
- * and the artwork on these cards is bright, high-contrast AI/tech imagery.
- * Measured against the rendered pixels, the worst spot behind a description
- * fell to 1.35:1 (WCAG AA wants 4.5:1 for body text): white type over a bright
- * neural-net render, effectively unreadable.
- *
- * The horizontal wash darkens the left column where the type lives and lets the
- * right side of the picture stay vivid, which is what keeps this looking like an
- * editorial card rather than a photo behind a grey sheet. The vertical one is
- * correspondingly *lighter* than it was (0.7 at the foot, not 0.9), because the
- * two multiply: stacking the old vertical values under this would have taken the
- * bottom-left corner to ~0.99 and painted the artwork out entirely.
- *
- * Combined alpha at the corners: ~0.92 bottom-left (where the copy is), ~0.70
- * bottom-right, ~0.05 top-right (artwork untouched). */
+ * On the light bento the copy sits bottom-LEFT on every slot in navy ink, so
+ * the artwork has to fade out through white by the time the ink starts,
+ * instead of fading in through black. The gradient is deliberately shallow at
+ * the top (the upper half of every card keeps a vivid picture) and whites out
+ * around the badge/title band. With .rc-body::before doing the same locally,
+ * the worst combined alpha behind body text is ~0.99 white — navy type at that
+ * opacity clears WCAG AA comfortably.
+ */
 .rc-scrim {
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background:
-    linear-gradient(
-      90deg,
-      rgba(4, 8, 20, 0.72) 0%,
-      rgba(4, 8, 20, 0.5) 35%,
-      rgba(4, 8, 20, 0.12) 68%,
-      rgba(4, 8, 20, 0) 100%
-    ),
-    linear-gradient(
-      180deg,
-      rgba(4, 8, 20, 0.05) 0%,
-      rgba(4, 8, 20, 0.25) 45%,
-      rgba(4, 8, 20, 0.55) 80%,
-      rgba(4, 8, 20, 0.7) 100%
-    );
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0) 34%,
+    rgba(255, 255, 255, 0.88) 58%,
+    rgba(255, 255, 255, 0.97) 78%,
+    #ffffff 100%
+  );
   transition: opacity 0.42s ease;
 }
 
-/* The hover layer: a blue wash from the bottom-left, and the drifting dot
+/* The hover layer: a soft blue wash from the bottom-left, and the drifting dot
    field over it. Both live on one element so a hover promotes one layer rather
    than three, and both are off until the pointer arrives. */
 .rc-glow {
@@ -322,8 +292,8 @@
   opacity: 0;
   pointer-events: none;
   background:
-    radial-gradient(70% 60% at 8% 100%, rgba(77, 141, 255, 0.4), transparent 70%),
-    radial-gradient(circle, rgba(190, 216, 255, 0.5) 1px, transparent 1.4px);
+    radial-gradient(70% 60% at 8% 100%, rgba(37, 99, 235, 0.16), transparent 70%),
+    radial-gradient(circle, rgba(37, 99, 235, 0.22) 1px, transparent 1.4px);
   background-size:
     auto,
     26px 26px;
@@ -348,20 +318,20 @@
   pointer-events: none;
 }
 
-/* A scrim that belongs to the copy rather than to the card.
+/* A local wash that belongs to the copy rather than to the card.
  *
  * .rc-scrim above handles the card as a whole, but it cannot win on the narrow
  * slots: `compact` is 367px and `wide`/`tall` are 465px, and the paragraph runs
- * to within a few pixels of the right edge on all three. A card-wide horizontal
- * gradient dark enough to cover that last column has, by then, covered the whole
+ * to within a few pixels of the right edge on all three. A card-wide gradient
+ * white enough to cover that last column has, by then, covered the whole
  * picture — the choice is a readable card or a visible one.
  *
- * Anchoring the gradient to .rc-body instead sidesteps the trade: it darkens
+ * Anchoring the gradient to .rc-body instead sidesteps the trade: it whites
  * exactly the block the type occupies, at whatever size that block happens to
- * be, and leaves every part of the artwork the copy does not touch alone. The
- * bleed pushes it a little past the text on each side so the edge lands in the
- * padding and reads as a soft foot to the card, not as a rectangle behind the
- * words.
+ * be, and lets even a bright picture stay vivid everywhere the copy does not
+ * touch. The bleed pushes it a little past the text on each side so the edge
+ * lands in the padding and reads as a soft foot to the card, not as a rectangle
+ * behind the words.
  *
  * z-index: -1 puts it behind the copy but still inside .rc-body's own stacking
  * context (position + z-index: 3 above), so it stays above .rc-media, .rc-scrim
@@ -374,10 +344,10 @@
   pointer-events: none;
   background: linear-gradient(
     180deg,
-    rgba(4, 8, 20, 0) 0%,
-    rgba(4, 8, 20, 0.55) 26%,
-    rgba(4, 8, 20, 0.82) 58%,
-    rgba(4, 8, 20, 0.9) 100%
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.72) 30%,
+    rgba(255, 255, 255, 0.94) 60%,
+    #ffffff 100%
   );
 }
 
@@ -385,11 +355,11 @@
   display: inline-flex;
   align-items: center;
   padding: 6px 11px;
-  border: 1px solid rgba(255, 157, 92, 0.42);
+  border: 1px solid rgba(37, 99, 235, 0.28);
   border-radius: 999px;
-  /* Flat, not a backdrop blur. See the note above .rc-stat. */
-  background: rgba(249, 115, 22, 0.26);
-  color: #ffd9c2 !important;
+  /* Flat, not a backdrop blur. See the note about flat chips below .rc-stat. */
+  background: rgba(37, 99, 235, 0.07);
+  color: #1d4ed8 !important;
   font-family: "Inter", system-ui, sans-serif;
   font-size: 0.6rem;
   font-weight: 800;
@@ -410,7 +380,7 @@
 
 .recommended-courses-section .rc-kicker {
   margin: 0;
-  color: rgba(157, 195, 255, 0.95) !important;
+  color: var(--rc-blue) !important;
   font-family: "Manrope", "Inter", system-ui, sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
@@ -441,43 +411,59 @@
 .rc-stats {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  align-items: center;
+  gap: 6px 10px;
   margin: 4px 0 0;
   padding: 0;
+  color: var(--rc-muted);
 }
 
-/* Flat background, no backdrop blur. A backdrop-filter has to re-sample
-   everything behind it, and it does that again on every frame anything behind
-   it moves — which here is the parallaxing artwork, i.e. every scroll frame.
-   Six cards carry a badge and three chips each, so that was 24 re-sampling
-   layers fighting the scroll. The chips already sit on a dark card behind a
-   scrim, which is most of what the blur was producing; an opaquer fill is
-   pixel-wise close and costs nothing. */
+/* The old three bordered chips (Duration / Format / Highlight) stacked visual
+   noise on every card. They are now one quiet meta line — values joined by a
+   dot, no borders, no background — so the eye compares programs on the two
+   numbers that matter instead of parsing nine separate boxes. The dt labels
+   are visually hidden but stay in the DOM and keep the semantic pairing. */
 .rc-stat {
-  padding: 8px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 14px;
-  background: rgba(8, 13, 32, 0.72);
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  font-size: var(--t-sm);
+  font-weight: 600;
+  line-height: 1.2;
 }
 
+.rc-stat:not(:last-child)::after {
+  content: "";
+  width: 3px;
+  height: 3px;
+  margin-left: 10px;
+  border-radius: 50%;
+  background: rgba(16, 42, 92, 0.3);
+}
+
+/* Labels stay for assistive tech and for the value-label pairing; they just
+   stop being a second row of uppercase micro-type on the visual. */
 .recommended-courses-section .rc-stat dt {
-  margin: 0 0 3px;
-  color: rgba(203, 213, 225, 0.66) !important;
-  font-family: "Inter", system-ui, sans-serif;
-  font-size: 0.56rem;
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .recommended-courses-section .rc-stat dd {
   margin: 0;
-  color: #ffffff !important;
+  color: var(--rc-ink) !important;
   font-family: "Manrope", "Inter", system-ui, sans-serif;
-  font-size: 0.8rem;
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.2;
 }
 
 /* ── CTA ──────────────────────────────────────────────────────────────────── */
@@ -487,7 +473,7 @@
   align-items: center;
   gap: 8px;
   margin-top: 6px;
-  color: #ffffff !important;
+  color: var(--rc-blue) !important;
   font-family: "Inter", system-ui, sans-serif;
   font-size: 0.82rem;
   font-weight: 700;
@@ -621,10 +607,10 @@
      large is the most expensive thing a pointer can trigger here. The ring and
      the blue cast do the same job in one layer. */
   .rc-card.is-linked:hover {
-    border-color: rgba(129, 173, 255, 0.42);
+    border-color: rgba(37, 99, 235, 0.3);
     box-shadow:
-      0 0 0 1px rgba(77, 141, 255, 0.24),
-      0 26px 60px rgba(6, 24, 70, 0.62);
+      0 0 0 1px rgba(37, 99, 235, 0.16),
+      0 26px 60px rgba(30, 64, 175, 0.14);
   }
 
   .rc-card.is-linked:hover .rc-media img {
@@ -634,7 +620,7 @@
   /* The scrim eases off, so the card the reader is pointing at shows more of
      its artwork than its neighbours. */
   .rc-card.is-linked:hover .rc-scrim {
-    opacity: 0.78;
+    opacity: 0.82;
   }
 
   /* Fades in, does not drift. The drift was an animated background-position,
@@ -652,7 +638,7 @@
   /* The keyboard equivalent. Without it a card reached by Tab gets the focus
      ring and none of the state the pointer would have given it. */
   .rc-card.is-linked:focus-within {
-    border-color: rgba(129, 173, 255, 0.42);
+    border-color: rgba(37, 99, 235, 0.3);
   }
 
   .rc-card.is-linked:focus-within .rc-glow {

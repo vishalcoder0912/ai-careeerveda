@@ -36,6 +36,9 @@
 		"test:load": "node scripts/load-test.mjs",
 		"test:visual": "playwright test --grep @visual",
 		"test:visual:update": "playwright test --grep @visual --update-snapshots",
+		"test:selenium": "node scripts/selenium.mjs",
+		"test:selenium:headed": "node scripts/selenium.mjs --headed",
+		"test:selenium:firefox": "node scripts/selenium.mjs --browser firefox",
 		"check": "npm run lint && npm run test:all && npm run build:all",
 		"preview": "vite preview",
 		"serve:dist": "node scripts/serve-dist.cjs",
@@ -64,6 +67,7 @@
 		"framer-motion": "^12.43.0",
 		"gsap": "^3.15.0",
 		"lenis": "^1.3.25",
+		"lucide-react": "1.47.0",
 		"mongodb": "^7.5.0",
 		"react": "^19.2.8",
 		"react-dom": "^19.2.8",
@@ -90,6 +94,7 @@
 		"jest-environment-jsdom": "^30.4.1",
 		"jsdom": "^30.0.1",
 		"rollup-plugin-visualizer": "^7.1.1",
+		"selenium-webdriver": "^4.49.0",
 		"vitest": "^4.1.10"
 	},
 	"allowScripts": {

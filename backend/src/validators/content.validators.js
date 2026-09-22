@@ -89,6 +89,7 @@ export const programBody = z.object({
         title: optionalText(300),
         duration: optionalText(60),
         points: stringArray(60),
+        deliverable: optionalText(300),
       }),
     )
     .max(60)
@@ -175,6 +176,7 @@ export const alumniBody = z.object({
   accent: optionalText(20),
   accentEnd: optionalText(20),
   showOnAlumniPage: z.boolean().optional(),
+  showOnCareerPage: z.boolean().optional(),
 });
 
 export const blogBody = z.object({
@@ -303,6 +305,12 @@ export const publicListQuery = z.object({
   // on the other resources: nothing sets the field, so nothing matches, and no
   // page requests it.
   showOnAlumniPage: z
+    .enum(["true", "false"])
+    .transform((value) => value === "true")
+    .optional(),
+  // Alumni only — the program detail pages' Career Outcomes testimonials. Same
+  // treatment: a query parameter nobody else sends is simply never applied.
+  showOnCareerPage: z
     .enum(["true", "false"])
     .transform((value) => value === "true")
     .optional(),

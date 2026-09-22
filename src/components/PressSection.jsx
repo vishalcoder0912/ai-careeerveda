@@ -1,5 +1,5 @@
-import {memo, useLayoutEffect, useRef, useState} from "react";
-import {motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform} from "framer-motion";
+import {memo, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
+import {motion, useMotionValueEvent, useReducedMotion, useScroll, useSpring, useTransform} from "framer-motion";
 import {Reveal} from "./motionPrimitives";
 import {pressArticles, pressLogos, pressOutlets} from "../data/pressArticles";
 import {cdnImage} from "../lib/imageCdn";
@@ -109,10 +109,48 @@ const OutletChip = memo(({source}) => {
   );
 });
 
+// A stat value like "300+" or "20+ LPA" or "68%": count the numeric core up
+// from zero the first time the story holding it takes the stage, keeping the
+// suffix steady. Runs once per card (pinned via startedRef), honours reduced
+// motion, and falls back to the literal string for anything non-numeric.
+const STAT_NUM_RE = /^([\d.,]+)(.*)$/;
+
+const PressCount = ({children, active}) => {
+  const reducedMotion = useReducedMotion();
+  const value = String(children ?? "");
+  const parsed = useMemo(() => STAT_NUM_RE.exec(value), [value]);
+  const [display, setDisplay] = useState(() => {
+    if (!parsed || reducedMotion) return value;
+    return `0${parsed[2]}`;
+  });
+
+  useEffect(() => {
+    if (!parsed || reducedMotion) return;
+    if (!active) return;
+
+    const target = parseFloat(parsed[1].replace(/,/g, ""));
+    if (!Number.isFinite(target)) return;
+    const suffix = parsed[2];
+    const DURATION = 1150;
+    const start = performance.now();
+    let raf = 0;
+    const tick = (now) => {
+      const t = Math.max(0, Math.min(1, (now - start) / DURATION));
+      const eased = 1 - Math.pow(1 - t, 3);
+      setDisplay(`${Math.round(target * eased).toLocaleString("en-US")}${suffix}`);
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [parsed, value, active, reducedMotion]);
+
+  return <strong>{display}</strong>;
+};
+
 // The body of one story, mode-agnostic. The pinned lane and the reduced-motion
 // narrative render the same inner content — the caller supplies the wrapper —
 // so a content edit can never drift between layouts.
-const StoryBody = memo(({article, kind}) => {
+const StoryBody = memo(({article, kind, entered}) => {
   if (kind === "wall") {
     return (
       <div className="press-story__inner press-story__inner--center">
@@ -150,7 +188,7 @@ const StoryBody = memo(({article, kind}) => {
           <div className="press-story__stats">
             {article.stats.map(([value, label]) => (
               <div className="press-story__stat" key={label}>
-                <strong>{value}</strong>
+                <PressCount active={entered}>{value}</PressCount>
                 <span>{label}</span>
               </div>
             ))}
@@ -210,17 +248,17 @@ const StoryLaneCard = memo(({story, index, total, scrollYProgress, isActive}) =>
   // time the visitor hands the stage over (documented in press-section.css);
   // users read that repeat as the section re-rendering itself. This flag pins
   // the finished rise so a story handed back the stage is already visible.
+  // Deriving it via the "adjust state during render" pattern keeps the rise
+  // applied in the same commit (no effect, no cascading render).
   const [entered, setEntered] = useState(false);
-  useLayoutEffect(() => {
-    if (isActive) setEntered(true);
-  }, [isActive]);
+  if (isActive && !entered) setEntered(true);
 
   return (
     <motion.article
       className={`press-story press-story--${story.accentClass}${isActive ? " is-active" : ""}${entered ? " is-entered" : ""}`}
       style={{zIndex, scale, opacity, x, ...storyAccentStyle(story)}}
     >
-      <StoryBody article={story.article} kind={story.kind} />
+      <StoryBody article={story.article} kind={story.kind} entered={entered} />
     </motion.article>
   );
 });
@@ -246,15 +284,40 @@ const PressSection = () => {
     offset: ["start start", "end end"],
   });
 
+  // The scrub is sprung, not raw: the lane keeps gliding a beat after the
+  // fingers stop, so the story hand-offs feel weighty rather than clutching
+  // to the scrollbar. Over-damped (damping > 2*sqrt(stiffness*mass)), so it
+  // settles without an overshoot that would park a card off-centre.
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 26,
+    mass: 0.6,
+  });
+  const progress = animated ? smoothProgress : scrollYProgress;
+
   // The lane slides so that timeline stop `i` lands in the active column:
   // x = -i * step. `step` is measured, not state, so a resize never re-renders
   // the tree — the transform simply reads the fresh number on its next scroll
   // evaluation.
-  const trackX = useTransform(scrollYProgress, (value) => -stepRef.current * (storyCount - 1) * value);
+  const trackX = useTransform(progress, (value) => -stepRef.current * (storyCount - 1) * value);
 
-  useMotionValueEvent(scrollYProgress, "change", (value) => {
+  useMotionValueEvent(progress, "change", (value) => {
     setActive(value < 0.22 ? 0 : value < 0.69 ? 1 : 2);
   });
+
+  // Jump the scrub to a given story's stop on the lane. The stage's pins run
+  // from its top arriving at the viewport top (progress 0) to its bottom
+  // leaving (progress 1), so story i's stop sits at i/(n-1) of that run —
+  // scroll there directly rather than re-engineering the spring.
+  const goToStory = (index) => {
+    const wrapper = scrollRef.current;
+    if (!wrapper) return;
+    const rect = wrapper.getBoundingClientRect();
+    const run = Math.max(0, rect.height - window.innerHeight);
+    const value = storyCount > 1 ? index / (storyCount - 1) : 0;
+    const top = window.scrollY + rect.top + run * value;
+    window.scrollTo({top, behavior: reducedMotion ? "auto" : "smooth"});
+  };
 
   // Measure the lane step (card width + gap). Triggered on mount, font settle
   // and resize; the width is vw-derived so fonts changing cannot move it, but
@@ -323,7 +386,7 @@ const PressSection = () => {
                   story={story}
                   index={index}
                   total={storyCount}
-                  scrollYProgress={scrollYProgress}
+                  scrollYProgress={progress}
                   isActive={index === active}
                 />
               ))}
@@ -336,7 +399,7 @@ const PressSection = () => {
                     className={`press-story press-story--${story.accentClass}${index === 0 ? " is-active" : ""}`}
                     style={storyAccentStyle(story)}
                   >
-                    <StoryBody article={story.article} kind={story.kind} />
+<StoryBody article={story.article} kind={story.kind} />
                   </article>
                 </Reveal>
               ))}
@@ -344,18 +407,56 @@ const PressSection = () => {
           )}
 
           {animated && (
-            <div
+            // The rail is the section's only explicit control: previous / next
+            // arrows and one dot per story, so a reader who clocked the
+            // horizontal lane knows it moves and can move it without scrolling
+            // the whole page. Interactive stories make the dots honest buttons
+            // — pagination, not decoration.
+            <nav
               className="press-rail"
               style={{"--accent": activeStory.accent.main}}
-              aria-hidden="true"
+              aria-label="Story navigation"
             >
-              <span className="press-rail__count">0{active + 1} / 03</span>
-              {stories.map((story, index) => (
-                <span key={story.id} className={`press-rail__dot${index === active ? " is-active" : ""}`}>
-                  0{index + 1}
-                </span>
-              ))}
-            </div>
+              <button
+                type="button"
+                className="press-rail__btn press-rail__btn--prev"
+                aria-label="Previous story"
+                disabled={active === 0}
+                onClick={() => goToStory(Math.max(0, active - 1))}
+              >
+                <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                  <path d="M15 5l-7 7 7 7" />
+                </svg>
+              </button>
+              <span className="press-rail__count" aria-hidden="true">
+                0{active + 1} / 03
+              </span>
+              <span className="press-rail__pager">
+                {stories.map((story, index) => (
+                  <button
+                    key={story.id}
+                    type="button"
+                    className={`press-rail__dot${index === active ? " is-active" : ""}`}
+                    aria-label={`Go to story ${index + 1}`}
+                    aria-current={index === active ? "true" : undefined}
+                    onClick={() => goToStory(index)}
+                  >
+                    0{index + 1}
+                  </button>
+                ))}
+              </span>
+              <button
+                type="button"
+                className="press-rail__btn press-rail__btn--next"
+                aria-label="Next story"
+                disabled={active === storyCount - 1}
+                onClick={() => goToStory(Math.min(storyCount - 1, active + 1))}
+              >
+                <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                  <path d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </nav>
           )}
         </div>
       </div>

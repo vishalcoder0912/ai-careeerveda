@@ -48,16 +48,18 @@ const alumniSchema = new mongoose.Schema(
 
     // Where a published story is shown, decided per record in the admin panel.
     //
-    // Three surfaces, two flags, on purpose:
-    //   home page outcome strip  → `featured` (from contentPlugin)
-    //   /alumni review grid      → `showOnAlumniPage`, below
-    //   /alumni dome gallery     → every published story, no flag at all
+    // Four surfaces, three flags, on purpose:
+    //   home page outcome strip       → `featured` (from contentPlugin)
+    //   /alumni review grid           → `showOnAlumniPage`, below
+    //   program Career Outcomes       → `showOnCareerPage`, below
+    //   /alumni dome gallery          → every published story, no flag at all
     //
     // The dome is the complete record of who came through, so it is deliberately
     // not filterable — hiding someone from the curated strips should never erase
-    // them from it. The two grids are editorial selections, and independent:
-    // a story can be on one, both, or neither and still appear in the dome.
+    // them from it. The other surfaces are editorial selections, and independent:
+    // a story can be on any of them and still appear in the dome.
     showOnAlumniPage: {type: Boolean, default: false, index: true},
+    showOnCareerPage: {type: Boolean, default: false, index: true},
   },
   {timestamps: true},
 );

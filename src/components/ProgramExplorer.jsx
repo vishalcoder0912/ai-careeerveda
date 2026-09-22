@@ -9,6 +9,7 @@ import {cdnImage} from "../lib/imageCdn";
 import {titleParts} from "./program-detail/programAssist";
 import {matchJobs} from "./program-detail/jobTracks";
 import SkillMark from "./SkillMark";
+import {skillPhoto} from "./skillPhotos";
 import "./program-explorer.css";
 
 // Tab labels are the program sections from the reference, minus the ones the
@@ -102,9 +103,7 @@ const ProgramExplorer = () => {
     offset: ["start end", "end start"],
   });
   const mediaY = useTransform(scrollYProgress, [0, 1], [8, -8]);
-  const chipsY = useTransform(scrollYProgress, [0, 1], [18, -18]);
   const parallaxMediaStyle = {y: prefersReducedMotion ? 0 : mediaY};
-  const parallaxChipsStyle = {y: prefersReducedMotion ? 0 : chipsY};
 
   // The right-hand highlights panel restates the record's own fields next to the
   // card; nothing here is invented. Placement support is read from the badges the
@@ -273,20 +272,6 @@ const ProgramExplorer = () => {
                         />
                       </motion.div>
                     </div>
-                    {activeProgram.skills?.length > 0 && (
-                      <motion.div
-                        className="program-media-chips"
-                        style={parallaxChipsStyle}
-                        aria-hidden="true"
-                      >
-                        {activeProgram.skills.slice(0, 4).map((skill, index) => (
-                          <span key={skill} className={`media-chip media-chip--${index + 1}`}>
-                            <SkillMark name={skill} />
-                            {skill}
-                          </span>
-                        ))}
-                      </motion.div>
-                    )}
                   </div>
                 ) : (
                   <div className="program-status-orb" aria-hidden="true">
@@ -397,39 +382,34 @@ const ProgramExplorer = () => {
               </AnimatePresence>
 
               <div className="program-tool-row">
-                {activeProgram.skills.map((skill) => (
-                  <span key={skill} className="skill-chip">
-                    <SkillMark name={skill} />
-                    {skill}
-                  </span>
-                ))}
+                {activeProgram.skills.map((skill) => {
+                  const photo = skillPhoto(skill);
+                  return (
+                    <span key={skill} className="skill-chip">
+                      {photo ? (
+                        <img
+                          className="skill-chip-photo"
+                          src={photo}
+                          alt=""
+                          width={26}
+                          height={26}
+                          loading="lazy"
+                          decoding="async"
+                          draggable="false"
+                        />
+                      ) : (
+                        <SkillMark name={skill} />
+                      )}
+                      {skill}
+                    </span>
+                  );
+                })}
               </div>
             </motion.div>
           </AnimatePresence>
         </div>
 
-        <div className="program-action-row">
-          {/* No price, no price block. Product Management has no fee set yet, and
-              a bare "Starting from" over an empty line reads as a broken card
-              rather than an honest "not priced yet". */}
-          {activeProgram.startingPrice && (
-            <div className="program-pricing">
-              <small>Starting from</small>
-              <strong>{activeProgram.startingPrice}</strong>
-            </div>
-          )}
-          <div className="program-cta-group">
-            {/* The card is a summary; the full syllabus, fees, batch dates and
-                outcomes live on the program's own page. Note this follows the
-                *displayed* program, so hovering a program in the sidebar and
-                clicking through takes you to the one you were looking at. */}
-            <Link to={`/programs/${activeProgram.id}`} className="cta-primary">
-              Explore Program
-            </Link>
-            <Link to="/#consultation" className="cta-secondary">Download Syllabus</Link>
-          </div>
-        </div>
-      </article>
+        </article>
 
       <aside className="program-highlights" aria-label="Program highlights">
         <div className="program-highlights-head">
