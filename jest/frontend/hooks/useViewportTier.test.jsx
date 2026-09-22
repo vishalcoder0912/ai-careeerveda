@@ -5,14 +5,18 @@
 // first render (a desktop-sized hero must not mount before being swapped out)
 // and that the hook re-reads the media queries when a boundary is crossed —
 // not on every resize.
+//
+// The breakpoints mirror the stylesheet tier system: mobile <= 767,
+// tablet 768-1023, laptop 1024-1199, desktop >= 1200.
 
 import {describe, it, expect, jest, afterEach} from "@jest/globals";
 import {renderHook, act} from "@testing-library/react";
 
 import useViewportTier from "../../../src/hooks/useViewportTier";
 
-const TABLET_QUERY = "(max-width: 980px)";
-const MOBILE_QUERY = "(max-width: 680px)";
+const LAPTOP_QUERY = "(max-width: 1199px)";
+const TABLET_QUERY = "(max-width: 1023px)";
+const MOBILE_QUERY = "(max-width: 767px)";
 
 const listenersByQuery = new Map();
 
@@ -35,15 +39,22 @@ const makeQuery = (media, matches) => {
   };
 };
 
-// Window's matchMedia answers from the two live query objects below, which the
-// tests can flip and then notify, exactly as the browser would at a breakpoint.
+// Window's matchMedia answers from the three live query objects below, which
+// the tests can flip and then notify, exactly as the browser would at a
+// breakpoint.
+let laptopQuery;
 let tabletQuery;
 let mobileQuery;
 
-const stubMatchMedia = ({tablet = false, mobile = false} = {}) => {
+const stubMatchMedia = ({laptop = false, tablet = false, mobile = false} = {}) => {
+  laptopQuery = makeQuery(LAPTOP_QUERY, laptop);
   tabletQuery = makeQuery(TABLET_QUERY, tablet);
   mobileQuery = makeQuery(MOBILE_QUERY, mobile);
-  window.matchMedia = jest.fn((media) => (media === TABLET_QUERY ? tabletQuery : mobileQuery));
+  window.matchMedia = jest.fn((media) => {
+    if (media === LAPTOP_QUERY) return laptopQuery;
+    if (media === TABLET_QUERY) return tabletQuery;
+    return mobileQuery;
+  });
   return window.matchMedia;
 };
 
@@ -101,21 +112,23 @@ describe("useViewportTier", () => {
     expect(result.current).toBe("tablet");
   });
 
-  it("watches both breakpoints, not just one", () => {
-    const matchMedia = stubMatchMedia({tablet: false, mobile: false});
+  it("watches every breakpoint, not just one", () => {
+    const matchMedia = stubMatchMedia({laptop: false, tablet: false, mobile: false});
 
     renderHook(() => useViewportTier());
 
+    expect(matchMedia).toHaveBeenCalledWith(LAPTOP_QUERY);
     expect(matchMedia).toHaveBeenCalledWith(TABLET_QUERY);
     expect(matchMedia).toHaveBeenCalledWith(MOBILE_QUERY);
   });
 
   it("stops listening when the caller unmounts", () => {
-    stubMatchMedia({tablet: false, mobile: false});
+    stubMatchMedia({laptop: false, tablet: false, mobile: false});
 
     const {unmount} = renderHook(() => useViewportTier());
     unmount();
 
+    expect(laptopQuery.removeEventListener).toHaveBeenCalledWith("change", expect.any(Function));
     expect(tabletQuery.removeEventListener).toHaveBeenCalledWith("change", expect.any(Function));
     expect(mobileQuery.removeEventListener).toHaveBeenCalledWith("change", expect.any(Function));
   });
