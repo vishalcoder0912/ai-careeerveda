@@ -390,10 +390,6 @@
   .program-head-media img {
     aspect-ratio: 16 / 9;
   }
-
-  .program-media-chips {
-    display: none;
-  }
 }
 
 /* ── Meta strip ──────────────────────────── */
@@ -788,6 +784,15 @@
   font-weight: 800;
 }
 
+.skill-chip-photo {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18);
+}
+
 /* ── Action row ──────────────────────────── */
 
 .program-action-row {
@@ -872,7 +877,7 @@
   transform: translateY(-1px);
 }
 
-/* ── Media visual & floating chips ──────── */
+/* ── Media visual ────────────────────────── */
 
 .program-head-visual {
   position: relative;
@@ -881,68 +886,8 @@
   flex-shrink: 0;
 }
 
-.program-media-parallax,
-.program-media-chips {
+.program-media-parallax {
   will-change: transform;
-}
-
-.program-media-chips {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.media-chip {
-  position: absolute;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 11px;
-  border: 1px solid rgba(15, 118, 110, 0.16);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.92);
-  color: #0f766e;
-  font-size: 0.7rem;
-  font-weight: 800;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  white-space: nowrap;
-}
-
-.media-chip::before {
-  content: "";
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #10b981;
-  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
-}
-
-/* A real brand logo replaces the little status dot. */
-.media-chip:has(.skill-mark)::before {
-  display: none;
-}
-
-.media-chip--1 {
-  top: -14px;
-  left: -20px;
-}
-
-.media-chip--2 {
-  top: 34%;
-  right: -26px;
-}
-
-.media-chip--3 {
-  bottom: 12%;
-  left: -30px;
-}
-
-.media-chip--4 {
-  right: -14px;
-  bottom: -14px;
 }
 
 /* ── Highlights panel ────────────────────── */
