@@ -1,5 +1,30 @@
+import {useState} from "react";
 import {Reveal, StaggerGroup, StaggerItem} from "../motionPrimitives";
 import SkillMark from "../SkillMark";
+import {skillPhoto} from "../skillPhotos";
+
+// The small real photograph to the left of a skill tag, when one exists. Falls
+// back to the brand icon chip on a dead URL, so a broken image can never sit
+// inside a pill.
+const TagPhoto = ({skill}) => {
+  const [failed, setFailed] = useState(false);
+  const src = skillPhoto(skill);
+  if (!src || failed) return <SkillMark name={skill} />;
+
+  return (
+    <img
+      className="pd-tags__photo"
+      src={src}
+      alt=""
+      width={26}
+      height={26}
+      loading="lazy"
+      decoding="async"
+      draggable="false"
+      onError={() => setFailed(true)}
+    />
+  );
+};
 
 // The program's internship and soft-skills tracks, rendered only when the record
 // carries them — the same honesty contract as the rest of the page.
@@ -61,7 +86,7 @@ const ProgramOverview = ({program}) => {
           <ul className="pd-tags" aria-label="Skills covered">
             {program.skills.map((skill) => (
               <li key={skill}>
-                <SkillMark name={skill} />
+                <TagPhoto skill={skill} />
                 {skill}
               </li>
             ))}
