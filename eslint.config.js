@@ -124,6 +124,7 @@ export default [
       "backend/**/*.js",
       "api/**/*.js",
       "scripts/**/*.{js,mjs,cjs}",
+      "selenium/**/*.mjs",
       "*.config.js",
       "*.js",
       // Root .cjs files (babel.config.cjs, the two jest configs) and the jest/
@@ -136,7 +137,7 @@ export default [
 
   // ── Test code ───────────────────────────────────────────────────────────────
   {
-    files: ["**/*.test.{js,jsx}", "**/*.spec.js", "**/tests/**", "e2e/**", "**/test-setup.js"],
+    files: ["**/*.test.{js,jsx,mjs}", "**/*.spec.js", "**/tests/**", "e2e/**", "**/test-setup.js"],
     languageOptions: {globals: {...globals.node, ...globals.browser}},
     rules: {
       // A test that builds a fixture it never asserts on is noise, not an error.
