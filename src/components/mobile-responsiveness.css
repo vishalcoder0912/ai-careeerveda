@@ -969,15 +969,6 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .pd-modules {
-    gap: 10px;
-  }
-
-  .pd-module summary {
-    padding: 16px 18px;
-    font-size: 15px;
-  }
-
   /* MagicBento: 4-column grid works at 1024px */
   .bento-grid {
     grid-template-columns: repeat(4, 1fr);
