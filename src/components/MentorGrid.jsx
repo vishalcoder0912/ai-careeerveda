@@ -311,7 +311,8 @@ const MentorGrid = () => {
         </h2>
         <p>
           Every mentor still works in the field they teach, so what reaches the
-          classroom is the job as it is done this year — not as it was written up
+          classroom is how the job is done this year — not how it was written
+          up in the syllabus years ago.
         </p>
       </Reveal>
 
