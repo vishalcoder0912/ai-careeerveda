@@ -116,7 +116,7 @@ export const reviews = [
     "Product Development at High Radius",
     "This program was exactly what I needed to transition into Product Management the industry-relevant curriculum and strong placement support helped me secure a role at HighRadius. Grateful to Team CareerVeda for the exceptional support throughout my journey!",
     "Product Management",
-    "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever1-4e81fee0.jpg?updatedAt=1783935492818"
+    "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever1-4e81fee0_jpg.webp?updatedAt=1783935492818"
   ],
   [
     "Nikunj Awasthi",
@@ -129,14 +129,14 @@ export const reviews = [
     "Associate Product Manager at Amazon",
     "My journey into Product Management began with a growing interest in understanding customer needs, solving business problems, and building products that create real value. My experience as a Business Analyst at GoKwik gave me valuable exposure to data, business strategy, and customer-focused decision-making. As I explored Product Management further, the Product Management Program at CareerVeda helped me strengthen my understanding of product development, market research, Agile practices, and product strategy. Today, I'm working as an Associate Product Manager at Amazon, where I continue to learn, take on new challenges, and grow every day.",
     "Product Management",
-    "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever5-09021396.jpg?updatedAt=1783937327758",
+    "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever5-09021396_jpg.webp?updatedAt=1783937327758",
   ],
   [
     "Himani Tamta",
     "Associate Product Manager at Wipro",
     "CareerVeda helped me build a strong foundation in problem-solving, feature prioritization, and product planning through practical projects. It equipped me with the data-driven frameworks needed to bridge customer psychology with business growth, ultimately helping me secure my role at Wipro.",
     "Product Management",
-    "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever12jpeg-295bcdbc.jpg",
+    "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever12jpeg-295bcdbc_jpg.webp",
   ],
 ];
 
