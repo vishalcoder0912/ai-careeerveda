@@ -11,6 +11,7 @@ export const loadContactPage = () => import("../pages/ContactPage");
 export const loadAlumniPage = () => import("../pages/AlumniPage");
 export const loadEnrollPage = () => import("../pages/EnrollPage");
 export const loadPolicyPage = () => import("../pages/PolicyPage");
+export const loadGenerativeAIPage = () => import("../cinematic/GenerativeAIPage");
 
 const EXACT_ROUTES = {
   "/programs": loadProgramsPage,
@@ -22,6 +23,7 @@ const EXACT_ROUTES = {
   "/contact": loadContactPage,
   "/alumni": loadAlumniPage,
   "/enroll": loadEnrollPage,
+  "/generative-ai": loadGenerativeAIPage, // cinematic landing page
   "/privacy-policy": loadPolicyPage,
   "/refund-policy": loadPolicyPage,
   "/terms": loadPolicyPage,
