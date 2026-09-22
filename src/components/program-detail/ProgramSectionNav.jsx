@@ -8,6 +8,7 @@ const ProgramSectionNav = ({hasMentors, hasJobs}) => {
       {id: "pd-overview", label: "Overview"},
       {id: "pd-curriculum", label: "Curriculum"},
       {id: "pd-careers", label: "Outcomes"},
+      {id: "pd-salaries", label: "Salaries"},
       ...(hasJobs ? [{id: "pd-jobs", label: "Jobs"}] : []),
       ...(hasMentors ? [{id: "pd-mentors", label: "Faculty"}] : []),
       {id: "pd-fees", label: "Fees"},
