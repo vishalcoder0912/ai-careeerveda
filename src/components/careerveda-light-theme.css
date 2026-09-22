@@ -412,6 +412,32 @@ body .spline-page .support-section .section-label {
   color: #2563eb !important;
 }
 
+/* ── Faculty page: mentor directory heading ("The people who will teach you")
+   lives in the shared .section-heading, which the slate system paints white on
+   the now-light canvas; and its centred flex layout floats the label and
+   paragraph mid-block while the heading itself sits flush-left. Bring back the
+   light-theme colours and align the whole block to the heading's left edge. */
+body .spline-page .mentor-section .section-heading {
+  align-items: flex-start !important;
+  text-align: left !important;
+}
+
+body .spline-page .mentor-section .section-heading :is(h1, h2) {
+  color: #102a5c !important;
+  background: none !important;
+  -webkit-text-fill-color: #102a5c !important;
+}
+
+body .spline-page .mentor-section .section-heading p:not(.section-label) {
+  color: #526682 !important;
+  text-align: left !important;
+  max-width: min(720px, 100%) !important;
+}
+
+body .spline-page .mentor-section .section-label {
+  color: #2563eb !important;
+}
+
 body .spline-page .support-section .section-label::before,
 body .spline-page .support-section .section-label::after {
   background: #2563eb !important;
@@ -649,4 +675,35 @@ body .about-btn-primary {
   border: 0;
   background: linear-gradient(135deg, #2563eb, #4f46e5) !important;
   box-shadow: 0 14px 38px rgba(37, 99, 235, 0.2) !important;
+}
+
+/* ── Footer interactions: theme glow instead of teal/green ──────────────────
+   The legacy slate system paints footer links and the social icon squares flat
+   mint/teal on hover and click (rgba(94,234,212) / rgba(45,212,191)), which
+   reads as green against the navy footer. Re-theme every footer interaction to
+   the site's blue/indigo glow instead — the same #2563eb/#4f46e5 accent used
+   across the light theme — so a hovered, focused or pressed link or icon picks
+   up a soft blue halo rather than a flat green tint. Scoped to body .site-footer
+   with !important to beat slate-color-system.css, which wins via !important. */
+body .site-footer a:hover,
+body .site-footer a:focus-visible,
+body .site-footer a:active {
+  color: #ffffff !important;
+  text-shadow: 0 0 14px rgba(96, 165, 250, 0.75), 0 0 4px rgba(37, 99, 235, 0.55);
+}
+
+body .site-footer a:focus-visible {
+  outline: none;
+}
+
+body .site-footer .social-links a:hover,
+body .site-footer .social-links a:focus-visible,
+body .site-footer .social-links a:active {
+  color: #ffffff !important;
+  border-color: rgba(96, 165, 250, 0.65);
+  background: rgba(37, 99, 235, 0.22);
+  box-shadow:
+    0 0 0 1px rgba(96, 165, 250, 0.4),
+    0 0 26px rgba(37, 99, 235, 0.55),
+    0 0 8px rgba(79, 70, 229, 0.5);
 }
