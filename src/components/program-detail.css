@@ -357,7 +357,8 @@ body main.page-shell.program-detail {
 }
 
 /* When a real brand logo (`.skill-mark`) is present, it replaces the
-   decorative gem entirely. */
+   decorative gem entirely. A small skill photograph (`.pd-tags__photo`) does
+   the same, so the pill never shows two marks at once. */
 .skill-mark {
   flex: 0 0 auto;
   width: 16px;
@@ -366,6 +367,17 @@ body main.page-shell.program-detail {
   border-radius: 3px;
 }
 
+.pd-tags__photo {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid var(--pd-line);
+  box-shadow: 0 4px 12px rgba(16, 42, 92, 0.1);
+}
+
+.pd-tags li:has(.pd-tags__photo)::before,
 .pd-tags li:has(.skill-mark)::before {
   display: none;
 }
@@ -380,10 +392,11 @@ body main.page-shell.program-detail {
      and made the page read as a floating card. The three grid columns below
      share this same top edge, so hero, rail and info panel start together. */
   padding: clamp(28px, 4vw, 56px) 0 clamp(36px, 4vw, 56px);
+  /* One shade with the rest of the page: no white/gradient slab here, just the
+     same #fafcff backdrop with two soft accent pools of light. */
   background:
     radial-gradient(820px 440px at 96% -8%, rgba(37, 99, 235, 0.12), transparent 62%),
-    radial-gradient(720px 420px at -6% 20%, rgba(37, 99, 235, 0.14), transparent 60%),
-    linear-gradient(180deg, #f7fafd 0%, #ffffff 44%);
+    radial-gradient(720px 420px at -6% 20%, rgba(37, 99, 235, 0.14), transparent 60%);
 }
 
 .pd-crumbs {
@@ -905,11 +918,16 @@ body main.page-shell.program-detail {
 
 .pd-section {
   padding: clamp(48px, 5.5vw, 84px) 0;
-  background: var(--pd-canvas);
+  /* One continuous page canvas: the section lets the #fafcff backdrop run
+     through it instead of painting its own white slab, so no full-width seam
+     appears between adjacent sections. Cards inside stay white for hierarchy. */
+  background: transparent;
 }
 
 .pd-section--alt {
-  background: var(--pd-soft);
+  /* Formerly a separate #f4f7fb band; now part of the same uniform canvas so
+     the page reads as one shade from hero to footer. */
+  background: transparent;
 }
 
 .pd-heading {
@@ -1041,93 +1059,503 @@ body main.page-shell.program-detail {
 
 /* ---------- Curriculum ---------- */
 
-.pd-module-count {
-  margin: 30px 0 16px;
-  font-size: 14px;
-  color: var(--pd-muted);
+.pd-curriculum {
+  --cur-ink: #102a56;
+  --cur-muted: #617494;
+  --cur-line: #e3ebf6;
+  --cur-canvas: #ffffff;
+  color: var(--cur-ink);
 }
 
-.pd-modules {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+/* Header: intro copy on the left, decorative roadmap right of it. The map is
+   a supporting illustration, so it stays beside the heading on wide screens
+   and simply drops out below the desktop breakpoint. */
+.pd-curriculum__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 400px);
+  gap: clamp(28px, 4vw, 72px);
+  align-items: center;
+  width: 100%;
 }
 
-.pd-modules summary {
-  list-style: none;
-  cursor: pointer;
+.pd-curriculum__intro {
+  max-width: min(740px, 100%);
 }
 
-.pd-modules summary::-webkit-details-marker {
-  display: none;
+.pd-curriculum__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 15px;
+  padding: 6px 13px;
+  border: 1px solid #d9e6fb;
+  border-radius: 999px;
+  background: #eef4ff;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #2563eb;
 }
 
-.pd-module {
-  border: 1px solid var(--pd-line);
-  border-radius: 14px;
-  background: var(--pd-canvas);
-  overflow: hidden;
+.pd-curriculum__intro h2 {
+  margin: 0;
+  font-size: clamp(27px, 3.1vw, 40px);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-weight: 800;
+  text-wrap: balance;
+  color: var(--cur-ink);
 }
 
-.pd-module summary {
+.pd-curriculum__desc {
+  margin: 15px 0 0;
+  max-width: 680px;
+  font-size: 15.5px;
+  line-height: 1.7;
+  color: var(--cur-muted);
+}
+
+.pd-curriculum__meta {
   display: flex;
   align-items: center;
-  gap: 14px;
-  min-height: 64px;
-  padding: 14px 18px;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--pd-ink);
-}
-
-.pd-module summary::after {
-  content: "+";
-  margin-left: auto;
-  font-size: 20px;
+  gap: 8px;
+  margin: 20px 0 0;
+  font-size: 13.5px;
   font-weight: 600;
-  color: var(--pd-teal);
-  transition: transform 220ms ease;
+  color: var(--cur-ink);
 }
 
-.pd-module[open] summary::after {
-  transform: rotate(45deg);
+.pd-curriculum__meta svg {
+  color: #2563eb;
 }
 
-.pd-module__n {
-  flex: 0 0 auto;
-  min-width: 30px;
-  height: 30px;
+.pd-curriculum__meta-dot {
+  color: #b7c4d8;
+  font-weight: 700;
+}
+
+/* Roadmap illustration */
+.pd-curriculum__map {
+  width: 100%;
+  max-width: 400px;
+  justify-self: end;
+}
+
+.pd-curriculum__map svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.pd-road-path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-width: 2;
+  stroke-dasharray: 720;
+  stroke-dashoffset: 720;
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
+}
+
+.pd-curriculum__map.is-in-view .pd-road-path {
+  stroke-dashoffset: 0;
+}
+
+.pd-road-caption {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  fill: #94a3b8;
+}
+
+.pd-road-caption--to {
+  fill: #7c3aed;
+}
+
+.pd-milestone {
+  opacity: 0;
+  transition: opacity 0.55s ease;
+  transition-delay: calc(0.35s + var(--m-delay, 0s));
+}
+
+.pd-curriculum__map.is-in-view .pd-milestone {
+  opacity: 1;
+}
+
+.pd-milestone text {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  fill: #617494;
+  text-anchor: middle;
+}
+
+.pd-road-target {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pd-road-float 5.5s ease-in-out infinite;
+}
+
+@keyframes pd-road-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+/* Card grid — 5-up on desktop, 3-up on tablet, 1-up on phone */
+.pd-curriculum__grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: clamp(30px, 3.5vw, 46px);
+  align-items: stretch;
+}
+
+/* Module card */
+.pd-modcard {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 16px 14px;
+  border: 1px solid var(--cur-line);
+  border-radius: 16px;
+  background: var(--cur-canvas);
+  box-shadow:
+    0 1px 2px rgba(16, 42, 86, 0.04),
+    0 10px 30px rgba(16, 42, 86, 0.05);
+  transition:
+    box-shadow 280ms ease,
+    border-color 280ms ease;
+}
+
+.pd-modcard__media {
+  position: relative;
+  margin: -16px -16px 14px;
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--mod-accent, #2563eb) 8%, #ffffff);
+}
+
+.pd-modcard__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--mod-accent, #2563eb) 16%, transparent);
+}
+
+.pd-modcard__media img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  transition: transform 420ms ease;
+}
+
+.pd-modcard:hover .pd-modcard__media img {
+  transform: scale(1.04);
+}
+
+.pd-modcard:hover {
+  border-color: color-mix(in srgb, var(--mod-accent, #2563eb) 38%, var(--cur-line));
+  box-shadow:
+    0 4px 10px rgba(16, 42, 86, 0.05),
+    0 18px 44px rgba(16, 42, 86, 0.11);
+}
+
+.pd-modcard__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pd-modcard__num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--mod-accent, #2563eb);
+  background: color-mix(in srgb, var(--mod-accent, #2563eb) 12%, #ffffff);
+  border: 1px solid color-mix(in srgb, var(--mod-accent, #2563eb) 22%, transparent);
+}
+
+.pd-modcard__icon {
   display: grid;
   place-items: center;
-  border-radius: 9px;
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--pd-teal);
-  background: rgba(37, 99, 235, 0.1);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: var(--mod-accent, #2563eb);
+  background: color-mix(in srgb, var(--mod-accent, #2563eb) 11%, #ffffff);
+  border: 1px solid color-mix(in srgb, var(--mod-accent, #2563eb) 18%, transparent);
+  transition: transform 260ms ease;
 }
 
-.pd-module ul {
+.pd-modcard:hover .pd-modcard__icon {
+  transform: scale(1.06);
+}
+
+.pd-modcard__title {
+  margin: 13px 0 10px;
+  font-size: 14.5px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--cur-ink);
+}
+
+.pd-modcard__topics {
   margin: 0;
-  padding: 2px 18px 18px 62px;
+  padding: 0;
   list-style: none;
 }
 
-.pd-module li {
+.pd-modcard__topics li {
   position: relative;
-  padding: 6px 0;
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--pd-muted);
+  margin: 0 0 5px;
+  padding-left: 15px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--cur-muted);
 }
 
-.pd-module li::before {
-  content: "✓";
+.pd-modcard__topics li::before {
+  content: "";
   position: absolute;
-  left: -20px;
-  top: 9px;
+  left: 1px;
+  top: 7px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--mod-accent, #2563eb);
+  opacity: 0.55;
+}
+
+.pd-modcard__deliverable {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding: 10px 11px;
+  border: 1px solid color-mix(in srgb, var(--mod-accent, #2563eb) 16%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--mod-accent, #2563eb) 6%, #ffffff);
+  transition: background 260ms ease;
+}
+
+.pd-modcard__deliverable-icon {
+  flex: 0 0 auto;
+  color: var(--mod-accent, #2563eb);
+}
+
+.pd-modcard__deliverable-text {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.pd-modcard__deliverable-label {
+  display: block;
+  margin: 0 0 2px;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--mod-accent, #2563eb);
+}
+
+.pd-modcard__deliverable-value {
+  display: block;
   font-size: 12px;
-  font-weight: 700;
-  color: var(--pd-teal);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--cur-ink);
+}
+
+.pd-modcard__arrow {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: #ffffff;
+  background: var(--mod-accent, #2563eb);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--mod-accent, #2563eb) 40%, transparent);
+  transition: transform 240ms ease, box-shadow 240ms ease;
+}
+
+.pd-modcard:hover .pd-modcard__arrow {
+  transform: translateX(3px);
+  box-shadow: 0 6px 14px color-mix(in srgb, var(--mod-accent, #2563eb) 55%, transparent);
+}
+
+/* Closing CTA tile — completes the roadmap in the space of two cards */
+.pd-cta-card {
+  position: relative;
+  grid-column: span 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 22px;
+  border: 1px solid #dce5f6;
+  border-radius: 16px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #eaf1ff 0%, #f2ecff 60%, #fdf6ff 100%);
+  box-shadow:
+    0 1px 2px rgba(16, 42, 86, 0.04),
+    0 10px 30px rgba(16, 42, 86, 0.05);
+  color: var(--cur-ink);
+  text-decoration: none;
+  transition:
+    box-shadow 280ms ease,
+    border-color 280ms ease;
+}
+
+.pd-cta-card:hover {
+  border-color: #c7d8f5;
+  box-shadow:
+    0 4px 10px rgba(16, 42, 86, 0.05),
+    0 20px 48px rgba(16, 42, 86, 0.12);
+}
+
+.pd-cta-card__art {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 96px;
+  height: auto;
+  opacity: 0.92;
+  pointer-events: none;
+}
+
+.pd-cta-card__kicker {
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #4f46e5;
+}
+
+.pd-cta-card__title {
+  display: block;
+  margin: 0;
+  font-size: clamp(22px, 2.2vw, 30px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  color: var(--cur-ink);
+}
+
+.pd-cta-card__meta {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--cur-muted);
+}
+
+.pd-cta-card__arrow {
+  align-self: flex-start;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-top: 6px;
+  border-radius: 50%;
+  color: #ffffff;
+  background: linear-gradient(120deg, #2563eb, #7c3aed);
+  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35);
+  transition: transform 240ms ease;
+}
+
+.pd-cta-card:hover .pd-cta-card__arrow {
+  transform: translateX(4px);
+}
+
+@media (max-width: 1320px) {
+  .pd-curriculum__header {
+    gap: 36px;
+  }
+
+  .pd-curriculum__map {
+    max-width: 330px;
+  }
+}
+
+@media (max-width: 1180px) {
+  .pd-curriculum__header {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .pd-curriculum__map {
+    display: none;
+  }
+}
+
+@media (max-width: 1080px) {
+  .pd-curriculum__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .pd-cta-card {
+    grid-column: span 3;
+  }
+}
+
+@media (max-width: 680px) {
+  .pd-curriculum__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .pd-cta-card {
+    grid-column: auto;
+  }
+
+  .pd-modcard {
+    padding: 15px 15px 13px;
+  }
+
+  .pd-curriculum__intro h2 {
+    font-size: clamp(25px, 7.5vw, 32px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pd-road-path {
+    transition: none;
+    stroke-dashoffset: 0;
+  }
+
+  .pd-milestone {
+    opacity: 1;
+    transition: none;
+  }
+
+  .pd-road-target {
+    animation: none;
+  }
+
+  .pd-modcard.cv-interactive:hover,
+  .pd-cta-card.cv-interactive:hover {
+    transform: none;
+  }
+
+  .pd-modcard:hover .pd-modcard__icon,
+  .pd-modcard:hover .pd-modcard__arrow,
+  .pd-cta-card:hover .pd-cta-card__arrow {
+    transform: none;
+  }
 }
 
 .pd-outline {
@@ -1976,14 +2404,6 @@ body main.page-shell.program-detail {
     min-width: 0;
   }
 
-  .pd-module summary {
-    padding: 16px;
-  }
-
-  .pd-module ul {
-    padding: 2px 16px 18px 62px;
-  }
-
   .pd-gains {
     grid-template-columns: 1fr;
   }
@@ -2023,13 +2443,244 @@ body main.page-shell.program-detail {
   }
 }
 
+/* ---------- Salary & hiring ---------- */
+
+.pd-salary-chart {
+  margin-top: 38px;
+}
+
+.pd-salary-plot {
+  position: relative;
+  height: 330px;
+  padding-left: 64px;
+}
+
+.pd-salary-gridline {
+  position: absolute;
+  left: 64px;
+  right: 0;
+  border-top: 1px dashed var(--pd-line);
+  pointer-events: none;
+}
+
+.pd-salary-gridline span {
+  position: absolute;
+  right: calc(100% + 12px);
+  top: 0;
+  transform: translateY(-50%);
+  width: 52px;
+  text-align: right;
+  color: var(--pd-muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.pd-salary-cols {
+  position: absolute;
+  top: 0;
+  left: 64px;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 3.5vw, 44px);
+  align-items: end;
+  border-bottom: 1px solid var(--pd-line-strong);
+}
+
+.pd-salary-col {
+  position: relative;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.pd-salary-col__bar {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(76px, 64%);
+  border-radius: 10px 10px 4px 4px;
+  background: var(--pd-grad);
+  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.22);
+  min-height: 3px;
+  overflow: hidden;
+}
+
+.pd-salary-col__bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 34%);
+}
+
+.pd-salary-col__low {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  transform: translateY(50%);
+  border-top: 2px solid rgba(255, 255, 255, 0.92);
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08);
+}
+
+.pd-salary-col__cap {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px 11px;
+  border: 1px solid color-mix(in srgb, var(--pd-blue) 28%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--pd-blue) 9%, #ffffff);
+  box-shadow: 0 6px 16px rgba(16, 42, 86, 0.08);
+  color: var(--pd-ink);
+  font-size: 12px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.pd-salary-col__foot {
+  position: absolute;
+  bottom: -44px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+}
+
+.pd-salary-col__foot strong {
+  font-size: 14.5px;
+  color: var(--pd-ink);
+}
+
+.pd-salary-col__foot small {
+  color: var(--pd-muted);
+  font-size: 12px;
+}
+
+.pd-salary-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding-left: 64px;
+  margin: 62px 0 0;
+  color: var(--pd-muted);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.pd-salary-note__swatch {
+  flex: 0 0 auto;
+  width: 15px;
+  height: 18px;
+  border-radius: 4px;
+  background: var(--pd-grad);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+}
+
+.pd-salary-industries {
+  margin-top: 66px;
+  width: 100%;
+}
+
+.pd-salary-industries h3 {
+  margin: 14px 0 0;
+  font-size: clamp(20px, 2.2vw, 28px);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+}
+
+.pd-industry-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pd-industry {
+  padding: 9px 15px;
+  border: 1px solid var(--pd-line);
+  border-radius: 999px;
+  background: var(--pd-canvas);
+  color: var(--pd-ink);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .pd-salary-plot {
+    height: 300px;
+    padding-left: 54px;
+  }
+
+  .pd-salary-gridline {
+    left: 54px;
+  }
+
+  .pd-salary-gridline span {
+    width: 42px;
+    font-size: 10.5px;
+  }
+
+  .pd-salary-cols {
+    left: 54px;
+    gap: 10px;
+  }
+
+  .pd-salary-col__bar {
+    width: 54px;
+  }
+
+  .pd-salary-col__cap {
+    font-size: 11px;
+    padding: 4px 8px;
+    bottom: calc(100% + 6px);
+  }
+
+  .pd-salary-col__foot {
+    bottom: -42px;
+  }
+
+  .pd-salary-col__foot strong {
+    font-size: 13px;
+  }
+
+  .pd-salary-col__foot small {
+    font-size: 11px;
+  }
+
+  .pd-salary-note {
+    padding-left: 54px;
+    margin-top: 56px;
+    font-size: 11.5px;
+  }
+
+  .pd-salary-note__swatch {
+    height: 16px;
+  }
+}
+
 /* ---------- Accessibility ---------- */
 
 .pd-btn:focus-visible,
 .pd-section-nav a:focus-visible,
 .pd-carousel-btn:focus-visible,
 .pd-dot:focus-visible,
-.pd-module summary:focus-visible,
+.pd-cta-card:focus-visible,
 .pd-faq__item summary:focus-visible {
   outline: 2px solid var(--pd-blue);
   outline-offset: 2px;
