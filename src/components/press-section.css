@@ -145,7 +145,7 @@
   overscroll-behavior: contain;
   scrollbar-width: thin;
   -webkit-overflow-scrolling: touch;
-  padding: clamp(26px, 3.2vw, 48px);
+  padding: clamp(30px, 3.6vw, 52px);
   border-radius: inherit;
   display: grid;
   grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
@@ -549,7 +549,7 @@
       "copy"
       "visual"
       "sources";
-    padding: 16px;
+    padding: 22px;
     column-gap: 0;
     row-gap: 10px;
   }
@@ -671,6 +671,17 @@
   .press-storytelling--lane .press-rail__dot::before {
     display: none;
   }
+
+  /* Compact the rail strip on phones so the added arrows don't eat the story
+     card's headroom. */
+  .press-storytelling--lane .press-rail {
+    gap: 8px;
+  }
+
+  .press-storytelling--lane .press-rail__btn {
+    width: 26px;
+    height: 26px;
+  }
 }
 
 /* ================================================================
@@ -698,7 +709,7 @@
   }
 
   .press-storytelling--lane .press-story__inner {
-    padding: clamp(24px, 3vw, 34px);
+    padding: clamp(28px, 3.2vw, 38px);
     row-gap: clamp(16px, 2vw, 24px);
   }
 
@@ -800,7 +811,7 @@
   }
 
   .press-storytelling--lane .press-story__inner {
-    padding: clamp(28px, 3.2vw, 48px);
+    padding: clamp(32px, 3.6vw, 52px);
   }
 
   .press-storytelling--lane .press-story__title {
@@ -845,11 +856,20 @@
 
 .press-rail__dot {
   position: relative;
+  padding: 4px 3px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.1em;
   color: rgba(16, 42, 92, 0.32);
   transition: color 0.4s ease, transform 0.4s cubic-bezier(0.22, 0.7, 0.22, 1);
+}
+
+.press-rail__dot:hover {
+  color: rgba(16, 42, 92, 0.62);
 }
 
 .press-rail__dot::before {
@@ -874,6 +894,56 @@
 .press-rail__dot.is-active::before {
   opacity: 1;
   transform: translateY(-50%) scale(1);
+}
+
+/* Interactive affordances — the rail was previously aria-hidden decoration;
+   now it is the section's pager. The numbered dots group as the page list and
+   the chevrons step one story at a time, both with a visible focus ring. */
+.press-rail__pager {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.press-rail__btn {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid rgba(16, 42, 92, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  color: rgba(16, 42, 92, 0.72);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+}
+
+.press-rail__btn svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.press-rail__btn:hover:not(:disabled) {
+  color: #fff;
+  background: var(--accent, #2563eb);
+  border-color: var(--accent, #2563eb);
+}
+
+.press-rail__btn:disabled {
+  opacity: 0.32;
+  cursor: default;
+}
+
+.press-rail__dot:focus-visible,
+.press-rail__btn:focus-visible {
+  outline: 2px solid var(--accent, #2563eb);
+  outline-offset: 3px;
 }
 
 /* ================================================================
