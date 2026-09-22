@@ -14,6 +14,7 @@ import ProgramSectionNav from "../components/program-detail/ProgramSectionNav";
 import ProgramOverview from "../components/program-detail/ProgramOverview";
 import ProgramCurriculum from "../components/program-detail/ProgramCurriculum";
 import ProgramCareers from "../components/program-detail/ProgramCareers";
+import ProgramSalaries from "../components/program-detail/ProgramSalaries";
 import ProgramMentors from "../components/program-detail/ProgramMentors";
 import ProgramFees from "../components/program-detail/ProgramFees";
 import ProgramFaq from "../components/program-detail/ProgramFaq";
@@ -35,8 +36,12 @@ import "../components/program-detail.css";
 // record in programCatalog.js (or the API's answer for it) and skipped when
 // that program has no data for it, so a thin program renders a short page
 // rather than a page full of empty headings.
-const ProgramDetailPage = () => {
-  const {slug} = useParams();
+const ProgramDetailPage = ({slug: providedSlug}) => {
+  const params = useParams();
+  // A fixed slug can be handed to this page directly (the /generative-ai route
+  // renders the gen-ai program under its own URL); otherwise it is the dynamic
+  // :slug from /programs/:slug.
+  const slug = providedSlug || params.slug;
   // The static catalogue is the fallback for this exact slug, so a live URL
   // renders instantly and keeps working even if the API is unreachable. When
   // the API answers, its copy wins — that is what makes an edit in the admin
@@ -46,10 +51,15 @@ const ProgramDetailPage = () => {
     adapt: adaptProgram,
   });
 
-  // Mentors are matched to their program by courseSlug in the same data file,
-  // so the strip only appears when real faculty exist for this course.
+  // Mentors are matched to their program by courseSlug (or the courseSlugs
+  // array, which lets one mentor teach two related programs) in the same data
+  // file, so the strip only appears when real faculty exist for this course.
   const programMentors = program
-    ? publishedMentors.filter((mentor) => mentor.courseSlug === program.id)
+    ? publishedMentors.filter(
+        (mentor) =>
+          mentor.courseSlug === program.id ||
+          (mentor.courseSlugs || []).includes(program.id),
+      )
     : [];
 
   // This route is dynamic, so it is not in pageMeta — RouteMeta leaves the tab as
@@ -132,8 +142,9 @@ const ProgramDetailPage = () => {
 
           <ProgramOverview program={program} />
 
-          <ProgramCurriculum program={program} />
+          <ProgramCurriculum program={program} applyHref={applyHref} />
           <ProgramCareers program={program} />
+          <ProgramSalaries program={program} />
 
           {programMentors.length > 0 && (
             <ProgramMentors mentors={programMentors} />
