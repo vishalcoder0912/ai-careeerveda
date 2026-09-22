@@ -686,7 +686,7 @@ body .spline-page .stat-strip span {
   }
 
   body .spline-page .hero-copy .eyebrow {
-    font-size: 11.5px !important;
+    font-size: var(--t-xs) !important;
   }
 
   body .spline-page .hero-copy h1 {
