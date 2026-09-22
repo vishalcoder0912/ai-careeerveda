@@ -15,6 +15,7 @@
 
 import {initialsOf} from "../data/mentors";
 import {avatarPlaceholder} from "../data/alumniSpotlight";
+import {programCatalog} from "../data/programCatalog";
 
 // A media reference down to the URL the components expect. Tolerates a plain
 // string so an adapter can be run over static data harmlessly.
@@ -125,11 +126,34 @@ const programFee = (record) => {
   };
 };
 
+// Module photographs are presentational, curated in the static catalogue and
+// keyed by module number. The API record carries the module's content and no
+// image, so rather than lose the artwork when the live answer arrives the
+// adapter restores each module's picture from the catalogue — a module the
+// admin edited keeps its editing (its points, deliverable, title) and simply
+// inherits the matching catalogue photo by `n`. Modules without a catalogue
+// match (an admin-created track) keep whatever the record shipped, usually
+// nothing.
+const moduleMedia = (slug, modules) => {
+  if (!Array.isArray(modules)) return modules;
+  const staticByN = new Map(
+    (programCatalog.find((program) => program.id === slug)?.modules || []).map((module) => [
+      module.n,
+      module,
+    ]),
+  );
+  return modules.map((module) => {
+    if (!module || module.image || !staticByN.has(module.n)) return module;
+    return {...module, image: staticByN.get(module.n).image};
+  });
+};
+
 export const adaptProgram = (record) => ({
   ...record,
   id: record.slug,
   image: mediaUrl(record.image),
   fee: programFee(record),
+  modules: moduleMedia(record.slug, record.modules),
 });
 
 export const adaptFaculty = (record) => ({
