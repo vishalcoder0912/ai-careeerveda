@@ -61,7 +61,7 @@ const spotlightProfiles = [
   },
   {
     id: "anjali-singh",
-    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever5-09021396.jpg",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever5-09021396_jpg.webp",
     initials: "AS",
     name: "Anjali Singh",
     hike: "220% Hike",
@@ -72,7 +72,7 @@ const spotlightProfiles = [
   },
   {
     id: "garima-singh",
-    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever4-9d672823.jpg",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever4-9d672823_jpg.webp",
     initials: "GS",
     name: "Garima Singh",
     hike: "200% Hike",
@@ -83,7 +83,7 @@ const spotlightProfiles = [
   },
   {
     id: "shalini-kumari",
-    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever2-3a2e0a3b.jpg",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever2-3a2e0a3b_jpg.webp",
     initials: "SK",
     name: "Shalini Kumari",
     hike: "58.33% Hike",
@@ -94,7 +94,7 @@ const spotlightProfiles = [
   },
   {
     id: "aditya-ahlawat",
-    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever3-7a90ad07.jpg",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever3-7a90ad07_jpg.webp",
     initials: "AA",
     name: "Aditya Ahlawat",
     hike: "66% Hike",
@@ -105,7 +105,7 @@ const spotlightProfiles = [
   },
   {
     id: "ipsita sen",
-    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever7-4f504cd7.jpg",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever7-4f504cd7_jpg.webp",
     initials: "IS",
     name: "Ipsita Sen",
     hike: "220% Hike",
@@ -116,7 +116,7 @@ const spotlightProfiles = [
   },
   {
     id: "Vikram Singh",
-    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever8-1a1454dd.jpg",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever8-1a1454dd_jpg.webp",
     initials: "VK",
     name: "Vikram Singh",
     hike: "300% Hike",
@@ -127,7 +127,7 @@ const spotlightProfiles = [
   },
   {
     id: "anjali Desai",
-    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever9-ac333547.jpg",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever9-ac333547_jpg.webp",
     initials: "AD",
     name: "Anjali Desai",
     hike: "170% Hike",
@@ -138,7 +138,7 @@ const spotlightProfiles = [
   },
   {
     id: "Aarohi Khurana",
-    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever10-4a35da07.jpg",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever10-4a35da07_jpg.webp",
     initials: "AK",
     name: "Aarohi Khurana",
     hike: "90% Hike",
@@ -149,7 +149,7 @@ const spotlightProfiles = [
   },
   {
     id: "Sneha Agarwal",
-    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever11jpeg-79c014b5.jpg?updatedAt=1784010443321",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever11jpeg-79c014b5_jpg.webp?updatedAt=1784010443321",
     initials: "SA",
     name: "Sneha Agarwal",
     hike: "150% Hike",
@@ -160,7 +160,7 @@ const spotlightProfiles = [
   },
    {
      id: "Himani Tamta",
-     imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever12jpeg-295bcdbc.jpg",
+     imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever12jpeg-295bcdbc_jpg.webp",
      initials: "HT",
      name: "Himani Tamta",
      hike: "150% Hike",
@@ -171,7 +171,7 @@ const spotlightProfiles = [
    },
    {
     id: "Riya Malhotra",
-    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Riya-Malhotra-877ecf3a.jpg?updatedAt=1784206969785",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Riya-Malhotra-877ecf3a_jpg.webp?updatedAt=1784206969785",
     initials: "RM",
     name: "Riya Malhotra",
     hike: "140% Hike",
@@ -182,7 +182,7 @@ const spotlightProfiles = [
   },
    {
     id: "Niharika Verma",
-    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Niharika-Verma-1a611215.jpg?updatedAt=1784206793089",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Niharika-Verma-1a611215_jpg.webp?updatedAt=1784206793089",
     initials: "NV",
     name: "Niharika Verma",
     hike: "120% Hike",
@@ -193,7 +193,7 @@ const spotlightProfiles = [
   },
    {
     id: "Sanya Kapoor",
-    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Sanya-Kapoor-964e07e6.jpg?updatedAt=1784206653269",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Sanya-Kapoor-964e07e6_jpg.webp?updatedAt=1784206653269",
     initials: "SK",
     name: "Sanya Kapoor",
     hike: "165% Hike",
@@ -204,7 +204,7 @@ const spotlightProfiles = [
   },
    {
     id: "Arjun Mehta",
-    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Arjun-Mehta-743badce.jpg?updatedAt=1784206469468",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Arjun-Mehta-743badce_jpg.webp?updatedAt=1784206469468",
     initials: "AM",
     name: "Arjun Mehta",
     hike: "120% Hike",
@@ -215,7 +215,7 @@ const spotlightProfiles = [
   },
    {
     id: "Karan Sharma",
-    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever13-13af87cb.jpg?updatedAt=1784206303783",
+    imageUrl: "https://ik.imagekit.io/q7ucn1rfni/careerveda/alumni/Achiever13-13af87cb_jpg.webp?updatedAt=1784206303783",
     initials: "KS",
     name: "Karan Sharma",
     hike: "100% Hike",
