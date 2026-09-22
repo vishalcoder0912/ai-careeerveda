@@ -26,5 +26,5 @@ export const BRAND_ICON_URL = "https://ik.imagekit.io/q7ucn1rfni/careerveda/bran
 
 // Favicon stays on the existing cvfavicon mark; change this too if you want the
 // browser-tab icon to match the new logo.
-const FAVICON_BASE = "https://ik.imagekit.io/q7ucn1rfni/careerveda/brand/cvfavicon-039eb18e.jpg";
+const FAVICON_BASE = "https://ik.imagekit.io/q7ucn1rfni/careerveda/brand/cvfavicon-039eb18e_jpg.webp";
 export const BRAND_FAVICON_URL = `${FAVICON_BASE}?tr=w-64&updatedAt=1783702268532`;
