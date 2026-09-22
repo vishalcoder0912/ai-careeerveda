@@ -133,6 +133,7 @@ const migratePrograms = async (modules) => {
           n: entry.n ?? null,
           title: entry.title || "",
           points: entry.points || [],
+          deliverable: entry.deliverable || "",
         })),
         outcomes: program.outcomes || [],
         gainsIntro: program.gainsIntro || "",
