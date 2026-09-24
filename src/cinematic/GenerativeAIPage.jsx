@@ -14,6 +14,7 @@ import {TimelineSection} from "./components/Timeline";
 import {SkillsSection} from "./components/Skills";
 import {AIQuote} from "./components/Quote";
 import {ProgramArchitecture} from "./components/Architecture";
+import {ModuleGrid} from "./components/ModuleGrid";
 import {AgentSystem} from "./components/AgentSystem";
 import {AgentWorkflow} from "./components/AgentWorkflow";
 import {ProjectsSection} from "./components/Projects";
@@ -24,6 +25,7 @@ import {CertificationSection} from "./components/Certifications";
 import {FinalCTA} from "./components/FinalCta";
 import {GaFooter} from "./components/GaFooter";
 import "./cinematic.css";
+import "./cinematic-site-theme.css";
 
 export function GenerativeAIPage() {
   const lenis = useLenis();
@@ -114,6 +116,7 @@ export function GenerativeAIPage() {
         <SkillsSection />
         <AIQuote />
         <ProgramArchitecture />
+        <ModuleGrid />
         <AgentSystem />
         <AgentWorkflow />
         <ProjectsSection />
