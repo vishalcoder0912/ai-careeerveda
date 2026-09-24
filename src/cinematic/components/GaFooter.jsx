@@ -27,6 +27,7 @@ export const GaFooter = () => {
         <div className="ga-footer-divider" aria-hidden="true" />
 
         <div className="ga-footer-base">
+          
           <p>PG Program in Generative AI &amp; Agentic AI</p>
           <a href="#ga-top" className="ga-footer-top" data-cursor>
             Back to top <uiIcons.ArrowUpRight size={14} aria-hidden="true" />
