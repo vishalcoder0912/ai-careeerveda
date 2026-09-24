@@ -130,8 +130,17 @@ const ProgramDetailPage = ({slug: providedSlug}) => {
   const applyHref = `/enroll?program=${program.id}`;
   const hasProgramJobs = matchJobs(program, 1).length > 0;
 
+  // Programs can carry their own colour theme (e.g. the violet → cyan look of
+  // the AI Systems flagship). The record's `theme` becomes a scoped class and
+  // the overrides in program-detail.css re-tint the brand tokens and pools for
+  // that page alone, so no other program changes with it. The static catalogue
+  // supplies the theme even when the API answers without it (the field is
+  // purely presentational and not yet part of the backend model).
+  const theme = program.theme || getProgram(slug)?.theme;
+  const themeClass = theme ? ` pd-theme-${theme}` : "";
+
   return (
-    <main className="spline-page page-shell program-detail">
+    <main className={`spline-page page-shell program-detail${themeClass}`}>
       <div className="pd-layout">
         <div className="pd-layout__main">
           <ProgramHero program={program} applyHref={applyHref} />
