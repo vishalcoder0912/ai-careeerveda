@@ -25,7 +25,7 @@ export const CertificationSection = () => {
   return (
     <section className="ga-certs" id="ga-certs" ref={band}>
       <div className="ga-certs-head">
-        <SectionLabel index="11">Proof of Work</SectionLabel>
+        <SectionLabel index="12">Proof of Work</SectionLabel>
         <h2 className="ga-display">
           Build Proof.
           <br />
