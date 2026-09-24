@@ -53,7 +53,7 @@ export const AgentWorkflow = () => {
     <section className="ga-flow" id="ga-workflow" ref={sectionRef}>
       <div className="ga-flow-pin" ref={pinRef}>
         <div className="ga-flow-head">
-          <SectionLabel index="06">Living Workflow</SectionLabel>
+          <SectionLabel index="07">Living Workflow</SectionLabel>
           <h2 className="ga-display">
             From Input
             <br />
