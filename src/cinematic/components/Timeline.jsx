@@ -83,7 +83,7 @@ export const TimelineSection = () => {
         const i = Math.min(n - 2, Math.max(0, Math.floor(pos)));
         const frac = pos - i;
         const x = cardTargetX(i) + frac * (cardTargetX(i + 1) - cardTargetX(i));
-        row.style.transform = `translate3d(${x.toFixed(2)}px, 0, 0)`;
+        row.style.transform = `translate3d(${x.toFixed(2)}px, -50%, 0)`;
 
         const stageIdx = Math.round(pos);
         if (stageIdx !== lastStage) {
@@ -116,9 +116,6 @@ export const TimelineSection = () => {
         </div>
 
         <div className="ga-tl-stage" ref={stageRef}>
-          <span className="ga-tl-stage-glow" aria-hidden="true" />
-          <span className="ga-tl-rail" aria-hidden="true" />
-
           <div className="ga-tl-row" ref={rowRef}>
             {timelineData.map((item, i) => (
               <article
@@ -130,14 +127,8 @@ export const TimelineSection = () => {
                 style={{zIndex: 10 - Math.abs(i - 3)}}
               >
                 <span className="ga-tl-card-year">{item.year}</span>
-                <span className="ga-tl-card-line" aria-hidden="true" />
                 <div className="ga-tl-card-visual">
-                  <span className="ga-tl-visual-orbit" />
-                  <span className="ga-tl-visual-core" />
-                  <span className="ga-tl-visual-node ga-tl-n1" />
-                  <span className="ga-tl-visual-node ga-tl-n2" />
-                  <span className="ga-tl-visual-node ga-tl-n3" />
-                  <span className="ga-tl-visual-node ga-tl-n4" />
+                  <img className="ga-tl-card-img" src={item.image} alt={item.title} loading="lazy" />
                 </div>
                 <h3>{item.title}</h3>
                 <div className="ga-tl-card-reveal">
@@ -167,7 +158,10 @@ export const TimelineSection = () => {
         <div className="ga-tl-vertical">
           {timelineData.map((item, i) => (
             <article className="ga-tl-vcard ga-reveal ga-reveal-up" key={item.year} style={{transitionDelay: `${i * 60}ms`}}>
-              <span className="ga-tl-v-year">{item.year}</span>
+              <div className="ga-tl-v-visual">
+                <img className="ga-tl-v-img" src={item.image} alt={item.title} loading="lazy" />
+              </div>
+              <span className="ga-tl-v-year">{item.num} · {item.year}</span>
               <div className="ga-tl-v-body">
                 <h3>{item.title}</h3>
                 <p>{item.description}</p>
@@ -175,7 +169,6 @@ export const TimelineSection = () => {
                   {item.tags.map((t) => <em key={t}>{t}</em>)}
                 </span>
               </div>
-              <span className="ga-tl-v-line" aria-hidden="true" />
             </article>
           ))}
         </div>
