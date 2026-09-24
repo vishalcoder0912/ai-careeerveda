@@ -1,14 +1,12 @@
 import {useEffect, useRef} from "react";
 import {gsap} from "gsap";
 import {reducedMotionNow} from "../fx/registry";
-import {TalentSilhouette} from "./TalentSilhouette";
 
 const QUOTE_LINES = ["GOOD IDEAS", "BECOME SYSTEMS.", "GOOD SYSTEMS", "BECOME IMPACT."];
 
 export const AIQuote = () => {
   const sectionRef = useRef(null);
   const wordRefs = useRef([]);
-  const silRef = useRef(null);
   const tweenRef = useRef(null);
 
   useEffect(() => {
@@ -31,30 +29,15 @@ export const AIQuote = () => {
       tl.to(w, {opacity: 1, duration: 0.6, ease: "none"}, i * 0.045);
     });
 
-    const sil = gsap.fromTo(
-      silRef.current,
-      {yPercent: 12},
-      {
-        yPercent: -12,
-        ease: "none",
-        scrollTrigger: {trigger: section, start: "top bottom", end: "bottom top", scrub: 0.5},
-      },
-    );
-
     tweenRef.current = tl;
     return () => {
       tl.scrollTrigger?.kill();
       tl.kill();
-      sil.scrollTrigger?.kill();
-      sil.kill();
     };
   }, []);
 
   return (
     <section className="ga-quote" ref={sectionRef}>
-      <div className="ga-quote-sil" ref={silRef} aria-hidden="true">
-        <TalentSilhouette className="ga-quote-figure" />
-      </div>
       <span className="ga-quote-glow" aria-hidden="true" />
       <span className="ga-quote-index" aria-hidden="true">03</span>
 
