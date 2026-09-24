@@ -2,14 +2,12 @@ import {useEffect, useRef} from "react";
 import {gsap} from "gsap";
 import {reducedMotionNow} from "../fx/registry";
 import {skillCategories} from "../data";
-import {TalentSilhouette} from "./TalentSilhouette";
 import {SectionLabel} from "./Atmosphere";
 
 export const SkillsSection = () => {
   const sectionRef = useRef(null);
   const pinRef = useRef(null);
   const cardsRef = useRef([]);
-  const silRef = useRef(null);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -55,26 +53,9 @@ export const SkillsSection = () => {
     /* Let the grid breathe for the remaining scroll distance. */
     tl.to({}, {duration: 0.5});
 
-    const silPar = gsap.fromTo(
-      silRef.current,
-      {yPercent: 8},
-      {
-        yPercent: -8,
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: "+=260%",
-          scrub: 0.6,
-        },
-      },
-    );
-
     const cleanup = () => {
       tl.scrollTrigger?.kill();
       tl.kill();
-      silPar.scrollTrigger?.kill();
-      silPar.kill();
     };
     return cleanup;
   }, []);
@@ -90,18 +71,10 @@ export const SkillsSection = () => {
             Will Master
           </h2>
           <p className="ga-sub">From prompts to autonomous systems — five domains, one engineering discipline.</p>
+          <p className="ga-meta ga-skills-tag">Practitioner · Builder · Operator</p>
         </div>
 
         <div className="ga-skills-body">
-          <div className="ga-skills-human" ref={silRef} aria-hidden="true">
-            <TalentSilhouette className="ga-skills-sil" />
-            <span className="ga-skills-rim" />
-            <span className="ga-skills-caption">
-              <span className="ga-meta">Practitioner · Builder · Operator</span>
-            </span>
-            <span className="ga-skills-floor" />
-          </div>
-
           <div className="ga-skills-grid">
             {skillCategories.map((cat, i) => (
               <div
