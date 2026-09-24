@@ -1,10 +1,19 @@
 import {useEffect, useRef} from "react";
 import {gsap} from "gsap";
-import {addTween, EASE, reducedMotionNow} from "../fx/registry";
+import {addTween, reducedMotionNow} from "../fx/registry";
 import {useMagneticHover} from "../fx/hooks";
 import {ArrowDownRight} from "lucide-react";
 
-const HERO_LINES = ["GENERATIVE AI", "&", "AGENTIC AI"];
+const HERO_LINES = ["GEN AI &", "AGENTIC AI ENGINEERING"];
+
+const HERO_BADGES = [
+  "24 WEEKS",
+  "6 MONTHS",
+  "PROJECT-DRIVEN",
+  "GPU-ENABLED",
+  "PRODUCTION-ORIENTED",
+  "HACKATHON-FIRST",
+];
 
 export const HeroSection = () => {
   const rootRef = useRef(null);
@@ -13,82 +22,38 @@ export const HeroSection = () => {
   const linesRef = useRef([]);
   const subRef = useRef(null);
   const ctaRef = useRef(null);
-  const netRef = useRef(null);
   const extraLeft = useRef(null);
   const extraRight = useRef(null);
+  const statsRef = useRef(null);
   const magneticA = useMagneticHover(0.35);
   const magneticB = useMagneticHover(0.35);
 
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return undefined;
-    const reduced = reducedMotionNow();
 
-    // ── Load sequence ───────────────────────────────────────────────────────
-    if (reduced) {
-      gsap.set([linesRef.current, subRef.current, ctaRef.current, netRef.current], {opacity: 1});
+    const els = [
+      ...linesRef.current,
+      subRef.current,
+      ctaRef.current,
+      statsRef.current,
+      extraLeft.current,
+      extraRight.current,
+    ].filter(Boolean);
+
+    if (reducedMotionNow()) {
+      gsap.set(els, {opacity: 1});
       return undefined;
     }
 
-    gsap.set([linesRef.current, subRef.current, ctaRef.current, netRef.current], {opacity: 0});
-    gsap.set(linesRef.current, {y: 34});
-    gsap.set(subRef.current, {y: 16});
-    gsap.set(ctaRef.current, {y: 14});
-    gsap.set([extraLeft.current, extraRight.current], {opacity: 0});
-    gsap.set(streakRef.current, {xPercent: -100, opacity: 0});
+    const tween = gsap.fromTo(
+      els,
+      {opacity: 0, y: 14},
+      {opacity: 1, y: 0, duration: 0.7, ease: "power1.out", stagger: 0.06},
+    );
+    addTween(tween);
 
-    const tl = gsap.timeline({defaults: {ease: EASE}});
-
-    // 1. background eases out of black
-    tl.fromTo(bgRef.current, {opacity: 0}, {opacity: 1, duration: 1.5, ease: "none"});
-    // 2. light streak enters from the left
-    tl.to(streakRef.current, {xPercent: 0, opacity: 1, duration: 1.4, ease: EASE}, "-=1.1");
-    // 3. heading line by line
-    linesRef.current.forEach((el) => {
-      tl.to(el, {y: 0, opacity: 1, duration: 0.9, ease: EASE}, `-=0.5`);
-    });
-    // 4. subtitle
-    tl.to(subRef.current, {y: 0, opacity: 1, duration: 0.7, ease: EASE}, "-=0.6");
-    // 5. CTAs
-    tl.to(ctaRef.current, {y: 0, opacity: 1, duration: 0.6, ease: EASE}, "-=0.55");
-    // 6. ambient network behind the title switches on
-    tl.to(netRef.current, {opacity: 1, duration: 1.2}, "-=0.4");
-    tl.to([extraLeft.current, extraRight.current], {opacity: 1, duration: 1.4}, "-=0.9");
-
-    addTween(tl);
-
-    // ── Scroll-away camera push ────────────────────────────────────────────
-    const cam = gsap.to(root, {
-      yPercent: -6,
-      opacity: 0.35,
-      ease: "none",
-      scrollTrigger: {
-        trigger: root,
-        start: "top top",
-        end: "+=120%",
-        scrub: 0.6,
-      },
-    });
-    const zoom = gsap.to(bgRef.current, {
-      scale: 1.12,
-      ease: "none",
-      scrollTrigger: {
-        trigger: root,
-        start: "top top",
-        end: "+=80%",
-        scrub: 0.5,
-      },
-    });
-    addTween(cam);
-    addTween(zoom);
-
-    return () => {
-      tl.kill();
-      cam.scrollTrigger?.kill();
-      cam.kill();
-      zoom.scrollTrigger?.kill();
-      zoom.kill();
-    };
+    return () => tween.kill();
   }, []);
 
   const scrollTo = (id) => () => {
@@ -109,43 +74,25 @@ export const HeroSection = () => {
 
       <div className="ga-hero-streak" ref={streakRef} aria-hidden="true" />
 
-      {/* Constellation behind title */}
-      <svg className="ga-hero-network" ref={netRef} viewBox="0 0 900 420" aria-hidden="true">
-        <g stroke="rgba(242,200,120,0.14)" strokeWidth="0.6">
-          <line x1="120" y1="120" x2="620" y2="60" />
-          <line x1="620" y1="60" x2="760" y2="180" />
-          <line x1="760" y1="180" x2="420" y2="300" />
-          <line x1="420" y1="300" x2="120" y2="120" />
-          <line x1="620" y1="60" x2="320" y2="220" />
-          <line x1="120" y1="120" x2="420" y2="300" />
-          <line x1="320" y1="220" x2="760" y2="180" />
-        </g>
-        <g fill="rgba(242,200,120,0.55)">
-          <circle cx="120" cy="120" r="2" /><circle cx="620" cy="60" r="2.4" />
-          <circle cx="760" cy="180" r="2" /><circle cx="420" cy="300" r="2.6" />
-          <circle cx="320" cy="220" r="1.6" />
-        </g>
-      </svg>
-
       <div className="ga-hero-extra ga-hero-extra-l" ref={extraLeft}>
-        <span className="ga-meta">INTELLIGENCE ENGINEERING</span>
+        <span className="ga-meta">6-MONTH PROFESSIONAL PROGRAM</span>
         <span className="ga-hero-rule" />
       </div>
       <div className="ga-hero-extra ga-hero-extra-r" ref={extraRight}>
-        <span className="ga-meta">BATCH 2026 · APPLICATIONS OPEN</span>
+        <span className="ga-meta">Batch 2026 · Applications open</span>
       </div>
 
       <div className="ga-hero-content">
         <div className="ga-hero-eyebrow">
           <span className="ga-eyebrow-line" />
-          <span>PG PROGRAM — NEXT-GENERATION AI EDUCATION</span>
+          <span>CAREERVEDA · PROFESSIONAL PROGRAM</span>
         </div>
 
-        <h1 className="ga-hero-title" aria-label="PG Program in Generative AI and Agentic AI">
+        <h1 className="ga-hero-title" aria-label="PG Program in Gen AI and Agentic AI Engineering">
           {HERO_LINES.map((line, i) => (
             <span
               key={line}
-              className={`ga-hero-line${i === 2 ? " ga-hero-line-italic" : ""}`}
+              className={`ga-hero-line${i === 1 ? " ga-hero-line-italic" : ""}`}
               ref={(el) => {
                 if (el) linesRef.current[i] = el;
               }}
@@ -156,8 +103,31 @@ export const HeroSection = () => {
         </h1>
 
         <p className="ga-hero-sub" ref={subRef}>
-          Build intelligent systems that understand, reason, create &amp; act.
+          Build AI. Break AI. Measure AI. Secure AI. Deploy AI — from Python to production agents.
         </p>
+
+        <div className="ga-hero-badges" ref={subRef} aria-hidden="true">
+          {HERO_BADGES.map((b) => <span key={b}>{b}</span>)}
+        </div>
+
+        <div className="ga-hero-stats" ref={statsRef}>
+          <span className="ga-hero-stat">
+            <strong>24 Weeks</strong>
+            <em>Duration</em>
+          </span>
+          <span className="ga-hero-stat">
+            <strong>Expert AI Mentors</strong>
+            <em>Mentorship</em>
+          </span>
+          <span className="ga-hero-stat">
+            <strong>Live Online</strong>
+            <em>Format</em>
+          </span>
+          <span className="ga-hero-stat">
+            <strong>10,000+</strong>
+            <em>Learners</em>
+          </span>
+        </div>
 
         <div className="ga-hero-ctas" ref={ctaRef}>
           <button type="button" className="ga-btn ga-btn-solid" data-cursor="cta" ref={magneticA} onClick={scrollTo("ga-architecture")}>
@@ -174,10 +144,15 @@ export const HeroSection = () => {
         </div>
       </div>
 
-      <div className="ga-hero-scroll" aria-hidden="true">
-        <span className="ga-scroll-word">Scroll to explore</span>
-        <span className="ga-scroll-track"><i /></span>
-      </div>
+      <img
+        className="ga-hero-side-image"
+        src="/images/agentic-ai-robot.jpg"
+        alt=""
+        width="1200"
+        height="900"
+        decoding="async"
+        aria-hidden="true"
+      />
     </section>
   );
 };
