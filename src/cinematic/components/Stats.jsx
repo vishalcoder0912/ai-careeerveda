@@ -6,7 +6,7 @@ export const StatisticsSection = () => {
   return (
     <section className="ga-stats" id="ga-stats">
       <div className="ga-stats-inner">
-        <SectionLabel index="09">Program Statistics</SectionLabel>
+        <SectionLabel index="10">Program Statistics</SectionLabel>
         <div className="ga-stats-grid">
           {statistics.map((s) => (
             <StatCell key={s.label} {...s} />
