@@ -11,6 +11,7 @@ each program.
 
 ## Programs
 
+- [PG Program in AI Systems & Agentic AI Engineering](https://careerveda.in/programs/ai-systems-agentic-ai): Build AI. Break AI. Measure AI. Secure AI. Deploy AI. — 6 Months, Live Online
 - [PG Program in Product Management](https://careerveda.in/programs/product-management): Become a High-Impact Product Manager — 6 Months, Live Online
 - [PG Program in Business Analytics with Generative AI](https://careerveda.in/programs/business-analytics): Become a Business Analyst with AI Skills — 6 Months, Live Online
 - [PG Program in Data Analytics with Generative AI](https://careerveda.in/programs/data-analytics): Become a Data Analyst with AI Workflows — 6 Months, Live Online
