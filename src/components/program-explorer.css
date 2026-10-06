@@ -29,7 +29,8 @@
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr) clamp(242px, 18vw, 288px);
   gap: clamp(18px, 3vw, 34px);
-  width: min(1400px, calc(100% - 40px));
+  /* Fills its section, which already applies the shared site container. */
+  width: 100%;
   margin: 48px auto 0;
   padding: clamp(14px, 2vw, 20px);
   border: 1px solid rgba(15, 23, 42, 0.08);
@@ -374,7 +375,10 @@
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  object-position: center;
+  /* Biased upward: a portrait upload (the subject's head is near the top)
+     cropped from the centre lost the face. Landscape images crop
+     horizontally, so the vertical bias doesn't affect them. */
+  object-position: center 22%;
 }
 
 @media (max-width: 720px) {
@@ -394,29 +398,35 @@
 
 /* ── Meta strip ──────────────────────────── */
 
-/* Flat facts under the description, mirroring the programme detail page's meta
-   rule: one line, hairline separators, no cards. */
+/* Facts under the description: one row of equal columns, value over label,
+   so all four always fit the card without wrapping or clipping. */
 .program-meta-strip {
-  display: flex;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
   align-items: center;
-  flex-wrap: wrap;
-  gap: 0 24px;
-  margin-bottom: 22px;
-  padding: 14px 0;
+  gap: 0;
+  margin-bottom: 18px;
+  padding: 10px 0;
   border-top: 1px solid rgba(15, 23, 42, 0.08);
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
   flex-shrink: 0;
 }
 
-.program-meta-item {
+.program-meta-strip .program-meta-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
+  min-width: 0;
+  padding: 0 8px;
 }
 
-.program-meta-item + .program-meta-item {
+.program-meta-strip .program-meta-item:first-child {
+  padding-left: 0;
+}
+
+.program-meta-strip .program-meta-item + .program-meta-item {
   border-left: 1px solid rgba(15, 23, 42, 0.08);
-  padding-left: 24px;
 }
 
 .program-meta-icon {
@@ -424,9 +434,17 @@
   flex-shrink: 0;
 }
 
-.program-meta-item strong,
-.program-meta-item small {
+.program-meta-strip .program-meta-item span {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.program-meta-strip .program-meta-item strong,
+.program-meta-strip .program-meta-item small {
   display: block;
+  overflow-wrap: anywhere;
 }
 
 .program-meta-item strong {
@@ -437,7 +455,7 @@
 }
 
 .program-meta-item small {
-  margin-top: 2px;
+  margin-top: 0;
   color: #64748b;
   font-size: 0.66rem;
   font-weight: 700;
@@ -445,18 +463,26 @@
   letter-spacing: 0.08em;
 }
 
-@media (max-width: 640px) {
+/* Phones: four columns get too narrow, so go 2×2 with a centre rule. */
+@media (max-width: 560px) {
   .program-meta-strip {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 10px;
   }
 
-  .program-meta-item + .program-meta-item {
+  .program-meta-strip .program-meta-item,
+  .program-meta-strip .program-meta-item + .program-meta-item {
+    padding: 0 0 0 12px;
     border-left: 0;
+  }
+
+  .program-meta-strip .program-meta-item:nth-child(odd) {
     padding-left: 0;
-    padding-top: 10px;
-    border-top: 1px dashed rgba(15, 23, 42, 0.1);
+  }
+
+  .program-meta-strip .program-meta-item:nth-child(even) {
+    border-left: 1px solid rgba(15, 23, 42, 0.08);
   }
 }
 
@@ -1123,6 +1149,9 @@
   .program-track-item {
     grid-template-columns: 30px 1fr;
     gap: 8px;
+    /* The base rule's width: 100% made every chip as wide as the rail, so only
+       one program was ever visible. */
+    width: min(78vw, 260px);
     min-width: 180px;
     min-height: auto;
     padding: 10px;
@@ -1198,7 +1227,7 @@
 
 @media (max-width: 520px) {
   .program-explorer {
-    width: min(100% - 16px, 1180px);
+    width: 100%;
     padding: 10px;
     border-radius: 16px;
   }
@@ -1270,4 +1299,10 @@
   .program-status-orb span {
     animation: none;
   }
+}
+
+/* Swipe hint: only the stacked (mobile/tablet) rail scrolls sideways; see
+   programs-page-responsive.css. */
+.program-rail-hint {
+  display: none;
 }
