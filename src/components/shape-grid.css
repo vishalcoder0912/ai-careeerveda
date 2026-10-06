@@ -49,9 +49,9 @@
   width: min(46vw, 660px);
   height: 124vh;
   pointer-events: none;
-  /* 70px, not 90: at 90 the two gradients smear into one flat wash and the
-     cloud stops having a shape to read. */
-  filter: blur(96px);
+  /* No filter blur: a 96px blur on a 660×1116px layer that also scales in
+     its drift keyframes was re-blurred every frame. The softness now comes
+     from the gradients themselves, which fade over their full radius. */
   opacity: 0.58;
   will-change: transform;
 }
@@ -59,16 +59,16 @@
 .cv-grid-layer::before {
   left: -14vw;
   background:
-    radial-gradient(closest-side circle at 44% 24%, rgba(37, 99, 235, 0.11), transparent 72%),
-    radial-gradient(closest-side circle at 58% 66%, rgba(37, 99, 235, 0.08), transparent 72%);
+    radial-gradient(closest-side circle at 44% 24%, rgba(37, 99, 235, 0.11), rgba(37, 99, 235, 0.04) 55%, transparent 100%),
+    radial-gradient(closest-side circle at 58% 66%, rgba(37, 99, 235, 0.08), rgba(37, 99, 235, 0.03) 55%, transparent 100%);
   animation: cv-cloud-drift-a 26s ease-in-out infinite alternate;
 }
 
 .cv-grid-layer::after {
   right: -14vw;
   background:
-    radial-gradient(closest-side circle at 56% 30%, rgba(124, 58, 237, 0.08), transparent 72%),
-    radial-gradient(closest-side circle at 42% 72%, rgba(85, 199, 255, 0.09), transparent 72%);
+    radial-gradient(closest-side circle at 56% 30%, rgba(124, 58, 237, 0.08), rgba(124, 58, 237, 0.03) 55%, transparent 100%),
+    radial-gradient(closest-side circle at 42% 72%, rgba(85, 199, 255, 0.09), rgba(85, 199, 255, 0.035) 55%, transparent 100%);
   animation: cv-cloud-drift-b 34s ease-in-out infinite alternate;
 }
 
