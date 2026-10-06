@@ -288,6 +288,20 @@ describe("admin lead management", () => {
     expect(response.body.data.notes).toHaveLength(1);
   });
 
+  it("deletes a lead and audits it", async () => {
+    await submit();
+    const token = await asAdmin();
+    const lead = await Lead.findOne({});
+
+    const response = await request(app)
+      .delete(`/api/v1/admin/leads/${lead._id}`)
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(await Lead.countDocuments({})).toBe(0);
+    expect(await AuditLog.countDocuments({action: AUDIT_ACTIONS.LEAD_DELETED})).toBe(1);
+  });
+
   it("refuses a status update from a viewer, who has forms.read only", async () => {
     await submit();
     const token = await asAdmin(ROLES.VIEWER, "viewer@careerveda.test");
