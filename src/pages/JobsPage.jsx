@@ -1,7 +1,7 @@
 import {useMemo, useState} from "react";
 import {jobs as staticJobs} from "../data/jobsData";
 import {useContentList} from "../hooks/useContent";
-import {adaptJob} from "../lib/contentAdapters";
+import {adaptJob, LINKEDIN_SOURCE} from "../lib/contentAdapters";
 import "../components/jobs-page.css";
 
 // Categories are matched against the listing title with a pattern rather than a
@@ -192,9 +192,11 @@ const JobsPage = () => {
 
                 <div className="job-card__footer">
                   <span className="job-card__date">
-                    Posted {job.postedDate}
+                    {job.postedDate && `Posted ${job.postedDate}`}
                     {job.source && (
-                      <span className="job-card__source"> · via {job.source}</span>
+                      <span className="job-card__source">
+                        {job.postedDate ? " · " : ""}via {job.source}
+                      </span>
                     )}
                   </span>
                   <a
@@ -202,9 +204,13 @@ const JobsPage = () => {
                     href={job.applyUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    title={`Search live "${job.title}" openings on ${job.source}`}
+                    title={
+                      job.source === LINKEDIN_SOURCE
+                        ? `Search live "${job.title}" openings on ${job.source}`
+                        : `Apply for ${job.title} at ${job.company}`
+                    }
                   >
-                    View Jobs on LinkedIn &#x2192;
+                    {job.source === LINKEDIN_SOURCE ? "View Jobs on LinkedIn" : "Apply Now"} &#x2192;
                   </a>
                 </div>
               </article>
