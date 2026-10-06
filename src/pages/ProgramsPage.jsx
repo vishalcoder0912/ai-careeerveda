@@ -1,5 +1,6 @@
 import { lazy } from "react";
 import ProgramExplorer from "../components/ProgramExplorer";
+import MarqueeStrip from "../components/MarqueeStrip";
 import DeferUntilVisible from "../components/DeferUntilVisible";
 import { Reveal } from "../components/motionPrimitives";
 import { useCinematicInteractions } from "../hooks/useCinematicInteractions";
@@ -11,6 +12,7 @@ import { programListSchema, useJsonLd } from "../lib/structuredData";
 import "../components/SplineLanding.css";
 import "../components/cinematic-interactions.css";
 import "../components/programs-page-responsive.css";
+import "../components/program-effects.css";
 
 // The explorer is the page — it stays eager. These two sit under it.
 const RecommendedCourses = lazy(() => import("../components/Recommended/RecommendedCourses1"));
@@ -64,6 +66,11 @@ const ProgramsPage = () => {
         <Reveal amount={0.1}>
           <ProgramExplorer />
         </Reveal>
+        <MarqueeStrip
+          items={programCatalog.map((program) => program.title)}
+          label="Career tracks ticker"
+          speed={56}
+        />
         <DeferUntilVisible minHeight={600}>
           <RecommendedCourses />
         </DeferUntilVisible>
