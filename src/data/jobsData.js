@@ -7,26 +7,10 @@
 // Now" button routes to a LIVE, verified search for that exact role and
 // location on LinkedIn Jobs — a real third-party platform — so learners land
 // on current, genuine openings they can actually apply to. The user-facing
-// disclaimer on the Jobs page explains this. Swap `buildApplyUrl` for an
+// disclaimer on the Jobs page explains this. Set an `applyUrl` on the listing to an
 // employer's real ATS URL whenever you have a confirmed direct posting.
 
-const LINKEDIN_JOBS_SEARCH = "https://www.linkedin.com/jobs/search/";
-
-// Builds a live LinkedIn Jobs search URL pre-filtered by role title and
-// location. Remote roles use "India" + LinkedIn's remote work-type filter.
-function buildApplyUrl(title, location) {
-  const isRemote = /remote/i.test(location);
-  const params = new URLSearchParams({
-    keywords: title,
-    location: isRemote ? "India" : location,
-  });
-  if (isRemote) params.set("f_WT", "2"); // 2 = Remote in LinkedIn's filter
-  return `${LINKEDIN_JOBS_SEARCH}?${params.toString()}`;
-}
-
-// The platform each listing is sourced/searchable from. Shown on the card so it
-// is clear the openings come from a third-party job board, not CareerVeda.
-const SOURCE = "LinkedIn Jobs";
+import {linkedInSearchUrl, LINKEDIN_SOURCE} from "../lib/contentAdapters";
 
 const listings = [
   {
@@ -1022,6 +1006,6 @@ const listings = [
 // Attach a live third-party apply link and source label to every listing.
 export const jobs = listings.map((job) => ({
   ...job,
-  source: SOURCE,
-  applyUrl: buildApplyUrl(job.title, job.location),
+  source: job.applyUrl ? job.source || "" : LINKEDIN_SOURCE,
+  applyUrl: job.applyUrl || linkedInSearchUrl(job.title, job.location),
 }));
