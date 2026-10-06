@@ -180,6 +180,7 @@ const App = () => {
         <RouteMeta />
         <Routes>
         <Route path="/generative-ai" element={<GenerativeAIPage />} />
+        <Route path="/programs/gen-ai-agentic-ai" element={<GenerativeAIPage />} />
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/programs" element={<ProgramsPage />} />
