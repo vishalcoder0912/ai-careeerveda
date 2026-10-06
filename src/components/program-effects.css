@@ -1,0 +1,178 @@
+/* ── Cinematic effects on the standard pages ────────────────────────────────
+ *
+ * The scroll reveals already live in the motion primitives; this file adds the
+ * landing-page flourishes the /generative-ai campaign uses, on the /programs
+ * listing and the /programs/:slug detail pages: an animated hero glow, floating
+ * badges and artwork, count-up stats, hover lift on outcome/job cards, and the
+ * fill-in wrappers that keep tilted cards at full grid height.
+ *
+ * Everything is decorative and honours prefers-reduced-motion at the end.
+ */
+
+/* ── Detail hero glow ───────────────────────────────────────────────────── */
+
+.pd-hero__glow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.pd-hero__glow::before,
+.pd-hero__glow::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.55;
+}
+
+.pd-hero__glow::before {
+  width: 540px;
+  height: 540px;
+  left: -160px;
+  top: -280px;
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.38), transparent 70%);
+  animation: pd-glow-drift-a 16s ease-in-out infinite alternate;
+}
+
+.pd-hero__glow::after {
+  width: 480px;
+  height: 480px;
+  right: -140px;
+  bottom: -240px;
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.34), transparent 70%);
+  animation: pd-glow-drift-b 19s ease-in-out infinite alternate;
+}
+
+@keyframes pd-glow-drift-a {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(66px, 52px, 0) scale(1.16);
+  }
+}
+
+@keyframes pd-glow-drift-b {
+  from {
+    transform: translate3d(0, 0, 0) scale(1.12);
+  }
+  to {
+    transform: translate3d(-54px, -44px, 0) scale(1);
+  }
+}
+
+/* Content rides above the glow layer. */
+.pd-hero > .pd-inner {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Floating hero badges & artwork ─────────────────────────────────────── */
+
+.pd-hero .pd-badge {
+  animation: pd-float 5.4s ease-in-out infinite;
+}
+
+.pd-hero .pd-badge:nth-of-type(1) {
+  animation-delay: 0s;
+}
+
+.pd-hero .pd-badge:nth-of-type(2) {
+  animation-delay: 0.5s;
+}
+
+.pd-hero .pd-badge:nth-of-type(3) {
+  animation-delay: 1s;
+}
+
+.pd-hero .pd-badge:nth-of-type(4) {
+  animation-delay: 1.5s;
+}
+
+.pd-hero .pd-visual-frame {
+  animation: pd-float-frame 8s ease-in-out infinite;
+}
+
+@keyframes pd-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes pd-float-frame {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* ── Hover lift on outcome & job cards ──────────────────────────────────── */
+
+.pd-outcome {
+  transition:
+    transform 260ms ease,
+    box-shadow 260ms ease,
+    border-color 260ms ease;
+}
+
+.pd-outcome:hover {
+  transform: translateY(-3px);
+}
+
+.pd-job {
+  transition:
+    transform 260ms ease,
+    box-shadow 260ms ease,
+    border-color 260ms ease;
+}
+
+.pd-job:hover {
+  transform: translateY(-3px);
+}
+
+/* ── Tilt wrappers keep cards at full grid height ───────────────────────── */
+
+.route-tile .tilt-card {
+  display: flex;
+  height: 100%;
+}
+
+.route-tile .tilt-card .route-tile-link {
+  flex: 1;
+}
+
+/* No height: 100% on the module tilt cards: modules collapse to their title
+   (ProgramCurriculum), and equal-height rows padded every closed card out to
+   the open one's height. */
+
+/* ── Marquee strips on both pages ───────────────────────────────────────── */
+
+.pd-marquee {
+  padding: 22px 0 10px;
+}
+
+/* ── Reduced motion: kill the new motion, keep the data ─────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .pd-hero__glow::before,
+  .pd-hero__glow::after,
+  .pd-hero .pd-badge,
+  .pd-hero .pd-visual-frame {
+    animation: none;
+  }
+
+  .pd-outcome:hover,
+  .pd-job:hover {
+    transform: none;
+  }
+}
