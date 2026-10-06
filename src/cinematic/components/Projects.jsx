@@ -1,4 +1,5 @@
 import {useEffect, useRef} from "react";
+import {ScrollTrigger} from "gsap/ScrollTrigger";
 import {createPinnedScrub} from "../fx/pinned";
 import {reducedMotionNow} from "../fx/registry";
 import {projectsData} from "../data";
@@ -67,25 +68,37 @@ const GalleryCard = ({project, index, state}) => {
       data-state={state}
       data-cursor
     >
-      <span className="ga-gallery-frame" aria-hidden="true" />
-      <div className="ga-gallery-screen">
-        <div className="ga-gallery-screen-bar">
-          <span className="ga-gallery-screen-dots" aria-hidden="true">
-            <i />
-            <i />
-            <i />
-          </span>
-          <span className="ga-gallery-screen-route">{num} · {project.accent}</span>
+      <span className="ga-gallery-lid" aria-hidden="true" />
+      <div className="ga-gallery-laptop">
+        <div className="ga-gallery-screen">
+          <div className="ga-gallery-screen-bar">
+            <span className="ga-gallery-screen-dots" aria-hidden="true">
+              <i />
+              <i />
+              <i />
+            </span>
+            <span className="ga-gallery-screen-route">{num} · {project.accent}</span>
+          </div>
+          <div className="ga-gallery-screen-body">
+            <span className="ga-gallery-screen-prompt" aria-hidden="true">
+              <i>~/</i>
+              <i>run</i>
+              <i>--project</i>
+              <i>{num.toLowerCase()}</i>
+            </span>
+            <span className="ga-gallery-screen-kicker">{category}</span>
+            <span className="ga-gallery-screen-desc">{project.description}</span>
+            <span className="ga-gallery-screen-chips">
+              {project.stack.map((t) => (
+                <em key={t}>{t}</em>
+              ))}
+            </span>
+            <span className="ga-gallery-screen-caret" aria-hidden="true" />
+          </div>
         </div>
-        <div className="ga-gallery-screen-body">
-          <span className="ga-gallery-screen-kicker">{category}</span>
-          <span className="ga-gallery-screen-desc">{project.description}</span>
-          <span className="ga-gallery-screen-chips">
-            {project.stack.map((t) => (
-              <em key={t}>{t}</em>
-            ))}
-          </span>
-        </div>
+        <span className="ga-gallery-laptop-base" aria-hidden="true">
+          <i />
+        </span>
       </div>
       <div className="ga-gallery-headline">
         <span className="ga-gallery-num">{num}</span>
@@ -107,14 +120,33 @@ export const ProjectsSection = () => {
   const bgRef = useRef(null);
   const reflectRef = useRef(null);
   const cardEls = useRef([]);
+  const listRef = useRef(null);
 
   useEffect(() => {
     const section = sectionRef.current;
     const stage = stageRef.current;
     if (!section || !stage) return undefined;
-    if (!window.matchMedia(MQ_DESKTOP).matches) return undefined;
-
     const reduced = reducedMotionNow();
+
+    /* Mobile list: the row crossing mid-screen becomes the lit "hero". */
+    if (!window.matchMedia(MQ_DESKTOP).matches) {
+      const rows = Array.from(listRef.current?.children || []);
+      if (reduced || !rows.length) return undefined;
+      const sts = rows.map((row) =>
+        ScrollTrigger.create({
+          trigger: row,
+          start: "top 60%",
+          end: "bottom 40%",
+          onToggle: (self) => {
+            row.dataset.state = self.isActive ? "active" : "front";
+          },
+        }),
+      );
+      rows.forEach((row) => {
+        row.dataset.state = "front";
+      });
+      return () => sts.forEach((st) => st.kill());
+    }
 
     let W = 0;
     let H = 0;
@@ -317,14 +349,14 @@ export const ProjectsSection = () => {
       </div>
 
       {/* Mobile composition — one hero plus the surrounding builds, stacked */}
-      <div className="ga-gallery-list">
+      <div className="ga-gallery-list" ref={listRef}>
         {projectsData.map((p, i) => (
           <div
             className={`ga-gallery-row ${i === ORDER[0] ? "ga-gallery-row--hero" : ""}`}
             key={p.id}
             data-state={i === ORDER[0] ? "active" : "front"}
           >
-            <GalleryCard project={p} index={i} state={i === ORDER[0] ? "active" : "front"} />
+            <GalleryCard project={p} index={i} />
           </div>
         ))}
       </div>
