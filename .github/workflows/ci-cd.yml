@@ -128,7 +128,7 @@ jobs:
         # The e2e job runs all four projects (chromium/mobile-chromium plus
         # webkit/mobile-webkit for Safari/iOS coverage), so both engines must be
         # present. --with-deps installs OS libraries; works on Linux runners.
-        run: npx playwright install --with-deps chromium webkit
+        run: npx playwright install --with-deps chromium webkit firefox
 
       # E2E tests — main suite (excludes visual, performance, smoke)
       # Native Playwright timeout handles hanging runners on Linux.
