@@ -96,6 +96,19 @@ describe("adaptJob", () => {
     });
   });
 
+  it("falls back to an email, then a LinkedIn search, when there is no application URL", () => {
+    expect(adaptJob({...record, applicationUrl: "", applicationEmail: "hr@example.com"}).applyUrl)
+      .toBe("mailto:hr@example.com");
+
+    const fallback = adaptJob({...record, applicationUrl: "", location: "Pune, Maharashtra"});
+    expect(fallback.applyUrl).toMatch(/^https:\/\/www\.linkedin\.com\/jobs\/search\/\?keywords=Frontend\+Developer/);
+    // Past-3-day postings, newest first: the link always shows recent openings.
+    const params = new URL(fallback.applyUrl).searchParams;
+    expect(params.get("f_TPR")).toBe("r259200");
+    expect(params.get("sortBy")).toBe("DD");
+    expect(fallback.source).toBe("LinkedIn Jobs");
+  });
+
   it("prints the posted date as a date, not an ISO timestamp", () => {
     // The card prints this verbatim: "Posted 2026-07-13", not
     // "Posted 2026-07-13T00:00:00.000Z".
