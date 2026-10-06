@@ -61,14 +61,31 @@ const ProgramExplorer = () => {
     adapt: adaptProgram,
   });
 
-  const [activeId,setActiveId] = useState(programCatalog[0]?.id || "");
+  // null until the visitor picks one: the default is whatever leads the list
+  // actually rendered. Seeding it from programCatalog[0] opened the card on a
+  // program the API list places last.
+  const [activeId,setActiveId] = useState(null);
   const [previewId,setPreviewId] = useState(null);
   const [activeTab,setActiveTab] = useState("Overview");
+  // Phones only (programs-page-responsive.css): the tab content and skill
+  // chips stay folded until a tab is tapped, and tapping the open tab folds
+  // them again. Desktop ignores the flag and always shows the pane. A class,
+  // not a different initial tab, so prerendered and hydrated markup match.
+  const [tabsOpen,setTabsOpen] = useState(false);
+  const handleTab = (tab) => {
+    if (tabsOpen && tab === activeTab) {
+      setTabsOpen(false);
+      return;
+    }
+    setActiveTab(tab);
+    setTabsOpen(true);
+  };
   const listRef = useRef(null);
   const detailRef = useRef(null);
   const explorerRef = useRef(null);
 
-  const displayId = previewId || activeId;
+  const selectedId = PROGRAMS.some((p) => p.id === activeId) ? activeId : PROGRAMS[0]?.id;
+  const displayId = previewId || selectedId;
   // The selected program can vanish under us when the API list arrives — the
   // admin may have unpublished it — so the first program is the standing
   // fallback rather than an undefined that would take the card down with it.
@@ -125,6 +142,15 @@ const ProgramExplorer = () => {
   const hasJobs = matchedJobs.length > 0;
   const hasFee = Boolean(feeAmount);
 
+  // A program can declare a cinematic landing of its own via `landingPath`.
+  // The explorer's primary CTA follows it there; the fee tab stays on the full
+  // detail page, which is the only page that carries the price breakdown it
+  // links to. No programme declares one today, so the CTA uses /programs/:slug.
+  const explorePath =
+    activeProgram.landingPath ||
+    programCatalog.find((program) => program.id === activeProgram.id)?.landingPath ||
+    `/programs/${activeProgram.id}`;
+
   const tabs = [
     "Overview",
     "Curriculum",
@@ -157,10 +183,20 @@ const ProgramExplorer = () => {
   // rail never settled and pegged a core. Hovering an item you are already
   // pointing at does not need scrolling; only a committed selection does.
   useEffect(() => {
-    if (!listRef.current) return;
+    // Nothing chosen yet: scrolling here on mount would yank the page.
+    if (!activeId || !listRef.current) return;
     const activeEl = listRef.current.querySelector(`[data-program-id="${activeId}"]`);
     if (activeEl) activeEl.scrollIntoView({behavior:"smooth",block:"nearest"});
   }, [activeId]);
+
+  // On the horizontal (mobile/tablet) rail, scroll-snap stays locked to the
+  // chip it first snapped to. When the API list replaces the fallback and that
+  // chip moves to the end, the rail follows it there — so put it back at the
+  // start until the visitor has chosen something.
+  useEffect(() => {
+    if (activeId || !listRef.current) return;
+    listRef.current.scrollLeft = 0;
+  }, [PROGRAMS, activeId]);
 
   // Only reachable if both the API and the static catalogue are empty, which
   // would mean the site has no programs at all. Better a missing section than a
@@ -173,10 +209,14 @@ const ProgramExplorer = () => {
         <div className="program-sidebar-head">
           <span>01</span>
           <strong>Programs</strong>
+          {/* Shown only where the rail scrolls sideways (mobile/tablet). */}
+          <small className="program-rail-hint" aria-hidden="true">
+            {PROGRAMS.length} tracks &middot; swipe &rarr;
+          </small>
         </div>
         <div className="program-track-list" ref={listRef} role="tablist" aria-label="Programs">
           {PROGRAMS.map((program, index) => {
-            const isActive = activeId === program.id;
+            const isActive = selectedId === program.id;
             const isPreviewed = previewId === program.id && !isActive;
             return (
               <button
@@ -209,7 +249,7 @@ const ProgramExplorer = () => {
         </div>
       </aside>
 
-      <article className="program-detail-card" ref={detailRef}>
+      <article className={`program-detail-card${tabsOpen ? " tabs-open" : ""}`} ref={detailRef}>
         <div className="program-card-topline">
           <span className="category-badge">{activeProgram.category}</span>
           <small className="admissions-badge">Admissions Open &middot; Limited Seats</small>
@@ -298,7 +338,7 @@ const ProgramExplorer = () => {
                     key={tab}
                     aria-selected={activeTab === tab}
                     className={`tab-pill ${activeTab === tab ? "is-active" : ""}`}
-                    onClick={() => setActiveTab(tab)}
+                    onClick={() => handleTab(tab)}
                     role="tab"
                     type="button"
                   >
@@ -428,7 +468,12 @@ const ProgramExplorer = () => {
             activeProgram.format && {label: "Format", value: activeProgram.format},
             placementBadge && {label: "Placement Support", value: placementBadge},
           ].filter(Boolean).map((row) => (
-            <li key={row.label} className="program-highlight-row">
+            // Duration, mentorship and format already sit in the card's meta
+            // strip; on stacked layouts they are hidden here as repeats.
+            <li
+              key={row.label}
+              className={`program-highlight-row${row.label === "Placement Support" ? "" : " is-repeat"}`}
+            >
               <small className="hl-label">{row.label}</small>
               <strong className="hl-value">{row.value}</strong>
             </li>
@@ -451,7 +496,7 @@ const ProgramExplorer = () => {
         )}
 
         <div className="program-highlights-cta">
-          <Link to={`/programs/${activeProgram.id}`} className="cta-primary">
+          <Link to={explorePath} className="cta-primary">
             Explore Program &rarr;
           </Link>
           <Link to="/#consultation" className="cta-secondary">Download Syllabus</Link>
