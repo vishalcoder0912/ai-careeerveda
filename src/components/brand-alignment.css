@@ -200,7 +200,7 @@
 .site-footer {
   /* 100% not 100vw: 100vw counts the scrollbar, which pushed these sections a
      few pixels left of the navbar on any desktop with a classic scrollbar. */
-  padding: 112px max(24px, calc((100% - var(--site-measure)) / 2));
+  padding: 112px max(var(--site-gutter, 24px), calc((100% - var(--site-measure)) / 2));
 }
 
 .light-section,
