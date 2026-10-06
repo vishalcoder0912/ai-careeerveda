@@ -218,7 +218,14 @@ export const jobBody = z.object({
   responsibilities: stringArray(50),
   skills: stringArray(40, 120),
   salaryRange: optionalText(120),
-  applicationUrl: z.string().max(1000).optional().default(""),
+  // http(s) or blank: the value lands in an Apply button's href, and a blank
+  // one falls back to a LinkedIn search on the site.
+  applicationUrl: z
+    .string()
+    .max(1000)
+    .refine((value) => value === "" || /^https?:\/\//i.test(value), "URL must start with http(s)")
+    .optional()
+    .default(""),
   applicationEmail: z.string().max(254).optional().default(""),
   source: optionalText(120),
   postedDate: z.coerce.date().nullish(),
