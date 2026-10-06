@@ -1,4 +1,5 @@
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
+import {gsap} from "gsap";
 import {ScrollTrigger} from "gsap/ScrollTrigger";
 import {useLenis} from "../lib/smoothScroll";
 import {killFX, syncLenisToScrollTrigger, reducedMotionNow} from "./fx/registry";
@@ -8,7 +9,9 @@ import {
   CustomCursor,
 } from "./components/Atmosphere";
 import {GlowTrail} from "./components/GlowTrail";
-import {CinematicNav} from "./components/Nav";
+import {ClickSpark} from "./components/ClickSpark";
+import SiteNavbar from "../components/SiteNavbar";
+import {navItems} from "../data/siteData";
 import {HeroSection} from "./components/Hero";
 import {TimelineSection} from "./components/Timeline";
 import {SkillsSection} from "./components/Skills";
@@ -26,9 +29,45 @@ import {FinalCTA} from "./components/FinalCta";
 import {GaFooter} from "./components/GaFooter";
 import "./cinematic.css";
 import "./cinematic-site-theme.css";
+import "./cinematic-2026-light.css";
+
+/* Phones and tablets only (the page's own desktop breakpoint is 900px), and
+   never for reduced-motion readers. Desktop renders exactly as before. */
+const MQ_MOBILE_MOTION = "(max-width: 899px) and (prefers-reduced-motion: no-preference)";
 
 export function GenerativeAIPage() {
   const lenis = useLenis();
+  const [mobileMotion, setMobileMotion] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia(MQ_MOBILE_MOTION);
+    const sync = () => setMobileMotion(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  /* React Bits' FadeContent/BlurText entrance on the section headings: each
+     title de-blurs and rises as it scrolls in. gsap.matchMedia reverts every
+     inline style it set the moment the viewport leaves the query, so a resize
+     to desktop is left with untouched headings. */
+  useEffect(() => {
+    const mm = gsap.matchMedia();
+    mm.add(MQ_MOBILE_MOTION, () => {
+      gsap.utils.toArray(".ga-page .ga-display").forEach((el) => {
+        gsap.from(el, {
+          opacity: 0,
+          y: 28,
+          filter: "blur(10px)",
+          duration: 0.9,
+          ease: "power3.out",
+          clearProps: "filter",
+          scrollTrigger: {trigger: el, start: "top 88%", once: true},
+        });
+      });
+    });
+    return () => mm.revert();
+  }, []);
 
   useEffect(() => {
     document.body.classList.add("ga-body");
@@ -107,8 +146,14 @@ export function GenerativeAIPage() {
       <FilmGrain />
       <CustomCursor />
       <GlowTrail />
+      {mobileMotion && <ClickSpark />}
 
-      <CinematicNav />
+      {/* The site navbar, exactly as the home page gets it: the shell reserves
+          --navbar-height of document space and the bar itself is fixed, so it
+          floats over the hero and docks on scroll (navbar-area.css). */}
+      <div className="navbar-shell">
+        <SiteNavbar navItems={navItems} />
+      </div>
 
       <main>
         <HeroSection />
