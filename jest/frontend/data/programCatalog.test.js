@@ -11,13 +11,14 @@ import {describe, it, expect} from "@jest/globals";
 import {programCatalog, getProgram, programTitles} from "../../../src/data/programCatalog";
 
 describe("programCatalog — the records", () => {
-  it("covers the ten advertised programs, one record each", () => {
-    expect(programCatalog).toHaveLength(10);
+  it("covers the eleven advertised programs, one record each", () => {
+    expect(programCatalog).toHaveLength(11);
     const ids = programCatalog.map((program) => program.id);
     expect(new Set(ids).size).toBe(ids.length);
     expect(ids).toEqual(
       expect.arrayContaining([
         "ai-systems-agentic-ai",
+        "gen-ai-agentic-ai",
         "product-management",
         "business-analytics",
         "data-analytics",
