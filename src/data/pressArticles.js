@@ -65,10 +65,12 @@ export const pressArticles = [
       {name: "The Viral Bytes", url: "https://theviralbytes.in/careerveda-recognized-as-indias-best-institute-for-online-upskilling-with-placement-support"},
       {name: "Punjab Bytes", url: "https://english.punjabbytes.com/careerveda-recognized-as-indias-best-institute-for-online-upskilling-with-placement-support"},
       {name: "Entrepreneur Hunt", url: "https://entrepreneurhunt.com/careerveda-recognized-as-indias-best-institute-for-online-upskilling-with-placement-support"},
-      {name: "TPTV", url: "https://tptv.in/careerveda-recognized-as-indias-best-institute-for-online-upskilling-with-placement-support"},
+      // Domain no longer resolves (checked 2026-10-06).
+      //{name: "TPTV", url: "https://tptv.in/careerveda-recognized-as-indias-best-institute-for-online-upskilling-with-placement-support"},
       {name: "The Daily Beat", url: "https://thedailybeat.in/careerveda-recognized-as-indias-best-institute-for-online-upskilling-with-placement-support"},
       {name: "Influencive India", url: "https://influenciveindia.in/careerveda-recognized-as-indias-best-institute-for-online-upskilling-with-placement-support"},
-      {name: "InstaStory", url: "https://instastory.in/careerveda-recognized-as-indias-best-institute-for-online-upskilling-with-placement-support"},
+      // Domain no longer resolves (checked 2026-10-06).
+      //{name: "InstaStory", url: "https://instastory.in/careerveda-recognized-as-indias-best-institute-for-online-upskilling-with-placement-support"},
       {name: "DailyHunt", url: "https://dhunt.in/13OAkM"},
     ],
   },
