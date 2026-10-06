@@ -111,7 +111,7 @@ export const ParticleField = ({className = ""}) => {
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(b.x, b.y);
-            ctx.strokeStyle = `rgba(242,200,120,${alpha})`;
+            ctx.strokeStyle = `rgba(96,165,250,${alpha})`;
             ctx.lineWidth = 0.6;
             ctx.stroke();
           }
@@ -176,9 +176,22 @@ export const CustomCursor = () => {
   const ringRef = useRef(null);
 
   useEffect(() => {
-    if (!window.matchMedia("(pointer: fine)").matches || reducedMotionNow()) {
-      return undefined;
-    }
+    const root = document.documentElement;
+    const fine = window.matchMedia("(pointer: fine)");
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    /* The class hides the native cursor, so it may only exist while the dot and
+       ring are actually mounted and being driven. Any change to the pointer or
+       motion preference (a user toggling reduced motion mid-session, a mouse
+       being plugged in) re-syncs it, and pagehide drops it outright — otherwise
+       the arrow would stay invisible with nothing replacing it. */
+    const sync = () => {
+      const on = fine.matches && !motion.matches && Boolean(dotRef.current && ringRef.current);
+      root.classList.toggle("ga-cursor-active", on);
+      return on;
+    };
+
+    if (!sync()) return undefined;
     const dot = dotRef.current;
     const ring = ringRef.current;
     if (!dot || !ring) return undefined;
@@ -190,8 +203,6 @@ export const CustomCursor = () => {
     let ry = 0;
     let shown = false;
     let active = false;
-
-    document.documentElement.classList.add("ga-cursor-active");
 
     const onMove = (e) => {
       mx = e.clientX;
@@ -230,18 +241,35 @@ export const CustomCursor = () => {
       shown = false;
     };
 
+    const onPreferenceChange = () => {
+      if (sync()) return;
+      cancelAnimationFrame(raf);
+      dot.style.opacity = 0;
+      ring.style.opacity = 0;
+      shown = false;
+    };
+    const onPageHide = () => {
+      root.classList.remove("ga-cursor-active");
+    };
+
     window.addEventListener("pointermove", onMove, {passive: true});
     window.addEventListener("pointerdown", onDown);
     window.addEventListener("pointerup", onUp);
+    window.addEventListener("pagehide", onPageHide);
     document.documentElement.addEventListener("pointerleave", onLeaveDoc);
+    motion.addEventListener("change", onPreferenceChange);
+    fine.addEventListener("change", onPreferenceChange);
 
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerdown", onDown);
       window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pagehide", onPageHide);
       document.documentElement.removeEventListener("pointerleave", onLeaveDoc);
-      document.documentElement.classList.remove("ga-cursor-active");
+      motion.removeEventListener("change", onPreferenceChange);
+      fine.removeEventListener("change", onPreferenceChange);
+      root.classList.remove("ga-cursor-active");
     };
   }, []);
 
