@@ -80,7 +80,10 @@
     radial-gradient(52% 44% at 84% 8%, rgba(85, 199, 255, 0.09), transparent 68%),
     radial-gradient(40% 38% at 6% 22%, rgba(124, 58, 237, 0.06), transparent 68%),
     radial-gradient(54% 48% at 50% 104%, rgba(37, 99, 235, 0.05), transparent 70%);
-  filter: blur(110px);
+  /* No filter: a 110px blur over a full-viewport fixed layer was re-rasterised
+     on every scroll frame and was the largest single paint cost on the page.
+     These gradients already fade to transparent at 68–70%, so the wash reads
+     the same without it. */
   opacity: 1;
 }
 
@@ -98,7 +101,7 @@
 
 @media (max-width: 900px) {
   .cv-bg-glow {
-    filter: blur(90px);
+    opacity: 0.9;
   }
 }
 
