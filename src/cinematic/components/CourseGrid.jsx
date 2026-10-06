@@ -5,7 +5,8 @@ import {SectionLabel} from "./Atmosphere";
 
 const feeLabel = (program) => {
   if (typeof program.startingPrice === "string") {
-    return `From \u20B9${program.startingPrice}`;
+    // Most catalogue prices already carry the \u20B9; strip it so it is never doubled.
+    return `From \u20B9${program.startingPrice.trim().replace(/^\u20B9\s*/, "")}`;
   }
   if (program.fee && program.fee.amount) {
     return `\u20B9${program.fee.amount}`;
