@@ -530,6 +530,20 @@ export const Field = ({field, value, onChange, disabled, error, needed = false, 
             onChange={(event) => onChange(event.target.value === "" ? undefined : Number(event.target.value))}
           />
         );
+      case "date":
+        // Native picker. The API returns full ISO timestamps; the input wants
+        // YYYY-MM-DD. Cleared → null, which the validator accepts as "no date".
+        return (
+          <input
+            id={id}
+            type="date"
+            value={value ? String(value).slice(0, 10) : ""}
+            disabled={disabled}
+            aria-describedby={describedBy || undefined}
+            aria-invalid={error ? "true" : undefined}
+            onChange={(event) => onChange(event.target.value || null)}
+          />
+        );
       case "boolean":
         return (
           <input
