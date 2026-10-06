@@ -10,8 +10,8 @@
 
 .whatsapp-fab {
   position: fixed;
-  right: max(clamp(14px, 3vw, 26px), env(safe-area-inset-right));
-  bottom: max(clamp(14px, 3vw, 26px), env(safe-area-inset-bottom));
+  right: max(24px, env(safe-area-inset-right));
+  bottom: max(24px, env(safe-area-inset-bottom));
   z-index: 900;
 
   display: inline-flex;
@@ -68,11 +68,11 @@
 
 /* The long label starts covering cards well before a phone breakpoint. Collapse
    it throughout tablet and mobile layouts, where screen content is already
-   single- or two-column and the bottom-right corner is valuable reading space. */
-@media (max-width: 1023px) {
+   single- or two-column and the bottom-right corner is valuable reading space.
+   Up to 1199px, because below that a reading column (blog articles) runs
+   under the full pill. */
+@media (max-width: 1199px) {
   .whatsapp-fab {
-    right: max(12px, env(safe-area-inset-right));
-    bottom: max(12px, env(safe-area-inset-bottom));
     width: 50px;
     height: 50px;
     justify-content: center;
@@ -86,6 +86,13 @@
   .whatsapp-fab__icon {
     width: 24px;
     height: 24px;
+  }
+}
+
+@media (max-width: 767px) {
+  .whatsapp-fab {
+    right: max(16px, env(safe-area-inset-right));
+    bottom: max(16px, env(safe-area-inset-bottom));
   }
 }
 
