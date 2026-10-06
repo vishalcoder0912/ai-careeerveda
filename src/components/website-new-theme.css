@@ -587,14 +587,16 @@ body .site-footer {
 
 /* The hero story keeps a slimmer glass box once the columns collapse. */
 @media (max-width: 1024px) {
+  /* The glass card sits ON the site gutter and the copy is inset inside it.
+     Drawn 16px outside the copy, it reached the screen edge on phones. */
   body .spline-page.spline-page--grid .hero-copy {
-    padding: 0 !important;
+    padding: 20px 18px !important;
   }
   body .spline-page.spline-page--grid .hero-copy::before {
-    top: -14px;
-    right: -16px;
-    bottom: -14px;
-    left: -16px;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
     border-radius: 18px;
   }
 }
