@@ -89,7 +89,9 @@ body .support-section .support-grid,
   position: relative;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  width: min(1400px, calc(100vw - 42px));
+  /* Fill the section's container. Sized off 100vw it ran past the shared
+     content width (and under the scrollbar) on every laptop. */
+  width: 100%;
   margin-inline: auto;
   gap: clamp(16px, 2.6vw, 28px);
 }
