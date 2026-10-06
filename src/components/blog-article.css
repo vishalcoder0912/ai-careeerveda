@@ -17,18 +17,20 @@
 
 .blog-article {
   position: relative;
-  width: min(calc(100% - 64px), 1360px);
+  /* The shared site container (site-theme.css tokens). */
+  width: min(calc(100% - 2 * var(--site-gutter, 24px)), var(--site-measure, 1280px));
   margin-inline: auto;
-  padding: clamp(112px, 12vw, 168px) 0 clamp(40px, 5vw, 64px);
+  /* The header is in flow above this, so this IS the header→breadcrumb gap. */
+  padding: 56px 0 clamp(40px, 5vw, 64px);
   color: var(--ps-ink);
 
   /* Shared desktop geometry — the reading column, the sticky rail and the gap
      between them. Everything (title column, breadcrumb, related grid, CTA and
      back link) is derived from these so the whole page shares ONE left edge
      instead of the bottom sections sprawling out to the full shell. */
-  --ba-content: 860px;
+  --ba-content: 820px;
   --ba-rail: 220px;
-  --ba-gap: clamp(44px, 5vw, 64px);
+  --ba-gap: 64px;
   --ba-layout: calc(var(--ba-content) + var(--ba-rail) + var(--ba-gap));
   /* Left offset that centres the reading+rail block inside the shell; reused by
      the crumbs / related / CTA / back so they sit on the reading column's edge. */
@@ -431,7 +433,7 @@
   letter-spacing: -0.01em;
   color: var(--ps-ink);
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  /* -webkit-line-clamp: 2; */
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -575,15 +577,16 @@
   display: none;
 }
 
-/* ── Laptop (1025–1279px): tighter rail, same single reading column ──────── */
-@media (min-width: 1025px) and (max-width: 1279px) {
+/* ── Laptop / small desktop (901–1439px): slimmer rail and gap; the reading
+      column flexes down from 820px rather than squeezing the rail. ─────── */
+@media (min-width: 901px) and (max-width: 1439px) {
   .blog-article {
-    width: min(calc(100% - 48px), 1360px);
-    padding: clamp(96px, 11vw, 140px) 0 clamp(36px, 4vw, 56px);
+    width: min(calc(100% - 2 * var(--site-gutter, 24px)), var(--site-measure, 1280px));
+    padding: 48px 0 clamp(36px, 4vw, 56px);
 
-    --ba-content: 760px;
+    --ba-content: 820px;
     --ba-rail: 200px;
-    --ba-gap: clamp(36px, 4vw, 48px);
+    --ba-gap: 44px;
     --ba-layout: calc(var(--ba-content) + var(--ba-rail) + var(--ba-gap));
   }
 
@@ -609,8 +612,8 @@
       collapsible "On this page" accordion above the prose. ───────────────── */
 @media (max-width: 900px) {
   .blog-article {
-    width: min(calc(100% - 48px), 1180px);
-    padding: clamp(84px, 12vw, 108px) 0 clamp(32px, 4vw, 48px);
+    width: min(calc(100% - 2 * var(--site-gutter, 24px)), var(--site-measure, 1280px));
+    padding: 40px 0 clamp(32px, 4vw, 48px);
   }
 
   .blog-article::before {
@@ -656,7 +659,7 @@
 /* ── Mobile (≤640px): 16px outer gutters, stacked related cards ──────────── */
 @media (max-width: 640px) {
   .blog-article {
-    width: min(calc(100% - 32px), 1180px);
+    width: min(calc(100% - 2 * var(--site-gutter, 24px)), var(--site-measure, 1280px));
   }
 
   .ba-crumbs {
@@ -724,3 +727,66 @@
     transform: none;
   }
 }
+/* ── Readability + touch pass (UI/UX checklist) ───────────────────────────
+   1. Reading measure: body text capped near 75 characters per line. The 820px
+      column carried ~95ch on desktop; the cover, takeaways card, related grid
+      and CTA keep the full column, and the left edge is unchanged.
+   2. Tap targets: breadcrumb, "On this page" and back links reach 44px tall
+      without moving their text (the extra height is padding around it).
+   3. No label below 12px. */
+.ba-prose > p,
+.ba-prose > section > :is(p, ul, ol, h2, h3, h4, blockquote) {
+  /* 66ch renders ~75 real characters per line in this face. */
+  max-width: 66ch;
+}
+
+.ba-crumbs a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.ba-crumbs {
+  row-gap: 0;
+}
+
+:is(.ba-toc, .ba-toc-mobile) a {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.ba-back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.ba-toc > strong {
+  font-size: 12px;
+}
+
+.ba-related-tag {
+  font-size: 12px;
+}
+
+/* The lead's larger type makes the cap wider; 60ch keeps it near 75 characters. */
+.ba-prose > .ba-lead {
+  max-width: 60ch;
+}
+
+/* Desktop: the reading column fills the shared page container instead of a
+   fixed 820px block centred inside it, which stacked a second ~90px inset on
+   each side. The rail stays at the right; breadcrumb, related, CTA and back
+   follow the column (all read --ba-content). */
+@media (min-width: 901px) {
+  .blog-article {
+    /* The article's own backdrop is the visible white panel; keep the text
+       off its edge. Replaces the old ~90px centring inset per side. */
+    padding-inline: 40px;
+    --ba-content: calc(100% - var(--ba-rail) - var(--ba-gap));
+    --ba-layout: 100%;
+    --ba-offset: 0px;
+  }
+}
+
