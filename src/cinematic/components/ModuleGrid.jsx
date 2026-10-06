@@ -4,8 +4,8 @@ import {Lock, ArrowRight} from "lucide-react";
 import {curriculumJourney, continuousTracks} from "../data";
 import {SectionLabel} from "./Atmosphere";
 
-const AGENTIC_PROGRAM = "ai-systems-agentic-ai";
-const AGENTIC_TITLE = "PG Program in AI Systems & Agentic AI Engineering";
+const AGENTIC_PROGRAM = "gen-ai-agentic-ai";
+const AGENTIC_TITLE = "PG Program in Gen AI and Agentic AI";
 
 const WeekRow = ({week}) => {
   const [open, setOpen] = useState(false);
