@@ -13,9 +13,23 @@ export const SkillsSection = () => {
     const section = sectionRef.current;
     const pin = pinRef.current;
     if (!section || !pin) return undefined;
-    if (reducedMotionNow() || !window.matchMedia("(min-width: 900px)").matches) return undefined;
+    if (reducedMotionNow()) return undefined;
 
     const cards = cardsRef.current.filter(Boolean);
+
+    /* Mobile: no pin — each card rises in as it scrolls into view. */
+    if (!window.matchMedia("(min-width: 900px)").matches) {
+      const tweens = cards.map((el, i) =>
+        gsap.fromTo(el, {opacity: 0, y: 48, x: i % 2 ? 24 : -24}, {
+          opacity: 1, y: 0, x: 0, duration: 0.9, ease: "expo.out",
+          scrollTrigger: {trigger: el, start: "top 88%", once: true},
+        }),
+      );
+      return () => tweens.forEach((t) => {
+        t.scrollTrigger?.kill();
+        t.kill();
+      });
+    }
 
     const entrance = cards.map((el, i) => {
       const base = {opacity: 0, ease: "power2.out"};
@@ -83,7 +97,6 @@ export const SkillsSection = () => {
                 ref={(el) => {
                   if (el) cardsRef.current[i] = el;
                 }}
-                style={{gridRow: i === 4 ? "span 1" : undefined, gridColumn: i === 4 ? "1 / -1" : undefined}}
               >
                 <div className="ga-skill-top">
                   <span className="ga-skill-id">{cat.id}</span>
