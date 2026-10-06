@@ -7,30 +7,31 @@ const CX = 50;
 const CY = 50;
 const END_INSET = 4.2;
 
-/* Hub is a visual circle; inside the 16:9 SVG space it maps to an ellipse
-   (width is 100 units, height is only 56 units). These are the ellipse radii
-   of the central node (~160px on desktop) so connectors start at its rim. */
-const HUB_A = 8;
-const HUB_B = 14.2;
+/* The canvas is a 1:1 square, so the hub's 100x100 SVG space is uniform and the
+   central node maps to a true circle. These are the rim radii in SVG units
+   (the hub is ~160px wide inside an ~820px square), so connectors start at its
+   edge on every axis. */
+const HUB_R = 9.8;
 
 const rimPoint = (ux, uy) => {
-  const t = 1 / Math.hypot(ux / HUB_A, uy / HUB_B);
-  return {x: CX + ux * t, y: CY + uy * t};
+  const t = 1 / Math.hypot(ux, uy);
+  return {x: CX + ux * t * HUB_R, y: CY + uy * t * HUB_R};
 };
 
-/* Compact, balanced radial anchors — kept deliberately close to the hub so the
-   network reads as one connected system. Mirrored left/right for symmetry. */
+/* Radial anchors across the 1:1 square. Kept mirrored left/right for symmetry
+   and spaced to use ~10-88% of the canvas so nodes never crowd the hub or
+   touch the edges. */
 const NODE_POS = {
-  USER: {x: 50, y: 22},
-  SECURITY: {x: 30, y: 34},
-  LLM: {x: 70, y: 34},
-  EVAL: {x: 24, y: 49},
-  MEMORY: {x: 76, y: 49},
-  "MULTI-AGENT": {x: 29, y: 66},
-  TOOLS: {x: 71, y: 66},
-  GPU: {x: 41.5, y: 79},
-  RAG: {x: 58.5, y: 79},
-  API: {x: 50, y: 81},
+  USER: {x: 50, y: 10},
+  SECURITY: {x: 19, y: 22},
+  LLM: {x: 81, y: 22},
+  EVAL: {x: 11, y: 42},
+  MEMORY: {x: 89, y: 42},
+  "MULTI-AGENT": {x: 16, y: 63},
+  TOOLS: {x: 84, y: 63},
+  GPU: {x: 32, y: 82},
+  RAG: {x: 68, y: 82},
+  API: {x: 50, y: 88},
 };
 
 /* Quadratic bezier: hub rim → gentle control → node. Short, controlled curves. */
@@ -174,7 +175,7 @@ export const AgentSystem = () => {
       <div className="ga-agent-system" ref={sceneRef} data-cursor="cta">
         <span className="ga-agent-arm" aria-hidden="true" />
 
-        <svg className="ga-agent-lines" ref={svgRef} viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <svg className="ga-agent-lines" ref={svgRef} viewBox="0 0 100 100" aria-hidden="true">
           <g className="ga-agent-line-flow">
             {LINKS.map((l) => (
               <path key={l.label} className="ga-agent-line-path" d={l.d} />
