@@ -144,6 +144,26 @@ const salaryMarket = {
       "Automotive & Robotics",
     ],
   },
+  "gen-ai-agentic-ai": {
+    role: "Gen AI / Agentic AI Engineer & LLM Application Builder",
+    bands: [
+      {level: "Fresher", years: "0–2 years", low: 8, high: 18},
+      {level: "Mid-level", years: "3–6 years", low: 22, high: 45},
+      {level: "Experienced", years: "7+ years", low: 50, high: 100},
+    ],
+    industries: [
+      "SaaS & Product Companies",
+      "Global Capability Centres",
+      "Deep-Tech & AI Startups",
+      "Fintech & BFSI",
+      "E-commerce & Retail",
+      "Healthcare & Life Sciences",
+      "Telecommunications",
+      "IT Services & Consulting",
+      "Automotive & Robotics",
+      "Cloud & Infrastructure",
+    ],
+  },
   "data-engineering": {
     role: "Data Engineer / Analytics Engineer",
     bands: [
