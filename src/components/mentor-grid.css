@@ -4,10 +4,10 @@
    slate colour system. */
 
 .mentor-section {
-  --mn-ink: #071a18;
+  --mn-ink: #102a5c;
   --mn-muted: #475569;
-  --mn-teal: #0f766e;
-  --mn-teal-bright: #2dd4bf;
+  --mn-teal: #2563eb;
+  --mn-teal-bright: #60a5fa;
   --mn-line: rgba(15, 23, 42, 0.09);
 }
 
@@ -39,7 +39,7 @@
 
 @media (hover: hover) and (pointer: fine) {
   .mentor-card:hover {
-    border-color: rgba(45, 212, 191, 0.34);
+    border-color: rgba(96, 165, 250, 0.34);
     box-shadow: 0 30px 84px rgba(15, 23, 42, 0.18);
   }
 }
@@ -97,7 +97,7 @@
      professional rather than a stock photo. */
   aspect-ratio: 3 / 4;
   border-radius: 6px;
-  background: linear-gradient(160deg, rgba(15, 118, 110, 0.14), rgba(45, 212, 191, 0.08));
+  background: linear-gradient(160deg, rgba(37, 99, 235, 0.14), rgba(96, 165, 250, 0.08));
 }
 
 .mentor-card__portrait img {
@@ -134,9 +134,9 @@
 .mentor-card__discipline {
   display: inline-block;
   padding: 4px 10px;
-  border: 1px solid rgba(15, 118, 110, 0.2);
+  border: 1px solid rgba(37, 99, 235, 0.2);
   border-radius: 999px;
-  background: rgba(15, 118, 110, 0.08);
+  background: rgba(37, 99, 235, 0.08);
   color: var(--mn-teal);
   font-size: 11.5px;
   font-weight: 700;
@@ -232,8 +232,8 @@
 
 .mentor-card__programs a:hover,
 .mentor-card__programs a:focus-visible {
-  border-color: rgba(15, 118, 110, 0.34);
-  background: rgba(15, 118, 110, 0.09);
+  border-color: rgba(37, 99, 235, 0.34);
+  background: rgba(37, 99, 235, 0.09);
   color: var(--mn-teal);
 }
 
@@ -252,10 +252,10 @@
    element's own background. The dialog itself is the full-viewport, flex-centred
    frame; .mentor-modal__dialog is the card inside it. */
 .mentor-modal {
-  --mn-ink: #071a18;
+  --mn-ink: #102a5c;
   --mn-muted: #475569;
-  --mn-teal: #0f766e;
-  --mn-teal-bright: #2dd4bf;
+  --mn-teal: #2563eb;
+  --mn-teal-bright: #60a5fa;
   --mn-line: rgba(15, 23, 42, 0.09);
   position: fixed;
   inset: 0;
@@ -275,7 +275,7 @@
 }
 
 .mentor-modal::backdrop {
-  background: rgba(4, 18, 27, 0.62);
+  background: rgba(9, 20, 45, 0.62);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   animation: mentor-modal-fade 200ms ease both;
@@ -289,7 +289,7 @@
   max-height: min(88vh, 760px);
   border-radius: 16px;
   background: #ffffff;
-  box-shadow: 0 40px 120px rgba(4, 18, 27, 0.5);
+  box-shadow: 0 40px 120px rgba(9, 20, 45, 0.5);
   animation: mentor-modal-rise 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -313,8 +313,8 @@
 }
 
 .mentor-modal__close:hover {
-  border-color: rgba(15, 118, 110, 0.34);
-  background: rgba(15, 118, 110, 0.08);
+  border-color: rgba(37, 99, 235, 0.34);
+  background: rgba(37, 99, 235, 0.08);
   color: var(--mn-teal);
 }
 
@@ -337,7 +337,7 @@
   overflow: hidden;
   aspect-ratio: 3 / 4;
   border-radius: 8px;
-  background: linear-gradient(160deg, rgba(15, 118, 110, 0.14), rgba(45, 212, 191, 0.08));
+  background: linear-gradient(160deg, rgba(37, 99, 235, 0.14), rgba(96, 165, 250, 0.08));
 }
 
 .mentor-modal__portrait img {
@@ -419,9 +419,9 @@
 
 .mentor-modal__chips span {
   padding: 6px 12px;
-  border: 1px solid rgba(15, 118, 110, 0.2);
+  border: 1px solid rgba(37, 99, 235, 0.2);
   border-radius: 999px;
-  background: rgba(15, 118, 110, 0.07);
+  background: rgba(37, 99, 235, 0.07);
   color: var(--mn-teal);
   font-size: 12.5px;
   font-weight: 650;
@@ -476,8 +476,8 @@
 
 .mentor-modal__programs a:hover,
 .mentor-modal__programs a:focus-visible {
-  border-color: rgba(15, 118, 110, 0.34);
-  background: rgba(15, 118, 110, 0.09);
+  border-color: rgba(37, 99, 235, 0.34);
+  background: rgba(37, 99, 235, 0.09);
   color: var(--mn-teal);
 }
 
@@ -489,7 +489,7 @@
   gap: 12px;
   padding: 18px 26px;
   border-top: 1px solid var(--mn-line);
-  background: rgba(15, 118, 110, 0.04);
+  background: rgba(37, 99, 235, 0.04);
   border-radius: 0 0 16px 16px;
 }
 
@@ -511,13 +511,13 @@
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;
-  box-shadow: 0 14px 30px rgba(15, 118, 110, 0.3);
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.3);
   transition: transform 180ms ease, box-shadow 200ms ease;
 }
 
 .mentor-modal__cta:hover {
   transform: translateY(-1px);
-  box-shadow: 0 20px 44px rgba(15, 118, 110, 0.4);
+  box-shadow: 0 20px 44px rgba(37, 99, 235, 0.4);
 }
 
 .mentor-modal__cta:focus-visible {
