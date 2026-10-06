@@ -46,6 +46,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://careerveda.in/programs/gen-ai-agentic-ai</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://careerveda.in/programs/ai-systems-agentic-ai</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
