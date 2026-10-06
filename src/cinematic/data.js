@@ -28,7 +28,6 @@ import {
   Mail,
   Phone,
   Camera,
-  MonitorPlay,
   ChevronDown,
   Menu,
   X,
@@ -41,6 +40,8 @@ import {
   Lock,
   TrendingUp,
 } from "lucide-react";
+import {ORGANISATION} from "../config/siteMeta";
+import {socialLinks} from "../config/externalLinks";
 
 /* ────────────────────────────────────────────────────────────────────────────
    NAVIGATION
@@ -1042,32 +1043,118 @@ export const learningPillars = [
 ──────────────────────────────────────────────────────────────────────────── */
 export const certificates = [
   {
+    mark: "PG-AIS-01",
     title: "PG Program in AI Systems Engineering",
     focus: "Systems · Backend · MLOps",
-    mark: "PG-AIS-01",
+    stage: "Modules 01–02",
+    outcome: "Ship an end-to-end AI service — data pipeline, trained model, containerised API with monitoring.",
+    skills: ["Python", "DSA", "FastAPI", "MLOps"],
   },
   {
+    mark: "PG-AGT-02",
     title: "PG Program in Agentic AI Engineering",
     focus: "Agents · Multi-Agent · MCP/A2A",
-    mark: "PG-AGT-02",
+    stage: "Modules 03–05",
+    outcome: "Design tool-using agents with memory, planning, multi-agent orchestration and MCP/A2A interop.",
+    skills: ["RAG", "Tool calling", "Memory", "MCP/A2A"],
   },
   {
+    mark: "PG-APR-03",
     title: "PG Program in Applied Production AI",
     focus: "GPU · Eval · Security · Cloud",
-    mark: "PG-APR-03",
+    stage: "Module 06",
+    outcome: "Optimise and defend a production LLM stack — GPU serving, evals, red-teaming and cloud rollout.",
+    skills: ["GPU", "Evals", "Security", "Cloud"],
   },
+];
+
+/* A learning badge is not a certificate, and a certificate is not proof you can
+   build. These three are deliberately separate: the roadmap below buys the first,
+   the project buys the second, and the repository is what a hiring manager
+   actually opens. Presenting one as the other is how a brochure loses its
+   credibility in the first interview. */
+export const proofPillars = [
+  {
+    title: "Credential",
+    note: "External industry learning, mapped to the module it was earned in.",
+    icon: GraduationCap,
+  },
+  {
+    title: "Project",
+    note: "A deployed system, not a notebook — something a user or a team can open.",
+    icon: FolderKanban,
+  },
+  {
+    title: "GitHub evidence",
+    note: "Architecture, tests and commit history — proof of how you work.",
+    icon: GitBranch,
+  },
+];
+
+/* The 24-week curriculum mapped onto external, industry-recognised learning.
+   `cost` is deliberately worded as "Free" / "Free assessment" rather than a
+   promise of a permanently free certificate: provider catalogues, badge
+   requirements and promotional exam offers all change without notice, and a
+   brochure that names one as free forever is the first thing a sceptical
+   admissions panel catches. The exact live list belongs on the course portal. */
+export const credentialRoadmap = [
+  {stage: "Foundation", weeks: "Weeks 1–2", credential: "AI & Python foundations", provider: "IBM SkillsBuild", cost: "Free"},
+  {stage: "Foundation → ML", weeks: "Week 4", credential: "Introduction to Machine Learning", provider: "Google for Developers", cost: "Free"},
+  {stage: "ML", weeks: "Weeks 5–8", credential: "ML Crash Course — core + module badges", provider: "Google for Developers", cost: "Free"},
+  {stage: "ML", weeks: "Week 8", credential: "Classification & Embeddings badges", provider: "Google for Developers", cost: "Free"},
+  {stage: "GenAI", weeks: "Weeks 9–12", credential: "Foundations in Generative AI", provider: "IBM SkillsBuild", cost: "Free"},
+  {stage: "GenAI", weeks: "Week 12", credential: "Large Language Models badge", provider: "Google for Developers", cost: "Free"},
+  {stage: "Agentic AI", weeks: "Weeks 13–16", credential: "AI Agents — Applied Skills", provider: "Microsoft Learn", cost: "Free assessment where offered"},
+  {stage: "Advanced agents", weeks: "Weeks 17–20", credential: "Agent orchestration — Applied Skills", provider: "Microsoft Learn", cost: "Free assessment where offered"},
+  {stage: "Production", weeks: "Weeks 21–24", credential: "Production ML Systems badge", provider: "Google for Developers", cost: "Free"},
+  {stage: "AI engineering", weeks: "Week 24", credential: "AI, data & cloud credentials", provider: "IBM SkillsBuild", cost: "Free"},
+];
+
+/* The narrative the ten credentials are meant to tell, in order. */
+export const credentialNarrative = [
+  "Developer",
+  "ML Engineer",
+  "GenAI Engineer",
+  "Agent Engineer",
+  "Production AI Engineer",
 ];
 
 /* ────────────────────────────────────────────────────────────────────────────
    CONTACT / FOOTER
-──────────────────────────────────────────────────────────────────────────── */
+   ────────────────────────────────────────────────────────────────────────────
+   The email and phone come from ORGANISATION in src/config/siteMeta.js, and the
+   social rows are read out of the shared list in src/config/externalLinks.js —
+   the same source the main site footer and the mobile drawer use.
+
+   This block used to hand-type its own values instead, and every one of them was
+   wrong: a placeholder phone number (+91 80000 00000), an admissions@ address
+   that exists nowhere else on the site, three social rows pointing at #contact
+   rather than the profile, a YouTube channel and a GitHub org for accounts that
+   have never existed. Reading the shared config is what stops the two footers
+   from drifting apart again.
+
+   A blank href in externalLinks.js means "no account, do not render" — so the
+   missing YouTube and X profiles simply drop out of this list instead of
+   shipping a dead link. `value` is display text only; the href is what matters,
+   and it can no longer be wrong. */
+const telHref = (number) => `tel:+${number.replace(/\D/g, "")}`;
+
+const SOCIAL_CHANNELS = {
+  linkedin: {label: "LinkedIn", value: "CareerVeda", icon: Briefcase},
+  instagram: {label: "Instagram", value: "@_careerveda_", icon: Camera},
+  facebook: {label: "Facebook", value: "CareerVeda", icon: Users},
+};
+
 export const contactChannels = [
-  {label: "Admissions", value: "admissions@careerveda.in", href: "mailto:admissions@careerveda.in", icon: Mail},
-  {label: "Call", value: "+91 80000 00000", href: "tel:+918000000000", icon: Phone},
-  {label: "LinkedIn", value: "CareerVeda", href: "#contact", icon: Briefcase},
-  {label: "Instagram", value: "@careerveda", href: "#contact", icon: Camera},
-  {label: "YouTube", value: "CareerVeda", href: "#contact", icon: MonitorPlay},
-  {label: "GitHub", value: "careerveda-labs", href: "#contact", icon: GitBranch},
+  {label: "Email", value: ORGANISATION.email, href: `mailto:${ORGANISATION.email}`, icon: Mail},
+  {label: "Call", value: "+91 92178 01191", href: telHref(ORGANISATION.telephone), icon: Phone},
+  ...socialLinks
+    .filter((link) => SOCIAL_CHANNELS[link.id])
+    .map((link) => ({
+      ...SOCIAL_CHANNELS[link.id],
+      href: link.href,
+      external: true,
+    })),
 ];
 
 /* Small shared icon exports for section headings / UI chrome. */
