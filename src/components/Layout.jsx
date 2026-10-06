@@ -77,13 +77,12 @@ const Layout = () => {
           <Link className="brand" to="/">
             <BrandLockup />
           </Link>
-          <p>Empowering learners worldwide to achieve career excellence</p>
           {/* Under the brand, not in the link columns: these are the same CareerVeda,
               not more places on the site. Renders nothing until a profile URL is set
               in externalLinks.js. */}
           <SocialLinks />
         </div>
-        <div>
+        <div className="footer-col footer-col--discover">
           <h3>Discover More</h3>
           <Link to="/about">About Us</Link>
           <Link to="/programs">Our Programs</Link>
@@ -103,7 +102,7 @@ const Layout = () => {
             </a>
           ))}
         </div>
-        <div>
+        <div className="footer-col footer-col--policies">
           <h3>Policies</h3>
           {/* Driven by the data, not typed out here: a policy is linked exactly when
               it is publishable. Hardcoding the four is how the footer came to link
@@ -113,18 +112,19 @@ const Layout = () => {
             <Link key={slug} to={`/${slug}`}>{title}</Link>
           ))}
         </div>
-        <div>
+        <div className="footer-col footer-col--contact">
           <h3>Contact Us</h3>
-          <p>
+          <p className="footer-address">
             CareerVeda OPC Private Limited, Awfis Majestic Signia, 1st Floor,
             Majestic Signia, Plot No. A-27, Block A, Industrial Area, Sector 62,
             Noida, Uttar Pradesh 201309
           </p>
-          <p>+91 9217801191</p>
-          <p>Info@careerveda.in</p>
-          <p>Mon-Sat: 10:00 AM to 07:00 PM · Sunday: Closed</p>
+          {/* Tappable: on a phone these are the two things someone wants to act on. */}
+          <a href="tel:+919217801191">+91 9217801191</a>
+          <a href="mailto:Info@careerveda.in">Info@careerveda.in</a>
+          <p className="footer-hours">Mon-Sat: 10:00 AM to 07:00 PM · Sunday: Closed</p>
         </div>
-        <small>© 2026 CareerVeda. All rights reserved.</small>
+        <small>© 2018 CareerVeda. All rights reserved.</small>
       </footer>
       {/* Outside the Suspense boundary on purpose: it is pinned to the viewport
           and must stay tappable while a route chunk loads. It reads the route
