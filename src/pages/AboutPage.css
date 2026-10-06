@@ -18,6 +18,20 @@
   --about-blue: #38bdf8;
   --about-panel: rgba(255, 255, 255, 0.035);
   --about-panel-strong: rgba(255, 255, 255, 0.07);
+  /* Accent tints and card depth derive from --about-cyan / the shell ink so a
+     single token flip (dark shell → light shell) re-tints every accent instead
+     of leaving hardcoded teal and white-on-white text behind. */
+  --about-accent-10: color-mix(in srgb, var(--about-cyan) 10%, transparent);
+  --about-accent-18: color-mix(in srgb, var(--about-cyan) 18%, transparent);
+  --about-accent-30: color-mix(in srgb, var(--about-cyan) 30%, transparent);
+  --about-accent-40: color-mix(in srgb, var(--about-cyan) 40%, transparent);
+  --about-accent-60: color-mix(in srgb, var(--about-cyan) 60%, transparent);
+  --about-accent-70: color-mix(in srgb, var(--about-cyan) 70%, transparent);
+  /* Small accent text sits on accent-tinted chips, so it uses a slightly
+     deepened accent to clear 4.5:1 on the light canvas. */
+  --about-accent-ink: color-mix(in srgb, var(--about-cyan) 82%, #000);
+  --about-card-shadow: 0 1px 2px rgba(16, 42, 92, 0.06), 0 10px 26px rgba(16, 42, 92, 0.07);
+  --about-card-shadow-hover: 0 18px 40px rgba(16, 42, 92, 0.14);
   position: relative;
   color: var(--about-text);
   font-family: inherit;
@@ -27,7 +41,8 @@
 .about-wrap {
   position: relative;
   z-index: 1;
-  width: min(calc(100% - 64px), 1400px);
+  /* The shared site container (site-theme.css tokens). */
+  width: min(calc(100% - 2 * var(--site-gutter, 24px)), var(--site-measure, 1280px));
   margin-inline: auto;
 }
 
@@ -40,9 +55,9 @@
 .about-eyebrow {
   display: inline-block;
   padding: 7px 12px;
-  border: 1px solid rgba(22, 212, 208, 0.2);
+  border: 1px solid var(--about-accent-30);
   border-radius: 999px;
-  color: #52e5df;
+  color: var(--about-cyan);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -433,7 +448,7 @@
   height: 40px;
   border-radius: 12px;
   color: var(--about-cyan);
-  background: rgba(22, 212, 208, 0.08);
+  background: var(--about-accent-10);
   font-size: 15px;
 }
 
@@ -451,7 +466,7 @@
 .about-journey-card small {
   display: block;
   margin-top: 14px;
-  color: #6edbd4;
+  color: var(--about-accent-ink);
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -462,13 +477,13 @@
   flex: 0 0 auto;
   width: 16px;
   height: 2px;
-  background: rgba(22, 212, 208, 0.18);
+  background: var(--about-accent-18);
   transition: background 240ms ease, box-shadow 240ms ease;
 }
 
 .about-journey-row:hover .about-connector {
-  background: rgba(22, 212, 208, 0.7);
-  box-shadow: 0 0 10px rgba(22, 212, 208, 0.5);
+  background: var(--about-accent-70);
+  box-shadow: 0 0 10px var(--about-accent-60);
 }
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -492,14 +507,14 @@
   min-width: 150px;
   min-height: 150px;
   margin: 0 auto 40px;
-  border: 1px solid rgba(22, 212, 208, 0.22);
+  border: 1px solid var(--about-accent-30);
   border-radius: 50%;
-  background: rgba(22, 212, 208, 0.06);
-  color: #52e5df;
+  background: var(--about-accent-10);
+  color: var(--about-cyan);
   font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.16em;
-  box-shadow: 0 0 50px rgba(22, 212, 208, 0.15);
+  box-shadow: 0 0 50px var(--about-accent-18);
 }
 
 .about-pills {
@@ -616,22 +631,22 @@
 }
 
 .about-way-card.tone-blue .about-way-number { color: var(--about-blue); }
-.about-way-card.tone-cyan .about-way-number { color: #22d3ee; }
-.about-way-card.tone-mint .about-way-number { color: #34d399; }
+.about-way-card.tone-cyan .about-way-number { color: #0ea5e9; }
+.about-way-card.tone-mint .about-way-number { color: #4f46e5; }
 
 .about-way-indicator {
   padding: 4px 8px;
   border-radius: 99px;
-  background: rgba(22, 212, 208, 0.08);
-  color: #61dad6;
+  background: var(--about-accent-10);
+  color: var(--about-accent-ink);
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.08em;
 }
 
-.about-way-card.tone-blue .about-way-indicator { background: rgba(56, 189, 248, 0.1); color: #7dd3fc; }
-.about-way-card.tone-cyan .about-way-indicator { background: rgba(34, 211, 238, 0.1); color: #67e8f9; }
-.about-way-card.tone-mint .about-way-indicator { background: rgba(52, 211, 153, 0.1); color: #6ee7b7; }
+.about-way-card.tone-blue .about-way-indicator { background: color-mix(in srgb, var(--about-blue) 12%, transparent); color: #0284c7; }
+.about-way-card.tone-cyan .about-way-indicator { background: color-mix(in srgb, #0ea5e9 12%, transparent); color: #0284c7; }
+.about-way-card.tone-mint .about-way-indicator { background: color-mix(in srgb, #4f46e5 12%, transparent); color: #4338ca; }
 
 .about-way-card h3 {
   margin: 0 0 8px;
@@ -664,13 +679,13 @@
   display: inline-block;
   padding: 4px 10px;
   border-radius: 8px;
-  background: rgba(20, 210, 200, 0.10);
-  color: #d7f6f1;
+  background: var(--about-accent-10);
+  color: var(--about-accent-ink);
   font-size: 12px;
   font-weight: 750;
   letter-spacing: 0.05em;
   white-space: nowrap;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 6px rgba(16, 42, 92, 0.08);
 }
 
 .folder.open .paper {
@@ -680,8 +695,8 @@
 }
 
 .folder.open .paper .about-way-folder-item {
-  background: rgba(20, 210, 200, 0.12);
-  color: #0d1b26;
+  background: color-mix(in srgb, var(--about-cyan) 14%, transparent);
+  color: var(--about-accent-ink);
 }
 
 .folder.open .paper {
@@ -689,10 +704,10 @@
   place-items: center;
 }
 
-.about-way-card.tone-teal { background: linear-gradient(160deg, rgba(20, 184, 166, 0.05), var(--about-panel)); }
-.about-way-card.tone-blue { background: linear-gradient(160deg, rgba(56, 189, 248, 0.05), var(--about-panel)); }
-.about-way-card.tone-cyan { background: linear-gradient(160deg, rgba(34, 211, 238, 0.05), var(--about-panel)); }
-.about-way-card.tone-mint { background: linear-gradient(160deg, rgba(52, 211, 153, 0.05), var(--about-panel)); }
+.about-way-card.tone-teal { background: linear-gradient(160deg, color-mix(in srgb, var(--about-cyan) 7%, transparent), var(--about-panel)); }
+.about-way-card.tone-blue { background: linear-gradient(160deg, color-mix(in srgb, var(--about-blue) 7%, transparent), var(--about-panel)); }
+.about-way-card.tone-cyan { background: linear-gradient(160deg, color-mix(in srgb, #0ea5e9 7%, transparent), var(--about-panel)); }
+.about-way-card.tone-mint { background: linear-gradient(160deg, color-mix(in srgb, #4f46e5 7%, transparent), var(--about-panel)); }
 
 /* ════════════════════════════════════════════════════════════════════════
    5. PROOF — metrics as product analytics rail
@@ -721,7 +736,7 @@
   display: block;
   font-size: clamp(26px, 3vw, 36px);
   line-height: 1;
-  color: #19cad7;
+  color: var(--about-cyan);
   letter-spacing: -0.02em;
 }
 
@@ -776,7 +791,7 @@
   width: 44px;
   height: 44px;
   border-radius: 14px;
-  background: rgba(22, 212, 208, 0.08);
+  background: var(--about-accent-10);
   color: var(--about-cyan);
   font-size: 20px;
 }
@@ -784,12 +799,12 @@
 .about-who-flow-line {
   flex: 1;
   height: 2px;
-  background: linear-gradient(90deg, rgba(22, 212, 208, 0.6), rgba(22, 212, 208, 0.1));
+  background: linear-gradient(90deg, var(--about-accent-60), var(--about-accent-10));
 }
 
 .about-who-card > b {
   display: block;
-  color: rgba(255, 255, 255, 0.3);
+  color: color-mix(in srgb, var(--about-muted) 70%, transparent);
   font-size: 13px;
   margin-bottom: 10px;
 }
@@ -815,20 +830,40 @@
   margin-top: 50px;
 }
 
+/* The four cards share one panel colour and differ only by a soft accent
+   glow, hairline and icon — all hues stay inside the site's teal/blue
+   language so the set reads as one system, not four tinted tiles. */
 .about-value-card {
+  --value-accent: var(--about-cyan);
+  --value-card-depth: var(--about-card-shadow);
   position: relative;
-  min-height: 195px;
-  padding: 24px;
+  min-height: 185px;
+  padding: 22px;
   border: 1px solid var(--about-border);
   border-radius: 22px;
-  background: var(--about-panel);
+  background:
+    radial-gradient(115% 95% at 8% 0%, color-mix(in srgb, var(--value-accent) 10%, transparent), transparent 72%),
+    var(--about-panel);
+  box-shadow: var(--value-card-depth);
   overflow: hidden;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 
-.about-value-card.tone-teal { background: linear-gradient(160deg, rgba(20, 184, 166, 0.14), rgba(18, 42, 60, 0.82)); }
-.about-value-card.tone-blue { background: linear-gradient(160deg, rgba(56, 189, 248, 0.14), rgba(18, 42, 60, 0.82)); }
-.about-value-card.tone-cyan { background: linear-gradient(160deg, rgba(34, 211, 238, 0.14), rgba(18, 42, 60, 0.82)); }
-.about-value-card.tone-mint { background: linear-gradient(160deg, rgba(52, 211, 153, 0.14), rgba(18, 42, 60, 0.82)); }
+/* Accent hairline on the top edge — the only saturated cue on the card. */
+.about-value-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--value-accent) 55%, transparent), transparent);
+}
+
+/* All four hues stay in the site's blue → indigo → sky family so the row reads
+   as one set instead of four differently-tinted tiles. */
+.about-value-card.tone-teal { --value-accent: var(--about-cyan); }
+.about-value-card.tone-blue { --value-accent: var(--about-blue); }
+.about-value-card.tone-cyan { --value-accent: #0ea5e9; }
+.about-value-card.tone-mint { --value-accent: #4f46e5; }
 
 .about-value-icon {
   display: grid;
@@ -836,14 +871,10 @@
   width: 42px;
   height: 42px;
   border-radius: 12px;
-  background: rgba(22, 212, 208, 0.08);
-  color: var(--about-cyan);
+  background: color-mix(in srgb, var(--value-accent) 12%, transparent);
+  color: var(--value-accent);
   font-size: 19px;
 }
-
-.about-value-card.tone-blue .about-value-icon { background: rgba(56, 189, 248, 0.1); color: var(--about-blue); }
-.about-value-card.tone-cyan .about-value-icon { background: rgba(34, 211, 238, 0.1); color: #22d3ee; }
-.about-value-card.tone-mint .about-value-icon { background: rgba(52, 211, 153, 0.1); color: #34d399; }
 
 .about-value-card h3 {
   margin: 16px 0 8px;
@@ -851,22 +882,15 @@
 }
 
 .about-value-card p {
-  color: #d8e8ee;
+  color: var(--about-muted);
   font-size: 15px;
   line-height: 1.65;
 }
 
-.about-value-card {
-  --value-card-depth: 0 3px 2px rgba(0, 0, 0, 0.2);
-  min-height: 170px;
-  padding: 20px;
-  box-shadow: var(--value-card-depth);
-  transition: transform 180ms ease, box-shadow 180ms ease;
-}
-
 .about-value-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.42);
+  border-color: color-mix(in srgb, var(--value-accent) 32%, var(--about-border));
+  box-shadow: var(--about-card-shadow-hover);
 }
 
 @media (max-width: 1024px) {
@@ -928,22 +952,24 @@
   margin-bottom: 14px;
   border-radius: 50%;
   background: var(--about-cyan);
-  box-shadow: 0 0 12px rgba(22, 212, 208, 0.6);
+  box-shadow: 0 0 12px var(--about-accent-60);
 }
 
+/* The six steps sit on the light canvas, so they use the shared panel colour
+   with an accent border — a translucent dark panel only muddied the text here. */
 .about-engine-card {
   width: 100%;
   padding: 14px 12px;
-  border: 1px solid rgba(91, 226, 232, 0.5);
+  border: 1px solid var(--about-accent-30);
   border-radius: 18px;
-  background: rgba(18, 42, 60, 0.72);
-  box-shadow: 0 0 22px rgba(34, 211, 238, 0.12), inset 0 0 18px rgba(34, 211, 238, 0.05);
+  background: var(--about-panel);
+  box-shadow: var(--about-card-shadow);
 }
 
 .about-engine-card b {
   display: inline-block;
   margin-bottom: 8px;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--about-accent-ink);
   font-size: 13px;
   letter-spacing: 0.08em;
 }
@@ -951,12 +977,12 @@
 .about-engine-card h3 {
   margin: 0 0 6px;
   font-size: 18px;
-  color: #f4ffff;
+  color: var(--about-text);
 }
 
 .about-engine-card small {
   display: block;
-  color: rgba(236, 250, 255, 0.82);
+  color: var(--about-muted);
   font-size: 13px;
   line-height: 1.35;
 }
@@ -967,7 +993,7 @@
   right: -18px;
   width: 18px;
   height: 0;
-  border-top: 1px solid rgba(91, 226, 232, 0.7);
+  border-top: 1px solid var(--about-accent-40);
 }
 
 .about-engine-connector::after {
@@ -975,19 +1001,20 @@
   position: absolute;
   right: -2px;
   top: -11px;
-  color: #8ffcff;
+  color: var(--about-cyan);
   font-size: 22px;
   line-height: 1;
-  text-shadow: 0 0 10px rgba(34, 211, 238, 0.9);
 }
 
 .about-engine-item:last-child .about-engine-card {
-  border-color: rgba(22, 212, 208, 0.4);
-  background: linear-gradient(160deg, rgba(20, 184, 166, 0.1), rgba(9, 25, 40, 0.9));
+  border-color: var(--about-accent-60);
+  background:
+    radial-gradient(120% 110% at 50% 0%, color-mix(in srgb, var(--about-cyan) 14%, transparent), transparent 75%),
+    var(--about-panel);
 }
 
 .about-engine-item:last-child .about-engine-card h3 {
-  color: #34d399;
+  color: var(--about-cyan);
 }
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -1022,6 +1049,7 @@
   border: 1px solid var(--about-border);
   border-radius: 22px;
   background: var(--about-panel);
+  box-shadow: var(--about-card-shadow);
   overflow: hidden;
 }
 
@@ -1032,12 +1060,14 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+  background: linear-gradient(90deg, transparent, var(--about-accent-30), transparent);
 }
 
 .about-diff-wide {
+  min-height: 230px;
   background:
-    linear-gradient(165deg, rgba(20, 184, 166, 0.07), var(--about-panel));
+    radial-gradient(120% 100% at 0% 0%, color-mix(in srgb, var(--about-cyan) 9%, transparent), transparent 70%),
+    var(--about-panel);
 }
 
 .about-diff-tag {
@@ -1045,8 +1075,8 @@
   margin-bottom: 16px;
   padding: 5px 9px;
   border-radius: 99px;
-  background: rgba(22, 212, 208, 0.1);
-  color: #61dad6;
+  background: var(--about-accent-10);
+  color: var(--about-accent-ink);
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -1054,7 +1084,9 @@
 
 .about-diff-card h3 {
   margin: 0 0 10px;
-  font-size: 20px;
+  color: var(--about-text);
+  font-size: 23px;
+  line-height: 1.25;
 }
 
 .about-diff-wide h3 {
@@ -1062,16 +1094,10 @@
 }
 
 .about-diff-card p {
-  color: #d8e8ee;
+  color: var(--about-muted);
   font-size: 15px;
   line-height: 1.7;
   margin: 0;
-}
-
-.about-diff-card h3 {
-  color: #f5ffff;
-  line-height: 1.25;
-  font-size: 23px;
 }
 
 .about-diff-icon {
@@ -1081,25 +1107,25 @@
   line-height: 1;
 }
 
-.about-diff-wide h3 {
-  font-size: 27px;
-}
-
 /* ════════════════════════════════════════════════════════════════════════
    10. FINAL CTA — the culmination of the journey
    ════════════════════════════════════════════════════════════════════════ */
 .about-final {
-  padding-top: 40px;
+  padding-top: 4px;
 }
 
+/* Matches the sitewide light CTA: white panel, blue + indigo corner glows and
+   a soft navy shadow (see .page-cta in careerveda-light-theme.css). */
 .about-final-inner {
-  padding: 70px 30px;
+  padding: 40px 30px;
   text-align: center;
-  border: 1px solid rgba(22, 212, 208, 0.22);
+  border: 1px solid var(--about-border);
   border-radius: 28px;
   background:
-    radial-gradient(60% 80% at 50% 0%, rgba(20, 184, 166, 0.16), transparent 70%),
-    linear-gradient(135deg, rgba(20, 49, 69, 0.85), rgba(12, 28, 46, 0.75));
+    radial-gradient(700px 300px at 12% -20%, color-mix(in srgb, var(--about-cyan) 12%, transparent), transparent 60%),
+    radial-gradient(700px 300px at 88% 120%, color-mix(in srgb, #4f46e5 12%, transparent), transparent 60%),
+    var(--about-panel);
+  box-shadow: var(--about-card-shadow-hover);
 }
 
 .about-final h2 {
@@ -1165,7 +1191,7 @@
 
 @media (max-width: 980px) {
   .about-wrap {
-    width: calc(100% - 40px);
+    width: min(calc(100% - 2 * var(--site-gutter, 24px)), var(--site-measure, 1280px));
   }
 
   .about-hero {
@@ -1220,7 +1246,7 @@
 
 @media (max-width: 700px) {
   .about-wrap {
-    width: calc(100% - 28px);
+    width: min(calc(100% - 2 * var(--site-gutter, 24px)), var(--site-measure, 1280px));
   }
 
   .about-hero {
@@ -1326,11 +1352,11 @@
   display: none;
 }
 
-/* Keep About content aligned to a clear editorial edge. */
+/* Keep About content aligned to a clear editorial edge. The final CTA is the
+   page's closing panel, so it stays centered like every other CTA. */
 .about-page,
 .about-hero,
-.about-heading,
-.about-final-inner {
+.about-heading {
   text-align: left;
 }
 
@@ -1346,6 +1372,10 @@
 
 .about-actions {
   justify-content: flex-start;
+}
+
+.about-final .about-actions {
+  justify-content: center;
 }
 
 .about-hero,
