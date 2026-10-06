@@ -67,9 +67,14 @@ export const pageMeta = {
       "Read how CareerVeda alumni moved into data, AI, product and finance roles — the programs they took, the projects they built and the transitions they made.",
   },
   "/generative-ai": {
-    title: "PG Program in Generative AI & Agentic AI",
+    title: "PG Program in Gen AI and Agentic AI",
     description:
-      "A mentor-led PG program in generative AI and agentic AI — LLMs, RAG, fine-tuning, autonomous agents and AI engineering, with capstone projects.",
+      "A mentor-led PG program in Gen AI and Agentic AI — LLMs, RAG, fine-tuning, autonomous agents, MCP tooling and multi-agent orchestration, capstone-driven.",
+  },
+  "/programs/gen-ai-agentic-ai": {
+    title: "PG Program in Gen AI and Agentic AI",
+    description:
+      "A mentor-led PG program in Gen AI and Agentic AI — LLMs, RAG, fine-tuning, autonomous agents, MCP tooling and multi-agent orchestration, capstone-driven.",
   },
   "/enroll": {
     title: "Enroll Online — Admissions Open",
