@@ -61,6 +61,8 @@ export default defineConfig({
     // `npx playwright install webkit` once before the first run.
     {name: "webkit", use: {...devices["Desktop Safari"]}},
     {name: "mobile-webkit", use: {...devices["iPhone 13"]}},
+    // Gecko is the one engine neither pair above covers.
+    {name: "firefox", use: {...devices["Desktop Firefox"]}},
   ],
 
   webServer: [

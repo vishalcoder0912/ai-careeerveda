@@ -327,4 +327,12 @@ describe("CertificateStudio", () => {
     await waitFor(() => expect(downloadButton().disabled).toBe(false));
     vi.unstubAllGlobals();
   });
+
+  /* Lenis is stopped while the dialog is open, and a stopped Lenis cancels
+     every wheel/touch event that does not opt out — on a phone the dialog
+     could not be scrolled at all. */
+  it("opts the dialog out of the paused smooth scroll so it scrolls on mobile", () => {
+    setup();
+    expect(document.querySelector("dialog.ga-cert-studio").hasAttribute("data-lenis-prevent")).toBe(true);
+  });
 });
