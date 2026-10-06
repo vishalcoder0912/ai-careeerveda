@@ -1,6 +1,8 @@
 import {useState} from "react";
+import {flushSync} from "react-dom";
 import {Link} from "react-router-dom";
 import {Reveal, StaggerGroup, StaggerItem} from "../motionPrimitives";
+import TiltCard from "../TiltCard";
 
 /* The curriculum as a data-driven card grid.
  *
@@ -389,43 +391,80 @@ const ModulePhoto = ({src}) => {
   );
 };
 
-const CurriculumCard = ({module}) => {
+// Only the first module opens by default; the rest show number, icon and title
+// until clicked, so thirteen-plus cards don't land as a wall of bullet text.
+const CurriculumCard = ({module, open, onToggle}) => {
   const art = MODULE_ART[module.n] || MODULE_ART[1];
   const accent = ACCENTS[art.accent];
   const points = modulePoints(module);
   const deliverable = moduleDeliverable(module);
+  const bodyId = `pd-module-${module.n}-body`;
 
   return (
-    <StaggerItem as="article" interactive className="pd-modcard" style={{"--mod-accent": accent}}>
-      <ModulePhoto src={module.image} />
-      <header className="pd-modcard__head">
-        <span className="pd-modcard__num">{String(module.n).padStart(2, "0")}</span>
-        <span className="pd-modcard__icon">
-          <Icon kind={art.icon} size={19} />
-        </span>
-      </header>
-      <h3 className="pd-modcard__title">{module.title}</h3>
-      <ul className="pd-modcard__topics">
-        {points.map((point) => (
-          <li key={point}>{point}</li>
-        ))}
-      </ul>
-      <footer className="pd-modcard__deliverable">
-        <Icon kind="doc" className="pd-modcard__deliverable-icon" size={16} strokeWidth={1.7} />
-        <span className="pd-modcard__deliverable-text">
-          <span className="pd-modcard__deliverable-label">Module Deliverable</span>
-          <span className="pd-modcard__deliverable-value">{deliverable}</span>
-        </span>
-        <span className="pd-modcard__arrow" aria-hidden="true">
-          <ArrowIcon />
-        </span>
-      </footer>
-    </StaggerItem>
+    <TiltCard className="pd-modcard-tilt">
+      <StaggerItem
+        as="article"
+        interactive
+        className={`pd-modcard${open ? " is-open" : ""}`}
+        style={{"--mod-accent": accent, viewTransitionName: `pd-mod-${module.n}`}}
+      >
+        <ModulePhoto src={module.image} />
+        <header className="pd-modcard__head">
+          <span className="pd-modcard__num">{String(module.n).padStart(2, "0")}</span>
+          <span className="pd-modcard__icon">
+            <Icon kind={art.icon} size={19} />
+          </span>
+        </header>
+        {/* Accordion pattern: the heading holds the button, not the reverse.
+            While collapsed, the button's ::after covers the card so a tap
+            anywhere on it opens the module. */}
+        <h3 className="pd-modcard__title">
+          <button
+            type="button"
+            className="pd-modcard__toggle"
+            aria-expanded={open}
+            aria-controls={bodyId}
+            onClick={onToggle}
+          >
+            {module.title}
+            <span className="pd-modcard__more">
+              {open ? "Hide topics" : "View topics"}
+              <span className="pd-modcard__chevron" aria-hidden="true" />
+            </span>
+          </button>
+        </h3>
+        <div className="pd-modcard__body" id={bodyId} hidden={!open}>
+          <ul className="pd-modcard__topics">
+            {points.map((point) => (
+              <li key={point}>{point}</li>
+            ))}
+          </ul>
+          {deliverable && (
+            <footer className="pd-modcard__deliverable">
+              <Icon kind="doc" className="pd-modcard__deliverable-icon" size={16} strokeWidth={1.7} />
+              <span className="pd-modcard__deliverable-text">
+                <span className="pd-modcard__deliverable-label">Module Deliverable</span>
+                <span className="pd-modcard__deliverable-value">{deliverable}</span>
+              </span>
+              <span className="pd-modcard__arrow" aria-hidden="true">
+                <ArrowIcon />
+              </span>
+            </footer>
+          )}
+        </div>
+      </StaggerItem>
+    </TiltCard>
   );
 };
 
 const CurriculumCta = ({href, moduleCount}) => (
-  <StaggerItem as={Link} interactive className="pd-cta-card" to={href}>
+  <StaggerItem
+    as={Link}
+    interactive
+    className="pd-cta-card"
+    to={href}
+    style={{viewTransitionName: "pd-mod-cta"}}
+  >
     <span className="pd-cta-card__kicker">Build. Learn.</span>
     <span className="pd-cta-card__title">Get Hired.</span>
     <span className="pd-cta-card__meta">
@@ -438,9 +477,36 @@ const CurriculumCta = ({href, moduleCount}) => (
   </StaggerItem>
 );
 
+// Opening a module re-flows the grid (it takes a full row), which CSS cannot
+// transition. A view transition snapshots every named card and morphs each one
+// from its old box to its new one. No API or reduced motion → instant swap.
+const animateLayout = (update) => {
+  const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  if (!document.startViewTransition || reduced) {
+    update();
+    return;
+  }
+  const root = document.documentElement;
+  root.classList.add("pd-vt");
+  document
+    .startViewTransition(() => flushSync(update))
+    .finished.finally(() => root.classList.remove("pd-vt"));
+};
+
 const ProgramCurriculum = ({program, applyHref}) => {
   const modules = program.modules || [];
   const moduleCount = modules.length;
+  const [openModules, setOpenModules] = useState(() => new Set([modules[0]?.n]));
+  const toggleModule = (n) => {
+    const update = () =>
+      setOpenModules((prev) => {
+        const next = new Set(prev);
+        if (next.has(n)) next.delete(n);
+        else next.add(n);
+        return next;
+      });
+    animateLayout(update);
+  };
 
   return (
     <section className="pd-section pd-curriculum" id="pd-curriculum">
@@ -469,7 +535,12 @@ const ProgramCurriculum = ({program, applyHref}) => {
         {moduleCount > 0 ? (
           <StaggerGroup className="pd-curriculum__grid" amount={0.05} stagger={0.045}>
             {modules.map((module) => (
-              <CurriculumCard key={module.n} module={module} />
+              <CurriculumCard
+                key={module.n}
+                module={module}
+                open={openModules.has(module.n)}
+                onToggle={() => toggleModule(module.n)}
+              />
             ))}
             <CurriculumCta href={applyHref} moduleCount={moduleCount} />
           </StaggerGroup>
