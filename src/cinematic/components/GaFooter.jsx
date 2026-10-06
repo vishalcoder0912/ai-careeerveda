@@ -14,7 +14,13 @@ export const GaFooter = () => {
 
         <div className="ga-footer-channels">
           {contactChannels.map((c) => (
-            <a className="ga-footer-channel" href={c.href} key={c.label} data-cursor>
+            <a
+              className="ga-footer-channel"
+              href={c.href}
+              key={c.label}
+              data-cursor
+              {...(c.external ? {target: "_blank", rel: "noopener noreferrer"} : {})}
+            >
               <span className="ga-channel-label">{c.label}</span>
               <span className="ga-channel-value">
                 <c.icon className="ga-channel-icon" size={16} strokeWidth={1.5} aria-hidden="true" />
