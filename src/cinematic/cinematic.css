@@ -62,8 +62,12 @@
   color: #ffffff;
 }
 
-.ga-cursor-active,
-.ga-cursor-active * {
+/* The native cursor is hidden ONLY while the custom dot + ring are mounted, and
+   only inside .ga-page. The class lives on <html> (a client-side navigation away
+   from this page can be aborted before its cleanup runs), so scoping it to the
+   page guarantees the arrow can never disappear site-wide. */
+.ga-page.ga-cursor-active,
+.ga-page.ga-cursor-active * {
   cursor: none !important;
 }
 
@@ -1026,18 +1030,19 @@
   min-height: 100svh;
   display: grid;
   grid-template-rows: auto 1fr;
-  gap: 1.4rem;
-  padding: 6.5rem clamp(1.2rem, 4vw, 3.5rem) 3rem;
+  gap: 1.1rem;
+  padding: 5rem clamp(1.2rem, 4vw, 3.5rem) 2rem;
 }
 
 .ga-skills-head {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.6rem;
 }
 
+/* Scales with viewport height too, so both card rows fit the pinned screen. */
 .ga-skills-head .ga-display {
-  font-size: clamp(2.4rem, 5.6vw, 4.9rem);
+  font-size: clamp(2rem, min(4.2vw, 6.5vh), 4.2rem);
 }
 
 .ga-skills-body {
@@ -1049,23 +1054,27 @@
 }
 
 .ga-skills-tag {
-  margin-top: 0.6rem;
+  margin-top: 0;
   color: var(--ga-gold);
 }
 
 .ga-skills-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 0.9rem;
   perspective: 1200px;
   min-height: 0;
 }
 
+/* 3 + 2 layout: all five cards fit inside the pinned viewport. */
+.ga-skill { grid-column: span 2; }
+.ga-skill:nth-child(n + 4) { grid-column: span 3; }
+
 .ga-skill {
   position: relative;
   background: var(--ga-panel);
   border: 1px solid var(--ga-line-soft);
-  padding: 1.3rem 1.4rem 1.5rem;
+  padding: 1.1rem 1.3rem 1.2rem;
   border-radius: 3px;
   overflow: hidden;
   transition: transform 0.5s var(--ga-ease), border-color 0.5s, background 0.5s, box-shadow 0.5s var(--ga-ease);
@@ -1106,7 +1115,7 @@
   font-family: var(--ga-serif);
   font-size: 1.5rem;
   font-weight: 500;
-  margin: 0.8rem 0 0.35rem;
+  margin: 0.6rem 0 0.3rem;
   color: var(--ga-ink);
 }
 
@@ -1114,7 +1123,7 @@
   color: var(--ga-ink-3);
   font-size: 0.78rem;
   font-weight: 300;
-  margin: 0 0 0.9rem;
+  margin: 0 0 0.7rem;
   line-height: 1.5;
 }
 
@@ -1422,10 +1431,13 @@
 
 .ga-agent-system {
   position: relative;
-  width: min(88vw, 920px);
+  width: min(82vw, 820px);
+  max-width: 100%;
   height: auto;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 1 / 1;
   margin-inline: auto;
+  overflow: visible;
+  isolation: isolate;
 }
 
 .ga-agent-arm {
@@ -3149,8 +3161,16 @@
     padding-left: 0;
   }
 
+  /* Stacked under the copy instead of hidden: the robot is the hero's only
+     image, and tablets/phones were getting none. */
   .ga-hero-side-image {
-    display: none;
+    position: relative;
+    right: auto;
+    top: auto;
+    transform: none;
+    display: block;
+    width: min(100%, 560px);
+    margin: 2.2rem auto 0;
   }
 
   .ga-hero-extra-l,
@@ -3159,13 +3179,23 @@
   }
 
   /* Timeline Ã¢â€ â€™ vertical */
+  /* .ga-tl-vertical lives INSIDE .ga-tl-pin, so hiding the pin hid the whole
+     mobile timeline. Keep the pin (and its heading) in flow; drop only the
+     desktop scrub stage. */
   .ga-tl-pin {
+    height: auto;
+    min-height: 0;
+    padding: 4rem clamp(1.2rem, 5vw, 2rem) 0;
+    overflow: visible;
+  }
+
+  .ga-tl-stage {
     display: none;
   }
 
   .ga-tl-vertical {
     display: block;
-    padding: 4rem clamp(1.2rem, 5vw, 2rem) 5rem;
+    padding: 2.4rem 0 4rem;
   }
 
   .ga-tl-vertical .ga-tl-head {
@@ -3247,13 +3277,33 @@
     display: block;
   }
 
+  /* display: block drops the pin's grid gap, which left the tagline sitting
+     on the first card. */
+  .ga-skills-head {
+    margin-bottom: 1.75rem;
+  }
+
+  /* stretch: the desktop align-items: center turns horizontal in a flex
+     column and shrank the grid to a centred column narrower than the head. */
   .ga-skills-body {
     display: flex;
     flex-direction: column;
+    align-items: stretch;
   }
 
   .ga-skills-grid {
     grid-template-columns: 1fr;
+  }
+
+  .ga-skill,
+  .ga-skill:nth-child(n + 4) {
+    grid-column: auto;
+  }
+
+  /* GSAP drives the entrance transform on mobile — a CSS transform
+     transition would smear it. */
+  .ga-skill {
+    transition: border-color 0.5s, background 0.5s, box-shadow 0.5s var(--ga-ease);
   }
 
   /* Quote */
@@ -3279,9 +3329,10 @@
     transform: none;
   }
 
-  /* Agent system â†’ 16:9 radial network, scaled smaller */
+  /* Agent system → square radial network, scaled smaller */
   .ga-agent-system {
-    width: min(96vw, 520px);
+    width: min(94vw, 520px);
+    aspect-ratio: 1 / 1;
   }
 
   .ga-agent-node {
@@ -3489,6 +3540,75 @@
 
   .ga-agent-arm {
     display: none;
+  }
+
+  /* Career orbit → role picker. Ten labels around a ring cannot fit a phone
+     without colliding with each other and the core, so the same buttons
+     un-orbit: the live-role disc becomes a card on top and the roles wrap as
+     chips beneath it. The ring, spokes and the nodes' inline left/top (ignored
+     once static) are desktop/tablet-only. */
+  .ga-page .ga-orbit {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    aspect-ratio: auto;
+  }
+
+  .ga-page .ga-orbit-lines,
+  .ga-page .ga-orbit-ring {
+    display: none;
+  }
+
+  .ga-page .ga-orbit .ga-orbit-core {
+    position: static;
+    order: -1;
+    width: 100%;
+    min-height: 0;
+    margin-bottom: 0.6rem;
+    padding: 1.3rem 1rem;
+    border-radius: 18px;
+    transform: none;
+    animation: none;
+  }
+
+  .ga-page .ga-orbit .ga-orbit-core__role {
+    font-size: 1.45rem;
+  }
+
+  .ga-page .ga-orbit .ga-orbit-core__label,
+  .ga-page .ga-orbit .ga-orbit-core__domain {
+    font-size: 0.6rem;
+  }
+
+  .ga-page .ga-orbit .ga-orbit-node,
+  .ga-page .ga-orbit .ga-orbit-node--active {
+    position: static;
+    transform: none;
+    flex-direction: row;
+    gap: 0.45rem;
+    max-width: none;
+    padding: 0.5rem 0.8rem;
+    border: 1px solid rgba(37, 99, 235, 0.18);
+    border-radius: 999px;
+    background: #ffffff;
+    transition: background 0.3s var(--ga-ease), border-color 0.3s var(--ga-ease), color 0.3s var(--ga-ease);
+  }
+
+  .ga-page .ga-orbit .ga-orbit-node--active {
+    border-color: #2563eb;
+    background: #eef4ff;
+  }
+
+  .ga-page .ga-orbit .ga-orbit-node__label {
+    font-size: 0.78rem;
+  }
+
+  .ga-page .ga-orbit .ga-orbit-node--active .ga-orbit-node__dot {
+    width: 8px;
+    height: 8px;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
   }
 }
 
@@ -4377,12 +4497,127 @@ body.ga-gallery-active .ga-burger {
 }
 
 @media (max-width: 560px) {
-  .ga-gallery-list {
-    padding-inline: 1rem;
+  /* Projects → swipe carousel. Eight stacked laptop cards were ~2,800px of
+     scrolling on a phone; one card at a time with the next peeking in reads as
+     a set, and native scroll-snap does the swiping (no JS, no library). */
+  .ga-page .ga-gallery-list {
+    flex-direction: row;
+    gap: 0.85rem;
+    padding: 2.4rem 1rem 3rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1rem;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+
+  .ga-page .ga-gallery-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ga-page .ga-gallery-row {
+    flex: 0 0 86%;
+    max-width: none;
+    margin: 0;
+    scroll-snap-align: start;
   }
 
   .ga-gallery-row .ga-gallery-card-inner {
     padding-inline: 0.8rem;
   }
+
+  /* The vertical "row crossing mid-screen is lit" trigger fires for every
+     card at once in a horizontal row, so the cards render alike here instead
+     of all jumping font size together. */
+  .ga-page .ga-gallery-list [data-state] .ga-gallery-headline h3 {
+    font-size: 1.15rem;
+  }
+
+  .ga-page .ga-gallery-list [data-state] .ga-gallery-screen-desc {
+    font-size: 0.9rem;
+  }
 }
 
+
+/* Tablet: the phone stacks are one full-width card per row, which at 600–900px
+   turns the timeline, projects and certificates into screens-tall columns of
+   oversized cards. Two up instead. */
+@media (min-width: 561px) and (max-width: 899px) {
+  .ga-tl-vertical {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.6rem 1.4rem;
+  }
+
+  /* The grid gap spaces the cards; their phone-stack bottom padding only
+     padded the last row. */
+  .ga-page .ga-tl-vertical .ga-tl-vcard {
+    padding-bottom: 0;
+  }
+
+  .ga-page .ga-gallery-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+  }
+
+  .ga-page .ga-gallery-row {
+    max-width: none;
+    margin-inline: 0;
+  }
+
+  .ga-page .ga-certs-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.4rem;
+  }
+
+  .ga-page .ga-certs-row > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: calc(50% - 0.7rem);
+  }
+}
+
+/* ── Laboratory (skills) cards: tablet + phone ─────────────────────────────
+   Tablet: two columns, the odd fifth card spans the row, instead of one long
+   column of wide, mostly empty cards. Phone: a calmer title size so long
+   domain names don't break across two oversized lines, and a tighter card. */
+@media (min-width: 600px) and (max-width: 899px) {
+  .ga-skills-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .ga-skill:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .ga-skill h3 {
+    font-size: 1.35rem;
+  }
+}
+
+@media (max-width: 599px) {
+  .ga-skills-grid {
+    gap: 0.85rem;
+  }
+
+  .ga-skill {
+    padding: 1.1rem 1.1rem 1.2rem;
+  }
+
+  .ga-skill h3 {
+    font-size: 1.3rem;
+    line-height: 1.2;
+    margin: 0.5rem 0 0.35rem;
+  }
+
+  .ga-skill-intro {
+    font-size: 0.86rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .ga-skill-stack {
+    gap: 0.35rem;
+  }
+}
