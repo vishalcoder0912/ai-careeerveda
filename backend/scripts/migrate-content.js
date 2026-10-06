@@ -2,6 +2,8 @@
 //
 //   npm run migrate:content:dry-run   report what would change, write nothing
 //   npm run migrate:content           apply
+//   npm run migrate:content -- --create-only --dry-run   preview adding only new slugs
+//   npm run migrate:content -- --create-only             add new slugs, never touch existing ones
 //
 // Safe to re-run: every record is upserted by slug, so a second pass updates
 // rather than duplicates. Slugs are preserved exactly as the static files
@@ -29,6 +31,9 @@ import {toSlug} from "../src/utils/sanitize.js";
 import {loadFrontendData} from "./lib/loadFrontendData.js";
 
 const DRY_RUN = process.argv.includes("--dry-run");
+// For a live database: adds content new to the static files (e.g. a program
+// launch) without overwriting edits admins have made to existing records.
+const CREATE_ONLY = process.argv.includes("--create-only");
 const PROJECT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 const report = {created: 0, updated: 0, skipped: 0, failed: 0, details: []};
@@ -71,6 +76,12 @@ const upsert = async (Model, rawSlug, data, label) => {
   }
 
   const existing = await Model.findOne({slug});
+
+  if (existing && CREATE_ONLY) {
+    report.skipped += 1;
+    report.details.push(`  = ${label} (${slug}) exists, left alone`);
+    return;
+  }
 
   if (DRY_RUN) {
     report[existing ? "updated" : "created"] += 1;
