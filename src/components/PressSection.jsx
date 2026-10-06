@@ -232,6 +232,8 @@ const storyAccentStyle = (story) => ({
 // order, so the active story is always the large, legible, topmost one while
 // its neighbours recede. The whole lane is scrubbed end-to-end by the
 // visitor's scroll — nothing pops in and out.
+const LANE_END = 0.8;
+
 const StoryLaneCard = memo(({story, index, total, scrollYProgress, isActive}) => {
   const center = index / (total - 1);
   const distance = useTransform(scrollYProgress, (value) => Math.abs(value - center));
@@ -243,13 +245,10 @@ const StoryLaneCard = memo(({story, index, total, scrollYProgress, isActive}) =>
   // its dimmed rest position — a tiny residual slant as the next one arrives.
   const x = useTransform(distance, [0, 0.5], [0, -34]);
 
-  // The entrance beat runs ONCE, the first time the card owns the stage. A
-  // plain `.is-active` replay would re-animate the whole card's content every
-  // time the visitor hands the stage over (documented in press-section.css);
-  // users read that repeat as the section re-rendering itself. This flag pins
-  // the finished rise so a story handed back the stage is already visible.
-  // Deriving it via the "adjust state during render" pattern keeps the rise
-  // applied in the same commit (no effect, no cascading render).
+  // Set ONCE, the first time the card owns the stage, so the stat count-up
+  // runs a single time. There is deliberately no CSS entrance on the content:
+  // the card is already visible while it slides in, and a fade-from-zero on
+  // activation blanked it mid-handoff, which read as the section re-rendering.
   const [entered, setEntered] = useState(false);
   if (isActive && !entered) setEntered(true);
 
@@ -288,36 +287,31 @@ const PressSection = () => {
   // fingers stop, so the story hand-offs feel weighty rather than clutching
   // to the scrollbar. Over-damped (damping > 2*sqrt(stiffness*mass)), so it
   // settles without an overshoot that would park a card off-centre.
+  // Softer than it was (120/26/0.6) so a hand-off glides rather than tracks
+  // the scrollbar. Still over-damped: critical damping is 2·√(70·0.7) ≈ 14.
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 120,
-    damping: 26,
-    mass: 0.6,
+    stiffness: 70,
+    damping: 20,
+    mass: 0.7,
   });
   const progress = animated ? smoothProgress : scrollYProgress;
+
+  // The lane finishes its slide at LANE_END of the pinned run and holds the
+  // last card still for the remainder. Mapped 1:1, the last card only reached
+  // its stop on the run's final pixel — the same moment the pin released — so
+  // on phones it was always caught half off the right edge, and the next
+  // section rose before the card had landed.
+  const laneProgress = useTransform(progress, (value) => Math.min(1, value / LANE_END));
 
   // The lane slides so that timeline stop `i` lands in the active column:
   // x = -i * step. `step` is measured, not state, so a resize never re-renders
   // the tree — the transform simply reads the fresh number on its next scroll
   // evaluation.
-  const trackX = useTransform(progress, (value) => -stepRef.current * (storyCount - 1) * value);
+  const trackX = useTransform(laneProgress, (value) => -stepRef.current * (storyCount - 1) * value);
 
-  useMotionValueEvent(progress, "change", (value) => {
-    setActive(value < 0.22 ? 0 : value < 0.69 ? 1 : 2);
+  useMotionValueEvent(laneProgress, "change", (value) => {
+    setActive(value < 0.25 ? 0 : value < 0.75 ? 1 : 2);
   });
-
-  // Jump the scrub to a given story's stop on the lane. The stage's pins run
-  // from its top arriving at the viewport top (progress 0) to its bottom
-  // leaving (progress 1), so story i's stop sits at i/(n-1) of that run —
-  // scroll there directly rather than re-engineering the spring.
-  const goToStory = (index) => {
-    const wrapper = scrollRef.current;
-    if (!wrapper) return;
-    const rect = wrapper.getBoundingClientRect();
-    const run = Math.max(0, rect.height - window.innerHeight);
-    const value = storyCount > 1 ? index / (storyCount - 1) : 0;
-    const top = window.scrollY + rect.top + run * value;
-    window.scrollTo({top, behavior: reducedMotion ? "auto" : "smooth"});
-  };
 
   // Measure the lane step (card width + gap). Triggered on mount, font settle
   // and resize; the width is vw-derived so fonts changing cannot move it, but
@@ -332,6 +326,18 @@ const PressSection = () => {
       const style = window.getComputedStyle(track);
       const gap = parseFloat(style.columnGap || "") || parseFloat(style.gap || "") || 0;
       stepRef.current = Math.round(card.getBoundingClientRect().width + gap);
+
+      // The stage is viewport-tall with the card centred, so when the pin
+      // releases, half the leftover height sits empty under the last card
+      // before the next section starts. Expose it so the CSS can pull the next
+      // section up by that much (press-section.css, --press-spare).
+      const stage = track.closest(".press-stage");
+      const cards = track.querySelectorAll(".press-story");
+      const last = cards[cards.length - 1];
+      if (stage && last && scrollRef.current) {
+        const spare = Math.max(0, Math.round((stage.clientHeight - last.offsetHeight) / 2));
+        scrollRef.current.style.setProperty("--press-spare", `${spare}px`);
+      }
     };
 
     measure();
@@ -343,8 +349,6 @@ const PressSection = () => {
       window.removeEventListener("resize", measure);
     };
   }, []);
-
-  const activeStory = stories[active];
 
   return (
     <section
@@ -386,7 +390,7 @@ const PressSection = () => {
                   story={story}
                   index={index}
                   total={storyCount}
-                  scrollYProgress={progress}
+                  scrollYProgress={laneProgress}
                   isActive={index === active}
                 />
               ))}
@@ -406,58 +410,6 @@ const PressSection = () => {
             </div>
           )}
 
-          {animated && (
-            // The rail is the section's only explicit control: previous / next
-            // arrows and one dot per story, so a reader who clocked the
-            // horizontal lane knows it moves and can move it without scrolling
-            // the whole page. Interactive stories make the dots honest buttons
-            // — pagination, not decoration.
-            <nav
-              className="press-rail"
-              style={{"--accent": activeStory.accent.main}}
-              aria-label="Story navigation"
-            >
-              <button
-                type="button"
-                className="press-rail__btn press-rail__btn--prev"
-                aria-label="Previous story"
-                disabled={active === 0}
-                onClick={() => goToStory(Math.max(0, active - 1))}
-              >
-                <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-                  <path d="M15 5l-7 7 7 7" />
-                </svg>
-              </button>
-              <span className="press-rail__count" aria-hidden="true">
-                0{active + 1} / 03
-              </span>
-              <span className="press-rail__pager">
-                {stories.map((story, index) => (
-                  <button
-                    key={story.id}
-                    type="button"
-                    className={`press-rail__dot${index === active ? " is-active" : ""}`}
-                    aria-label={`Go to story ${index + 1}`}
-                    aria-current={index === active ? "true" : undefined}
-                    onClick={() => goToStory(index)}
-                  >
-                    0{index + 1}
-                  </button>
-                ))}
-              </span>
-              <button
-                type="button"
-                className="press-rail__btn press-rail__btn--next"
-                aria-label="Next story"
-                disabled={active === storyCount - 1}
-                onClick={() => goToStory(Math.min(storyCount - 1, active + 1))}
-              >
-                <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-                  <path d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-            </nav>
-          )}
         </div>
       </div>
     </section>
