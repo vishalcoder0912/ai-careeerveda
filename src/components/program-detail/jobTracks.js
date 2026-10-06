@@ -36,6 +36,9 @@ const JOB_TRACKS = {
   "gen-ai": [
     "AI Engineer", "Data Scientist", "Machine Learning",
   ],
+  "gen-ai-agentic-ai": [
+    "AI Engineer", "Machine Learning", "Data Scientist", "LLM", "MLOps",
+  ],
   "ai-systems-agentic-ai": [
     "AI Engineer", "Machine Learning", "Data Scientist", "LLM", "MLOps",
   ],
