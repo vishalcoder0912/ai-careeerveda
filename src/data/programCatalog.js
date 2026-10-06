@@ -1,4 +1,4 @@
-﻿// One record per program, and the single source of truth for all of them.
+// One record per program, and the single source of truth for all of them.
 //
 // This used to be a PROGRAMS const inside ProgramExplorer.jsx. It moved here so
 // the explorer card, the /programs/:slug detail page, and the enrol form's
@@ -22,10 +22,312 @@ export const programCatalog = [
      its fee panel when they are missing, which is the honest state for a program
      that has not been priced. Add the three fields and both reappear. Same for
      `nextBatch` and `seats`  no batch date has been announced. */
-  /* AI Systems & Agentic AI Engineering leads the list as the flagship: the
-     ProgramExplorer rail numbers this array's order, so position 01 here is
-     position 01 on the site. Authored from the programme's 24-week brochure:
-     28 modules, GPU laboratories, three hackathons and two flagship builds. */
+  /* PG Program in Gen AI and Agentic AI is the flagship and the catalogue's
+     position 01, and it is now a live admin-managed programme like the rest of
+     the list: cards link to its own /programs/gen-ai-agentic-ai detail page.
+     No `landingPath` is set, so nothing points at /generative-ai — the 24-week
+     cinematic campaign keeps its own route over there, but every card that
+     represents this programme opens the admin-editable page instead. */
+  {
+    id: "gen-ai-agentic-ai",
+    title: "PG Program in Gen AI and Agentic AI",
+    category: "AI",
+    subtitle: "Become a Gen AI & Agentic AI Engineer",
+    description:
+      "Master Generative AI and agentic systems end to end — LLMs, prompt engineering, RAG, fine-tuning, autonomous agents, MCP tooling and multi-agent orchestration — through live mentor-led classes, hands-on builds and a production-ready portfolio.",
+    duration: "6 Months",
+    mentorship: "AI Mentor",
+    format: "Live Online",
+    startingPrice: "₹1,45,000",
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/PG-WITH-GENAI-803ad9e9.webp",
+    theme: "violet-cyan",
+    overview: [
+      "LLM foundations, prompt engineering, RAG and fine-tuning",
+      "Agentic AI: tools, memory, planning, MCP/A2A and multi-agent orchestration",
+      "Production Gen AI — deployed, monitored, evaluated and portfolio-worthy",
+    ],
+    curriculum: [
+      "Python, deep learning and transformer/LLM foundations",
+      "RAG, embeddings, fine-tuning and evaluation",
+      "Agent engineering, MCP, multi-agent systems and LLMOps",
+    ],
+    outcomes: [
+      "A portfolio of Gen AI applications, RAG systems and autonomous agents",
+      "Readiness for AI Engineer, LLM Developer, Gen AI and Agentic AI roles",
+      "Production confidence — evaluation, deployment, observability and cost control",
+    ],
+    skills: ["Python", "LLMs", "RAG", "Prompt Engineering", "Fine-Tuning", "Agentic AI", "MCP", "Multi-Agent"],
+
+    fullTitle: "PG Program in Gen AI and Agentic AI",
+    badges: ["Industry-Aligned", "Agent-First Curriculum", "Lifetime Placement Assistance"],
+    lead:
+      "Master the two forces reshaping software — Generative AI and agentic AI. From LLM foundations and RAG to autonomous agents, MCP tooling and multi-agent systems, this 24-week, 100% live program turns you into a builder who ships AI systems, not just prompts.",
+    learners: "10,000+",
+    roadFrom: "From AI Enthusiast",
+    roadTo: "to Gen AI & Agentic AI Engineer",
+    fee: {label: "Program Investment", amount: "₹1,45,000", note: "Including GST"},
+    emi: "3, 6, 9 & 12 months (No Cost EMIs)",
+    nextBatch: "September 19, 2026",
+    seats: "Few seats left",
+    projects: "30+",
+    eligibility: "Freshers, Graduates, Experienced",
+    gainsIntro:
+      "Twenty-four weeks of live, instructor-led engineering from AI practitioners working in production: GPU-enabled labs, 30+ portfolio artifacts, hackathons, deliberate evaluation and failure labs, and end-to-end career support — so you graduate with a deployable portfolio, not just notes.",
+    gains: [
+      "100% Live Instructor-Led Classes",
+      "GPU-Enabled Hands-On Labs",
+      "LLM, RAG & Agentic AI Builds",
+      "MCP, A2A & Multi-Agent Orchestration",
+      "30+ Portfolio Artifacts",
+      "3 Grand Hackathons Across the Program",
+      "RAG Evaluation & Failure Labs",
+      "Fine-Tuning & Model Customization",
+      "AI Security & Red-Team Labs",
+      "Observability & Cost Engineering",
+      "Docker, CI/CD & Cloud Deployment",
+      "Deliberate Break-It Labs — Debugging by Design",
+      "Evaluation as a Discipline: Golden Datasets & Regression",
+      "Daily Live Doubt-Solving Sessions",
+      "Dedicated Portfolio, Resume & LinkedIn Building",
+      "Mock Interviews & Technical Defense Preparation",
+      "Lifetime Placement Assistance",
+      "Advanced LMS with 2-Year Access to Recordings",
+      "Global Alumni Community",
+    ],
+    curriculumIntro:
+      "One roadmap from Python to production agents. Sixteen modules take you from Python and deep-learning fundamentals through LLM engineering, RAG and fine-tuning, into agent engineering, MCP and multi-agent systems, and on to LLMOps, security and a flagship capstone — each module shipping a working build you keep.",
+    modules: [
+      {
+        n: 0,
+        title: "Engineering Foundations",
+        points: [
+          "Linux, the command line and the file system",
+          "Git & GitHub: branches, pull requests and clean history",
+          "VS Code and Python virtual environments",
+          "APIs, JSON and working with remote services",
+          "Maths refresher: linear algebra, probability and calculus for AI",
+          "Setting up the course workspace and full toolchain",
+        ],
+        deliverable: "A working terminal-to-cloud development environment",
+      },
+      {
+        n: 1,
+        title: "Python for AI",
+        points: [
+          "Python from syntax to idiomatic code",
+          "Types, collections, comprehensions and functions done properly",
+          "Modules, packages, file handling and configuration",
+          "Exception handling, type hints and logging",
+          "Scripting, automation and combining tools",
+          "Python for AI exercise set and assignment",
+        ],
+        deliverable: "A clean, tested Python toolkit for AI work",
+      },
+      {
+        n: 2,
+        title: "Maths & Data Foundations",
+        points: [
+          "NumPy and pandas for data handling",
+          "Descriptive statistics and distributions",
+          "Probability baselines for model behaviour",
+          "EDA, feature engineering and data cleaning",
+          "When machine learning beats rules",
+          "Foundations exercise set",
+        ],
+        deliverable: "An EDA notebook with clear findings",
+      },
+      {
+        n: 3,
+        title: "Deep Learning & Transformers",
+        points: [
+          "Neurons, backpropagation and optimisation",
+          "CNNs and sequence models",
+          "Attention and the transformer architecture in depth",
+          "PyTorch from tensors to training loops",
+          "Pretraining, alignment and scaling laws",
+          "A first deep learning project",
+        ],
+        deliverable: "A PyTorch model with training curves",
+      },
+      {
+        n: 4,
+        title: "LLM Foundations & Prompt Engineering",
+        points: [
+          "How LLMs are pretrained and aligned",
+          "Tokens, context windows and cost",
+          "System, user and assistant prompting patterns",
+          "Few-shot, chain-of-thought and structured output",
+          "Prompt evaluation and versioning",
+          "Prompt engineering project",
+        ],
+        deliverable: "A reusable prompt library with evaluation notes",
+      },
+      {
+        n: 5,
+        title: "Building with LLM APIs",
+        points: [
+          "Calling OpenAI, Anthropic and open models",
+          "Streaming, temperature and sampling controls",
+          "Function calling and tool use",
+          "Rate limits, retries and error handling",
+          "Cost tracking and token budgeting",
+          "LLM-powered application component",
+        ],
+        deliverable: "An LLM-powered app component with token cost tracking",
+      },
+      {
+        n: 6,
+        title: "Embeddings, Vector Search & RAG",
+        points: [
+          "Embeddings and semantic similarity explained",
+          "Chunking, indexing and metadata filtering",
+          "Vector stores: pgvector, Pinecone, Chroma",
+          "Reranking and context assembly",
+          "Grounding, citations and reducing hallucination",
+          "End-to-end RAG application build",
+        ],
+        deliverable: "A production-grade RAG pipeline with retrieval metrics",
+      },
+      {
+        n: 7,
+        title: "RAG Evaluation & Failure Lab",
+        points: [
+          "Golden datasets for your own domain",
+          "Retrieval metrics: recall, precision, hit-rate",
+          "Faithfulness and answer relevance",
+          "Documenting and debugging failures like an engineer",
+          "Regression-safe evaluation harnesses",
+          "A RAG failure lab on a production system",
+        ],
+        deliverable: "A golden dataset and evaluation report",
+      },
+      {
+        n: 8,
+        title: "Fine-Tuning & Model Customization",
+        points: [
+          "When to fine-tune versus prompt, RAG or context engineering",
+          "Instruction tuning and dataset preparation",
+          "LoRA, PEFT and adapter orchestration",
+          "Training, evaluation and iteration",
+          "Quantized inference and safe serving",
+          "Domain fine-tune project",
+        ],
+        deliverable: "A domain-tuned model with evaluation and safety notes",
+      },
+      {
+        n: 9,
+        title: "Agent Engineering Fundamentals",
+        points: [
+          "The anatomy of an agent: model, tools, memory, loop",
+          "Planning, acting and observing",
+          "Tools as structured contracts",
+          "Guardrails and failure handling",
+          "When agents beat workflows",
+          "A first working agent build",
+        ],
+        deliverable: "A first working agent with scoped tools",
+      },
+      {
+        n: 10,
+        title: "Tool Engineering, Memory & State",
+        points: [
+          "Designing tools an agent can use reliably",
+          "Tool schemas, retries and idempotency",
+          "Short-term, working and long-term memory",
+          "Conversation summarization and compaction",
+          "Memory backends: vector, SQL and files",
+          "A memory-rich agent build",
+        ],
+        deliverable: "An agent with durable memory across sessions",
+      },
+      {
+        n: 11,
+        title: "Multi-Agent Systems & Orchestration",
+        points: [
+          "Why multi-agent systems help",
+          "Single-purpose agents as engineering roles",
+          "Supervisors, fact checkers and hand-offs",
+          "Conflict resolution between agents",
+          "Swarm patterns and shared working memory",
+          "A multi-agent project with defined teams",
+        ],
+        deliverable: "A multi-agent team that ships a reviewable result",
+      },
+      {
+        n: 12,
+        title: "MCP, Agent Interoperability & A2A",
+        points: [
+          "Model Context Protocol for tool marketplaces",
+          "Building and hosting MCP servers",
+          "Capability discovery and authorization",
+          "Agent-to-Agent protocols and negotiation",
+          "Interop across enterprises, repos and LLMs",
+          "A publishable MCP server and interoperable agent",
+        ],
+        deliverable: "A publishable MCP server and interoperable agent",
+      },
+      {
+        n: 13,
+        title: "Multimodal & Computer-Use AI",
+        points: [
+          "Multimodal models with vision, image and audio",
+          "Vision LLM tokens, cost and context tradeoffs",
+          "Document understanding with rich artifacts",
+          "Computer-use agents that act on screens",
+          "Multimodal inputs in agent pipelines",
+          "A multimodal or computer-use agent project",
+        ],
+        deliverable: "A multimodal or computer-use agent pipeline",
+      },
+      {
+        n: 14,
+        title: "LLMOps, Security & Cost Engineering",
+        points: [
+          "Packaging Gen AI apps as APIs with FastAPI and Docker",
+          "Monitoring, logging and experimentation",
+          "Prompt injection, jailbreaking and guardrails",
+          "Governance, model cards and responsible deployment",
+          "Token budgeting, caching and cost control",
+          "Deployment project",
+        ],
+        deliverable: "A monitored AI service with a cost dashboard",
+      },
+      {
+        n: 15,
+        title: "Capstone: Production Gen AI & Agentic Platform",
+        points: [
+          "Real-world problem definition",
+          "Data collection and preparation",
+          "Model, RAG and agent development",
+          "Deployment, monitoring and evaluation",
+          "Technical defense and ROI story",
+          "Portfolio packaging of the capstone",
+        ],
+        deliverable: "A production-ready Gen AI and agentic capstone demo",
+      },
+    ],
+    internship: [
+      "Real-World Gen AI & Agentic Projects",
+      "LLM, RAG and Agent Builds",
+      "MCP and Multi-Agent Platform Delivery",
+      "Evaluation, Security & Cost Labs",
+      "Production Deployment & Monitoring",
+      "Industry Mentorship by Practising AI Engineers",
+    ],
+    softSkills: [
+      "Technical Communication for AI",
+      "System Design Storytelling",
+      "Collaborative Agent Development",
+      "Problem Framing & Critical Thinking",
+      "Blameless Failure & Incident Culture",
+      "AI Ethics & Responsible Engineering",
+    ],
+  },
+
+  /* AI Systems & Agentic AI Engineering is the second card in the catalogue:
+     28 modules, GPU laboratories, three hackathons and two flagship builds,
+     authored from the programme's 24-week brochure. The ProgramExplorer rail
+     numbers this array's order, so position here is position on the site. */
   {
     id: "ai-systems-agentic-ai",
     title: "PG Program in AI Systems & Agentic AI Engineering",
@@ -1185,6 +1487,7 @@ export const programCatalog = [
       {
         n: 1,
         title: "Introduction to Data Analytics",
+        image: "/images/data-analytics/da1-intro.jpg",
         points: [
           "What a data analyst actually does day to day",
           "The analytics lifecycle from raw data to decision",
@@ -1197,6 +1500,7 @@ export const programCatalog = [
       {
         n: 2,
         title: "Excel for Data Analysis",
+        image: "/images/data-analytics/da2-excel.jpg",
         points: [
           "Structuring data for analysis",
           "Essential formulas and functions",
@@ -1209,6 +1513,7 @@ export const programCatalog = [
       {
         n: 3,
         title: "Advanced Excel & Power Query",
+        image: "/images/data-analytics/da3-adv-excel.jpg",
         points: [
           "Power Query for repeatable transformations",
           "Dynamic arrays and modern functions",
@@ -1221,6 +1526,7 @@ export const programCatalog = [
       {
         n: 4,
         title: "Statistics for Analysts",
+        image: "/images/data-analytics/da4-stats.jpg",
         points: [
           "Measures of centre and spread",
           "Distributions and the normal curve",
@@ -1233,6 +1539,7 @@ export const programCatalog = [
       {
         n: 5,
         title: "Data Cleaning & Wrangling",
+        image: "/images/data-analytics/da5-cleaning.jpg",
         points: [
           "Profiling and auditing a raw dataset",
           "Missing data strategies",
@@ -1245,6 +1552,7 @@ export const programCatalog = [
       {
         n: 6,
         title: "SQL Fundamentals",
+        image: "/images/data-analytics/da6-sql.jpg",
         points: [
           "How relational databases store data",
           "SELECT, filtering and sorting",
@@ -1257,6 +1565,7 @@ export const programCatalog = [
       {
         n: 7,
         title: "Advanced SQL for Analytics",
+        image: "/images/data-analytics/da7-sql-adv.jpg",
         points: [
           "Window functions and running totals",
           "Ranking, percentiles and deciles",
@@ -1269,6 +1578,7 @@ export const programCatalog = [
       {
         n: 8,
         title: "Python Foundations for Analysts",
+        image: "/images/data-analytics/da8-python.jpg",
         points: [
           "Python syntax, types and control flow",
           "Working in Jupyter notebooks",
@@ -1281,6 +1591,7 @@ export const programCatalog = [
       {
         n: 9,
         title: "Data Analysis with pandas",
+        image: "/images/data-analytics/da9-pandas.jpg",
         points: [
           "DataFrames, indexing and selection",
           "Filtering, grouping and aggregating",
@@ -1293,6 +1604,7 @@ export const programCatalog = [
       {
         n: 10,
         title: "Exploratory Data Analysis",
+        image: "/images/data-analytics/da10-eda.jpg",
         points: [
           "Framing the question before touching data",
           "Distribution and relationship exploration",
@@ -1305,6 +1617,7 @@ export const programCatalog = [
       {
         n: 11,
         title: "Data Visualisation Principles",
+        image: "/images/data-analytics/da11-viz.jpg",
         points: [
           "Matching chart type to the question",
           "Encoding, scale and axis integrity",
@@ -1317,6 +1630,7 @@ export const programCatalog = [
       {
         n: 12,
         title: "Power BI Fundamentals",
+        image: "/images/data-analytics/da12-powerbi.jpg",
         points: [
           "Connecting and shaping data sources",
           "Building the data model",
@@ -1329,6 +1643,7 @@ export const programCatalog = [
       {
         n: 13,
         title: "DAX & Advanced Power BI",
+        image: "/images/data-analytics/da13-dax.jpg",
         points: [
           "Measures versus calculated columns",
           "Filter and row context explained",
@@ -1341,6 +1656,7 @@ export const programCatalog = [
       {
         n: 14,
         title: "Tableau for Data Analysts",
+        image: "/images/data-analytics/da14-tableau.jpg",
         points: [
           "Tableau data connections and extracts",
           "Calculated fields and table calculations",
@@ -1353,6 +1669,7 @@ export const programCatalog = [
       {
         n: 15,
         title: "Dashboards & Reporting Workflows",
+        image: "/images/data-analytics/da15-reporting.jpg",
         points: [
           "Designing a report for its audience",
           "Self-serve versus curated reporting",
@@ -1365,6 +1682,7 @@ export const programCatalog = [
       {
         n: 16,
         title: "Data Storytelling & Communication",
+        image: "/images/data-analytics/da16-storytelling.jpg",
         points: [
           "Structuring an analysis narrative",
           "Leading with the finding, not the method",
@@ -1377,6 +1695,7 @@ export const programCatalog = [
       {
         n: 17,
         title: "Business Metrics & Domain Context",
+        image: "/images/data-analytics/da17-metrics.jpg",
         points: [
           "Defining metrics that mean something",
           "Funnel, retention and growth metrics",
@@ -1389,6 +1708,7 @@ export const programCatalog = [
       {
         n: 18,
         title: "Predictive Analysis Foundations",
+        image: "/images/data-analytics/da18-predictive.jpg",
         points: [
           "When a model beats a simple analysis",
           "Linear and logistic regression basics",
@@ -1401,6 +1721,7 @@ export const programCatalog = [
       {
         n: 19,
         title: "AI-Assisted Analytics Workflows",
+        image: "/images/data-analytics/da19-genai.jpg",
         points: [
           "Where GenAI speeds up analyst work",
           "Prompting for SQL, pandas and DAX",
@@ -1413,6 +1734,7 @@ export const programCatalog = [
       {
         n: 20,
         title: "Data Analytics Capstone Project",
+        image: "/images/data-analytics/da20-capstone.jpg",
         points: [
           "End-to-end project on a real company dataset",
           "Question framing and data acquisition",
@@ -1425,6 +1747,7 @@ export const programCatalog = [
       {
         n: 21,
         title: "Analyst Career Readiness & Interview Prep",
+        image: "/images/data-analytics/da21-career.jpg",
         points: [
           "Data analyst resume creation and optimization",
           "SQL and Excel interview preparation",
@@ -1526,6 +1849,7 @@ export const programCatalog = [
       {
         n: 1,
         title: "Introduction to Investment Banking",
+        image: "/images/ib/ib1-intro.jpg",
         points: [
           "What is Investment Banking and its role in finance",
           "Investment banking divisions: M&A, ECM, DCM",
@@ -1538,6 +1862,7 @@ export const programCatalog = [
       {
         n: 2,
         title: "Accounting & Financial Statements",
+        image: "/images/ib/ib2-accounting.jpg",
         points: [
           "Accounting principles and concepts",
           "Income Statement analysis",
@@ -1550,6 +1875,7 @@ export const programCatalog = [
       {
         n: 3,
         title: "Corporate Finance Basics",
+        image: "/images/ib/ib3-finance.jpg",
         points: [
           "Time value of money",
           "Present and future value calculations",
@@ -1562,6 +1888,7 @@ export const programCatalog = [
       {
         n: 4,
         title: "M&A Fundamentals",
+        image: "/images/ib/ib4-ma.jpg",
         points: [
           "Overview of M&A transactions",
           "Types of M&A deals: Mergers, Acquisitions, Consolidations",
@@ -1574,6 +1901,7 @@ export const programCatalog = [
       {
         n: 5,
         title: "Deal Structuring & Negotiation",
+        image: "/images/ib/ib5-contract.jpg",
         points: [
           "Deal structure options: Stock vs Cash",
           "Purchase price allocation",
@@ -1586,6 +1914,7 @@ export const programCatalog = [
       {
         n: 6,
         title: "M&A Modeling Project",
+        image: "/images/ib/ib6-model.jpg",
         points: [
           "Building merger models",
           "Accretion/dilution analysis in Excel",
@@ -1598,6 +1927,7 @@ export const programCatalog = [
       {
         n: 7,
         title: "Equity Research Fundamentals",
+        image: "/images/ib/ib7-research.jpg",
         points: [
           "Introduction to equity research",
           "Buy-side vs Sell-side research",
@@ -1610,6 +1940,7 @@ export const programCatalog = [
       {
         n: 8,
         title: "Company Analysis & Forecasting",
+        image: "/images/ib/ib8-analysis.jpg",
         points: [
           "Financial statement analysis deep dive",
           "Revenue and earnings forecasting",
@@ -1622,6 +1953,7 @@ export const programCatalog = [
       {
         n: 9,
         title: "Equity Research Report Writing",
+        image: "/images/ib/ib9-report.jpg",
         points: [
           "Research report structure and format",
           "Investment thesis development",
@@ -1634,6 +1966,7 @@ export const programCatalog = [
       {
         n: 10,
         title: "Advanced Excel for Investment Banking",
+        image: "/images/ib/ib10-excel.jpg",
         points: [
           "Advanced Excel formulas and functions",
           "Complex financial modeling techniques",
@@ -1646,6 +1979,7 @@ export const programCatalog = [
       {
         n: 11,
         title: "Financial Software & Platforms",
+        image: "/images/ib/ib11-bloomberg.jpg",
         points: [
           "Bloomberg Terminal fundamentals",
           "FactSet for financial analysis",
@@ -1658,6 +1992,7 @@ export const programCatalog = [
       {
         n: 12,
         title: "Leveraged Buyout (LBO) Modeling",
+        image: "/images/ib/ib12-lbo.jpg",
         points: [
           "Introduction to LBO transactions",
           "LBO deal structure and mechanics",
@@ -1670,6 +2005,7 @@ export const programCatalog = [
       {
         n: 13,
         title: "Special Situations & Restructuring",
+        image: "/images/ib/ib13-distressed.jpg",
         points: [
           "Distressed M&A and restructuring",
           "Bankruptcy and liquidation analysis",
@@ -1682,6 +2018,7 @@ export const programCatalog = [
       {
         n: 14,
         title: "Debt Capital Markets",
+        image: "/images/ib/ib14-bonds.jpg",
         points: [
           "Introduction to debt capital markets",
           "Bond types and structures",
@@ -1694,6 +2031,7 @@ export const programCatalog = [
       {
         n: 15,
         title: "Credit Analysis & Risk Assessment",
+        image: "/images/ib/ib15-credit.jpg",
         points: [
           "Credit analysis frameworks",
           "Leverage ratios and coverage ratios",
@@ -1706,6 +2044,7 @@ export const programCatalog = [
       {
         n: 16,
         title: "Technology & Healthcare Sectors",
+        image: "/images/ib/ib16-tech.jpg",
         points: [
           "Technology sector analysis and trends",
           "SaaS business models and metrics",
@@ -1717,6 +2056,7 @@ export const programCatalog = [
       {
         n: 17,
         title: "Financial Services & Consumer Sectors",
+        image: "/images/ib/ib17-bank.jpg",
         points: [
           "Banking and financial services analysis",
           "Insurance company valuation",
@@ -1728,6 +2068,7 @@ export const programCatalog = [
       {
         n: 18,
         title: "Energy & Industrials Sectors",
+        image: "/images/ib/ib18-energy.jpg",
         points: [
           "Energy sector fundamentals",
           "Oil & gas valuation methods",
@@ -1739,6 +2080,7 @@ export const programCatalog = [
       {
         n: 19,
         title: "Real Estate & Emerging Sectors",
+        image: "/images/ib/ib19-realestate.jpg",
         points: [
           "Real estate investment banking",
           "REIT analysis and valuation",
@@ -1750,6 +2092,7 @@ export const programCatalog = [
       {
         n: 20,
         title: "Investment Banking Capstone Project",
+        image: "/images/ib/ib20-capstone.jpg",
         points: [
           "Comprehensive IB deal project",
           "Full M&A or LBO transaction modeling",
@@ -1762,6 +2105,7 @@ export const programCatalog = [
       {
         n: 21,
         title: "IB Career Readiness & Interview Prep",
+        image: "/images/ib/ib21-career.jpg",
         points: [
           "Investment banking portfolio building",
           "IB resume creation and optimization",
@@ -2502,6 +2846,7 @@ export const programCatalog = [
       {
         n: 1,
         title: "Introduction to Data Engineering",
+        image: "/images/data-analytics/da1-intro.jpg",
         points: [
           "What data engineers build and own",
           "The modern data stack explained",
@@ -2514,6 +2859,7 @@ export const programCatalog = [
       {
         n: 2,
         title: "SQL for Data Engineering",
+        image: "/images/data-analytics/da6-sql.jpg",
         points: [
           "Core SQL and set-based thinking",
           "Joins, aggregations and subqueries",
@@ -2526,6 +2872,7 @@ export const programCatalog = [
       {
         n: 3,
         title: "Python for Data Engineering",
+        image: "/images/data-analytics/da8-python.jpg",
         points: [
           "Python fundamentals for pipeline code",
           "File, API and database I/O",
@@ -2538,6 +2885,7 @@ export const programCatalog = [
       {
         n: 4,
         title: "Data Modeling & Warehouse Design",
+        image: "/images/business-analytics/ba3-modeling.jpg",
         points: [
           "Normalisation versus dimensional modeling",
           "Star and snowflake schemas",
@@ -2550,6 +2898,7 @@ export const programCatalog = [
       {
         n: 5,
         title: "ETL & ELT Fundamentals",
+        image: "/images/data-analytics/da5-cleaning.jpg",
         points: [
           "Extract, transform and load stages",
           "ETL versus ELT and when each wins",
@@ -2562,6 +2911,7 @@ export const programCatalog = [
       {
         n: 6,
         title: "Data Ingestion & Source Systems",
+        image: "/images/timeline/tl-05.jpg",
         points: [
           "Ingesting from APIs, files and databases",
           "Handling schema drift at the source",
@@ -2574,6 +2924,7 @@ export const programCatalog = [
       {
         n: 7,
         title: "Data Lakes & Lakehouse Architecture",
+        image: "/images/timeline/tl-06.jpg",
         points: [
           "Object storage fundamentals",
           "File formats: Parquet, Avro, ORC",
@@ -2586,6 +2937,7 @@ export const programCatalog = [
       {
         n: 8,
         title: "Cloud Data Warehouses",
+        image: "/images/data-analytics/da7-sql-adv.jpg",
         points: [
           "Snowflake, BigQuery and Redshift compared",
           "Storage and compute separation",
@@ -2598,6 +2950,7 @@ export const programCatalog = [
       {
         n: 9,
         title: "Apache Spark & Distributed Processing",
+        image: "/images/timeline/tl-01.jpg",
         points: [
           "Why distributed processing exists",
           "Spark architecture: driver, executors, tasks",
@@ -2610,6 +2963,7 @@ export const programCatalog = [
       {
         n: 10,
         title: "Workflow Orchestration with Airflow",
+        image: "/images/photo-1552664730.jpg",
         points: [
           "DAG concepts and scheduling",
           "Operators, sensors and hooks",
@@ -2622,6 +2976,7 @@ export const programCatalog = [
       {
         n: 11,
         title: "Analytics Engineering with dbt",
+        image: "/images/business-analytics/ba8-modeling.jpg",
         points: [
           "dbt models, refs and the DAG",
           "Staging, intermediate and mart layers",
@@ -2634,6 +2989,7 @@ export const programCatalog = [
       {
         n: 12,
         title: "Streaming Data with Kafka",
+        image: "/images/cybersecurity/linux.jpg",
         points: [
           "Topics, partitions, producers and consumers",
           "Event streaming architecture",
@@ -2646,6 +3002,7 @@ export const programCatalog = [
       {
         n: 13,
         title: "Data Quality & Testing",
+        image: "/images/data-analytics/da10-eda.jpg",
         points: [
           "Defining data quality dimensions",
           "Validation with Great Expectations",
@@ -2658,6 +3015,7 @@ export const programCatalog = [
       {
         n: 14,
         title: "Data Governance, Lineage & Security",
+        image: "/images/cybersecurity/networking.jpg",
         points: [
           "Cataloguing and metadata management",
           "End-to-end lineage tracking",
@@ -2670,6 +3028,7 @@ export const programCatalog = [
       {
         n: 15,
         title: "DataOps, CI/CD & Infrastructure",
+        image: "/images/data-analytics/da17-metrics.jpg",
         points: [
           "Version control for data pipelines",
           "CI/CD for data transformations",
@@ -2682,6 +3041,7 @@ export const programCatalog = [
       {
         n: 16,
         title: "Pipeline Monitoring & Reliability",
+        image: "/images/cybersecurity/monitoring.jpg",
         points: [
           "Pipeline observability and metrics",
           "Freshness, volume and schema monitoring",
@@ -2694,6 +3054,7 @@ export const programCatalog = [
       {
         n: 17,
         title: "Generative AI for Data Engineering",
+        image: "/images/data-analytics/da19-genai.jpg",
         points: [
           "Where GenAI genuinely helps a data team",
           "AI-assisted SQL and pipeline code",
@@ -2706,6 +3067,7 @@ export const programCatalog = [
       {
         n: 18,
         title: "Vector Databases & Embedding Pipelines",
+        image: "/images/timeline/tl-03.jpg",
         points: [
           "Embeddings and vector search explained",
           "Chunking and indexing strategies",
@@ -2718,6 +3080,7 @@ export const programCatalog = [
       {
         n: 19,
         title: "Agentic AI for Data Operations",
+        image: "/images/agentic-ai-robot.jpg",
         points: [
           "What makes a data workflow agentic",
           "Tool use and function calling over data systems",
@@ -2730,6 +3093,7 @@ export const programCatalog = [
       {
         n: 20,
         title: "Data Engineering Capstone Project",
+        image: "/images/data-analytics/da20-capstone.jpg",
         points: [
           "End-to-end platform build on real data",
           "Ingestion, modeling and transformation layers",
@@ -2742,6 +3106,7 @@ export const programCatalog = [
       {
         n: 21,
         title: "Data Career Readiness & Interview Prep",
+        image: "/images/photo-1551836022.jpg",
         points: [
           "Data engineer resume creation and optimization",
           "SQL and Python interview preparation",
