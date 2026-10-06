@@ -48,7 +48,7 @@ body .partner-band,
 body .consultation-section,
 body .faq-section,
 body .site-footer {
-  padding: 112px max(24px, calc((100% - var(--site-measure)) / 2));
+  padding: 112px max(var(--site-gutter, 24px), calc((100% - var(--site-measure)) / 2));
 }
 
 body .light-section,

@@ -27,7 +27,7 @@
 
 .learner-outcomes {
   position: relative;
-  width: min(calc(100% - 64px), 1380px);
+  width: min(calc(100% - 2 * var(--site-gutter, 24px)), var(--site-measure, 1280px));
   margin-inline: auto;
   margin-top: clamp(42px, 6vw, 76px);
   padding-block: clamp(60px, 7vw, 104px);
@@ -481,7 +481,7 @@
 
 @media (max-width: 767px) {
   .learner-outcomes {
-    width: min(100% - 24px, 1180px);
+    width: min(calc(100% - 2 * var(--site-gutter, 24px)), var(--site-measure, 1280px));
     padding-block: clamp(48px, 8vw, 72px);
   }
 

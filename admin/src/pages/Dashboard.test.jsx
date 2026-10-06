@@ -94,7 +94,7 @@ describe("Dashboard", () => {
 
     await renderDashboard();
 
-    expect(list).toHaveBeenCalledWith({limit: 6, sort: "updatedAt", order: "desc"});
+    expect(list).toHaveBeenCalledWith({limit: 8, sort: "updatedAt", order: "desc"});
   });
 
   it("shows each readable resource with its total", async () => {

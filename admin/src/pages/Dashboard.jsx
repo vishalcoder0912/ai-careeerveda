@@ -38,7 +38,7 @@ const Dashboard = () => {
         const results = await Promise.all(
           visible.map(async (resource) => {
             const response = await contentApi(resource.name).list({
-              limit: 6,
+              limit: 8,
               sort: "updatedAt",
               order: "desc",
             });

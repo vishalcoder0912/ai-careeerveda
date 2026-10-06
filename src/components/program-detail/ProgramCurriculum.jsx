@@ -1,6 +1,8 @@
 import {useState} from "react";
+import {flushSync} from "react-dom";
 import {Link} from "react-router-dom";
 import {Reveal, StaggerGroup, StaggerItem} from "../motionPrimitives";
+import TiltCard from "../TiltCard";
 
 /* The curriculum as a data-driven card grid.
  *
@@ -45,6 +47,21 @@ const MODULE_ART = {
   14: {icon: "flag", accent: "orange"},
   15: {icon: "layers", accent: "cyan"},
   16: {icon: "doc", accent: "indigo"},
+  // The AI Systems flagship runs 28 modules (0 == Engineering Bridge). Its
+  // accents stay in the violet/cyan family so the two-tone theme holds across
+  // the whole grid; the other programs never reach past 16.
+  0: {icon: "terminal", accent: "indigo"},
+  17: {icon: "plug", accent: "teal"},
+  18: {icon: "gitBranch", accent: "violet"},
+  19: {icon: "image", accent: "cyan"},
+  20: {icon: "server", accent: "indigo"},
+  21: {icon: "settings", accent: "purple"},
+  22: {icon: "target", accent: "cyan"},
+  23: {icon: "shield", accent: "violet"},
+  24: {icon: "trending", accent: "teal"},
+  25: {icon: "rocket", accent: "indigo"},
+  26: {icon: "lineChart", accent: "violet"},
+  27: {icon: "zap", accent: "cyan"},
 };
 
 // Lucide-shaped strokes, drawn inline so the section adds no icon dependency.
@@ -171,6 +188,67 @@ const ICON_PATHS = {
     <>
       <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
       <line x1="4" x2="4" y1="22" y2="15" />
+    </>
+  ),
+  terminal: (
+    <>
+      <polyline points="4 17 10 11 4 5" />
+      <line x1="12" x2="20" y1="19" y2="19" />
+    </>
+  ),
+  plug: (
+    <>
+      <path d="M12 22v-5" />
+      <path d="M9 8V2" />
+      <path d="M15 8V2" />
+      <path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z" />
+    </>
+  ),
+  gitBranch: (
+    <>
+      <line x1="6" x2="6" y1="3" y2="15" />
+      <circle cx="18" cy="6" r="3" />
+      <circle cx="6" cy="18" r="3" />
+      <path d="M18 9a9 9 0 0 1-9 9" />
+    </>
+  ),
+  image: (
+    <>
+      <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+      <circle cx="9" cy="9" r="2" />
+      <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+    </>
+  ),
+  server: (
+    <>
+      <rect width="20" height="8" x="2" y="2" rx="2" ry="2" />
+      <rect width="20" height="8" x="2" y="14" rx="2" ry="2" />
+      <line x1="6" x2="6.01" y1="6" y2="6" />
+      <line x1="6" x2="6.01" y1="18" y2="18" />
+    </>
+  ),
+  settings: (
+    <>
+      <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+      <circle cx="12" cy="12" r="3" />
+    </>
+  ),
+  shield: (
+    <>
+      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+    </>
+  ),
+  rocket: (
+    <>
+      <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
+      <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
+      <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
+      <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
+    </>
+  ),
+  zap: (
+    <>
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
     </>
   ),
 };
@@ -313,43 +391,80 @@ const ModulePhoto = ({src}) => {
   );
 };
 
-const CurriculumCard = ({module}) => {
+// Only the first module opens by default; the rest show number, icon and title
+// until clicked, so thirteen-plus cards don't land as a wall of bullet text.
+const CurriculumCard = ({module, open, onToggle}) => {
   const art = MODULE_ART[module.n] || MODULE_ART[1];
   const accent = ACCENTS[art.accent];
   const points = modulePoints(module);
   const deliverable = moduleDeliverable(module);
+  const bodyId = `pd-module-${module.n}-body`;
 
   return (
-    <StaggerItem as="article" interactive className="pd-modcard" style={{"--mod-accent": accent}}>
-      <ModulePhoto src={module.image} />
-      <header className="pd-modcard__head">
-        <span className="pd-modcard__num">{String(module.n).padStart(2, "0")}</span>
-        <span className="pd-modcard__icon">
-          <Icon kind={art.icon} size={19} />
-        </span>
-      </header>
-      <h3 className="pd-modcard__title">{module.title}</h3>
-      <ul className="pd-modcard__topics">
-        {points.map((point) => (
-          <li key={point}>{point}</li>
-        ))}
-      </ul>
-      <footer className="pd-modcard__deliverable">
-        <Icon kind="doc" className="pd-modcard__deliverable-icon" size={16} strokeWidth={1.7} />
-        <span className="pd-modcard__deliverable-text">
-          <span className="pd-modcard__deliverable-label">Module Deliverable</span>
-          <span className="pd-modcard__deliverable-value">{deliverable}</span>
-        </span>
-        <span className="pd-modcard__arrow" aria-hidden="true">
-          <ArrowIcon />
-        </span>
-      </footer>
-    </StaggerItem>
+    <TiltCard className="pd-modcard-tilt">
+      <StaggerItem
+        as="article"
+        interactive
+        className={`pd-modcard${open ? " is-open" : ""}`}
+        style={{"--mod-accent": accent, viewTransitionName: `pd-mod-${module.n}`}}
+      >
+        <ModulePhoto src={module.image} />
+        <header className="pd-modcard__head">
+          <span className="pd-modcard__num">{String(module.n).padStart(2, "0")}</span>
+          <span className="pd-modcard__icon">
+            <Icon kind={art.icon} size={19} />
+          </span>
+        </header>
+        {/* Accordion pattern: the heading holds the button, not the reverse.
+            While collapsed, the button's ::after covers the card so a tap
+            anywhere on it opens the module. */}
+        <h3 className="pd-modcard__title">
+          <button
+            type="button"
+            className="pd-modcard__toggle"
+            aria-expanded={open}
+            aria-controls={bodyId}
+            onClick={onToggle}
+          >
+            {module.title}
+            <span className="pd-modcard__more">
+              {open ? "Hide topics" : "View topics"}
+              <span className="pd-modcard__chevron" aria-hidden="true" />
+            </span>
+          </button>
+        </h3>
+        <div className="pd-modcard__body" id={bodyId} hidden={!open}>
+          <ul className="pd-modcard__topics">
+            {points.map((point) => (
+              <li key={point}>{point}</li>
+            ))}
+          </ul>
+          {deliverable && (
+            <footer className="pd-modcard__deliverable">
+              <Icon kind="doc" className="pd-modcard__deliverable-icon" size={16} strokeWidth={1.7} />
+              <span className="pd-modcard__deliverable-text">
+                <span className="pd-modcard__deliverable-label">Module Deliverable</span>
+                <span className="pd-modcard__deliverable-value">{deliverable}</span>
+              </span>
+              <span className="pd-modcard__arrow" aria-hidden="true">
+                <ArrowIcon />
+              </span>
+            </footer>
+          )}
+        </div>
+      </StaggerItem>
+    </TiltCard>
   );
 };
 
 const CurriculumCta = ({href, moduleCount}) => (
-  <StaggerItem as={Link} interactive className="pd-cta-card" to={href}>
+  <StaggerItem
+    as={Link}
+    interactive
+    className="pd-cta-card"
+    to={href}
+    style={{viewTransitionName: "pd-mod-cta"}}
+  >
     <span className="pd-cta-card__kicker">Build. Learn.</span>
     <span className="pd-cta-card__title">Get Hired.</span>
     <span className="pd-cta-card__meta">
@@ -362,9 +477,36 @@ const CurriculumCta = ({href, moduleCount}) => (
   </StaggerItem>
 );
 
+// Opening a module re-flows the grid (it takes a full row), which CSS cannot
+// transition. A view transition snapshots every named card and morphs each one
+// from its old box to its new one. No API or reduced motion → instant swap.
+const animateLayout = (update) => {
+  const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  if (!document.startViewTransition || reduced) {
+    update();
+    return;
+  }
+  const root = document.documentElement;
+  root.classList.add("pd-vt");
+  document
+    .startViewTransition(() => flushSync(update))
+    .finished.finally(() => root.classList.remove("pd-vt"));
+};
+
 const ProgramCurriculum = ({program, applyHref}) => {
   const modules = program.modules || [];
   const moduleCount = modules.length;
+  const [openModules, setOpenModules] = useState(() => new Set([modules[0]?.n]));
+  const toggleModule = (n) => {
+    const update = () =>
+      setOpenModules((prev) => {
+        const next = new Set(prev);
+        if (next.has(n)) next.delete(n);
+        else next.add(n);
+        return next;
+      });
+    animateLayout(update);
+  };
 
   return (
     <section className="pd-section pd-curriculum" id="pd-curriculum">
@@ -393,7 +535,12 @@ const ProgramCurriculum = ({program, applyHref}) => {
         {moduleCount > 0 ? (
           <StaggerGroup className="pd-curriculum__grid" amount={0.05} stagger={0.045}>
             {modules.map((module) => (
-              <CurriculumCard key={module.n} module={module} />
+              <CurriculumCard
+                key={module.n}
+                module={module}
+                open={openModules.has(module.n)}
+                onToggle={() => toggleModule(module.n)}
+              />
             ))}
             <CurriculumCta href={applyHref} moduleCount={moduleCount} />
           </StaggerGroup>

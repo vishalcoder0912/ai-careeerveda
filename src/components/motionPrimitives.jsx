@@ -127,6 +127,7 @@ export const StaggerItem = ({
   interactive = false,
   className,
   children,
+  style,
   ...rest
 }) => {
   const ctx = useContext(StaggerContext);
@@ -152,7 +153,9 @@ export const StaggerItem = ({
   return (
     <Comp
       className={classes}
-      style={ctx ? {["--cv-delay"]: delay} : undefined}
+      // Merged, not replaced: a caller's own style (an accent variable, say)
+      // used to wipe the stagger delay, so those items all entered at once.
+      style={ctx ? {["--cv-delay"]: delay, ...style} : style}
       {...rest}
     >
       {children}

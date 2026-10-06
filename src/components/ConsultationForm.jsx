@@ -232,7 +232,7 @@ const ConsultationForm = () => {
 
       <div className="consultation-form__footer">
         <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Submitting…" : "Submit"}
+          {isSubmitting ? "Booking…" : "Book My Free Consultation"}
         </button>
         <p className="consultation-security">
           <svg

@@ -31,13 +31,13 @@ const SplineFallback = () => {
 // own WebGL canvas, and ~1 MB across three third-party hosts (unpkg,
 // spline.design, a Google CDN) — about 80% of the home page's total weight.
 //
-// Every device that can have it, gets it — phones included. The robot is the hero,
-// and a still of it is not the same thing. The cost is real and is managed by the
-// two gates in the effect below (on screen, then idle) rather than by withholding
-// the scene.
+// Desktop loads it automatically, behind the two gates in the effect below (on
+// screen, then idle). Phones and tablets show the still and load the live scene
+// on a tap: measured on a throttled phone, the idle scene alone pinned the main
+// thread and dropped page scrolling to a few frames a second.
 //
-// The still stands in only where the live scene was never going to be a good
-// trade at any point in the load:
+// The still is the only robot, with no tap to upgrade, where the live scene
+// was never going to be a good trade at any point in the load:
 //   save-data / 2g  — megabytes of decoration on a connection that can't spare it
 //   reduced motion  — an idling, animated 3D character is exactly what they turned off
 const shouldSkipScene = () => {
@@ -76,9 +76,15 @@ const SplineHeroScene = ({sceneUrl}) => {
   );
   const [isActive,setIsActive] = useState(false);
   const [isMobile] = useState(() => isPhone());
+  // Phones and tablets start on the still and fetch the live scene only when
+  // the visitor taps it. Profiled on a 4x-throttled phone, the idle scene alone
+  // held the main thread at ~865ms of every second and dropped scrolling to
+  // ~2fps — the whole page felt heavy for an animation most visitors scroll
+  // past. Desktop keeps loading it automatically, as before.
+  const [wantsLive,setWantsLive] = useState(() => !isPhone());
 
   useEffect(() => {
-    if (shouldSkipScene()) {
+    if (shouldSkipScene() || !wantsLive) {
       return undefined;
     }
 
@@ -118,7 +124,7 @@ const SplineHeroScene = ({sceneUrl}) => {
       cancelled = true;
       observer.disconnect();
     };
-  },[isMobile]);
+  },[isMobile,wantsLive]);
 
   // Hand the gestures back. While the robot is active it eats every swipe that
   // starts on it, so a scroll event can only mean the visitor swiped somewhere
@@ -143,13 +149,12 @@ const SplineHeroScene = ({sceneUrl}) => {
   },[isActive]);
 
   const showFallback = useFallback || hasFailed;
-  // The still is only for the visitors who can never get the live scene —
-  // reduced-motion / save-data / 2g / an iframe that failed to boot. Everyone
-  // else gets the real robot: the frame starts downloading as soon as it can and
-  // the loader ring stands in while it boots. No static stand-in is interposed
-  // on the default path, so the still robot this app ships with can never be the
-  // robot someone sees on a working device.
-  const showPoster = showFallback;
+  // The still covers three cases: visitors who can never get the live scene
+  // (reduced-motion / save-data / 2g / an iframe that failed to boot), a phone
+  // or tablet that has not tapped for 3D yet, and that same device while the
+  // tapped scene boots — so the robot never blinks out to a loader ring.
+  const awaitingTap = !showFallback && !wantsLive;
+  const showPoster = showFallback || awaitingTap || (isMobile && !isLoaded);
   // Desktop drives the robot with a cursor, which can hover over the scene without
   // committing to it, so there the frame takes pointer events as normal. On touch
   // it takes them only once the visitor has asked for it.
@@ -212,9 +217,25 @@ const SplineHeroScene = ({sceneUrl}) => {
           </div>
         )}
 
-        {/* The still is the scene for the fallback visitors above, who get no live
-            frame; it is never interposed on anyone else's view. */}
+        {/* The still: the fallback visitors' only robot, and the phone/tablet
+            robot until the visitor taps for the live scene. */}
         {showPoster && <SplineFallback />}
+
+        {/* Phones/tablets: one tap swaps the still for the live 3D scene and
+            hands it the gestures straight away. Same transparent full-robot
+            layer as the "Tap to rotate" one below, for the same reasons. */}
+        {awaitingTap && (
+          <div
+            className="spline-tap-layer"
+            aria-hidden="true"
+            onPointerDown={() => {
+              setWantsLive(true);
+              setIsActive(true);
+            }}
+          >
+            <span className="spline-tap-hint">Tap to view in 3D</span>
+          </div>
+        )}
 
         {/* Covers the whole robot, not just the pill. Tapping the robot is the
             gesture people actually make, and when only the pill listened every

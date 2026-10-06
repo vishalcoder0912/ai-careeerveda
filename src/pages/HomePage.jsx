@@ -22,7 +22,6 @@ const RecommendedCourses = lazy(() => import("../components/Recommended/Recommen
 const LearnerOutcomes = lazy(() => import("../components/LearnerOutcomes"));
 const ConsultationForm = lazy(() => import("../components/ConsultationForm"));
 const PressSection = lazy(() => import("../components/PressSection"));
-const FaqAnimatedList = lazy(() => import("../components/FaqAnimatedList"));
 
 const HomePage = () => {
   const pageRef = useCinematicInteractions();
@@ -94,7 +93,7 @@ const HomePage = () => {
           fog seam, which has been removed — no overlap is wanted now, and
           pulling the cards over the stat strip would create the broken
           stats → programs transition. */}
-      <DeferUntilVisible minHeight={600} margin="-150px">
+      <DeferUntilVisible className="home-defer-programs" margin="-150px">
         <RecommendedCourses />
       </DeferUntilVisible>
 
@@ -105,7 +104,7 @@ const HomePage = () => {
         <TrustedCompanies />
       </DeferUntilVisible>
 
- <DeferUntilVisible minHeight={800}>
+ <DeferUntilVisible className="home-defer-press">
         <PressSection />
       </DeferUntilVisible>
 
@@ -124,7 +123,7 @@ const HomePage = () => {
               programs, and receive placement support from a professional career platform
             </p>
           </Reveal>
-          <DeferUntilVisible minHeight={520}>
+          <DeferUntilVisible className="home-defer-form">
             <ConsultationForm />
           </DeferUntilVisible>
         </div>
@@ -147,17 +146,6 @@ const HomePage = () => {
           </StaggerGroup>
         </div>
 
-        {/* Phone companion to the accordion above. Narrow screens swap the
-            stacked <details> wall for an animated question list (React Bits'
-            AnimatedList) — the questions ride in as they scroll and a tap opens
-            the answer in a card below. The accordion stays in the DOM, hidden,
-            so the prerendered markup is unchanged for hydration; and the whole
-            phone list is deferred by DeferUntilVisible, so its framer-motion
-            chunk is only fetched once a phone reader is heading towards the FAQ
-            — the same treatment TrustedCompanies gets. */}
-        <DeferUntilVisible className="faq-mobile-animated-list" minHeight={420}>
-          <FaqAnimatedList faqs={faqs} />
-        </DeferUntilVisible>
       </section>
     </main>
   );

@@ -1,0 +1,95 @@
+/* MarqueeStrip — a single infinite text-chip ticker.
+   Scoped under .ms- so it never collides with the site's other marquees. */
+
+.ms-strip {
+  width: 100%;
+  overflow: hidden;
+  padding: 18px 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+  user-select: none;
+}
+
+.ms-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-name: ms-scroll;
+  animation-duration: var(--ms-speed, 38s);
+}
+
+.ms-track {
+  animation-direction: normal;
+}
+
+.ms-strip--rtl .ms-track {
+  animation-name: ms-scroll-rtl;
+}
+
+/* One sequence is exactly half the doubled track, so -50% is pixel-perfect. */
+.ms-group {
+  display: contents;
+}
+
+.ms-chip {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  font-family: "Manrope", "Inter", system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #102a5c;
+}
+
+.ms-chip__sep {
+  margin: 0 22px;
+  color: #2563eb;
+  opacity: 0.6;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+/* Pause on hover or keyboard focus. */
+.ms-strip:hover .ms-track,
+.ms-strip:focus-within .ms-track {
+  animation-play-state: paused;
+}
+
+@keyframes ms-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes ms-scroll-rtl {
+  from {
+    transform: translate3d(-50%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .ms-strip {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .ms-track {
+    animation: none;
+    transform: none;
+  }
+  .ms-group[aria-hidden="true"] {
+    display: none;
+  }
+}

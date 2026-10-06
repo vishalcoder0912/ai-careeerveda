@@ -8,7 +8,7 @@ export const LearningExperience = () => {
   return (
     <section className="ga-learning" id="ga-learning">
       <div className="ga-learning-head">
-        <SectionLabel index="10">The Experience</SectionLabel>
+        <SectionLabel index="11">The Experience</SectionLabel>
         <h2 className="ga-display">
           Learn.
           <br />

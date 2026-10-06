@@ -707,3 +707,10 @@ body .site-footer .social-links a:active {
     0 0 26px rgba(37, 99, 235, 0.55),
     0 0 8px rgba(79, 70, 229, 0.5);
 }
+/* Faculty mentor directory on phones: slate-color-system repaints every
+   .section-block slate/teal below 640px; keep this one on the light canvas. */
+@media (max-width: 640px) {
+  body .spline-page .mentor-section {
+    background: transparent !important;
+  }
+}

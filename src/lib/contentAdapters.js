@@ -154,6 +154,11 @@ export const adaptProgram = (record) => ({
   image: mediaUrl(record.image),
   fee: programFee(record),
   modules: moduleMedia(record.slug, record.modules),
+  // A cinematic landing is a front-end concern the admin panel does not model,
+  // so the API answer never carries it. Restore it from the catalogue whenever
+  // a programme declares one; none do today, so live records fall back to
+  // /programs/:slug — gen-ai-agentic-ai included.
+  landingPath: programCatalog.find((program) => program.id === record.slug)?.landingPath,
 });
 
 export const adaptFaculty = (record) => ({
@@ -202,13 +207,44 @@ export const adaptBlogPost = (record) => ({
   cta: blogCta(record.cta),
 });
 
+// A live LinkedIn Jobs search for the role and location — the apply link for
+// any listing without an employer URL of its own. Remote roles search India
+// with LinkedIn's remote work-type filter (f_WT=2). f_TPR=r259200 limits it to
+// postings from the past 3 days and sortBy=DD puts the newest first, so the
+// link always lands on current openings however old the listing here is.
+export const LINKEDIN_SOURCE = "LinkedIn Jobs";
+export const linkedInSearchUrl = (title, location = "") => {
+  const isRemote = /remote/i.test(location);
+  const params = new URLSearchParams({
+    keywords: title,
+    location: isRemote || !location ? "India" : location,
+    f_TPR: "r259200",
+    sortBy: "DD",
+  });
+  if (isRemote) params.set("f_WT", "2");
+  return `https://www.linkedin.com/jobs/search/?${params.toString()}`;
+};
+
+// A listing saved in the panel without an application URL used to render
+// href="" — an Apply button that just reloaded /jobs. It falls back to the
+// employer's email, then to a live LinkedIn search for the role.
+const jobApplyLink = (record) => {
+  if (/^https?:\/\//i.test(record.applicationUrl || "")) {
+    return {applyUrl: record.applicationUrl, source: record.source || ""};
+  }
+  if (record.applicationEmail) {
+    return {applyUrl: `mailto:${record.applicationEmail}`, source: record.source || ""};
+  }
+  return {applyUrl: linkedInSearchUrl(record.title, record.location), source: LINKEDIN_SOURCE};
+};
+
 export const adaptJob = (record) => ({
   ...record,
   id: record.slug,
   experience: record.experienceLevel || "",
   jobType: record.employmentType || "",
   salary: record.salaryRange || "",
-  applyUrl: record.applicationUrl || "",
+  ...jobApplyLink(record),
   postedDate: dateOnly(record.postedDate),
 });
 

@@ -76,12 +76,10 @@ body .faq-section.faq-spacing {
   }
 }
 
-/* FAQ: the stacked <details> accordion on wide screens, the animated question
-   list (React Bits' AnimatedList) on a phone. The desktop accordion stays
-   mounted but hidden — it keeps the prerendered markup stable for hydration and
-   gives crawlers the full Q&A — while the phone list is deferred in
-   DeferUntilVisible, so its framer-motion chunk is only fetched when a phone
-   reader is actually heading towards the FAQ. */
+/* FAQ: one <details> accordion on every screen. Phones used to swap in a
+   height-capped animated list whose hidden scrollbar showed only ~5 of the 12
+   questions, with no sign the box scrolled. The accordion shows them all and
+   opens each answer under its own question. */
 .faq-accordion {
   display: block;
   /* The section spans the full --site-measure rail; a question that wide
@@ -91,47 +89,96 @@ body .faq-section.faq-spacing {
   margin-inline: auto;
 }
 
-.faq-mobile-animated-list {
-  display: none;
-}
-
+/* Phone compaction: shorter program cards, clamped testimonials and a shorter
+   press scroll-lane, so the home page is fewer screens of scrolling. */
 @media (max-width: 680px) {
-  .faq-accordion {
+  .spline-page .rc-grid {
+    gap: 14px;
+  }
+
+  .spline-page .rc-card {
+    min-height: 260px;
+  }
+
+  .spline-page .rc-card--hero {
+    min-height: 340px;
+  }
+
+  /* Title + kicker + stats say enough at this size; the full blurb is on the
+     program page. The featured card keeps its two-line description. */
+  .spline-page .rc-card:not(.rc-card--hero) .rc-desc {
     display: none;
   }
 
-  .faq-mobile-animated-list {
-    display: block;
+  .spline-page .learner-quote p {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 767.98px) {
+  /* 3 stories need ~1 screen each, not 1.6. */
+  .spline-page .press-storytelling--lane .press-scroll {
+    height: 320vh;
+  }
+}
+
+/* Placeholder heights for the two deferred sections, matched to what they
+   render at each breakpoint (measured; each value sits just under the real
+   height, since min-height stays applied after mount and an overshoot would be
+   permanent blank space). A fixed 600/800px stood in for sections that are
+   ~1,730–2,250px (programs) and ~2,700–5,500px (the pinned press lane), so
+   everything below jumped by up to 3,500px when they mounted — a CLS of ~1.0.
+   If either section's layout changes, re-measure these. */
+.home-defer-programs {
+  min-height: 1820px;
+}
+
+.home-defer-press {
+  /* heading block + the lane's pinned scroll run (press-section.css) */
+  min-height: calc(430vh + 450px);
+}
+
+@media (max-width: 1199.98px) {
+  .home-defer-programs {
+    min-height: 1680px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199.98px) {
+  .home-defer-press {
+    min-height: calc(440vh + 330px);
+  }
+}
+
+@media (max-width: 767.98px) {
+  .home-defer-press {
+    min-height: calc(320vh + 320px);
+  }
+}
+
+/* The placeholder height only matters before the section mounts. Once it is
+   in, the section sizes itself — and the lane pulls the next section up into
+   its empty half-stage (press-section.css), which a fixed min-height here
+   would otherwise hold open. */
+.home-defer-press:has(> .press-section) {
+  min-height: 0;
+}
+
+/* The consultation form: ~520–545px laid out beside its copy, ~660–725px
+   stacked on a phone. */
+.home-defer-form {
+  min-height: 520px;
+}
+
+@media (max-width: 680px) {
+  .home-defer-programs {
+    min-height: 2180px;
   }
 
-  .faq-animated-hint {
-    margin: 10px 6px 0;
-    color: #8aa1c4;
-    font-size: 13px;
-    text-align: center;
-  }
-
-  .faq-animated-answer {
-    margin-top: 14px;
-    padding: 18px 20px;
-    background: #ffffff;
-    border: 1px solid #dfe7f5;
-    border-left: 4px solid #2563eb;
-    border-radius: 14px;
-    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.08);
-  }
-
-  .faq-animated-answer h3 {
-    margin: 0 0 8px;
-    color: #102a5c;
-    font-size: 16px;
-    line-height: 1.35;
-  }
-
-  .faq-animated-answer p {
-    margin: 0;
-    color: #3f5378;
-    font-size: 15px;
-    line-height: 1.65;
+  .home-defer-form {
+    min-height: 660px;
   }
 }

@@ -18,6 +18,30 @@
      viewport the outer gutters drop from ~130px to ~48px, giving the layout
      the wide immersive quality of a modern EdTech platform. */
   --site-measure: 1440px;
+  /* Responsive container: content 1200px wide (1280px from a 1440px screen),
+     centred, with 16 / 20 / 32px side gutters. Every shared section, the
+     page-shell inner and the press band read these two tokens, so one change
+     here moves the whole site together. */
+  --site-measure: 1200px;
+  --site-gutter: 16px;
+}
+
+@media (min-width: 480px) {
+  :root {
+    --site-gutter: 20px;
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --site-gutter: 32px;
+  }
+}
+
+@media (min-width: 1440px) {
+  :root {
+    --site-measure: 1280px;
+  }
 }
 
 body {

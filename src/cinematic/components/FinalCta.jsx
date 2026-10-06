@@ -37,7 +37,7 @@ export const FinalCTA = () => {
       </svg>
 
       <div className="ga-cta-inner">
-        <SectionLabel index="12">Admissions Open</SectionLabel>
+        <SectionLabel index="13">Admissions Open</SectionLabel>
         <h2 className="ga-display ga-cta-title">
           Your AI
           <br />

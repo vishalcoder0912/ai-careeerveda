@@ -168,7 +168,7 @@ export function programListSchema(programs) {
       item: {
         "@type": "Course",
         name: program.fullTitle || program.title,
-        url: absoluteUrl(`/programs/${program.id}`),
+        url: absoluteUrl(program.landingPath || `/programs/${program.id}`),
         provider: {"@id": ORG_ID},
       },
     })),
@@ -186,7 +186,7 @@ export function courseSchema(program) {
     "@type": "Course",
     name: program.fullTitle || program.title,
     description: program.description,
-    url: absoluteUrl(`/programs/${program.id}`),
+    url: absoluteUrl(program.landingPath || `/programs/${program.id}`),
     provider: {
       "@type": "EducationalOrganization",
       name: SITE_NAME,

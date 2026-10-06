@@ -1,4 +1,5 @@
 import {useEffect, useRef} from "react";
+import {ScrollTrigger} from "gsap/ScrollTrigger";
 import {createPinnedScrub} from "../fx/pinned";
 import {reducedMotionNow} from "../fx/registry";
 import {workflowSteps} from "../data";
@@ -14,7 +15,7 @@ export const AgentWorkflow = () => {
     const section = sectionRef.current;
     const pin = pinRef.current;
     if (!section || !pin) return undefined;
-    if (reducedMotionNow() || !window.matchMedia("(min-width: 900px)").matches) return undefined;
+    if (reducedMotionNow()) return undefined;
 
     let last = -1;
 
@@ -28,6 +29,20 @@ export const AgentWorkflow = () => {
       const fill = fillRef.current;
       if (fill) fill.style.height = `${Math.round(proxied * 100)}%`;
     };
+
+    /* Mobile: no pin — the step crossing mid-screen lights up as you scroll. */
+    if (!window.matchMedia("(min-width: 900px)").matches) {
+      setState(0);
+      const sts = stepsRef.current.map((el, i) =>
+        ScrollTrigger.create({
+          trigger: el,
+          start: "top 55%",
+          end: "bottom 55%",
+          onToggle: (self) => self.isActive && setState(i),
+        }),
+      );
+      return () => sts.forEach((st) => st.kill());
+    }
 
     const cleanup = createPinnedScrub({
       section,
@@ -53,7 +68,7 @@ export const AgentWorkflow = () => {
     <section className="ga-flow" id="ga-workflow" ref={sectionRef}>
       <div className="ga-flow-pin" ref={pinRef}>
         <div className="ga-flow-head">
-          <SectionLabel index="06">Living Workflow</SectionLabel>
+          <SectionLabel index="07">Living Workflow</SectionLabel>
           <h2 className="ga-display">
             From Input
             <br />

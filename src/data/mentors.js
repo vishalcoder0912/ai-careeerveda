@@ -96,7 +96,7 @@ export const mentors = [
       "NLP",
     ],
     courseSlug: "data-science-ai",
-    courseSlugs: ["data-science-ai", "gen-ai"],
+    courseSlugs: ["data-science-ai", "gen-ai", "ai-systems-agentic-ai"],
   },
   {
     id: "surya-deepta-mazumdaar",

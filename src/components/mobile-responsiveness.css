@@ -103,64 +103,15 @@
   }
 }
 
-/* ── Footer mobile layout: even distribution ──
-   There are three content blocks (Discover More, Policies, Contact Us) plus the
-   brand/message block. Rather than a short brand column crushed against the
-   tall Discover column, the brand sits on its own full row and the three
-   content columns split evenly below it. */
-@media (max-width: 768px) {
-  .site-footer {
-    display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    gap: 36px 16px !important;
-    padding-block: 48px 24px !important;
-    align-items: start;
-  }
-
-  .site-footer > div {
-    width: auto !important;
-    max-width: none !important;
-    min-width: 0;
-  }
-
-  .site-footer > div:first-child {
-    grid-column: 1 / -1;
-    margin-bottom: 4px;
-  }
-
-  .site-footer h3 {
-    margin-bottom: 12px;
-    font-size: 15px;
-  }
-
-  .site-footer a {
-    font-size: 13px;
-    padding: 6px 0;
-  }
-
-  .site-footer p {
-    font-size: 13px;
-    line-height: 1.55;
-  }
-
-  .site-footer small {
-    grid-column: 1 / -1 !important;
-    margin-top: 8px;
-    font-size: 12px;
-    text-align: center;
-    opacity: 0.7;
-  }
-}
-
-/* ── Footer tablet layout: even distribution ──
-   The brand/message block stretches across the top, and the three link/contact
-   columns sit evenly side by side below it. */
-@media (min-width: 769px) and (max-width: 1024px) {
+/* ── Footer: phone + tablet ──
+   Three 109px columns on a phone broke the address one word per line and ran
+   the email into the screen edge, and every link stacked an 8px margin, 6px
+   padding and a 44px min-height into ~60px rows. Now: links are flat 44px
+   rows (still a full tap target), phone sections run full width with link
+   lists in two columns, and tablet columns are sized to what they hold. */
+@media (max-width: 1024px) {
   body .site-footer {
     display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    gap: 48px 40px !important;
-    padding-block: 72px 32px !important;
     align-items: start;
   }
 
@@ -170,12 +121,112 @@
     min-width: 0;
   }
 
+  body .site-footer > div:first-child,
+  body .site-footer small {
+    grid-column: 1 / -1 !important;
+  }
+
+  body .site-footer h3 {
+    margin: 0 0 8px;
+    font-size: 15px;
+  }
+
+  /* `.site-footer a { display: block }` caught the logo link too, which
+     stacked the icon above the wordmark between 769px and 1024px. */
+  body .site-footer .brand {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  body .site-footer .footer-col a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    line-height: 1.35 !important;
+  }
+
+  body .site-footer .footer-col--discover {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 16px;
+    align-content: start;
+  }
+
+  body .site-footer .footer-col--discover h3 {
+    grid-column: 1 / -1;
+  }
+
+  body .site-footer .footer-col--contact p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  body .site-footer .footer-col--contact .footer-address {
+    margin-bottom: 4px;
+  }
+
+  body .site-footer .footer-col--contact a {
+    min-height: 40px;
+    overflow-wrap: anywhere;
+  }
+
+  body .site-footer .footer-hours {
+    margin-top: 4px;
+    opacity: 0.85;
+  }
+
+  body .site-footer small {
+    margin-top: 8px;
+    font-size: 12px;
+    text-align: center;
+    opacity: 0.7;
+  }
+}
+
+/* Tablet: brand across the top, then Discover (two link columns), Policies
+   and Contact, each sized to its content. */
+@media (min-width: 600px) and (max-width: 1024px) {
+  body .site-footer {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1.5fr) !important;
+    gap: 40px 32px !important;
+    padding-block: 56px 28px !important;
+  }
+}
+
+/* Phone: every section full width, separated by a hairline. */
+@media (max-width: 599px) {
+  body .site-footer {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 0 !important;
+    padding-block: 44px 24px !important;
+  }
+
   body .site-footer > div:first-child {
+    padding-bottom: 24px;
+  }
+
+  body .site-footer .footer-col {
+    padding: 20px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  body .site-footer .footer-col--policies {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 16px;
+  }
+
+  body .site-footer .footer-col--policies h3 {
     grid-column: 1 / -1;
   }
 
   body .site-footer small {
-    grid-column: 1 / -1 !important;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
 }
 
@@ -265,7 +316,7 @@
 /* ── Program explorer mobile ── */
 @media (max-width: 768px) {
   .program-explorer {
-    width: min(100% - 16px, 1180px) !important;
+    width: 100% !important; /* section-block supplies the site gutter */
   }
 
   .program-detail-head :is(h3, h2) {
@@ -710,7 +761,7 @@
   }
 
   body .hero-layout {
-    width: calc(100% - 16px) !important;
+    width: calc(100% - 2 * var(--site-gutter, 16px)) !important;
   }
 
   body .hero-headline {

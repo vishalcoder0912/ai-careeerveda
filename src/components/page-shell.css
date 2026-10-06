@@ -27,7 +27,7 @@
 }
 
 .page-shell .ps-inner {
-  width: min(var(--site-measure), calc(100% - 48px));
+  width: min(var(--site-measure), calc(100% - 2 * var(--site-gutter, 24px)));
   margin-inline: auto;
 }
 

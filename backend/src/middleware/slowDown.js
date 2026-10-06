@@ -8,14 +8,15 @@ import {env} from "../config/env.js";
 // Unlike rate-limiting (which returns 429), this still serves the request — it
 // just takes longer, which wastes attacker resources more effectively.
 //
-// express-slow-down v2 requires `delayMs` as a *function*; the function receives
+// express-slow-down v3 requires `delayMs` as a *function*; the function receives
 // (used, req) and must return the per-request delay. We compute an increasing
-// delay from how far past the threshold the request is, capped at maxDelayMs.
+// delay from how far past the threshold the request is. The library itself caps
+// the result at `maxDelayMs`, so the function returns the unbounded ramp.
 
 const incrementalDelay = (stepMs) => (used, req) => {
   const threshold = req.slowDown.limit;
   const excess = Math.max(0, used - threshold);
-  return Math.min(excess * stepMs, req.slowDown.maxDelayMs);
+  return excess * stepMs;
 };
 
 const skipInTest = () => env.isTest;

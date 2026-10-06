@@ -16,8 +16,8 @@ RUN npm ci
 COPY admin/index.html admin/vite.config.js ./
 COPY admin/src ./src
 
-ARG VITE_ADMIN_API_BASE_URL=""
-ARG VITE_PUBLIC_SITE_URL=""
+ARG VITE_ADMIN_API_BASE_URL="https://backend.careerveda.in/api/v1"
+ARG VITE_PUBLIC_SITE_URL="https://careerveda.in"
 ENV VITE_ADMIN_API_BASE_URL=${VITE_ADMIN_API_BASE_URL}
 ENV VITE_PUBLIC_SITE_URL=${VITE_PUBLIC_SITE_URL}
 

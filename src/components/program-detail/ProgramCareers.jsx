@@ -5,6 +5,7 @@ import {useContentList} from "../../hooks/useContent";
 import {adaptAlumniReview} from "../../lib/contentAdapters";
 import {matchJobs} from "./jobTracks";
 import {careerStats, careerReviews} from "./careerOutcomes";
+import MetricValue from "../MetricValue";
 
 const AUTOCYCLE_MS = 6000;
 
@@ -198,7 +199,9 @@ const ProgramCareers = ({program}) => {
             <StaggerGroup as="ul" className="pd-metrics pd-metrics--compact" stagger={0.04}>
               {careerStats.map(([value, label]) => (
                 <StaggerItem as="li" className="pd-metric" key={label}>
-                  <strong>{value}</strong>
+                  <strong>
+                    <MetricValue value={value} />
+                  </strong>
                   <small>{label}</small>
                 </StaggerItem>
               ))}

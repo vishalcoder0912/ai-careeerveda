@@ -59,6 +59,7 @@ const SLOTS = [
   {name: "compact", cols: 4, rows: 1, size: "sm"},
   {name: "panel", cols: 8, rows: 1, size: "md"},
   {name: "banner", cols: 12, rows: 1, size: "lg"},
+  {name: "banner", cols: 12, rows: 1, size: "lg"},
 ];
 
 // Widest each slot is ever drawn, at the 1180px container. The CDN is asked for
@@ -77,8 +78,12 @@ const SLOT_IMAGE_WIDTH = {hero: 720, wide: 520, tall: 520, compact: 420, panel: 
 // `duration` still shortens on small screens: on a phone the bento is a single
 // column, so a card is most of the viewport by the time it triggers and a long
 // reveal leaves the reader waiting on it.
+// Every tier useViewportTier() can return needs an entry: "laptop" (1024–1199)
+// was missing, so the lookup came back undefined and destructuring it crashed
+// the whole home page at laptop widths.
 const REVEAL_TIERS = {
   desktop: {stagger: 0.08, duration: 0.62},
+  laptop: {stagger: 0.08, duration: 0.58},
   tablet: {stagger: 0.07, duration: 0.52},
   mobile: {stagger: 0.05, duration: 0.4},
 };
@@ -172,6 +177,19 @@ const recommendedCourses = [
       "Master Generative AI and transform your career with cutting-edge skills. Learn to build intelligent applications using the latest AI models, LLMs, and automation technologies",
     meta: ["6 Months", "Hands-On Labs", "Certification Prep"],
   },
+  {
+    id: "gen-ai-agentic-ai",
+    slug: "gen-ai-agentic-ai",
+    // An admin-managed programme now: its route is /programs/gen-ai-agentic-ai
+    // like every other managed course, not the standalone /generative-ai page.
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/PG-WITH-GENAI-803ad9e9.webp",
+    label: "New Launch",
+    title: "PG Program in Gen AI and Agentic AI",
+    subtitle: "Become a Gen AI & Agentic AI Engineer",
+    description:
+      "Master Generative AI and agentic systems end to end — LLMs, prompt engineering, RAG, fine-tuning, autonomous agents, MCP tooling and multi-agent orchestration — through live mentor-led classes, hands-on builds and a production-ready portfolio.",
+    meta: ["6 Months", "Live Online", "Agent-First Curriculum"],
+  },
 ];
 
 const STAT_LABELS = ["Duration", "Format", "Highlight"];
@@ -237,7 +255,7 @@ const BentoCard = ({course, slot, variants, lift}) => {
       {course.slug && (
         <Link
           className="rc-link"
-          to={`/programs/${course.slug}`}
+          to={course.path || `/programs/${course.slug}`}
           aria-label={`${course.title} — explore program`}
         />
       )}
@@ -306,7 +324,7 @@ const BentoCard = ({course, slot, variants, lift}) => {
 };
 
 // This strip is an editorial selection, not a listing — the full catalogue is
-// the program explorer's job. So the six entries above decide which programs
+// the program explorer's job. So the seven entries above decide which programs
 // appear and in what order, and the API only supplies their current copy. A
 // program published in the admin panel therefore shows up on /programs without
 // also appending itself to the home page.
@@ -343,7 +361,7 @@ const RecommendedCourses1 = () => {
 
   const reduceMotion = useReducedMotion();
   const tier = useViewportTier();
-  const {stagger, duration} = REVEAL_TIERS[tier];
+  const {stagger, duration} = REVEAL_TIERS[tier] ?? REVEAL_TIERS.desktop;
   // One variant per bento slot. They differ only in the delay that offsets the
   // right-hand card of each band — see the note on REVEAL_TIERS. Memoised
   // because handing framer a freshly-built variants object on some later render

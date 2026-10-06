@@ -15,6 +15,7 @@ export const loadGenerativeAIPage = () => import("../cinematic/GenerativeAIPage"
 
 const EXACT_ROUTES = {
   "/programs": loadProgramsPage,
+  "/programs/": loadProgramsPage,
   "/jobs": loadJobsPage,
   "/achievers": loadJobsPage, // redirects to /jobs — warm what it lands on
   "/faculty": loadFacultyPage,
@@ -33,6 +34,10 @@ const EXACT_ROUTES = {
 /** The loader for a pathname, or null when the path has no chunk of its own. */
 export const loaderForPath = (pathname) => {
   if (EXACT_ROUTES[pathname]) return EXACT_ROUTES[pathname];
+  // The Gen AI & Agentic AI flagship renders the cinematic landing on both of
+  // its URLs (/generative-ai and /programs/gen-ai-agentic-ai), so this slug
+  // keeps the cinematic chunk instead of the detail-page one.
+  if (/^\/programs\/gen-ai-agentic-ai\/?(?:[?#].*)?$/.test(pathname)) return loadGenerativeAIPage;
   // /programs/:slug — one chunk shared by every program page.
   if (/^\/programs\/[^/]+\/?$/.test(pathname)) return loadProgramDetailPage;
   if (/^\/blog\/[^/]+\/?$/.test(pathname)) return loadBlogDetailPage;

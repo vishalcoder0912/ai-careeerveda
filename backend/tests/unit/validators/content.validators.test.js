@@ -154,6 +154,15 @@ describe("jobBody", () => {
   it("rejects an unparseable date", () => {
     expect(() => parse(jobBody, {title: "x", postedDate: "not-a-date"})).toThrow();
   });
+
+  it("accepts an http(s) or blank application URL and refuses anything else", () => {
+    expect(parse(jobBody, {title: "x", applicationUrl: "https://jobs.example.com/1"}).applicationUrl)
+      .toBe("https://jobs.example.com/1");
+    expect(parse(jobBody, {title: "x"}).applicationUrl).toBe("");
+    // A scheme-less URL rendered as a relative link to /jobs/careers.example.com.
+    expect(() => parse(jobBody, {title: "x", applicationUrl: "careers.example.com"})).toThrow();
+    expect(() => parse(jobBody, {title: "x", applicationUrl: "javascript:alert(1)"})).toThrow();
+  });
 });
 
 describe("policyBody", () => {

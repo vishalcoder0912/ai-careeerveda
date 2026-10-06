@@ -1,0 +1,37 @@
+/* TiltCard — pointer tilt on a wrapped card.
+   The default is entirely inert: no `--tilt-*` overrides, no transform. Coarse
+   pointers and reduced motion switch it off again, so nothing here fights a
+   user's own settings. */
+
+.tilt-card {
+  --tilt-rx: 0deg;
+  --tilt-ry: 0deg;
+  --tilt-scale: 1;
+  transform:
+    perspective(900px) rotateX(var(--tilt-rx)) rotateY(var(--tilt-ry))
+    scale(var(--tilt-scale));
+  transition:
+    transform 260ms ease,
+    box-shadow 260ms ease;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.tilt-card--active {
+  transition:
+    transform 90ms ease-out,
+    box-shadow 90ms ease-out;
+}
+
+@media (pointer: coarse) {
+  .tilt-card {
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tilt-card {
+    transform: none !important;
+    transition: none !important;
+  }
+}

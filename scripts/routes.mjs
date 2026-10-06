@@ -75,7 +75,10 @@ export function collectRoutes() {
   for (const program of programCatalog) {
     const meta = programMeta(program);
     routes.push({
-      loc: `/programs/${program.id}`,
+      // A program may declare a cinematic landing of its own (the Gen AI &
+      // Agentic AI flagship lives at /generative-ai) — that is the URL every
+      // card uses, so it is also the URL sitemaps and previews should cite.
+      loc: program.landingPath || `/programs/${program.id}`,
       priority: "0.9",
       changefreq: "monthly",
       title: composeTitle(meta.title),

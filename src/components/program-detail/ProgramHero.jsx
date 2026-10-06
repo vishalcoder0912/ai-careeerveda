@@ -3,6 +3,7 @@ import {Reveal} from "../motionPrimitives";
 import {cdnImage, cdnSrcSet} from "../../lib/imageCdn";
 import {titleParts} from "./programAssist";
 import SkillMark from "../SkillMark";
+import MetricValue from "../MetricValue";
 
 // Small inline stroke icons — 16-18px, one consistent family, no icon library.
 const iconPaths = {
@@ -57,11 +58,12 @@ const ProgramHero = ({program, applyHref}) => {
       icon: "user",
     },
     program.format && {label: "Format", value: program.format, icon: "monitor"},
-    program.learners && {label: "Learners", value: program.learners, icon: "users"},
+    program.learners && {label: "Learners", value: program.learners, icon: "users", count: true},
   ].filter(Boolean);
 
   return (
     <section className="pd-hero">
+      <div className="pd-hero__glow" aria-hidden="true" />
       <div className="pd-inner">
         <Reveal as="nav" className="pd-crumbs" aria-label="Breadcrumb">
           <Link to="/">Home</Link>
@@ -131,16 +133,6 @@ const ProgramHero = ({program, applyHref}) => {
                     event.currentTarget.closest(".pd-visual-frame")?.remove();
                   }}
                 />
-                {program.skills?.length > 0 && (
-                  <div className="pd-visual-chips" aria-hidden="true">
-                    {program.skills.slice(0, 3).map((skill, index) => (
-                      <span className={`pd-visual-chip pd-visual-chip--${index + 1}`} key={skill}>
-                        <SkillMark name={skill} />
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                )}
               </div>
             ) : (
               <div className="pd-visual-frame pd-visual-frame--empty" aria-hidden="true">
@@ -156,7 +148,9 @@ const ProgramHero = ({program, applyHref}) => {
               <div className="pd-meta__item" key={item.label}>
                 <MetaIcon name={item.icon} />
                 <span>
-                  <strong>{item.value}</strong>
+                  <strong>
+                    {item.count ? <MetricValue value={item.value} /> : item.value}
+                  </strong>
                   <small>{item.label}</small>
                 </span>
               </div>

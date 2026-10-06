@@ -19,6 +19,7 @@ import ProgramMentors from "../components/program-detail/ProgramMentors";
 import ProgramFees from "../components/program-detail/ProgramFees";
 import ProgramFaq from "../components/program-detail/ProgramFaq";
 import ProgramCta from "../components/program-detail/ProgramCta";
+import MarqueeStrip from "../components/MarqueeStrip";
 
 import {matchJobs} from "../components/program-detail/jobTracks";
 // This page wears .page-shell but is the one route that does not render the
@@ -31,6 +32,7 @@ import {matchJobs} from "../components/program-detail/jobTracks";
 // Imported before program-detail.css so the page's own rules still win.
 import "../components/page-shell.css";
 import "../components/program-detail.css";
+import "../components/program-effects.css";
 
 // One page, nine programs. Every section below is driven by the program's
 // record in programCatalog.js (or the API's answer for it) and skipped when
@@ -38,9 +40,8 @@ import "../components/program-detail.css";
 // rather than a page full of empty headings.
 const ProgramDetailPage = ({slug: providedSlug}) => {
   const params = useParams();
-  // A fixed slug can be handed to this page directly (the /generative-ai route
-  // renders the gen-ai program under its own URL); otherwise it is the dynamic
-  // :slug from /programs/:slug.
+  // A fixed slug can be handed to this page directly (a route wrapper simply
+  // forwards it); otherwise it is the dynamic :slug from /programs/:slug.
   const slug = providedSlug || params.slug;
   // The static catalogue is the fallback for this exact slug, so a live URL
   // renders instantly and keeps working even if the API is unreachable. When
@@ -72,6 +73,13 @@ const ProgramDetailPage = ({slug: providedSlug}) => {
 
   useDocumentTitle(program && program.title, programDescription);
 
+  // The canonical URL. Every programme lives at /programs/:slug. A programme
+  // that declares a cinematic landing via `landingPath` points cards — and this
+  // canonical — at that landing instead; none do today, so each detail page is
+  // its own canonical.
+  const landingHref =
+    program?.landingPath || getProgram(slug)?.landingPath || `/programs/${program?.id ?? slug}`;
+
   // Canonical, Open Graph and Twitter tags for this specific program. RouteMeta
   // deliberately skips this route so these are not written and then immediately
   // overwritten — without them every program URL shared to LinkedIn or WhatsApp
@@ -82,13 +90,13 @@ const ProgramDetailPage = ({slug: providedSlug}) => {
     applySeo({
       title: composeTitle(program.title),
       description: programDescription,
-      url: absoluteUrl(`/programs/${program.id}`),
+      url: absoluteUrl(landingHref),
       image: program.image || OG_IMAGE,
       // Not "website": this is a specific offering, and the type is what makes
       // a share render as a rich card rather than a bare link.
       type: "article",
     });
-  }, [program, programDescription]);
+  }, [program, programDescription, landingHref]);
 
   // Course structured data — the schema that can earn a rich result in search
   // for a program page. Removed on unmount by useJsonLd, so navigating to
@@ -110,7 +118,7 @@ const ProgramDetailPage = ({slug: providedSlug}) => {
           // careerveda.in › careerveda.in › careerveda.in and earned nothing.
           {name: "Home", path: "/"},
           {name: "Programs", path: "/programs"},
-          {name: program.title, path: `/programs/${program.id}`},
+          {name: program.title, path: landingHref},
         ])
       : null,
   );
@@ -130,11 +138,29 @@ const ProgramDetailPage = ({slug: providedSlug}) => {
   const applyHref = `/enroll?program=${program.id}`;
   const hasProgramJobs = matchJobs(program, 1).length > 0;
 
+  // Programs can carry their own colour theme (e.g. the violet → cyan look of
+  // the AI Systems flagship). The record's `theme` becomes a scoped class and
+  // the overrides in program-detail.css re-tint the brand tokens and pools for
+  // that page alone, so no other program changes with it. The static catalogue
+  // supplies the theme even when the API answers without it (the field is
+  // purely presentational and not yet part of the backend model).
+  const theme = program.theme || getProgram(slug)?.theme;
+  const themeClass = theme ? ` pd-theme-${theme}` : "";
+
   return (
-    <main className="spline-page page-shell program-detail">
+    <main className={`spline-page page-shell program-detail${themeClass}`}>
       <div className="pd-layout">
         <div className="pd-layout__main">
           <ProgramHero program={program} applyHref={applyHref} />
+          {program.skills?.length > 0 && (
+            <div className="pd-marquee">
+              <MarqueeStrip
+                items={program.skills}
+                label="Program skills ticker"
+                speed={44}
+              />
+            </div>
+          )}
           <ProgramSectionNav
             hasMentors={programMentors.length > 0}
             hasJobs={hasProgramJobs}

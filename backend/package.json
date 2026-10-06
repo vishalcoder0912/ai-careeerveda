@@ -62,9 +62,9 @@
     "mongodb-memory-server": true,
     "unrs-resolver": true
   },
-  "_comment:overrides": "GHSA-mh99-v99m-4gvg — unbounded brace expansion crashes the process with OOM. Fixed only in brace-expansion 5.0.8. GHSA-2883-xcg3-v3hh (js-yaml) and GHSA-wc9g-mqfw-jrwm (multer) high CVEs overridden.",
+  "_comment:overrides": "GHSA-mh99-v99m-4gvg — unbounded brace expansion crashes the process with OOM. Fixed only in brace-expansion 5.0.8; GHSA-q2hr-2g5m-vwhr, GHSA-qhr7-859c-m2p7 and GHSA-6j4f-fj2g-mc7p (CPU/stack DoS) need 5.0.12. GHSA-2883-xcg3-v3hh (js-yaml) and GHSA-wc9g-mqfw-jrwm (multer) high CVEs overridden.",
   "overrides": {
-    "brace-expansion": "^5.0.8",
+    "brace-expansion": "^5.0.12",
     "js-yaml": "^3.15.2",
     "multer": "^2.3.0"
   }

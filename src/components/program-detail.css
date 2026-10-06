@@ -13,7 +13,6 @@
  */
 
 .program-detail {
-  --site-measure: 1440px;
   --pd-ink: #0f172a;
   --pd-muted: #5a6474;
   --pd-soft: #f4f7fb;
@@ -68,9 +67,24 @@ body main.page-shell.program-detail {
   width: 100%;
   max-width: none;
   margin-inline: 0;
-  padding-inline: clamp(16px, 2vw, 40px);
+  /* One gutter scale for the whole page: 16 / 20 / 32px. Sections and the
+     hero backdrop stay full-bleed; .pd-inner caps and centres the content. */
+  --pd-gutter: 16px;
+  padding-inline: var(--pd-gutter);
   box-sizing: border-box;
   background: transparent;
+}
+
+@media (min-width: 480px) {
+  .pd-layout {
+    --pd-gutter: 20px;
+  }
+}
+
+@media (min-width: 768px) {
+  .pd-layout {
+    --pd-gutter: 32px;
+  }
 }
 
 /* ---------- All Programs rail (desktop column) / strip (tablet & phone) ---------- */
@@ -242,10 +256,27 @@ body main.page-shell.program-detail {
 }
 
 .pd-inner {
-  /* The layout already owns the shared container and its gutters, so every
-     section body simply fills its column — no second auto-centering, no extra
-     max-width. Left edges stay identical from the hero to the closing CTA. */
+  /* The single content container: every section body (breadcrumb and hero
+     included) shares this width, so left and right edges line up from the
+     hero to the closing CTA. Capped and centred so desktop content never
+     stretches across a wide screen. */
   width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+/* The ticker strip sits outside any .pd-inner; give it the same box so its
+   edges line up with the hero and sections above and below it. */
+.pd-layout .pd-marquee {
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+@media (min-width: 1440px) {
+  .pd-inner,
+  .pd-layout .pd-marquee {
+    max-width: 1280px;
+  }
 }
 
 [class*="pd-section"],
@@ -367,6 +398,11 @@ body main.page-shell.program-detail {
   border-radius: 3px;
 }
 
+/* Line-icon fallback for skills with no brand logo (SkillMark). */
+.skill-mark--icon {
+  color: var(--pd-teal, #0e9488);
+}
+
 .pd-tags__photo {
   flex: 0 0 auto;
   width: 26px;
@@ -383,6 +419,15 @@ body main.page-shell.program-detail {
 }
 
 /* ---------- Hero ---------- */
+
+/* The hero clips its tinted backdrop to its own box; sitting on the gutter,
+   that box edge read as a panel the copy was flush against. The backdrop
+   bleeds to the screen edge at every width while the content keeps the
+   gutter (and .pd-inner's max-width inside it). */
+.pd-layout .pd-hero {
+  margin-inline: calc(-1 * var(--pd-gutter));
+  padding-inline: var(--pd-gutter);
+}
 
 .pd-hero {
   position: relative;
@@ -519,41 +564,45 @@ body main.page-shell.program-detail {
 
 .pd-meta {
   display: flex;
-  flex-wrap: wrap;
-  gap: 18px 0;
-  margin-top: clamp(26px, 3vw, 38px);
-  padding: 18px 0;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 4px 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin-top: clamp(18px, 2vw, 26px);
+  padding: 12px 0;
   border-top: 1px solid var(--pd-line);
   border-bottom: 1px solid var(--pd-line);
 }
 
 .pd-meta__item {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 12px;
-  min-width: 0;
-  padding: 0 22px;
-  border-left: 1px solid var(--pd-line);
+  gap: 6px;
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
-.pd-meta__item:first-child {
-  padding-left: 4px;
-  border-left: 0;
+.pd-meta__item + .pd-meta__item::before {
+  content: "·";
+  margin-right: 6px;
+  color: var(--pd-muted);
 }
 
 .pd-meta__icon {
   flex: 0 0 auto;
-  width: 36px;
-  height: 36px;
-  padding: 8px;
-  border-radius: 10px;
+  width: 28px;
+  height: 28px;
+  padding: 6px;
+  border-radius: 8px;
   color: var(--pd-teal);
   background: rgba(37, 99, 235, 0.1);
 }
 
 .pd-meta__item span {
-  display: flex;
-  flex-direction: column;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
   min-width: 0;
 }
 
@@ -565,7 +614,7 @@ body main.page-shell.program-detail {
 }
 
 .pd-meta__item small {
-  margin-top: 2px;
+  margin-top: 0;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.07em;
@@ -622,56 +671,6 @@ body main.page-shell.program-detail {
   background: var(--pd-grad);
   -webkit-background-clip: text;
   background-clip: text;
-}
-
-.pd-visual-chips {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.pd-visual-chip {
-  position: absolute;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 9px 15px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.85);
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.18);
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--pd-ink);
-  animation: pd-float 5.5s ease-in-out infinite alternate;
-}
-
-.pd-visual-chip--1 {
-  top: 9%;
-  left: -7%;
-}
-
-.pd-visual-chip--2 {
-  top: 44%;
-  right: -6%;
-  animation-delay: -2.2s;
-  animation-duration: 6.5s;
-}
-
-.pd-visual-chip--3 {
-  bottom: 7%;
-  left: 10%;
-  animation-delay: -4s;
-  animation-duration: 5s;
-}
-
-@keyframes pd-float {
-  from {
-    translate: 0 0;
-  }
-  to {
-    translate: 0 -7px;
-  }
 }
 
 /* ---------- Info panel (right-hand column / mobile inline block) ---------- */
@@ -1397,6 +1396,138 @@ body main.page-shell.program-detail {
 .pd-modcard:hover .pd-modcard__arrow {
   transform: translateX(3px);
   box-shadow: 0 6px 14px color-mix(in srgb, var(--mod-accent, #2563eb) 55%, transparent);
+}
+
+/* Collapsible modules: the head + title is the toggle; topics and deliverable
+   sit in the body, which only the first module shows by default. */
+.pd-curriculum__grid {
+  /* Stretching would pad every collapsed card to the open one's height. */
+  align-items: start;
+}
+
+.pd-modcard__toggle {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pd-modcard:not(.is-open) {
+  position: relative;
+}
+
+.pd-modcard:not(.is-open) .pd-modcard__toggle::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.pd-modcard__toggle:focus-visible {
+  outline: 2px solid var(--mod-accent, #2563eb);
+  outline-offset: 4px;
+  border-radius: 10px;
+}
+
+.pd-modcard__more {
+  display: flex;
+  margin-top: 8px;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--mod-accent, #2563eb);
+}
+
+.pd-modcard__chevron {
+  width: 7px;
+  height: 7px;
+  margin-top: -3px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 220ms ease;
+}
+
+.pd-modcard.is-open .pd-modcard__chevron {
+  margin-top: 3px;
+  transform: rotate(-135deg);
+}
+
+
+.pd-modcard__body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: pd-modcard-reveal 260ms ease-out;
+}
+
+.pd-modcard__body[hidden] {
+  display: none;
+}
+
+/* Multi-column grids: an open module takes the whole row, artwork beside the
+   text and topics in two columns, so its height doesn't stretch a row of
+   collapsed cards into empty boxes. */
+@media (min-width: 681px) {
+  .pd-modcard-tilt:has(> .pd-modcard.is-open) {
+    grid-column: 1 / -1;
+    /* TiltCard's hover scale (inline style) is fine on a small card but pushes
+       a full-row card ~45px past the grid edges. */
+    transform: none !important;
+  }
+
+  .pd-modcard.is-open:has(> .pd-modcard__media) {
+    display: grid;
+    grid-template-columns: minmax(220px, 32%) minmax(0, 1fr);
+    column-gap: 22px;
+    align-items: start;
+  }
+
+  .pd-modcard.is-open > .pd-modcard__media {
+    grid-row: 1 / span 3;
+    margin: -16px 0 -14px -16px;
+    height: calc(100% + 30px);
+    border-radius: 16px 0 0 16px;
+  }
+
+  .pd-modcard.is-open > .pd-modcard__media img {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+
+  .pd-modcard.is-open .pd-modcard__topics {
+    columns: 2;
+    column-gap: 28px;
+  }
+
+  .pd-modcard.is-open .pd-modcard__topics li {
+    break-inside: avoid;
+  }
+
+  .pd-modcard.is-open .pd-modcard__deliverable {
+    max-width: 460px;
+  }
+}
+
+@keyframes pd-modcard-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pd-modcard__body {
+    animation: none;
+  }
 }
 
 /* Closing CTA tile — completes the roadmap in the space of two cards */
@@ -2330,10 +2461,6 @@ body main.page-shell.program-detail {
     gap: clamp(24px, 4vw, 36px) 0;
   }
 
-  .pd-visual-frame {
-    max-width: 560px;
-  }
-
   .pd-crumbs__back {
     margin-left: 0;
   }
@@ -2348,7 +2475,6 @@ body main.page-shell.program-detail {
      content replaces the right-hand sticky aside, which hides here. */
   .pd-layout {
     display: block;
-    padding-inline: 16px;
   }
 
   .pd-layout__aside {
@@ -2364,15 +2490,8 @@ body main.page-shell.program-detail {
   }
 
   .pd-meta {
-    flex-direction: column;
-    gap: 14px;
-    border-bottom: 0;
-    padding: 18px 0 0;
-  }
-
-  .pd-meta__item {
-    padding: 0;
-    border-left: 0;
+    gap: 4px 6px;
+    padding: 10px 0;
   }
 }
 
@@ -2433,10 +2552,6 @@ body main.page-shell.program-detail {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pd-visual-chip {
-    animation: none;
-  }
-
   .pd-proof__quote p,
   .pd-job {
     transition: none;
@@ -2684,4 +2799,151 @@ body main.page-shell.program-detail {
 .pd-faq__item summary:focus-visible {
   outline: 2px solid var(--pd-blue);
   outline-offset: 2px;
+}
+
+/* ---------- Theme: violet → cyan ---------- */
+
+/* A program can carry its own palette (the AI Systems flagship does). Re-tint
+   the shared tokens and the handful of hard-coded light-blue literals so ONLY
+   this page changes; the other nine programs keep the blue they shipped with.
+   Everything is scoped to `.program-detail.pd-theme-violet-cyan`, which the
+   page applies when the record's `theme` is set. */
+.program-detail.pd-theme-violet-cyan {
+  --pd-teal: #7c3aed;
+  --pd-blue: #0891b2;
+  --pd-orange: #06b6d4;
+  --pd-grad: linear-gradient(120deg, #8b5cf6 0%, #06b6d4 100%);
+}
+
+/* Program rail — the active program's link wash */
+.program-detail.pd-theme-violet-cyan .pd-rail__link.is-active {
+  background: linear-gradient(120deg, rgba(124, 58, 237, 0.09), rgba(124, 58, 237, 0.03));
+  box-shadow: inset 0 0 0 1px rgba(124, 58, 237, 0.28);
+}
+
+/* Primary buttons — violet shadows, cyan on hover */
+.program-detail.pd-theme-violet-cyan .pd-btn--primary {
+  box-shadow: 0 16px 38px rgba(124, 58, 237, 0.26);
+}
+
+.program-detail.pd-theme-violet-cyan .pd-btn--primary:hover {
+  box-shadow: 0 20px 50px rgba(6, 182, 212, 0.34);
+}
+
+/* Hero — the two light pools become violet and cyan */
+.program-detail.pd-theme-violet-cyan .pd-hero {
+  background:
+    radial-gradient(820px 440px at 96% -8%, rgba(124, 58, 237, 0.12), transparent 62%),
+    radial-gradient(720px 420px at -6% 20%, rgba(6, 182, 212, 0.14), transparent 60%);
+}
+
+/* Hero badges — category violet, status cyan */
+.program-detail.pd-theme-violet-cyan .pd-badge--category {
+  border-color: rgba(124, 58, 237, 0.35);
+  background: rgba(124, 58, 237, 0.08);
+}
+
+.program-detail.pd-theme-violet-cyan .pd-badge--status {
+  border-color: rgba(6, 182, 212, 0.35);
+  background: rgba(6, 182, 212, 0.08);
+}
+
+/* Hero meta icons and information panel icons */
+.program-detail.pd-theme-violet-cyan .pd-meta__icon,
+.program-detail.pd-theme-violet-cyan .pd-panel__icon {
+  background: rgba(124, 58, 237, 0.1);
+}
+
+/* Hero visual placeholder — violet → cyan wash */
+.program-detail.pd-theme-violet-cyan .pd-visual-frame--empty {
+  background:
+    radial-gradient(420px 260px at 80% 10%, rgba(124, 58, 237, 0.18), transparent 68%),
+    radial-gradient(380px 240px at 12% 88%, rgba(6, 182, 212, 0.2), transparent 66%),
+    var(--pd-soft);
+}
+
+/* Curriculum eyebrow pill and leaf bullets */
+.program-detail.pd-theme-violet-cyan .pd-curriculum__eyebrow {
+  border: 1px solid #ddd6fe;
+  background: #f5f3ff;
+  color: #6d28d9;
+}
+
+.program-detail.pd-theme-violet-cyan .pd-curriculum__meta svg {
+  color: #06b6d4;
+}
+
+/* Roadmap closing tile — cyan → violet wash, arrow cyan → violet */
+.program-detail.pd-theme-violet-cyan .pd-cta-card {
+  border-color: #ddd6fe;
+  background: linear-gradient(135deg, #ede9fe 0%, #e0f2fe 60%, #cffafe 100%);
+}
+
+.program-detail.pd-theme-violet-cyan .pd-cta-card:hover {
+  border-color: #c4b5fd;
+}
+
+.program-detail.pd-theme-violet-cyan .pd-cta-card__kicker {
+  color: #6d28d9;
+}
+
+.program-detail.pd-theme-violet-cyan .pd-cta-card__arrow {
+  background: linear-gradient(120deg, #06b6d4, #8b5cf6);
+  box-shadow: 0 8px 20px rgba(6, 182, 212, 0.35);
+}
+
+/* Career proof card and mentor placeholder pools */
+.program-detail.pd-theme-violet-cyan .pd-proof {
+  background:
+    radial-gradient(320px 200px at 94% -8%, rgba(124, 58, 237, 0.1), transparent 66%),
+    var(--pd-canvas);
+}
+
+.program-detail.pd-theme-violet-cyan .pd-mentor__thumb {
+  background:
+    radial-gradient(260px 180px at 80% 10%, rgba(6, 182, 212, 0.14), transparent 68%),
+    var(--pd-soft);
+}
+
+/* Salary bars and swatches */
+.program-detail.pd-theme-violet-cyan .pd-salary-col__bar {
+  box-shadow: 0 14px 28px rgba(8, 145, 178, 0.22);
+}
+
+.program-detail.pd-theme-violet-cyan .pd-salary-note__swatch {
+  box-shadow: 0 4px 10px rgba(6, 182, 212, 0.25);
+}
+
+/* Bottom CTA panel and its primary button */
+.program-detail.pd-theme-violet-cyan .pd-cta__panel {
+  background:
+    radial-gradient(620px 320px at 18% 0%, rgba(6, 182, 212, 0.08), transparent 62%),
+    radial-gradient(560px 300px at 92% 100%, rgba(124, 58, 237, 0.09), transparent 62%),
+    var(--pd-canvas);
+}
+
+.program-detail.pd-theme-violet-cyan .pd-cta .pd-btn--primary {
+  background: var(--pd-grad);
+  box-shadow: 0 18px 44px rgba(124, 58, 237, 0.35);
+}
+/* Curriculum open/close (ProgramCurriculum's animateLayout). Scoped by the
+   .pd-vt class the toggle sets for the transition's lifetime, so no other
+   view transition on the site picks these timings up. Each card morphs to its
+   new box; the rest of the page holds still instead of cross-fading. */
+html.pd-vt::view-transition-group(*) {
+  animation-duration: 420ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html.pd-vt::view-transition-old(*),
+html.pd-vt::view-transition-new(*) {
+  animation-duration: 260ms;
+  height: 100%;
+  object-fit: cover;
+  object-position: top left;
+}
+
+html.pd-vt::view-transition-old(root),
+html.pd-vt::view-transition-new(root) {
+  animation: none;
 }

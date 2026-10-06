@@ -53,7 +53,7 @@ const url = (loc) => `${SITE_URL}${loc}`;
 const programLines = programCatalog.map((program) => {
   const facts = [program.duration, program.format].filter(Boolean).join(", ");
   const summary = [program.subtitle, facts].filter(Boolean).join(" — ");
-  return `- [${program.fullTitle || program.title}](${url(`/programs/${program.id}`)}): ${summary}`;
+  return `- [${program.fullTitle || program.title}](${url(program.landingPath || `/programs/${program.id}`)}): ${summary}`;
 });
 
 // The blog, most recent first as the file lists them. Capped: llms.txt is meant

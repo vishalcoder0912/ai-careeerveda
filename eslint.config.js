@@ -35,6 +35,8 @@ export default [
       // Root debug-* scratch scripts are the same kind of helper and are
       // gitignored (local only) — they are not this project's code.
       "debug-*.mjs",
+      // Playwright screen-capture probes: page.evaluate bodies read browser globals.
+      "scripts/cap-*.mjs",
       "dbg-deck.mjs",
     ],
   },

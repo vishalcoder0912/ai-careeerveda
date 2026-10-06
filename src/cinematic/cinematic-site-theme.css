@@ -1,0 +1,1940 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   CINEMATIC → WEBSITE THEME RESKIN
+   Re-declares the cinematic page's tokens and hard-coded surfaces so the GenAI
+   × Agentic program page reads as part of the CareerVeda website: navy-ink
+   headings on light sections, Manrope display type and rounded cards — with a
+   light hero that continues the site's light visual language (white / off-white
+   field, navy typography, orange accents, thin borders, soft shadows) while the
+   quote, CTA and footer stay styled as dark navy bands exactly like the site's
+   strategy / consultation sections.
+
+   COLOUR ZONES — blue and orange are never blended. The dark navy bands (quote,
+   CTA, footer) are a BLUE zone: blue glows, streaks and accents only. Every
+   light surface (hero + content sections) is an ORANGE zone: orange labels,
+   hovers and glows only. No surface mixes the two hues.
+   Loaded AFTER cinematic.css so every rule here wins by cascade order.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────── Tokens ─────────────────── */
+.ga-page {
+  --ga-bg: #ffffff;
+  --ga-bg-2: #f4f7fd;
+  --ga-panel: #ffffff;
+  --ga-panel-2: #f2f6ff;
+  --ga-panel-3: #e9effc;
+  --ga-ink: #102a5c;
+  --ga-ink-2: #33486b;
+  --ga-ink-3: #64748b;
+  --ga-gold: #eb741f;
+  --ga-gold-bright: #ea580c;
+  --ga-amber: #fb923c;
+  --ga-orange: #ea580c; /* the orange accent; #1d5fd3 blue is reserved for the navy bands */
+  --ga-blue: #1d5fd3;
+  --ga-blue-soft: #a6c8ff;
+  --ga-line: rgba(16, 42, 92, 0.16);
+  --ga-line-soft: rgba(16, 42, 92, 0.09);
+  --ga-serif: "Manrope", "Inter", system-ui, -apple-system, sans-serif;
+  --ga-sans: "Manrope", "Inter", system-ui, -apple-system, sans-serif;
+}
+
+.ga-body {
+  background: #ffffff;
+}
+
+/* Site headings are heavy — Manrope 800 instead of the Cormorant serif. */
+.ga-page .ga-display,
+.ga-page .ga-hero-title,
+.ga-page .ga-quote-line,
+.ga-page .ga-role-name,
+.ga-page .ga-stat-value,
+.ga-page .ga-cert h3,
+.ga-page .ga-tl-card-year,
+.ga-page .ga-tl-v-year,
+.ga-page .ga-step-body strong,
+.ga-page .ga-skill h3,
+.ga-page .ga-learning-card h3,
+.ga-page .ga-layer-card h3,
+.ga-page .ga-project h3,
+.ga-page .ga-agent-center-title,
+.ga-page .ga-channel-value {
+  font-family: var(--ga-serif);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.ga-page .ga-display {
+  color: var(--ga-ink);
+  line-height: 1.02;
+}
+
+.ga-page .ga-display em {
+  font-style: italic;
+  color: var(--ga-gold);
+}
+
+/* The old fixed dark vignette would grey out a light page — neutralise it. */
+.ga-page::after {
+  background: linear-gradient(
+    180deg,
+    rgba(16, 42, 92, 0.04) 0%,
+    rgba(255, 255, 255, 0) 24%,
+    rgba(255, 255, 255, 0) 72%,
+    rgba(16, 42, 92, 0.06) 100%
+  );
+}
+
+.ga-page ::selection {
+  background: rgba(249, 115, 22, 0.28);
+  color: #ffffff;
+}
+
+/* ─────────────────────────────────────────────── Buttons ────────────────── */
+.ga-btn {
+  border-radius: 12px;
+  border-color: var(--ga-line);
+  color: var(--ga-ink);
+  font-family: var(--ga-sans);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: none;
+}
+
+.ga-btn::after {
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.3) 50%, transparent 70%);
+}
+
+.ga-btn-solid {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  border-color: transparent;
+  color: #ffffff;
+  box-shadow: 0 16px 36px rgba(249, 115, 22, 0.26);
+}
+
+.ga-btn-solid:hover {
+  box-shadow: 0 22px 46px rgba(249, 115, 22, 0.32);
+}
+
+.ga-btn-outline {
+  border-color: rgba(249, 115, 22, 0.45);
+}
+
+.ga-btn-outline:hover {
+  background: rgba(249, 115, 22, 0.08);
+}
+
+.ga-btn-ghost {
+  color: var(--ga-ink);
+}
+
+/* ─────────────────────────────────────────────── Cursor + atmosphere ─────── */
+.ga-cursor-dot {
+  background: #f97316;
+}
+
+.ga-cursor-ring {
+  border-color: rgba(249, 115, 22, 0.45);
+}
+
+.ga-ring-hover {
+  border-color: rgba(249, 115, 22, 0.9);
+}
+
+.ga-ring-cta {
+  background: radial-gradient(circle, rgba(249, 115, 22, 0.2), transparent 70%);
+  border-color: rgba(249, 115, 22, 0.6);
+}
+
+.ga-trail-path {
+  stroke: rgba(249, 115, 22, 0.4);
+}
+
+.ga-trail-core {
+  stroke: #fb923c;
+}
+
+.ga-trail-dot {
+  fill: #ea580c;
+}
+
+.ga-trail-halo {
+  fill: rgba(249, 115, 22, 0.16);
+}
+
+/* ─────────────────────────────────────────────── Section labels ──────────── */
+.ga-section-label {
+  color: var(--ga-gold);
+  font-family: var(--ga-sans);
+}
+
+.ga-section-label::before {
+  background: linear-gradient(90deg, var(--ga-gold), rgba(249, 115, 22, 0));
+}
+
+.ga-label-index {
+  color: var(--ga-ink-3);
+}
+
+/* ─────────────────────────────────────────────── Navigation ──────────────── */
+.ga-nav {
+  background: rgba(255, 255, 255, 0.82);
+  border-bottom-color: transparent;
+}
+
+.ga-nav-scrolled {
+  background: rgba(255, 255, 255, 0.94);
+  border-color: var(--ga-line-soft);
+  box-shadow: 0 10px 30px -22px rgba(16, 24, 64, 0.2);
+}
+
+.ga-brand-mark {
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--ga-orange), var(--ga-gold));
+  border-color: transparent;
+  box-shadow: 0 8px 20px -8px rgba(249, 115, 22, 0.5);
+}
+
+.ga-brand-text strong {
+  font-family: var(--ga-serif);
+  font-weight: 800;
+  color: var(--ga-ink);
+}
+
+.ga-brand-text small {
+  color: var(--ga-ink-3);
+  font-family: var(--ga-sans);
+}
+
+.ga-nav-links a {
+  color: var(--ga-ink-2);
+  font-family: var(--ga-sans);
+}
+
+.ga-nav-links a::after {
+  background: linear-gradient(90deg, var(--ga-gold), rgba(249, 115, 22, 0));
+}
+
+.ga-nav-links a:hover {
+  color: var(--ga-ink);
+}
+
+.ga-burger {
+  color: var(--ga-ink);
+}
+
+.ga-nav-overlay {
+  background: rgba(250, 252, 255, 0.97);
+}
+
+.ga-nav-overlay-links a {
+  color: var(--ga-ink-2);
+}
+
+.ga-nav-open .ga-nav-overlay-links a {
+  font-family: var(--ga-serif);
+}
+
+.ga-nav-overlay-links a:hover {
+  color: var(--ga-gold-bright);
+}
+
+.ga-overlay-index {
+  color: var(--ga-gold);
+}
+
+.ga-overlay-cta {
+  color: var(--ga-gold) !important;
+  border-color: var(--ga-line);
+  font-family: var(--ga-sans) !important;
+}
+
+/* ─────────────────────────────────────────────── Hero (light band) ──────────── */
+.ga-hero-bg {
+  background:
+    radial-gradient(64vw 46vw at 78% -6%, rgba(29, 95, 211, 0.1), transparent 62%),
+    radial-gradient(58vw 44vw at 8% 96%, rgba(249, 115, 22, 0.07), transparent 60%),
+    radial-gradient(46vw 40vw at 92% 88%, rgba(16, 42, 92, 0.05), transparent 62%),
+    linear-gradient(180deg, #fbfcfe 0%, #f5f8fc 58%, #eef2f9 100%);
+}
+
+.ga-hero-glow-a {
+  background: radial-gradient(circle, rgba(29, 95, 211, 0.12), transparent 66%);
+}
+
+.ga-hero-glow-b {
+  background: radial-gradient(circle, rgba(249, 115, 22, 0.1), transparent 64%);
+}
+
+.ga-hero-glow-arch,
+.ga-hero-columns,
+.ga-hero-floor,
+.ga-hero-streak {
+  display: none;
+}
+
+.ga-hero-streak::after {
+  background: var(--ga-gold);
+  box-shadow: 0 0 18px 4px rgba(249, 115, 22, 0.4);
+}
+
+.ga-hero-extra .ga-meta {
+  color: var(--ga-ink-3);
+}
+
+.ga-hero-rule {
+  background: linear-gradient(90deg, var(--ga-gold), rgba(249, 115, 22, 0));
+}
+
+.ga-hero-eyebrow {
+  color: var(--ga-ink-2);
+  font-family: var(--ga-sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+}
+
+.ga-eyebrow-line {
+  background: var(--ga-gold);
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.25);
+}
+
+.ga-hero-title {
+  line-height: 1.02;
+}
+
+.ga-hero-line {
+  color: var(--ga-ink);
+  text-shadow: 0 10px 26px rgba(16, 42, 92, 0.08);
+  font-size: clamp(2.2rem, 6vw, 5.2rem);
+}
+
+.ga-hero-line:nth-child(2) {
+  color: var(--ga-gold);
+  text-shadow: 0 6px 18px rgba(249, 115, 22, 0.12);
+  padding-left: clamp(1rem, 9vw, 7rem);
+  font-size: clamp(1.4rem, 3.8vw, 3.3rem);
+}
+
+.ga-hero-line-italic {
+  color: var(--ga-gold-bright);
+}
+
+.ga-hero-side-image {
+  border: 1px solid rgba(16, 42, 92, 0.12);
+  box-shadow: 0 30px 60px -30px rgba(16, 42, 92, 0.4);
+  background: #ffffff;
+}
+
+.ga-hero-sub {
+  color: var(--ga-ink-2);
+}
+
+.ga-hero-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.7rem;
+}
+
+.ga-hero-badges span {
+  border: 1px solid var(--ga-line);
+  background: rgba(255, 255, 255, 0.65);
+  border-radius: 999px;
+  color: var(--ga-ink-2);
+  font-family: var(--ga-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  padding: 0.42rem 0.8rem;
+  transition: border-color 0.3s, color 0.3s;
+}
+
+.ga-hero-badges span:hover {
+  border-color: rgba(249, 115, 22, 0.55);
+  color: var(--ga-gold-bright);
+}
+
+.ga-hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.1rem 2.4rem;
+  margin-top: 2rem;
+  padding-top: 1.35rem;
+  border-top: 1px solid var(--ga-line);
+}
+
+.ga-hero-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ga-hero-stat strong {
+  color: var(--ga-ink);
+  font-family: var(--ga-sans);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.ga-hero-stat em {
+  font-style: normal;
+  color: var(--ga-ink-3);
+  font-family: var(--ga-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.ga-hero .ga-btn-outline {
+  border-color: rgba(16, 42, 92, 0.4);
+  color: var(--ga-ink);
+}
+
+.ga-hero .ga-btn-outline:hover {
+  background: rgba(249, 115, 22, 0.07);
+  border-color: rgba(249, 115, 22, 0.55);
+  color: var(--ga-gold-bright);
+}
+
+/* ─────────────────────────────────────────────── Timeline ────────────────── */
+.ga-tl-card {
+  background: linear-gradient(165deg, #ffffff, #f7faff);
+  border: 1px solid var(--ga-line);
+  border-radius: 16px;
+  box-shadow: 0 18px 44px -30px rgba(16, 24, 64, 0.28);
+  opacity: 0.5;
+  filter: brightness(1) saturate(1);
+}
+
+.ga-tl-card::before {
+  background: radial-gradient(120% 80% at 50% 0%, rgba(249, 115, 22, 0.1), transparent 60%);
+}
+
+.ga-tl-card.ga-near {
+  opacity: 0.8;
+  filter: brightness(1);
+}
+
+.ga-tl-card.ga-on {
+  border-color: rgba(249, 115, 22, 0.5);
+  box-shadow: 0 40px 80px -36px rgba(16, 24, 64, 0.4), 0 0 44px -16px rgba(249, 115, 22, 0.45);
+  filter: contrast(1.02);
+}
+
+.ga-tl-card-year {
+  color: var(--ga-gold);
+}
+
+.ga-tl-card-year,
+.ga-tl-v-year {
+  letter-spacing: 0.16em;
+  font-weight: 700;
+}
+
+.ga-tl-card h3 {
+  color: var(--ga-ink);
+}
+
+.ga-tl-card-reveal p {
+  color: var(--ga-ink-2);
+}
+
+.ga-tl-tags em {
+  color: var(--ga-gold-bright);
+  border-color: rgba(249, 115, 22, 0.3);
+  font-family: var(--ga-sans);
+}
+
+.ga-tl-caption-year {
+  color: var(--ga-gold);
+}
+
+.ga-tl-caption-title {
+  color: var(--ga-ink-2);
+}
+
+.ga-tl-caption-hint {
+  color: var(--ga-ink-3);
+}
+
+.ga-tl-v-year {
+  color: var(--ga-gold);
+}
+
+.ga-tl-v-body h3 {
+  color: var(--ga-ink);
+}
+
+.ga-tl-v-body p {
+  color: var(--ga-ink-2);
+}
+
+/* Flat, aligned timeline cards — no 3D skew so the row keeps one clean baseline. */
+.ga-tl-stage {
+  perspective: none;
+}
+
+.ga-tl-card,
+.ga-tl-card.ga-near,
+.ga-tl-card.ga-far {
+  transform: none;
+}
+
+.ga-tl-card.ga-on {
+  transform: translateY(-12px) scale(1.03);
+}
+
+/* ─────────────────────────────────────────────── Curriculum journey (5 stages) ─ */
+
+.ga-modules {
+  padding: 6.5rem clamp(1.2rem, 4vw, 3.5rem) 5rem;
+}
+
+.ga-journey {
+  margin-top: clamp(2.2rem, 3.5vw, 3rem);
+}
+
+.ga-journey-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-items: stretch;
+}
+
+.ga-journey-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.ga-journey-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  background: #ffffff;
+  border: 1px solid var(--ga-line);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px -26px rgba(16, 24, 64, 0.3);
+  overflow: hidden;
+  transition:
+    border-color 280ms ease,
+    box-shadow 280ms ease;
+}
+
+.ga-journey-card:hover {
+  border-color: rgba(249, 115, 22, 0.5);
+  box-shadow: 0 26px 52px -32px rgba(16, 24, 64, 0.4), 0 0 36px -18px rgba(249, 115, 22, 0.35);
+}
+
+.ga-journey-card.is-open {
+  border-color: rgba(249, 115, 22, 0.55);
+  box-shadow: 0 30px 60px -36px rgba(16, 24, 64, 0.45), 0 0 40px -20px rgba(249, 115, 22, 0.35);
+}
+
+.ga-journey-card-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  width: 100%;
+  text-align: left;
+  padding: 1.4rem 1.35rem 1.2rem;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: transform 280ms ease;
+}
+
+.ga-journey-card-btn:hover {
+  transform: translateY(-3px);
+}
+
+.ga-journey-card-btn:focus-visible,
+.ga-journey-week-btn:focus-visible {
+  outline: 2px solid var(--ga-gold);
+  outline-offset: -2px;
+}
+
+.ga-journey-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.ga-journey-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.7rem;
+  height: 2.7rem;
+  padding: 0 0.55rem;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #ffffff;
+  font-family: var(--ga-sans);
+  font-weight: 800;
+  font-size: 0.86rem;
+  letter-spacing: 0.04em;
+  box-shadow: 0 9px 20px -9px rgba(249, 115, 22, 0.65);
+}
+
+.ga-journey-arrow {
+  flex: none;
+  margin-top: 0.5rem;
+  color: var(--ga-ink-3);
+  font-size: 1.15rem;
+  line-height: 1;
+  transition: transform 280ms ease, color 280ms ease;
+}
+
+.ga-journey-card:hover .ga-journey-arrow {
+  color: var(--ga-gold);
+  transform: translateX(3px);
+}
+
+.ga-journey-card.is-open .ga-journey-arrow {
+  transform: rotate(90deg);
+  color: var(--ga-gold);
+}
+
+.ga-journey-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ga-journey-title {
+  color: var(--ga-ink);
+  font-family: var(--ga-serif);
+  font-weight: 800;
+  font-size: 1.22rem;
+  line-height: 1.22;
+  letter-spacing: -0.01em;
+}
+
+.ga-journey-range {
+  color: var(--ga-gold);
+  font-family: var(--ga-sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ga-journey-desc {
+  color: var(--ga-ink-2);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  margin-top: 0.35rem;
+}
+
+.ga-journey-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ga-line-soft);
+}
+
+.ga-journey-motif {
+  color: var(--ga-ink-3);
+  font-family: var(--ga-sans);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ga-journey-weeks-count {
+  color: var(--ga-ink-3);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+/* card → weeks accordion */
+.ga-journey-reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ga-journey-card.is-open .ga-journey-reveal {
+  grid-template-rows: 1fr;
+}
+
+.ga-journey-reveal-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.ga-journey-weeks {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--ga-line-soft);
+}
+
+.ga-journey-week {
+  border-bottom: 1px solid var(--ga-line-soft);
+}
+
+.ga-journey-week:last-child {
+  border-bottom: 0;
+}
+
+.ga-journey-week-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.85rem 1.3rem;
+  background: #ffffff;
+  border: 0;
+  cursor: pointer;
+  transition: background 220ms ease;
+}
+
+.ga-journey-week-btn:hover {
+  background: var(--ga-bg-2);
+}
+
+.ga-journey-week-id {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.1rem;
+  border-radius: 8px;
+  background: var(--ga-panel-3);
+  color: var(--ga-ink);
+  font-family: var(--ga-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.ga-journey-week.is-open .ga-journey-week-id {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #ffffff;
+}
+
+.ga-journey-week-title {
+  flex: 1;
+  color: var(--ga-ink);
+  font-size: 0.96rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.ga-journey-week-meta {
+  flex: none;
+  color: var(--ga-ink-3);
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.ga-journey-week-arrow {
+  flex: none;
+  width: 0.7rem;
+  height: 0.7rem;
+  margin-right: 0.4rem;
+  border-right: 2px solid var(--ga-ink-3);
+  border-bottom: 2px solid var(--ga-ink-3);
+  transform: rotate(45deg);
+  transition: transform 260ms ease, border-color 260ms ease;
+}
+
+.ga-journey-week.is-open .ga-journey-week-arrow {
+  transform: rotate(225deg);
+  border-color: var(--ga-gold);
+}
+
+/* week → topics accordion */
+.ga-journey-week-reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ga-journey-week.is-open .ga-journey-week-reveal {
+  grid-template-rows: 1fr;
+}
+
+.ga-journey-week-reveal-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.ga-journey-topics {
+  list-style: none;
+  margin: 0;
+  padding: 0.55rem 1.3rem 0.9rem 4.6rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.42rem 0.6rem;
+}
+
+.ga-journey-topics li {
+  color: var(--ga-ink-2);
+  font-size: 0.76rem;
+  line-height: 1.4;
+  padding: 0.28rem 0.68rem;
+  border: 1px solid var(--ga-line);
+  border-radius: 999px;
+  background: #ffffff;
+}
+
+.ga-journey-build {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0 1.3rem 1.15rem 4.6rem;
+  padding: 0.8rem 0.95rem;
+  border-left: 3px solid var(--ga-gold);
+  border-radius: 0 10px 10px 0;
+  background: rgba(249, 115, 22, 0.07);
+}
+
+.ga-journey-build-label {
+  color: var(--ga-gold);
+  font-family: var(--ga-sans);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.ga-journey-build-text {
+  color: var(--ga-ink-2);
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.ga-mod-tracks {
+  margin-top: 2.8rem;
+  padding-top: 1.7rem;
+  border-top: 1px solid var(--ga-line-soft);
+}
+
+.ga-mod-tracks-label {
+  display: block;
+  margin-bottom: 1.1rem;
+  color: var(--ga-ink-3);
+}
+
+.ga-mod-tracks-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.ga-mod-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.52rem 0.95rem;
+  border: 1px solid var(--ga-line);
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 6px 18px -16px rgba(16, 24, 64, 0.3);
+  transition: border-color 280ms ease, box-shadow 280ms ease;
+}
+
+.ga-mod-track:hover {
+  border-color: rgba(249, 115, 22, 0.5);
+  box-shadow: 0 10px 24px -18px rgba(16, 24, 64, 0.35);
+}
+
+.ga-mod-track strong {
+  color: var(--ga-ink);
+  font-family: var(--ga-sans);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.ga-mod-track em {
+  font-style: normal;
+  color: var(--ga-gold);
+  font-family: var(--ga-sans);
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+@media (max-width: 1099px) {
+  .ga-journey-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 699px) {
+  .ga-journey-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─────────────────────────────────────────────── Skills ──────────────────── */
+.ga-skill {
+  background: #ffffff;
+  border: 1px solid var(--ga-line);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px -26px rgba(16, 24, 64, 0.3);
+}
+
+.ga-skill:hover {
+  border-color: rgba(249, 115, 22, 0.5);
+  background: #ffffff;
+  box-shadow: 0 24px 50px -30px rgba(16, 24, 64, 0.4), 0 0 36px -18px rgba(249, 115, 22, 0.4);
+}
+
+.ga-skill-id {
+  color: var(--ga-gold);
+}
+
+.ga-skill-icon {
+  color: var(--ga-gold);
+}
+
+.ga-skill:hover .ga-skill-icon {
+  color: var(--ga-gold-bright);
+}
+
+.ga-skill h3 {
+  color: var(--ac, var(--ga-gold));
+}
+
+.ga-skill-intro {
+  color: var(--ga-ink-3);
+}
+
+.ga-skill-stack li {
+  color: var(--ga-ink-2);
+  border-color: var(--ga-line-soft);
+  font-family: var(--ga-sans);
+}
+
+.ga-skill:hover .ga-skill-stack li {
+  border-color: rgba(249, 115, 22, 0.3);
+  color: var(--ga-ink);
+}
+
+.ga-skill-sweep {
+  background: linear-gradient(105deg, transparent 40%, rgba(249, 115, 22, 0.07) 50%, transparent 60%);
+}
+
+/* Every domain chip stays inside the orange ramp — no blue skill titles. */
+.ga-skill-ember { --ac: #f97316; }
+.ga-skill-gold { --ac: #ea580c; }
+.ga-skill-bronze { --ac: #d9480f; }
+.ga-skill-tangerine { --ac: #fb923c; }
+.ga-skill-brass { --ac: #f59e0b; }
+
+/* ─────────────────────────────────────────────── Quote (dark navy band) ───── */
+.ga-quote {
+  background:
+    radial-gradient(circle at 12% 12%, rgba(29, 95, 211, 0.3), transparent 28%),
+    radial-gradient(circle at 86% 18%, rgba(56, 130, 246, 0.2), transparent 26%),
+    linear-gradient(135deg, #10183f 0%, #0b102b 100%);
+}
+
+.ga-quote-glow {
+  background: radial-gradient(50% 50% at 50% 50%, rgba(29, 95, 211, 0.28), transparent 70%);
+}
+
+.ga-quote-index {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.ga-quote .ga-quote-line {
+  color: #ffffff;
+}
+
+.ga-quote .ga-quote-line:nth-child(3) {
+  color: var(--ga-blue-soft);
+}
+
+.ga-quote .ga-quote-cite {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* ─────────────────────────────────────────────── Architecture ─────────────── */
+.ga-layer-card {
+  background: #ffffff;
+  border-color: var(--ga-line);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px -26px rgba(16, 24, 64, 0.28);
+}
+
+.ga-layer-card p {
+  color: var(--ga-ink-3);
+}
+
+.ga-layer-index {
+  color: var(--ga-ink-3);
+}
+
+.ga-layer-arrow {
+  color: var(--ga-ink-3);
+}
+
+.ga-layer-dot {
+  background: rgba(16, 42, 92, 0.3);
+}
+
+.ga-layer.ga-on .ga-layer-card {
+  border-color: rgba(249, 115, 22, 0.5);
+  background: linear-gradient(160deg, #ffffff, #f4f8ff);
+  box-shadow: 0 24px 60px -32px rgba(16, 24, 64, 0.35);
+}
+
+.ga-layer.ga-on .ga-layer-card h3 {
+  color: var(--ga-gold);
+}
+
+.ga-layer.ga-on .ga-layer-index {
+  color: var(--ga-ink);
+}
+
+.ga-layer.ga-on .ga-layer-dot {
+  background: var(--ga-gold);
+  box-shadow: 0 0 14px 4px rgba(249, 115, 22, 0.5);
+}
+
+.ga-layer.ga-on .ga-layer-arrow {
+  color: var(--ga-gold-bright);
+}
+
+/* ─────────────────────────────────────────────── Agent system ─────────────── */
+.ga-agent-line-flow path {
+  stroke: rgba(249, 115, 22, 0.5);
+}
+
+.ga-agent-end,
+.ga-agent-packet {
+  fill: #f97316;
+  filter: drop-shadow(0 0 2px rgba(249, 115, 22, 0.55));
+}
+
+.ga-agent-center {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.88));
+  border-color: rgba(249, 115, 22, 0.32);
+}
+
+.ga-agent-center::after {
+  border-color: rgba(249, 115, 22, 0.22);
+}
+
+.ga-agent-center-icon {
+  color: #f97316;
+}
+
+.ga-agent-center-title {
+  color: #163b73;
+}
+
+.ga-agent-center-sub {
+  color: #f97316;
+}
+
+.ga-agent-node {
+  background: rgba(255, 255, 255, 0.97);
+  border-color: #d8e1ee;
+  border-radius: 999px;
+  color: #163b73;
+}
+
+.ga-agent-node:hover {
+  border-color: rgba(249, 115, 22, 0.65);
+  color: #f97316;
+  background: #ffffff;
+  box-shadow: 0 0 32px -8px rgba(249, 115, 22, 0.5);
+}
+
+.ga-agent-node-icon {
+  color: #f97316;
+}
+
+.ga-agent-system:hover .ga-agent-node {
+  border-color: rgba(249, 115, 22, 0.4);
+}
+
+/* ─────────────────────────────────────────────── Workflow ─────────────────── */
+.ga-flow-line {
+  background: rgba(16, 42, 92, 0.14);
+}
+
+.ga-flow-line-fill {
+  background: linear-gradient(180deg, var(--ga-gold), var(--ga-orange));
+  box-shadow: 0 0 14px rgba(249, 115, 22, 0.5);
+}
+
+.ga-step-core {
+  background: rgba(16, 42, 92, 0.3);
+}
+
+.ga-step-index {
+  color: var(--ga-ink-3);
+}
+
+.ga-step-body strong {
+  color: var(--ga-ink-3);
+}
+
+.ga-step-body em {
+  color: var(--ga-ink-3);
+}
+
+.ga-step.ga-step-on .ga-step-core {
+  background: var(--ga-gold);
+  box-shadow: 0 0 16px 5px rgba(249, 115, 22, 0.6);
+}
+
+.ga-step.ga-step-on .ga-step-ring {
+  border-color: rgba(249, 115, 22, 0.5);
+}
+
+.ga-step.ga-step-on .ga-step-body strong {
+  color: var(--ga-ink);
+}
+
+.ga-step.ga-step-on .ga-step-body em {
+  color: var(--ga-ink-2);
+}
+
+.ga-step.ga-step-done .ga-step-core {
+  background: rgba(249, 115, 22, 0.6);
+}
+
+.ga-step.ga-step-done .ga-step-body strong {
+  color: var(--ga-ink-2);
+}
+
+.ga-flow-caption {
+  color: var(--ga-ink-3);
+  font-family: var(--ga-sans);
+}
+
+/* ─────────────────────────────────────────────── Projects ─────────────────── */
+.ga-projects-caption {
+  color: var(--ga-gold);
+}
+
+.ga-projects-orbits i {
+  border-color: rgba(16, 42, 92, 0.16);
+}
+
+.ga-projects-orbits i:nth-child(2) {
+  border-color: rgba(16, 42, 92, 0.12);
+}
+
+.ga-project {
+  background: #ffffff;
+  border: 1px solid var(--ga-line);
+  border-radius: 16px;
+  box-shadow: 0 24px 50px -34px rgba(16, 24, 64, 0.35);
+}
+
+.ga-project:hover {
+  border-color: rgba(249, 115, 22, 0.55);
+  background: #ffffff;
+  box-shadow: 0 40px 80px -38px rgba(16, 24, 64, 0.45), 0 0 44px -20px rgba(249, 115, 22, 0.5);
+}
+
+.ga-project-visual-halo {
+  background: radial-gradient(circle, rgba(249, 115, 22, 0.12), transparent 68%);
+}
+
+.ga-project-icon {
+  color: var(--ga-gold);
+}
+
+.ga-project:hover .ga-project-icon {
+  color: var(--ga-gold-bright);
+}
+
+.ga-project h3 {
+  color: var(--ga-ink);
+}
+
+.ga-project-stack {
+  color: var(--ga-gold);
+}
+
+.ga-project p {
+  color: var(--ga-ink-3);
+}
+
+.ga-project-sweep {
+  background: linear-gradient(105deg, transparent 40%, rgba(249, 115, 22, 0.07) 50%, transparent 60%);
+}
+
+.ga-project-orbit-item.ga-project-front .ga-project {
+  border-color: rgba(249, 115, 22, 0.65);
+  box-shadow: 0 40px 90px -40px rgba(16, 24, 64, 0.4), 0 0 60px -20px rgba(249, 115, 22, 0.5);
+}
+
+.ga-projects-center-ring em {
+  color: var(--ga-ink-3);
+}
+
+.ga-projects-note {
+  color: var(--ga-ink-3);
+}
+
+/* ─────────────────────────────────────────────── Careers ──────────────────── */
+.ga-role-index {
+  color: var(--ga-ink-3);
+}
+
+.ga-role-name {
+  color: var(--ga-ink);
+}
+
+.ga-role-domain {
+  color: var(--ga-ink-3);
+}
+
+.ga-role-current .ga-role-name {
+  color: var(--ga-ink);
+  text-shadow: 0 0 60px rgba(249, 115, 22, 0.22);
+}
+
+.ga-careers-caption {
+  color: var(--ga-ink-3);
+}
+
+.ga-career-row {
+  border-bottom-color: var(--ga-line-soft);
+}
+
+.ga-career-row-index {
+  color: var(--ga-gold);
+}
+
+.ga-career-row h3 {
+  color: var(--ga-ink);
+}
+
+.ga-career-row > span {
+  color: var(--ga-ink-3);
+}
+
+/* ─────────────────────────────────────────────── Stats ────────────────────── */
+.ga-stats-grid {
+  background: var(--ga-line-soft);
+  border-color: var(--ga-line-soft);
+}
+
+.ga-stat {
+  background: #ffffff;
+}
+
+.ga-stat:hover {
+  background: #fff7ed;
+}
+
+.ga-stat-value {
+  color: var(--ga-ink);
+}
+
+.ga-stat-suffix {
+  color: var(--ga-gold);
+}
+
+.ga-stat-label {
+  color: var(--ga-gold);
+  font-family: var(--ga-sans);
+}
+
+.ga-stat-note {
+  color: var(--ga-ink-3);
+}
+
+.ga-stat-rule {
+  background: linear-gradient(90deg, var(--ga-gold), rgba(249, 115, 22, 0));
+}
+
+/* ─────────────────────────────────────────────── Learning ─────────────────── */
+.ga-learning-card {
+  background: #ffffff;
+  border: 1px solid var(--ga-line);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px -26px rgba(16, 24, 64, 0.28);
+}
+
+.ga-learning-card:hover {
+  border-color: rgba(249, 115, 22, 0.5);
+  background: #ffffff;
+  box-shadow: 0 30px 60px -34px rgba(16, 24, 64, 0.4), 0 0 36px -18px rgba(249, 115, 22, 0.45);
+}
+
+.ga-learning-icon {
+  color: var(--ga-gold);
+}
+
+.ga-learning-card h3 {
+  color: var(--ga-ink);
+}
+
+.ga-learning-card p {
+  color: var(--ga-ink-3);
+}
+
+.ga-learning-index {
+  color: var(--ga-ink-3);
+}
+
+.ga-learning-sweep {
+  background: linear-gradient(105deg, transparent 40%, rgba(249, 115, 22, 0.06) 50%, transparent 60%);
+}
+
+/* ─────────────────────────────────────────────── Certificates ─────────────── */
+.ga-cert {
+  filter: drop-shadow(0 24px 44px rgba(16, 24, 64, 0.16));
+}
+
+.ga-cert-inner {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M0 80 L80 0 M-10 90 L10 110 M70 -10 L90 10' stroke='%23f97316' stroke-opacity='0.08'/%3E%3C/svg%3E"),
+    linear-gradient(165deg, #ffffff, #fff7ed);
+  border: 1px solid rgba(16, 42, 92, 0.28);
+  border-radius: 18px;
+  box-shadow: 0 30px 60px -34px rgba(16, 24, 64, 0.35);
+  padding: 2rem 1.7rem;
+}
+
+.ga-cert-inner::before {
+  border-color: rgba(16, 42, 92, 0.16);
+}
+
+.ga-cert-inner:hover {
+  border-color: rgba(249, 115, 22, 0.6);
+  box-shadow: 0 60px 100px -44px rgba(16, 24, 64, 0.4), 0 0 50px -20px rgba(249, 115, 22, 0.45);
+}
+
+.ga-cert-kicker {
+  color: var(--ga-gold);
+  font-family: var(--ga-sans);
+}
+
+.ga-cert-mark {
+  color: var(--ga-ink-3);
+  font-family: var(--ga-sans);
+}
+
+.ga-cert h3 {
+  color: var(--ga-ink);
+}
+
+.ga-cert-focus {
+  color: var(--ga-ink-2);
+}
+
+.ga-cert-guard {
+  color: rgba(249, 115, 22, 0.1);
+}
+
+.ga-cert-seal {
+  border-color: rgba(249, 115, 22, 0.55);
+  color: var(--ga-gold);
+}
+
+.ga-cert-line {
+  background: linear-gradient(90deg, transparent, rgba(249, 115, 22, 0.35), transparent);
+}
+
+.ga-certs-note {
+  color: var(--ga-ink-3);
+}
+
+/* ─────────────────────────────────────────────── Final CTA (dark navy band) ── */
+.ga-cta {
+  background:
+    radial-gradient(100% 80% at 50% 110%, rgba(29, 95, 211, 0.3), transparent 60%),
+    radial-gradient(circle at 82% 18%, rgba(56, 130, 246, 0.22), transparent 32%),
+    linear-gradient(160deg, #10183f 0%, #0b102b 100%);
+}
+
+.ga-cta::before {
+  background:
+    repeating-linear-gradient(90deg, transparent 0 90px, rgba(255, 255, 255, 0.04) 90px 91px),
+    repeating-linear-gradient(0deg, transparent 0 90px, rgba(255, 255, 255, 0.03) 90px 91px);
+}
+
+.ga-cta-horizon {
+  background: radial-gradient(60% 100% at 50% 0%, rgba(29, 95, 211, 0.3), transparent 70%);
+}
+
+.ga-cta-glow {
+  background: radial-gradient(50% 50% at 50% 50%, rgba(56, 130, 246, 0.24), transparent 70%);
+}
+
+.ga-cta-trail path {
+  stroke: rgba(166, 200, 255, 0.85);
+}
+
+.ga-cta .ga-cta-title {
+  color: #ffffff;
+}
+
+.ga-cta .ga-cta-title em {
+  color: var(--ga-blue-soft);
+}
+
+.ga-cta .ga-cta-sub {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.ga-cta .ga-section-label {
+  color: var(--ga-blue-soft);
+}
+
+.ga-cta .ga-section-label::before {
+  background: linear-gradient(90deg, var(--ga-blue-soft), rgba(166, 200, 255, 0));
+}
+
+.ga-cta .ga-btn-outline {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+}
+
+.ga-cta .ga-btn-outline:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.ga-cta-meta {
+  color: rgba(255, 255, 255, 0.55);
+  font-family: var(--ga-sans);
+}
+
+/* ─────────────────────────────────────────────── Footer (dark navy band) ───── */
+.ga-footer {
+  border-top-color: rgba(255, 255, 255, 0.1);
+  background:
+    radial-gradient(circle at 12% 12%, rgba(29, 95, 211, 0.28), transparent 30%),
+    radial-gradient(circle at 85% 85%, rgba(29, 95, 211, 0.16), transparent 32%),
+    #0b102b;
+}
+
+.ga-footer-grid-bg {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
+.ga-footer .ga-footer-title {
+  color: #ffffff;
+}
+
+.ga-footer .ga-footer-title em {
+  color: var(--ga-blue-soft);
+}
+
+.ga-channel-label {
+  color: rgba(255, 255, 255, 0.5);
+  font-family: var(--ga-sans);
+}
+
+.ga-channel-value {
+  color: #ffffff;
+}
+
+.ga-channel-icon {
+  color: var(--ga-blue-soft);
+}
+
+.ga-footer-channel:hover {
+  border-color: rgba(166, 200, 255, 0.5);
+}
+
+.ga-footer-divider {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+}
+
+.ga-footer-base {
+  color: rgba(255, 255, 255, 0.5);
+  font-family: var(--ga-sans);
+}
+
+.ga-footer-top {
+  color: var(--ga-blue-soft);
+}
+
+.ga-footer-top:hover {
+  color: #cfe2ff;
+}
+
+/* ─────────────────────────────────────────────── Hero + timeline layering ──────
+   The hero and the opening timeline render on clean light surfaces. Both bands
+   sit above the page's floating particle canvas (z-index 3) so nothing drifts
+   across them; the rest of the page keeps its animated atmosphere. The hero's
+   ambient effects (glow, streak, columns, floor) stay enabled
+   and re-tinted for the light ground in the Hero (light band) section above. */
+.ga-hero {
+  z-index: 4;
+}
+
+.ga-timeline {
+  position: relative;
+  z-index: 4;
+  background: #ffffff;
+}
+
+/* ─────────────────────────────────────────────── Reduced motion ──────────────
+   Re-reveal stays fully visible; the overrides above must not rely on the
+   dark-state animations for legibility. */
+@media (prefers-reduced-motion: reduce) {
+  .ga-page .ga-reveal,
+  .ga-page .ga-reveal-up,
+  .ga-page .ga-reveal-rise {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ga-tl-caption-hint,
+.ga-flow-caption {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+}
+
+.ga-flow-caption {
+  letter-spacing: 0.14em;
+  text-transform: none;
+}
+
+.ga-tl-caption-hint {
+  text-transform: none;
+}
+
+.ga-journey-topics li {
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.ga-journey-build-text {
+  font-size: 0.8rem;
+}
+
+.ga-journey-build-label {
+  font-size: 0.66rem;
+}
+
+.ga-project p {
+  font-size: 0.82rem;
+}
+
+.ga-projects-note {
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: none;
+}
+
+.ga-journey-num,
+.ga-tl-visual,
+.ga-layer-card {
+  border-radius: 12px;
+}
+
+.ga-tl-tags em {
+  border-radius: 6px;
+}
+
+.ga-cert-inner {
+  border-radius: 16px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+REMOVE ALL ORANGE ANIMATED / SCROLL-FOLLOWING LINES
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* Remove workflow progress line */
+.ga-flow-line,
+.ga-flow-line-fill {
+display: none !important;
+visibility: hidden !important;
+opacity: 0 !important;
+width: 0 !important;
+height: 0 !important;
+background: none !important;
+box-shadow: none !important;
+}
+
+/* Remove timeline connectors */
+.ga-timeline::before,
+.ga-timeline::after,
+.ga-tl-stage::before,
+.ga-tl-stage::after,
+.ga-tl-card::before,
+.ga-tl-card::after {
+background: none !important;
+box-shadow: none !important;
+}
+
+/* Remove any journey-section connector */
+.ga-journey::before,
+.ga-journey::after,
+.ga-journey-grid::before,
+.ga-journey-grid::after,
+.ga-journey-card::before,
+.ga-journey-card::after {
+content: none !important;
+display: none !important;
+background: none !important;
+box-shadow: none !important;
+}
+
+/* Remove SVG animated paths used as timeline/connectors */
+.ga-timeline svg,
+.ga-timeline svg path,
+.ga-timeline svg line,
+.ga-timeline svg polyline,
+.ga-timeline svg circle {
+/* Keep legitimate timeline content only if explicitly required */
+}
+
+/* Remove workflow SVG connectors */
+.ga-flow-line svg,
+.ga-flow-line svg path,
+.ga-flow-line svg line,
+.ga-flow-line svg polyline {
+display: none !important;
+}
+
+/* Agent system connectors are part of the diagram — keep them visible */
+
+/* Remove animated trail/path decorations */
+.ga-trail-path,
+.ga-trail-core,
+.ga-trail-dot,
+.ga-trail-halo {
+display: none !important;
+visibility: hidden !important;
+opacity: 0 !important;
+}
+
+/* Remove pseudo-element connector decorations */
+.ga-flow-line-fill::before,
+.ga-flow-line-fill::after,
+.ga-flow-line::before,
+.ga-flow-line::after {
+content: none !important;
+display: none !important;
+}
+
+/* Make sure no sticky/fixed progress element survives */
+.ga-page [class*="progress-line"],
+.ga-page [class*="scroll-line"],
+.ga-page [class*="timeline-line"],
+.ga-page [class*="connector-line"] {
+display: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+PROGRAM STUDIO LOOK — same content and order, presented like the
+PG Program in Product Management page: chip clusters, numbered module rows,
+stat tiles and job-card careers.
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Careers → orbit + live panel ────────────────────────────────────────── */
+.ga-orbit-node--active .ga-orbit-node__label {
+  color: var(--ga-ink);
+}
+
+.ga-salary {
+  color: var(--ga-ink);
+}
+
+.ga-skill-chips li {
+  background: var(--ga-panel-2);
+}
+
+.ga-careers-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2.4rem;
+  font-family: var(--ga-sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ga-ink-3);
+}
+
+.ga-careers-live-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #f97316;
+  box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.45);
+  animation: ga-living 2.2s ease-out infinite;
+}
+
+@keyframes ga-living {
+  0% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.45); }
+  70% { box-shadow: 0 0 0 7px rgba(249, 115, 22, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
+}
+
+.ga-role {
+  width: min(100%, 920px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2.4rem 2rem 2.2rem;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--ga-line);
+  border-radius: 22px;
+  box-shadow: 0 34px 74px -46px rgba(16, 24, 64, 0.5);
+  backdrop-filter: blur(8px);
+}
+
+.ga-role-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 1.75rem;
+  padding: 0 0.65rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #ffffff;
+  font-family: var(--ga-sans);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.ga-role-name {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-size: clamp(1.7rem, 4.6vw, 3.1rem);
+  margin: 0;
+}
+
+.ga-role-domain {
+  font-family: var(--ga-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid rgba(249, 115, 22, 0.35);
+  border-radius: 999px;
+  color: #f97316;
+  background: #fff7ed;
+}
+
+.ga-role.ga-role-current .ga-role-name {
+  text-shadow: none;
+}
+
+.ga-role.ga-role-prev,
+.ga-role.ga-role-next {
+  opacity: 0.25;
+}
+
+/* Mobile role rows → stacked PM job cards */
+.ga-career-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.4rem 1rem;
+  padding: 1.25rem 1.25rem;
+  background: #ffffff;
+  border: 1px solid var(--ga-line);
+  border-bottom: 1px solid var(--ga-line);
+  border-radius: 16px;
+  box-shadow: 0 10px 26px -26px rgba(16, 24, 64, 0.4);
+}
+
+.ga-career-row-index {
+  grid-row: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.1rem;
+  height: 1.6rem;
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #ffffff;
+  font-family: var(--ga-sans);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.ga-career-row h3 {
+  font-weight: 700;
+  font-size: 1.3rem;
+  letter-spacing: -0.01em;
+}
+
+.ga-career-row > span:last-child {
+  font-family: var(--ga-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid rgba(249, 115, 22, 0.3);
+  border-radius: 999px;
+  color: #f97316;
+  background: #fff7ed;
+}
+
+.ga-careers-caption {
+  font-family: var(--ga-sans);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+}
+
+/* ── Stats → stat tiles ───────────────────────────────────────────────────── */
+.ga-stats-grid {
+  gap: 1rem;
+  background: transparent;
+  border: 0;
+}
+
+.ga-stat {
+  background: #ffffff;
+  border: 1px solid var(--ga-line);
+  border-radius: 18px;
+  padding: 1.9rem 1.5rem 1.65rem;
+  box-shadow: 0 16px 36px -32px rgba(16, 24, 64, 0.4);
+  transition: border-color 0.4s, box-shadow 0.4s, background 0.4s;
+}
+
+.ga-stat:hover {
+  background: #fff7ed;
+  border-color: rgba(249, 115, 22, 0.4);
+  box-shadow: 0 26px 52px -34px rgba(16, 24, 64, 0.45);
+}
+
+.ga-stat-value {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-size: clamp(2.3rem, 3.6vw, 3.3rem);
+}
+
+.ga-stat-label {
+  font-weight: 700;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  margin-top: 0.55rem;
+}
+
+.ga-stat-note {
+  font-weight: 400;
+}
+
+/* ── Learning → numbered cards with chip index ────────────────────────────── */
+.ga-learning-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 1.6rem;
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  background: #fff7ed;
+  border: 1px solid rgba(249, 115, 22, 0.35);
+  color: #f97316;
+  font-family: var(--ga-sans);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.ga-learning-card h3 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* ── Curriculum → deliverable pill + topic chips ──────────────────────────── */
+.ga-journey-build-label {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  padding: 0.28rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(249, 115, 22, 0.12);
+  color: #f97316;
+  letter-spacing: 0.14em;
+}
+
+.ga-journey-build {
+  border-left: 0;
+  border: 1px solid rgba(249, 115, 22, 0.2);
+  border-radius: 12px;
+  background: #fffaf5;
+}
+
+.ga-tl-tags em {
+  border-radius: 999px;
+  padding: 0.34rem 0.72rem;
+}
+
+/* ── Locked "Agentic AI labs" companion card ───────────────────────────────── */
+.ga-journey-lock-card {
+  flex: 1 1 auto;
+  padding: 1.4rem 1.35rem 1.2rem;
+  gap: 1.05rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.ga-journey-lock-card:hover {
+  transform: translateY(-3px);
+}
+
+.ga-journey-lock-card:focus-visible {
+  outline: 2px solid var(--ga-gold);
+  outline-offset: -2px;
+}
+
+.ga-journey-num-lock {
+  background: linear-gradient(135deg, #1f2937, #111827);
+  box-shadow: 0 9px 20px -9px rgba(17, 24, 39, 0.55);
+}
+
+.ga-journey-lock-card .ga-journey-arrow {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 0.65rem;
+}
+
+.ga-journey-lock-card .ga-journey-motif {
+  color: #f97316;
+  letter-spacing: 0.16em;
+}
+
+.ga-journey-lock-card .ga-journey-desc {
+  color: var(--ga-ink-2);
+}
+
+.ga-journey-unlock-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  box-shadow: 0 8px 18px -10px rgba(249, 115, 22, 0.7);
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+
+.ga-journey-lock-card:hover .ga-journey-unlock-pill {
+  transform: translateX(2px);
+  box-shadow: 0 10px 22px -10px rgba(249, 115, 22, 0.8);
+}
+
+.ga-journey-cell-locked .ga-journey-card {
+  background:
+    radial-gradient(140% 120% at 100% 0%, rgba(249, 115, 22, 0.1) 0%, rgba(249, 115, 22, 0) 50%),
+    #ffffff;
+}

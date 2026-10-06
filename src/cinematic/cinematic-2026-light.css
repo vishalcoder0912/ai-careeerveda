@@ -1,0 +1,2160 @@
+/* ============================================================================
+   cinematic-2026-light.css — CareerVeda 2026 light theme for the cinematic
+   GenerativeAI program page.
+
+   Loaded AFTER cinematic.css and cinematic-site-theme.css inside
+   GenerativeAIPage.jsx. Re-composes the page into the site's "2026 light"
+   identity: white atmosphere, navy ink (#102a5c), blue (#2563eb) + indigo
+   (#4f46e5) + violet (#7c3aed) accents, with dark navy bands reserved for the
+   quote, CTA, footer and the immersive Projects gallery room.
+
+   Color zones
+   -----------
+   · Light surfaces  → white/near-white with blue + violet radials
+   · Accents         → blue gradient (135deg) on buttons/on-states, blue links
+   · Dark navy bands → #102a5c → #172e64 only on Quote / CTA / Footer / Gallery
+   · Editorial lines → rgba(37,99,235,.16) on light, rgba(151,182,255,.12) on navy
+   ========================================================================== */
+
+/* ── Tokens ──────────────────────────────────────────────────────────────── */
+.ga-page {
+  --ga-bg: #fafcff;
+  --ga-panel: #ffffff;
+  --ga-panel-2: #f4f8ff;
+  --ga-ink: #102a5c;
+  --ga-ink-2: #33486b;
+  --ga-ink-3: #64748b;
+  --ga-gold: #2563eb;
+  --ga-gold-bright: #4f46e5;
+  --ga-amber: #7c3aed;
+  --ga-orange: #7c3aed;
+  --ga-blue: #2563eb;
+  --ga-blue-electric: #1769e8;
+  --ga-blue-soft: #a6c8ff;
+  --ga-blue-soft-2: #dbe9ff;
+  --ga-lavender: #f3f0ff;
+  --ga-line: rgba(37, 99, 235, 0.16);
+  --ga-line-soft: rgba(16, 42, 92, 0.09);
+  --ga-glow: rgba(37, 99, 235, 0.16);
+  --ga-glow-purple: rgba(124, 58, 237, 0.13);
+  --ga-btn-gradient: linear-gradient(135deg, #2563eb, #4f46e5);
+}
+
+/* The Projects room redefines its tokens with ID specificity — beat it. */
+.ga-page #ga-projects.ga-gallery {
+  --ga-bg: #0d1b3d;
+  --ga-bg-2: #0d1b3d;
+  --ga-panel: rgba(14, 22, 46, 0.92);
+  --ga-panel-2: rgba(14, 22, 46, 0.92);
+  --ga-panel-3: rgba(147, 197, 253, 0.16);
+  --ga-ink: #ffffff;
+  --ga-ink-2: #b7c6e6;
+  --ga-ink-3: #7f90ba;
+  --ga-gold: #6ea8ff;
+  --ga-gold-bright: #c9dbff;
+  --ga-amber: #93c5fd;
+  --ga-orange: #60a5fa;
+  --ga-blue: #60a5fa;
+  --ga-blue-soft: #a6c8ff;
+  --ga-line: rgba(151, 182, 255, 0.16);
+  --ga-line-soft: rgba(151, 182, 255, 0.09);
+  --ga-glow: rgba(96, 165, 250, 0.22);
+  --ga-glow-purple: rgba(129, 140, 248, 0.18);
+}
+
+/* ── Selection + cursor (blue, not gold) ────────────────────────────────── */
+.ga-page ::selection {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.ga-page .ga-cursor-dot {
+  background: #2563eb;
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.5);
+}
+
+.ga-page .ga-cursor-ring {
+  border-color: rgba(70, 103, 219, 0.65);
+}
+
+.ga-page .ga-cursor-ring.ga-ring-hover {
+  background: rgba(37, 99, 235, 0.14);
+  border-color: #2563eb;
+}
+
+.ga-page .ga-cursor-ring.ga-ring-cta {
+  background: rgba(76, 61, 219, 0.22);
+  border-color: #4f46e5;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+.ga-page .ga-btn-solid {
+  background-image: linear-gradient(135deg, #2563eb, #4f46e5);
+  box-shadow: 0 14px 34px -12px rgba(41, 85, 237, 0.45);
+}
+
+.ga-page .ga-btn-solid:hover {
+  box-shadow: 0 20px 44px -14px rgba(79, 70, 229, 0.55);
+}
+
+.ga-page .ga-btn-outline {
+  border-color: rgba(37, 99, 235, 0.4);
+  color: #2563eb;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.ga-page .ga-btn-outline:hover {
+  border-color: #2563eb;
+  color: #ffffff;
+  background-image: linear-gradient(135deg, #2563eb, #4f46e5);
+}
+
+.ga-page .ga-btn-outline::after,
+.ga-page .ga-btn-solid::after {
+  background: linear-gradient(120deg, #4f46e5, #7c3aed);
+}
+
+/* ── Navbar ──────────────────────────────────────────────────────────────── */
+.ga-page .ga-nav {
+  background: rgba(250, 252, 255, 0.84) !important;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(37, 99, 235, 0.1);
+  box-shadow: 0 1px 0 rgba(16, 42, 92, 0.05);
+}
+
+.ga-page .ga-nav .ga-brand-mark {
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  box-shadow: 0 6px 18px -6px rgba(37, 99, 235, 0.5);
+}
+
+.ga-page .ga-nav .ga-brand-text strong {
+  color: #102a5c;
+}
+
+.ga-page .ga-nav .ga-brand-text small,
+.ga-page .ga-nav-links a {
+  color: #33486b;
+}
+
+.ga-page .ga-nav-links a::after {
+  background: linear-gradient(90deg, #2563eb, #7c3aed);
+}
+
+.ga-page .ga-nav-links a:hover {
+  color: #2563eb;
+}
+
+.ga-page .ga-nav .ga-burger {
+  color: #102a5c;
+}
+
+.ga-page .ga-nav-overlay {
+  background: rgba(250, 252, 255, 0.97);
+}
+
+.ga-page .ga-nav-overlay-links a {
+  color: #102a5c;
+}
+
+.ga-page .ga-nav-overlay-links a:hover {
+  color: #2563eb;
+}
+
+/* ── Hero — light atmosphere, blue/violet radials ────────────────────────── */
+.ga-page .ga-hero-bg {
+  background:
+    radial-gradient(64vw 46vw at 78% -6%, rgba(37, 99, 235, 0.12), transparent 62%),
+    radial-gradient(58vw 44vw at 8% 96%, rgba(124, 58, 237, 0.07), transparent 60%),
+    radial-gradient(46vw 40vw at 92% 88%, rgba(96, 165, 250, 0.16), transparent 62%),
+    linear-gradient(180deg, #ffffff 0%, #f6faff 55%, #faf8ff 100%);
+}
+
+.ga-page .ga-hero-glow-a {
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.14), transparent 66%);
+}
+
+.ga-page .ga-hero-glow-b {
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.11), transparent 64%);
+}
+
+.ga-page .ga-hero-floor,
+.ga-page .ga-hero-glow-arch,
+.ga-page .ga-hero-columns,
+.ga-page .ga-hero-streak {
+  display: none !important;
+}
+
+.ga-page .ga-hero-line {
+  color: #102a5c;
+}
+
+.ga-page .ga-hero-line:nth-child(2) {
+  color: #2563eb;
+}
+
+.ga-page .ga-eyebrow-line {
+  background: linear-gradient(90deg, #2563eb, #7c3aed);
+}
+
+.ga-page .ga-hero-sub,
+.ga-page .ga-hero-stat strong {
+  color: #102a5c;
+}
+
+.ga-page .ga-hero-rule,
+.ga-page .ga-hero-extra .ga-meta {
+  color: #33486b;
+}
+
+.ga-page .ga-hero-badges span {
+  color: #33486b;
+}
+
+.ga-page .ga-hero-badges span:hover {
+  border-color: rgba(37, 99, 235, 0.55);
+  color: #4f46e5;
+}
+
+.ga-page .ga-hero-side-image {
+  border-color: rgba(37, 99, 235, 0.16);
+  background: #ffffff;
+  box-shadow: 0 24px 60px -24px rgba(16, 42, 92, 0.26);
+}
+
+/* ── Stats ───────────────────────────────────────────────────────────────── */
+.ga-page .ga-stat {
+  border-color: var(--ga-line);
+  background: #ffffff;
+}
+
+.ga-page .ga-stat:hover {
+  border-color: rgba(37, 99, 235, 0.4);
+  background: #eef5ff;
+}
+
+.ga-page .ga-stat-value {
+  background: linear-gradient(110deg, #2563eb, #7c3aed);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.ga-page .ga-stat-rule {
+  background: linear-gradient(90deg, #2563eb, #7c3aed);
+}
+
+.ga-page .ga-stat-value,
+.ga-page .ga-stat-suffix,
+.ga-page .ga-stat-label {
+  color: #102a5c;
+}
+
+.ga-page .ga-stat-suffix {
+  color: #7c3aed;
+}
+
+/* ── Timeline ────────────────────────────────────────────────────────────── */
+.ga-page .ga-tl-card {
+  border-color: var(--ga-line);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: none;
+}
+
+.ga-page .ga-tl-card:hover {
+  border-color: rgba(37, 99, 235, 0.4);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.ga-page .ga-tl-card-year,
+.ga-page .ga-tl-v-year {
+  color: #2563eb;
+}
+
+.ga-page .ga-tl-tags em {
+  color: #4f46e5;
+  border: 1px solid rgba(37, 99, 235, 0.24);
+  background: rgba(37, 99, 235, 0.07);
+}
+
+.ga-page .ga-tl-caption-year {
+  color: #2563eb;
+}
+
+/* ── Timeline caption — stop "WEEKS 21–24 · PRODUCTION AI" colliding with the
+   "scroll to advance the timeline" hint ─────────────────────────────────────
+   The base packs the absolutely-stacked caption frames into a 1.4rem-tall,
+   12rem-wide box with white-space: nowrap, so a long stage name overflows the
+   box and the stacked frames smother the inline hint. Give the caption room to
+   breathe: a taller self-sizing active box, year above title (column stack),
+   and the hint moved to its own reserved track so nothing can overlap.        */
+.ga-page .ga-tl-caption {
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 1.4rem;
+}
+
+.ga-page .ga-tl-caption-active {
+  position: relative;
+  height: clamp(2.6rem, 1.6rem + 1.6vw, 3.4rem);
+  min-width: 13rem;
+  width: max-content;
+  max-width: min(72vw, 30rem);
+}
+
+.ga-page .ga-tl-caption-frame {
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.28rem;
+  max-width: 100%;
+  white-space: normal;
+  overflow: hidden;
+}
+
+.ga-page .ga-tl-caption-frame.ga-tl-frame-on {
+  transform: translateY(-50%);
+}
+
+.ga-page .ga-tl-caption-year {
+  font-family: var(--ga-serif);
+  font-size: 1.28rem;
+  line-height: 1.08;
+  color: #2563eb;
+}
+
+.ga-page .ga-tl-caption-title {
+  font-family: var(--ga-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #33486b;
+}
+
+.ga-page .ga-tl-caption-hint {
+  position: relative;
+  flex-shrink: 0;
+  margin-left: auto;
+  padding-left: 1.4rem;
+  border-left: 1px solid rgba(37, 99, 235, 0.22);
+  font-family: var(--ga-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+/* Timeline caption — stop the "Weeks 21–24 · PRODUCTION AI" frame crowding
+   the "scroll to advance the timeline" hint. The base packs both into one
+   baseline flex row inside a 1.4rem-tall absolute box, so a long stage like
+   "PRODUCTION AI / Weeks 21-24" overflows and overlaps the hint. Reserve a
+   taller stack instead: year above title, frame sized to its own content. */
+.ga-page .ga-tl-caption {
+  align-items: center;
+  gap: 1.6rem;
+}
+
+.ga-page .ga-tl-caption-active {
+  position: relative;
+  height: 2.6rem;
+  min-width: 0;
+}
+
+.ga-page .ga-tl-caption-frame {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.18rem;
+  white-space: nowrap;
+}
+
+.ga-page .ga-tl-caption-year {
+  font-family: var(--ga-serif);
+  font-size: 1.2rem;
+  line-height: 1.1;
+  color: #2563eb;
+}
+
+.ga-page .ga-tl-caption-title {
+  font-family: var(--ga-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #102a5c;
+}
+
+.ga-page .ga-tl-caption-hint {
+  position: relative;
+  white-space: nowrap;
+  color: #33486b;
+}
+
+/* Timeline caption row — year + title must never collide with the hint.
+   The base theme lays out several absolute `.ga-tl-caption-frame`s on one
+   baseline inside a tiny 1.4rem box, so the long "Weeks 21-24 â€¢ PRODUCTION
+   AI" label spills over the "scroll to advance" hint. Stack year over title
+   and reserve a dedicated line for the hint instead. */
+.ga-page .ga-tl-caption {
+  gap: 2.2rem;
+}
+
+.ga-page .ga-tl-caption-active {
+  height: auto;
+  min-height: 1.2rem;
+  min-width: auto;
+  max-width: min(86vw, 40rem);
+  display: grid;
+  place-items: center;
+}
+
+.ga-page .ga-tl-caption-frame {
+  position: absolute;
+  grid-row: 1;
+  grid-column: 1;
+  left: 0;
+  right: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.2rem;
+  white-space: normal;
+  width: 100%;
+}
+
+.ga-page .ga-tl-caption-year {
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.ga-page .ga-tl-caption-title {
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  color: #102a5c;
+}
+
+.ga-page .ga-tl-caption-hint {
+  flex-shrink: 0;
+  margin-left: auto;
+  padding-left: 1.8rem;
+  border-left: 1px solid rgba(37, 99, 235, 0.24);
+  color: #64748b;
+}
+
+/* ── Modules / Journey ───────────────────────────────────────────────────── */
+.ga-page .ga-journey-week-btn {
+  background: #ffffff;
+}
+
+.ga-page .ga-journey-week-btn:hover {
+  background: #f4f8ff;
+}
+
+.ga-page .ga-journey-week-id {
+  background: #eaf2ff;
+  color: #102a5c;
+}
+
+.ga-page .ga-journey-week.is-open .ga-journey-week-id {
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: #ffffff;
+}
+
+.ga-page .ga-journey-week-title {
+  color: #102a5c;
+}
+
+.ga-page .ga-journey-week-meta {
+  color: #64748b;
+}
+
+.ga-page .ga-journey-week-arrow {
+  border-right-color: #64748b;
+  border-bottom-color: #64748b;
+}
+
+.ga-page .ga-journey-week.is-open .ga-journey-week-arrow {
+  border-color: #4f46e5;
+}
+
+.ga-page .ga-journey-topics li {
+  background: #ffffff;
+}
+
+.ga-page .ga-journey-build {
+  border-left-color: #2563eb;
+  background: rgba(37, 99, 235, 0.07);
+}
+
+.ga-page .ga-journey-build-label {
+  color: #2563eb;
+}
+
+.ga-page .ga-journey-build-text {
+  color: #2563eb;
+}
+
+.ga-page .ga-journey-card-btn {
+  border-color: var(--ga-line);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.ga-page .ga-journey-card-btn:hover {
+  border-color: rgba(37, 99, 235, 0.42);
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 18px 44px -20px rgba(37, 99, 235, 0.35);
+}
+
+.ga-page .ga-journey-num {
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: #ffffff;
+  box-shadow: 0 9px 20px -9px rgba(37, 99, 235, 0.65);
+}
+
+.ga-page .ga-journey-cell:hover .ga-journey-num {
+  color: #ffffff;
+}
+
+.ga-page .ga-journey-card.is-open .ga-journey-num {
+  color: #ffffff;
+}
+
+.ga-page .ga-journey-title {
+  color: #102a5c;
+}
+
+.ga-page .ga-journey-range {
+  color: #2563eb;
+}
+
+.ga-page .ga-journey-desc,
+.ga-page .ga-journey-motif {
+  color: #33486b;
+}
+
+.ga-page .ga-journey-cell:not(.ga-journey-cell-locked):hover .ga-journey-motif {
+  color: #2563eb;
+}
+
+.ga-page .ga-journey-arrow {
+  color: #2563eb;
+}
+
+.ga-page .ga-journey-lock-card {
+  background: rgba(37, 99, 235, 0.06);
+  border-style: dashed;
+}
+
+.ga-page .ga-journey-lock-card .ga-journey-num-lock {
+  color: rgba(16, 42, 92, 0.4);
+}
+
+.ga-page .ga-journey-lock-card .ga-journey-motif {
+  color: #4f46e5;
+}
+
+.ga-page .ga-journey-unlock-pill {
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+}
+
+.ga-page .ga-mod-tracks .ga-mod-track {
+  background: #ffffff;
+}
+
+.ga-page .ga-mod-tracks .ga-mod-track:hover {
+  border-color: rgba(37, 99, 235, 0.5);
+  box-shadow: 0 10px 24px -18px rgba(16, 42, 92, 0.35);
+}
+
+.ga-page .ga-mod-tracks .ga-mod-track em {
+  color: #2563eb;
+}
+
+.ga-page .ga-mod-tracks-label {
+  color: #64748b;
+}
+
+/* ── Quote band — navy ───────────────────────────────────────────────────── */
+.ga-page .ga-quote {
+  background:
+    radial-gradient(circle at 12% 12%, rgba(37, 99, 235, 0.3), transparent 28%),
+    radial-gradient(circle at 86% 18%, rgba(99, 152, 255, 0.2), transparent 26%),
+    linear-gradient(135deg, #102a5c 0%, #172e64 100%);
+}
+
+.ga-page .ga-quote-glow {
+  background: radial-gradient(50% 50% at 50% 50%, rgba(37, 99, 235, 0.28), transparent 70%);
+}
+
+.ga-page .ga-quote-index {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.ga-page .ga-quote .ga-quote-line {
+  color: #ffffff;
+}
+
+.ga-page .ga-quote .ga-quote-line:nth-child(3) {
+  color: #a6c8ff;
+}
+
+.ga-page .ga-quote .ga-quote-cite {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* ── Architecture ────────────────────────────────────────────────────────── */
+.ga-page .ga-arch .ga-section-label::before {
+  background: linear-gradient(90deg, #2563eb, #7c3aed);
+}
+
+.ga-page .ga-arch-line {
+  background: rgba(37, 99, 235, 0.14);
+}
+
+.ga-page .ga-arch-line-fill {
+  background: linear-gradient(180deg, #2563eb, #7c3aed);
+}
+
+.ga-page .ga-layer-card {
+  background: #ffffff;
+  box-shadow: 0 10px 30px -26px rgba(16, 42, 92, 0.28);
+}
+
+.ga-page .ga-layer-dot {
+  background: rgba(37, 99, 235, 0.4);
+}
+
+.ga-page .ga-layer-index {
+  color: #4f46e5;
+}
+
+.ga-page .ga-layer.ga-on .ga-layer-card {
+  border-color: rgba(37, 99, 235, 0.5);
+  background: linear-gradient(160deg, #ffffff, #f4f8ff);
+  box-shadow: 0 24px 60px -32px rgba(16, 42, 92, 0.35);
+}
+
+.ga-page .ga-layer.ga-on .ga-layer-card h3 {
+  color: #2563eb;
+}
+
+.ga-page .ga-layer.ga-on .ga-layer-index {
+  color: #102a5c;
+}
+
+.ga-page .ga-layer.ga-on .ga-layer-dot {
+  background: #2563eb;
+  box-shadow: 0 0 14px 4px rgba(37, 99, 235, 0.5);
+}
+
+.ga-page .ga-layer.ga-on .ga-layer-arrow {
+  color: #4f46e5;
+}
+
+/* ── Agent system — light panel, blue wiring ─────────────────────────────── */
+.ga-page .ga-agent-section {
+  background: #ffffff;
+}
+
+/* Agent architecture — a TRUE 1:1 square canvas. The base used 16/9, which
+   squeezed the radial composition wide. Keep the square and let the network
+   scale as one proportional block. */
+.ga-page .ga-agent-system {
+  width: min(82vw, 820px);
+  max-width: 100%;
+  aspect-ratio: 1 / 1;
+  height: auto;
+  margin-inline: auto;
+  overflow: visible;
+  isolation: isolate;
+}
+
+.ga-page .ga-agent-center {
+  width: 160px;
+  height: 160px;
+}
+
+.ga-page .ga-agent-line-flow path {
+  stroke: #f97316;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 2 9;
+  opacity: 0.72;
+  vector-effect: non-scaling-stroke;
+  animation: none;
+}
+
+.ga-page .ga-agent-blue-particle {
+  display: none;
+}
+
+.ga-page .ga-agent-arm {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .ga-page .ga-agent-system {
+    width: min(88vw, 680px);
+  }
+
+  .ga-page .ga-agent-center {
+    width: 140px;
+    height: 140px;
+  }
+}
+
+@media (max-width: 600px) {
+  .ga-page .ga-agent-system {
+    width: min(94vw, 520px);
+  }
+
+  .ga-page .ga-agent-center {
+    width: 115px;
+    height: 115px;
+  }
+}
+
+@media (max-width: 420px) {
+  .ga-page .ga-agent-system {
+    width: 96vw;
+  }
+
+  .ga-page .ga-agent-center {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+
+.ga-page .ga-agent-line-flow path {
+  stroke: rgba(37, 99, 235, 0.5);
+}
+
+.ga-page .ga-agent-end,
+.ga-page .ga-agent-packet {
+  fill: #2563eb;
+  filter: drop-shadow(0 0 2px rgba(37, 99, 235, 0.55));
+}
+
+.ga-page .ga-agent-orange-particle {
+  fill: #93c5fd;
+}
+
+.ga-page .ga-agent-center {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.88));
+  border-color: rgba(37, 99, 235, 0.32);
+  box-shadow: 0 18px 50px -20px rgba(37, 99, 235, 0.45);
+}
+
+.ga-page .ga-agent-center::after {
+  border-color: rgba(37, 99, 235, 0.22);
+}
+
+.ga-page .ga-agent-center-icon {
+  color: #2563eb;
+}
+
+.ga-page .ga-agent-center-title {
+  color: #102a5c;
+}
+
+.ga-page .ga-agent-center-sub {
+  color: #4f46e5;
+}
+
+.ga-page .ga-agent-node {
+  background: rgba(255, 255, 255, 0.97);
+  border-color: #d8e1ee;
+  color: #102a5c;
+}
+
+.ga-page .ga-agent-node:hover {
+  border-color: rgba(37, 99, 235, 0.65);
+  color: #2563eb;
+  background: #ffffff;
+  box-shadow: 0 0 32px -8px rgba(37, 99, 235, 0.5);
+}
+
+.ga-page .ga-agent-node-icon {
+  color: #2563eb;
+}
+
+.ga-page .ga-agent-system:hover .ga-agent-node {
+  border-color: rgba(37, 99, 235, 0.4);
+}
+
+/* ── Workflow steps ──────────────────────────────────────────────────────── */
+.ga-page .ga-flow-line {
+  background: rgba(37, 99, 235, 0.15);
+}
+
+.ga-page .ga-flow-line-fill {
+  background: linear-gradient(90deg, #2563eb, #7c3aed);
+}
+
+.ga-page .ga-step-index {
+  color: #7c3aed;
+}
+
+.ga-page .ga-step-core {
+  background: #2563eb;
+  box-shadow: 0 0 14px rgba(37, 99, 235, 0.5);
+}
+
+.ga-page .ga-step-ring {
+  border-color: rgba(37, 99, 235, 0.34);
+}
+
+.ga-page .ga-step:hover .ga-step-ring {
+  border-color: #7c3aed;
+}
+
+.ga-page .ga-flow-caption {
+  color: #33486b;
+  flex: 0 0 auto;
+  max-width: 100%;
+  text-align: center;
+  line-height: 2;
+  overflow-wrap: break-word;
+}
+
+/* ── Site navbar on this page ───────────────────────────────────────────────
+   The home navbar's shell reserves --navbar-height above the hero, so the hero
+   is sized against the space that is actually left in the first viewport. */
+.ga-page .navbar-shell {
+  position: relative;
+  z-index: 1000;
+}
+
+.ga-page .ga-hero {
+  min-height: calc(100svh - var(--navbar-height, 78px));
+  padding-top: 4.5rem;
+}
+
+/* ── Workflow layout: stop the 10 steps from overlapping ────────────────────
+   The pinned stage is 100svh with `overflow: hidden`, but ten steps of 1.35rem
+   serif plus notes cannot fit next to a 4.9rem heading — the track overflowed
+   and the rows piled into the caption rail. Distribute the steps evenly across
+   the height the pin actually has, scale type with viewport height, and give
+   the caption its own non-collapsing line. */
+@media (min-width: 900px) {
+  .ga-page .ga-flow-pin {
+    gap: 1.1rem;
+    padding: 4.25rem clamp(1rem, 3vw, 2.5rem) 1.6rem;
+  }
+
+  .ga-page .ga-flow-head {
+    flex: 0 0 auto;
+    gap: 0.6rem;
+  }
+
+  .ga-page .ga-flow-head .ga-display {
+    font-size: clamp(1.9rem, 3.4vw, 3.1rem);
+  }
+
+  .ga-page .ga-flow-track {
+    flex: 1 1 auto;
+    width: min(680px, 100%);
+    max-height: none;
+  }
+
+  .ga-page .ga-flow-steps {
+    display: grid;
+    grid-auto-rows: minmax(0, 1fr);
+    gap: 0;
+    height: 100%;
+    margin: 0;
+  }
+
+  .ga-page .ga-flow-line {
+    top: 0;
+    bottom: 0;
+  }
+
+  .ga-page .ga-step {
+    gap: 0.95rem;
+    min-height: 0;
+  }
+
+  .ga-page .ga-step-index {
+    flex: 0 0 auto;
+    width: 1.7rem;
+    font-size: 0.5rem;
+  }
+
+  .ga-page .ga-step-body {
+    gap: 0.05rem;
+    min-width: 0;
+  }
+
+  .ga-page .ga-step-body strong {
+    font-size: clamp(0.92rem, 0.42rem + 1.5vh, 1.28rem);
+    line-height: 1.12;
+  }
+
+  .ga-page .ga-step-body em {
+    font-size: clamp(0.44rem, 0.34rem + 0.28vh, 0.54rem);
+    line-height: 1.35;
+  }
+}
+
+@media (max-width: 899px) {
+  .ga-page .ga-flow-caption {
+    margin-top: 1.6rem;
+    line-height: 1.9;
+  }
+}
+
+
+/* ── Projects gallery room — navy band ───────────────────────────────────── */
+.ga-page .ga-gallery-halo {
+  background: radial-gradient(circle, rgba(96, 165, 250, 0.2), rgba(59, 130, 246, 0.06) 42%, transparent 70%);
+}
+
+.ga-page .ga-gal-wall {
+  background:
+    radial-gradient(120% 90% at 50% -10%, rgba(64, 139, 255, 0.12), rgba(5, 4, 3, 0) 58%),
+    linear-gradient(180deg, rgba(13, 27, 61, 0.85), rgba(11, 22, 51, 0) 62%);
+}
+
+.ga-page .ga-gal-streak--a {
+  background: linear-gradient(90deg, transparent, rgba(125, 211, 252, 0.5), transparent);
+}
+
+.ga-page .ga-gal-streak--b {
+  background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.35), transparent);
+}
+
+.ga-page .ga-gallery-haze {
+  background: linear-gradient(to top, rgba(10, 16, 38, 0.96), rgba(10, 16, 38, 0) 94%);
+}
+
+.ga-page .ga-gallery-floor {
+  background:
+    radial-gradient(68% 90% at 50% 100%, rgba(96, 165, 250, 0.26), rgba(59, 130, 246, 0.06) 58%, transparent 80%),
+    repeating-linear-gradient(90deg, rgba(151, 182, 255, 0.07) 0 1px, transparent 1px 90px),
+    linear-gradient(to top, rgba(59, 130, 246, 0.24), rgba(59, 130, 246, 0) 72%);
+}
+
+.ga-page .ga-gallery-ring--outer {
+  border-color: rgba(147, 197, 253, 0.34);
+  box-shadow: 0 0 70px -22px rgba(96, 165, 250, 0.45);
+}
+
+.ga-page .ga-gallery-ring--mid {
+  border-color: rgba(147, 197, 253, 0.22);
+  box-shadow: 0 0 80px -26px rgba(59, 130, 246, 0.4);
+}
+
+.ga-page .ga-gallery-ring--inner {
+  border-color: rgba(147, 197, 253, 0.14);
+}
+
+.ga-page .ga-gallery-accent--ember {
+  --ga-acc: #60a5fa;
+  --ga-acc-soft: rgba(96, 165, 250, 0.55);
+}
+
+.ga-page .ga-gallery-accent--gold {
+  --ga-acc: #818cf8;
+  --ga-acc-soft: rgba(129, 140, 248, 0.55);
+}
+
+.ga-page .ga-gallery-accent--bronze {
+  --ga-acc: #a78bfa;
+  --ga-acc-soft: rgba(167, 139, 250, 0.55);
+}
+
+.ga-page .ga-gallery-accent--tangerine {
+  --ga-acc: #22d3ee;
+  --ga-acc-soft: rgba(34, 211, 238, 0.55);
+}
+
+.ga-page .ga-gallery-accent--brass {
+  --ga-acc: #93c5fd;
+  --ga-acc-soft: rgba(147, 197, 253, 0.55);
+}
+
+.ga-page .ga-gallery-card-inner {
+  border-color: rgba(151, 182, 255, 0.26);
+  background:
+    linear-gradient(165deg, rgba(96, 165, 250, 0.06), rgba(255, 255, 255, 0.012) 38%),
+    rgba(14, 22, 46, 0.92);
+  box-shadow:
+    0 30px 80px -30px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(151, 182, 255, 0.06);
+}
+
+.ga-page .ga-gallery-card:hover .ga-gallery-card-inner {
+  border-color: rgba(147, 197, 253, 0.6);
+  box-shadow:
+    0 46px 96px -34px rgba(0, 0, 0, 0.7),
+    0 0 64px -18px rgba(59, 130, 246, 0.42),
+    inset 0 1px 0 rgba(147, 197, 253, 0.14);
+}
+
+.ga-page .ga-gallery-screen {
+  border-color: rgba(151, 182, 255, 0.14);
+  background: rgba(8, 14, 34, 0.72);
+}
+
+.ga-page .ga-gallery-screen-bar {
+  border-bottom-color: rgba(151, 182, 255, 0.1);
+  background: linear-gradient(180deg, rgba(151, 182, 255, 0.07), rgba(8, 14, 34, 0));
+}
+
+.ga-page .ga-gallery-screen-dots i {
+  background: rgba(147, 197, 253, 0.55);
+}
+
+.ga-page .ga-gallery-screen-dots i:nth-child(2) {
+  background: rgba(147, 197, 253, 0.26);
+}
+
+.ga-page .ga-gallery-screen-dots i:nth-child(3) {
+  background: rgba(147, 197, 253, 0.4);
+}
+
+.ga-page .ga-gallery-screen-chips em {
+  border-color: rgba(147, 197, 253, 0.28);
+  background: rgba(147, 197, 253, 0.08);
+  color: #c9dbff;
+}
+
+.ga-page .ga-gallery-frame {
+  border-color: rgba(151, 182, 255, 0.1);
+}
+
+/* ── MacBook terminal cards ──────────────────────────────────────────────────
+   Anatomy, front-on, matching a 14" MacBook Pro: Space-grey aluminium lid, a
+   black bezel around the panel, the display notch cut into the top of the menu
+   bar, a glass sheen over the panel, and the aluminium deck below. */
+.ga-page .ga-gallery-lid {
+  padding: 0.5rem 0.5rem 0.55rem;
+  border-radius: 12px 12px 2px 2px;
+  background: linear-gradient(180deg, #eef2f7 0%, #d3dbe6 38%, #9aa8ba 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(15, 23, 42, 0.22),
+    inset 1px 0 0 rgba(255, 255, 255, 0.35),
+    inset -1px 0 0 rgba(15, 23, 42, 0.1);
+}
+
+.ga-page .ga-gallery-laptop {
+  display: flex;
+  flex-direction: column;
+}
+
+/* The screen element IS the panel: its padding is the black bezel, so the
+   notch and the glass sheen can be positioned against the display edges. */
+.ga-page .ga-gallery-lid .ga-gallery-screen {
+  position: relative;
+  border-radius: 5px;
+  border: 1px solid rgba(15, 23, 42, 0.7);
+  background: #000;
+  padding: 0.5rem 0.45rem 0.6rem;
+  aspect-ratio: 16 / 10;
+  box-shadow: inset 0 0 18px rgba(2, 6, 23, 0.95);
+}
+
+/* Display notch, hanging from the top edge into the menu bar. */
+.ga-page .ga-gallery-lid .ga-gallery-screen::before {
+  content: "";
+  position: absolute;
+  top: 0.5rem;
+  left: 50%;
+  width: 15%;
+  height: 0.34rem;
+  transform: translateX(-50%);
+  border-radius: 0 0 4px 4px;
+  background: #000;
+  box-shadow: 0 1px 0 rgba(148, 163, 184, 0.12);
+  z-index: 6;
+}
+
+/* Anti-reflective glass sheen. */
+.ga-page .ga-gallery-lid .ga-gallery-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0.5rem 0.45rem 0.6rem;
+  background: linear-gradient(122deg, rgba(255, 255, 255, 0.11) 0%, rgba(255, 255, 255, 0.035) 20%, transparent 40%);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.ga-page .ga-gallery-lid .ga-gallery-screen-bar {
+  position: relative;
+  z-index: 5;
+  padding: 0.28rem 0.45rem;
+  background: linear-gradient(180deg, #1e2743 0%, #151d33 100%);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 3px 3px 0 0;
+}
+
+/* Traffic lights, in macOS order, with the usual top gloss. */
+.ga-page .ga-gallery-lid .ga-gallery-screen-dots i {
+  width: 7px;
+  height: 7px;
+  background: radial-gradient(circle at 50% 25%, #ff8a85, #ff5f57 70%);
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.3);
+}
+
+.ga-page .ga-gallery-lid .ga-gallery-screen-dots i:nth-child(2) {
+  background: radial-gradient(circle at 50% 25%, #ffd77a, #febc2e 70%);
+}
+
+.ga-page .ga-gallery-lid .ga-gallery-screen-dots i:nth-child(3) {
+  background: radial-gradient(circle at 50% 25%, #6ee98a, #28c840 70%);
+}
+
+.ga-page .ga-gallery-lid .ga-gallery-screen-route {
+  color: #8296bb;
+  font-size: clamp(0.44rem, 0.48vw, 0.54rem);
+  letter-spacing: 0.12em;
+}
+
+.ga-page .ga-gallery-lid .ga-gallery-screen-body {
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(180deg, #0a0f1f 0%, #050914 100%);
+  border-radius: 0 0 3px 3px;
+  gap: 0.34rem;
+  padding: 0.5rem 0.6rem 0.55rem;
+}
+
+.ga-page .ga-gallery-screen-prompt {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.28rem;
+  font-family: var(--ga-mono);
+  font-size: clamp(0.42rem, 0.46vw, 0.52rem);
+  line-height: 1.5;
+}
+
+.ga-page .ga-gallery-screen-prompt i {
+  font-style: normal;
+  color: #5eead4;
+}
+
+.ga-page .ga-gallery-screen-prompt i:first-child {
+  color: #34d399;
+}
+
+.ga-page .ga-gallery-screen-prompt i:nth-child(2) {
+  color: #e2e8f0;
+}
+
+.ga-page .ga-gallery-screen-prompt i:nth-child(3),
+.ga-page .ga-gallery-screen-prompt i:nth-child(4) {
+  color: #7dd3fc;
+}
+
+.ga-page .ga-gallery-screen-caret {
+  display: inline-block;
+  width: 0.4rem;
+  height: 0.78rem;
+  background: var(--ga-acc, #60a5fa);
+  box-shadow: 0 0 8px var(--ga-acc-soft, rgba(96, 165, 250, 0.55));
+  animation: ga-caret-blink 1.15s steps(2, start) infinite;
+}
+
+@keyframes ga-caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Aluminium deck, a touch wider than the lid, with the front-edge notch. */
+.ga-page .ga-gallery-laptop-base {
+  position: relative;
+  display: block;
+  height: clamp(0.3rem, 0.42vw, 0.42rem);
+  margin: 0 -2.2% -0.3rem;
+  border-radius: 0 0 5px 5px;
+  background: linear-gradient(180deg, #e2e8f0 0%, #b6c1d0 45%, #7f8da1 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 8px 16px -8px rgba(2, 6, 23, 0.6);
+}
+
+.ga-page .ga-gallery-laptop-base i {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 14%;
+  height: 2px;
+  transform: translateX(-50%);
+  border-radius: 0 0 3px 3px;
+  background: rgba(51, 65, 85, 0.7);
+}
+
+.ga-page .ga-gallery-edge {
+  opacity: 0.75;
+}
+
+.ga-page [data-state="active"] .ga-gallery-card-inner {
+  border-color: rgba(147, 197, 253, 0.6);
+  box-shadow:
+    0 50px 110px -38px rgba(0, 0, 0, 0.72),
+    0 0 90px -22px rgba(59, 130, 246, 0.5),
+    0 0 34px -12px rgba(147, 197, 253, 0.35),
+    inset 0 1px 0 rgba(151, 182, 255, 0.18);
+}
+
+.ga-page [data-state="front"] .ga-gallery-card-inner {
+  box-shadow:
+    0 34px 78px -30px rgba(0, 0, 0, 0.6),
+    0 0 44px -20px rgba(96, 165, 250, 0.3),
+    inset 0 1px 0 rgba(151, 182, 255, 0.1);
+}
+
+.ga-page [data-state="back"] .ga-gallery-headline h3 {
+  color: rgba(238, 243, 255, 0.85);
+}
+
+.ga-page .ga-gallery-reflect {
+  background: radial-gradient(50% 100% at 50% 50%, rgba(96, 165, 250, 0.4), rgba(59, 130, 246, 0.08) 60%, transparent 80%);
+}
+
+.ga-page .ga-gallery-note {
+  color: rgba(122, 140, 185, 0.75);
+}
+
+.ga-page .ga-gal-rule {
+  background: linear-gradient(90deg, #6ea8ff, transparent);
+}
+
+.ga-page .ga-gal-side span::before,
+.ga-page .ga-gal-side--right span::after {
+  background: #6ea8ff;
+}
+
+.ga-page .ga-gal-foot-l::before {
+  border-color: #6ea8ff;
+}
+
+#ga-projects.ga-gallery .ga-section-label::before {
+  background: linear-gradient(90deg, #6ea8ff, #a78bfa);
+}
+
+body.ga-gallery-active .ga-nav {
+  background: rgba(8, 14, 34, 0.5);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-bottom-color: rgba(151, 182, 255, 0.12);
+}
+
+body.ga-gallery-active .ga-nav .ga-brand-text strong {
+  color: #ffffff;
+}
+
+body.ga-gallery-active .ga-nav .ga-brand-text small,
+body.ga-gallery-active .ga-nav-links a {
+  color: #c4d3f2;
+}
+
+body.ga-gallery-active .ga-nav-links a:hover {
+  color: #93c5fd;
+}
+
+body.ga-gallery-active .ga-burger {
+  color: #ffffff;
+}
+
+@media (max-width: 899px) {
+  #ga-projects.ga-gallery {
+    background:
+      radial-gradient(120% 60% at 50% 0%, rgba(96, 165, 250, 0.12), rgba(16, 11, 8, 0) 55%),
+      linear-gradient(180deg, #0e1d42 0%, #0b1733 60%, #0a1430 100%);
+  }
+
+  [data-state="active"] .ga-gallery-card-inner {
+    border-color: rgba(147, 197, 253, 0.6);
+    box-shadow:
+      0 34px 80px -28px rgba(0, 0, 0, 0.72),
+      0 0 54px -16px rgba(59, 130, 246, 0.4);
+  }
+}
+
+/* ── Skills / Laboratory ──────────────────────────────────────────────────── */
+.ga-page .ga-skill {
+  background: #ffffff;
+  box-shadow: 0 10px 30px -26px rgba(16, 42, 92, 0.3);
+}
+
+.ga-page .ga-skill:hover {
+  border-color: rgba(37, 99, 235, 0.5);
+  box-shadow: 0 24px 50px -30px rgba(16, 42, 92, 0.4), 0 0 36px -18px rgba(37, 99, 235, 0.4);
+}
+
+.ga-page .ga-skill:hover .ga-skill-stack li {
+  border-color: rgba(37, 99, 235, 0.3);
+}
+
+.ga-page .ga-skill-sweep {
+  background: linear-gradient(105deg, transparent 40%, rgba(37, 99, 235, 0.07) 50%, transparent 60%);
+}
+
+/* Every domain chip stays inside the blue→indigo→violet ramp. */
+.ga-page .ga-skill-ember { --ac: #2563eb; }
+.ga-page .ga-skill-gold { --ac: #4f46e5; }
+.ga-page .ga-skill-bronze { --ac: #1769e8; }
+.ga-page .ga-skill-tangerine { --ac: #7c3aed; }
+.ga-page .ga-skill-brass { --ac: #0ea5e9; }
+
+/* ── Careers / orbit ─────────────────────────────────────────────────────── */
+.ga-page .ga-careers {
+  background: #ffffff;
+}
+
+.ga-page .ga-orbit-ring {
+  border-color: rgba(37, 99, 235, 0.16);
+}
+
+.ga-page .ga-orbit-ring--ticks i {
+  background: rgba(37, 99, 235, 0.5);
+}
+
+/* Career orbit core — this is a navy disc, so the label/role/domain inside it
+   need light, high-contrast colours. The base sized the core at 30% of the
+   orbit, which forced "Live role for this track" and "AI Platform Engineer" to
+   wrap mid-phrase and spilled the domain line over the edge. */
+.ga-page .ga-orbit-core {
+  width: 46%;
+  min-height: 46%;
+  padding: 1.5rem 1.1rem;
+  border: 1px solid rgba(37, 99, 235, 0.5);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(37, 99, 235, 0.28), rgba(124, 58, 237, 0.08) 55%, transparent 75%),
+    #102a5c;
+  box-shadow: 0 26px 70px -24px rgba(37, 99, 235, 0.55);
+  /* The base column set align-items but never justify-content, so the stack
+     was packed against the top of the disc. Centre it on both axes, and cap
+     each line so nothing runs into the circle's curve. */
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.ga-page .ga-orbit-core__label,
+.ga-page .ga-orbit-core__role,
+.ga-page .ga-orbit-core__domain {
+  max-width: 100%;
+  margin: 0;
+}
+
+.ga-page .ga-orbit-core__label {
+  color: #93c5fd;
+  font-size: 0.5rem;
+  letter-spacing: 0.2em;
+  line-height: 1.5;
+  text-wrap: balance;
+}
+
+.ga-page .ga-orbit-core__role {
+  color: #ffffff;
+  font-size: clamp(1rem, 1.35vw, 1.35rem);
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.ga-page .ga-orbit-core__domain {
+  color: #cbd9f2;
+  font-size: 0.5rem;
+  letter-spacing: 0.14em;
+  line-height: 1.5;
+  text-wrap: balance;
+}
+
+.ga-page .ga-orbit-node__dot {
+  border-color: #2563eb;
+  background: radial-gradient(circle at 40% 35%, #a6c8ff, #2563eb 70%);
+  box-shadow: 0 0 16px rgba(37, 99, 235, 0.55);
+}
+
+@media (max-width: 899px) {
+  /* The orbit shrinks to min(78vw, 430px) here, so the core needs a slightly
+     larger share and tighter type for its three lines to stay inside the disc. */
+  .ga-page .ga-orbit-core {
+    width: 52%;
+    min-height: 52%;
+    padding: 1.1rem 0.8rem;
+    gap: 0.35rem;
+  }
+
+  .ga-page .ga-orbit-core__label {
+    font-size: 0.44rem;
+    letter-spacing: 0.16em;
+  }
+
+  .ga-page .ga-orbit-core__domain {
+    font-size: 0.44rem;
+    letter-spacing: 0.1em;
+  }
+}
+
+.ga-page .ga-orbit-node__label {
+  color: #33486b;
+}
+
+.ga-page .ga-orbit-node:hover .ga-orbit-node__label,
+.ga-page .ga-orbit-node--active .ga-orbit-node__label {
+  color: #102a5c;
+}
+
+.ga-page .ga-role {
+  background: rgba(255, 255, 255, 0.94);
+}
+
+.ga-page .ga-role-index {
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: #ffffff;
+}
+
+.ga-page .ga-role-name {
+  color: #102a5c;
+}
+
+.ga-page .ga-role-domain {
+  border-color: rgba(37, 99, 235, 0.35);
+  color: #2563eb;
+  background: #eef5ff;
+}
+
+.ga-page .ga-career-row {
+  background: #ffffff;
+}
+
+.ga-page .ga-career-row-index {
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: #ffffff;
+}
+
+.ga-page .ga-career-row h3 {
+  color: #102a5c;
+}
+
+.ga-page .ga-career-row > span:last-child {
+  border-color: rgba(37, 99, 235, 0.3);
+  color: #2563eb;
+  background: #eef5ff;
+}
+
+.ga-page .ga-careers-panel {
+  border-color: var(--ga-line);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.ga-page .ga-careers-panel__role h3 {
+  color: #102a5c;
+}
+
+.ga-page .ga-skill-chips li {
+  background: #eef5ff;
+  color: #2563eb;
+}
+
+.ga-page .ga-careers-cta {
+  border-color: rgba(37, 99, 235, 0.4);
+  color: #2563eb;
+}
+
+.ga-page .ga-careers-cta:hover {
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  border-color: transparent;
+  color: #ffffff;
+}
+
+.ga-page .ga-careers-live {
+  color: #2563eb;
+}
+
+.ga-page .ga-careers-live-dot {
+  background: #1769e8;
+  box-shadow: 0 0 0 0 rgba(23, 105, 232, 0.45);
+  animation: ga-living-2026 2.2s ease-out infinite;
+}
+
+@keyframes ga-living-2026 {
+  0% { box-shadow: 0 0 0 0 rgba(23, 105, 232, 0.45); }
+  70% { box-shadow: 0 0 0 7px rgba(23, 105, 232, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(23, 105, 232, 0); }
+}
+
+/* ── Learning ────────────────────────────────────────────────────────────── */
+.ga-page .ga-learning-card {
+  border-color: var(--ga-line);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ga-page .ga-learning-card:hover {
+  border-color: rgba(37, 99, 235, 0.42);
+  background: rgba(37, 99, 235, 0.055);
+}
+
+.ga-page .ga-learning-icon {
+  color: #2563eb;
+}
+
+.ga-page .ga-learning-index {
+  color: #4f46e5;
+}
+
+.ga-page .ga-learning-sweep {
+  background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.16), transparent);
+}
+
+/* ── Certifications ──────────────────────────────────────────────────────── */
+.ga-page .ga-certs {
+  background: #ffffff;
+}
+
+.ga-page .ga-cert {
+  filter: drop-shadow(0 24px 44px rgba(16, 42, 92, 0.16));
+}
+
+.ga-page .ga-cert-inner {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M0 80 L80 0 M-10 90 L10 110 M70 -10 L90 10' stroke='%232563eb' stroke-opacity='0.08'/%3E%3C/svg%3E"),
+    linear-gradient(165deg, #ffffff, #f4f8ff);
+  border-color: rgba(16, 42, 92, 0.28);
+  border-radius: 18px;
+  box-shadow: 0 30px 60px -34px rgba(16, 42, 92, 0.35);
+}
+
+.ga-page .ga-cert-inner::before {
+  border-color: rgba(16, 42, 92, 0.16);
+}
+
+.ga-page .ga-cert-inner:hover {
+  border-color: rgba(37, 99, 235, 0.6);
+  box-shadow: 0 60px 100px -44px rgba(16, 42, 92, 0.4), 0 0 50px -20px rgba(37, 99, 235, 0.45);
+}
+
+.ga-page .ga-cert-kicker {
+  color: #2563eb;
+}
+
+.ga-page .ga-cert-mark {
+  color: #64748b;
+}
+
+.ga-page .ga-cert h3 {
+  color: #102a5c;
+}
+
+.ga-page .ga-cert-focus {
+  color: #33486b;
+}
+
+.ga-page .ga-cert-guard {
+  color: rgba(37, 99, 235, 0.1);
+}
+
+.ga-page .ga-cert-seal {
+  border-color: rgba(37, 99, 235, 0.55);
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: #ffffff;
+  box-shadow: 0 10px 26px -10px rgba(37, 99, 235, 0.55);
+}
+
+.ga-page .ga-cert-line {
+  background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.35), transparent);
+}
+
+.ga-page .ga-certs-note {
+  color: #64748b;
+}
+
+.ga-page .ga-certs-lede {
+  max-width: 42rem;
+  margin: 1.1rem 0 0;
+  font-size: clamp(0.95rem, 1.05vw, 1.08rem);
+  line-height: 1.7;
+  color: #33486b;
+}
+
+/* The card became a button, so it needs the reset a <button> does not get for
+   free. The tilt hook writes `transform` inline, which outranks the :hover rule
+   below on a fine pointer — both write the same lift, so the two never fight. */
+.ga-page .ga-cert-inner--action {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.ga-page .ga-cert-inner--action:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 4px;
+}
+
+.ga-page .ga-cert-stage {
+  margin-top: 0.5rem;
+  font-family: var(--ga-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.ga-page .ga-cert-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid rgba(37, 99, 235, 0.3);
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.07);
+  color: #2563eb;
+  font-family: var(--ga-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition: background 0.35s var(--ga-ease), color 0.35s var(--ga-ease),
+    border-color 0.35s var(--ga-ease);
+}
+
+.ga-page .ga-cert-inner--action:hover .ga-cert-cta {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+}
+
+/* ── Proof pillars: credential / project / repository ─────────────────── */
+.ga-page .ga-proof {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.9rem, 1.6vw, 1.4rem);
+  margin: clamp(2.4rem, 4vw, 3.4rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ga-page .ga-proof-item {
+  padding: clamp(1.1rem, 1.8vw, 1.6rem);
+  border: 1px solid rgba(16, 42, 92, 0.12);
+  border-radius: 16px;
+  background: linear-gradient(165deg, #ffffff, #f6f9ff);
+  box-shadow: 0 22px 48px -34px rgba(16, 42, 92, 0.4);
+}
+
+.ga-page .ga-proof-icon {
+  color: #2563eb;
+}
+
+.ga-page .ga-proof-title {
+  margin: 0.7rem 0 0.35rem;
+  font-family: var(--ga-serif);
+  font-size: clamp(1rem, 1.1vw, 1.15rem);
+  font-weight: 600;
+  color: #102a5c;
+}
+
+.ga-page .ga-proof-note {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.6;
+  color: #475569;
+}
+
+/* ── Credential roadmap ───────────────────────────────────────────────── */
+.ga-page .ga-roadmap {
+  margin-top: clamp(2rem, 3.4vw, 3rem);
+  padding: clamp(1.3rem, 2.2vw, 2rem);
+  border: 1px solid rgba(37, 99, 235, 0.16);
+  border-radius: 20px;
+  background:
+    radial-gradient(120% 100% at 100% 0%, rgba(79, 70, 229, 0.06), transparent 60%),
+    linear-gradient(165deg, #ffffff, #f5f8ff);
+  box-shadow: 0 30px 70px -44px rgba(16, 42, 92, 0.45);
+}
+
+.ga-page .ga-roadmap-title {
+  margin: 0;
+  font-family: var(--ga-serif);
+  font-size: clamp(1.15rem, 1.6vw, 1.5rem);
+  font-weight: 600;
+  color: #102a5c;
+}
+
+.ga-page .ga-roadmap-sub {
+  max-width: 44rem;
+  margin: 0.55rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: #475569;
+}
+
+.ga-page .ga-roadmap-list {
+  margin: 1.4rem 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: cv-roadmap;
+}
+
+.ga-page .ga-roadmap-row {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 0.5fr) minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 0.8fr);
+  gap: 0.9rem;
+  align-items: center;
+  padding: 0.72rem 0.9rem;
+  border-top: 1px solid rgba(16, 42, 92, 0.08);
+  font-size: 0.82rem;
+  color: #33486b;
+}
+
+.ga-page .ga-roadmap-row:first-child {
+  border-top: 0;
+}
+
+.ga-page .ga-roadmap-stage {
+  font-weight: 600;
+  color: #102a5c;
+}
+
+.ga-page .ga-roadmap-weeks,
+.ga-page .ga-roadmap-cost {
+  font-family: var(--ga-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  color: #64748b;
+}
+
+.ga-page .ga-roadmap-cost {
+  color: #16a34a;
+  text-align: right;
+}
+
+.ga-page .ga-roadmap-provider {
+  color: #475569;
+}
+
+.ga-page .ga-roadmap-narrative {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.55rem;
+  margin: 1.5rem 0 0;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  background: rgba(37, 99, 235, 0.06);
+  font-family: var(--ga-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #102a5c;
+}
+
+.ga-page .ga-roadmap-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.ga-page .ga-roadmap-arrow {
+  color: #2563eb;
+}
+
+.ga-page .ga-roadmap-caveat {
+  margin: 1.1rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(16, 42, 92, 0.08);
+  font-size: 0.78rem;
+  line-height: 1.7;
+  color: #64748b;
+}
+
+@media (max-width: 899px) {
+  .ga-page .ga-proof {
+    grid-template-columns: 1fr;
+  }
+
+  /* Credential roadmap → cards. The desktop table squeezed into a phone read
+     as loose lines of text; each credential is now its own card:
+       [stage chip] .............. weeks
+       Credential name (the headline)
+       ─────────────────────────────────
+       provider ............... [cost pill]
+     Type sits on a 12/14/16 scale (nothing under 12px), spacing on 8px. */
+  .ga-page .ga-roadmap-list {
+    display: grid;
+    gap: 12px;
+  }
+
+  .ga-page .ga-roadmap-row,
+  .ga-page .ga-roadmap-row:first-child {
+    position: relative;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0 12px;
+    padding: 16px 16px 14px 20px;
+    border: 1px solid rgba(37, 99, 235, 0.14);
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 6px 18px -12px rgba(16, 42, 92, 0.28);
+    overflow: hidden;
+  }
+
+  /* Accent rail — ties the cards into one week-by-week sequence. */
+  .ga-page .ga-roadmap-row::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: linear-gradient(180deg, #2563eb, #7c3aed);
+  }
+
+  .ga-page .ga-roadmap-stage {
+    justify-self: start;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #eef4ff;
+    color: #1d4ed8;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+
+  .ga-page .ga-roadmap-weeks {
+    justify-self: end;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: #475569;
+    white-space: nowrap;
+  }
+
+  /* The divider lives under the headline, so the footer cells stay free to
+     be a plain label and a pill. */
+  .ga-page .ga-roadmap-credential {
+    grid-column: 1 / -1;
+    margin: 12px 0;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(16, 42, 92, 0.08);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.35;
+    color: #102a5c;
+  }
+
+  .ga-page .ga-roadmap-provider {
+    font-size: 14px;
+    color: #475569;
+    white-space: nowrap;
+  }
+
+  /* A labelled pill, not colour alone; #15803d on #ecfdf3 clears AA. */
+  .ga-page .ga-roadmap-cost {
+    justify-self: end;
+    max-width: 9.5rem;
+    padding: 4px 10px;
+    border-radius: 10px;
+    background: #ecfdf3;
+    color: #15803d;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1.35;
+    text-align: center;
+  }
+}
+
+@media (min-width: 561px) and (max-width: 899px) {
+  .ga-page .ga-roadmap-list {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ── CTA band — navy ─────────────────────────────────────────────────────── */
+.ga-page .ga-cta {
+  background:
+    radial-gradient(100% 80% at 50% 110%, rgba(37, 99, 235, 0.3), transparent 60%),
+    radial-gradient(circle at 82% 18%, rgba(99, 152, 255, 0.22), transparent 32%),
+    linear-gradient(160deg, #102a5c 0%, #172e64 100%);
+}
+
+.ga-page .ga-cta::before {
+  background:
+    repeating-linear-gradient(90deg, transparent 0 90px, rgba(255, 255, 255, 0.04) 90px 91px),
+    repeating-linear-gradient(0deg, transparent 0 90px, rgba(255, 255, 255, 0.03) 90px 91px);
+}
+
+.ga-page .ga-cta-horizon {
+  background: radial-gradient(60% 100% at 50% 0%, rgba(37, 99, 235, 0.3), transparent 70%);
+}
+
+.ga-page .ga-cta-glow {
+  background: radial-gradient(50% 50% at 50% 50%, rgba(99, 152, 255, 0.24), transparent 70%);
+}
+
+.ga-page .ga-cta-trail path {
+  stroke: rgba(166, 200, 255, 0.85);
+}
+
+.ga-page .ga-cta .ga-cta-title {
+  color: #ffffff;
+}
+
+.ga-page .ga-cta .ga-cta-title em {
+  background: linear-gradient(100deg, #a6c8ff, #c4b5fd);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.ga-page .ga-cta .ga-cta-sub {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.ga-page .ga-cta .ga-section-label {
+  color: #a6c8ff;
+}
+
+.ga-page .ga-cta .ga-section-label::before {
+  background: linear-gradient(90deg, #a6c8ff, rgba(166, 200, 255, 0));
+}
+
+.ga-page .ga-cta .ga-btn-outline {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+}
+
+.ga-page .ga-cta .ga-btn-outline:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  background-image: none;
+}
+
+.ga-page .ga-cta .ga-cta-meta {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* ── Footer — navy ───────────────────────────────────────────────────────── */
+.ga-page .ga-footer {
+  border-top-color: rgba(255, 255, 255, 0.1);
+  background:
+    radial-gradient(circle at 12% 12%, rgba(37, 99, 235, 0.28), transparent 30%),
+    radial-gradient(circle at 85% 85%, rgba(37, 99, 235, 0.16), transparent 32%),
+    #102a5c;
+}
+
+.ga-page .ga-footer-grid-bg {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
+.ga-page .ga-footer .ga-footer-title {
+  color: #ffffff;
+}
+
+.ga-page .ga-footer .ga-footer-title em {
+  background: linear-gradient(100deg, #a6c8ff, #c4b5fd);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.ga-page .ga-channel-label {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.ga-page .ga-channel-value {
+  color: #ffffff;
+}
+
+.ga-page .ga-channel-icon {
+  color: #a6c8ff;
+}
+
+.ga-page .ga-footer-channel:hover {
+  border-color: rgba(166, 200, 255, 0.5);
+}
+
+.ga-page .ga-footer-divider {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+}
+
+.ga-page .ga-footer-base {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.ga-page .ga-footer-top {
+  color: #a6c8ff;
+}
+
+.ga-page .ga-footer-top:hover {
+  color: #cfe2ff;
+}
+
+/* ── Section chrome ──────────────────────────────────────────────────────── */
+.ga-page .ga-section-label::before {
+  background: linear-gradient(90deg, #2563eb, #7c3aed);
+}
+
+.ga-page .ga-label-index {
+  color: #7c3aed;
+}
+
+.ga-page .ga-sub {
+  color: #64748b;
+}
+
+.ga-page .ga-display em {
+  background: linear-gradient(100deg, #2563eb, #7c3aed);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+/* ── Mobile/tablet vertical rhythm ────────────────────────────────────────
+   Sections kept their desktop padding (96–128px each side) below 900px, so
+   two stacked sections left 200px+ of blank screen before every heading, and
+   heading blocks sat 48–72px above their content. One 8px-based scale here:
+   ~56px section padding on a phone (scaling to 72px on tablet) and a 32px
+   heading → content gap. Desktop is untouched. */
+@media (max-width: 899px) {
+  .ga-page #ga-architecture,
+  .ga-page #ga-modules,
+  .ga-page #ga-agents,
+  .ga-page #ga-career,
+  .ga-page #ga-stats,
+  .ga-page #ga-learning,
+  .ga-page #ga-certs {
+    padding-top: clamp(48px, 12vw, 72px);
+    padding-bottom: clamp(48px, 12vw, 72px);
+  }
+
+  /* The CTA was a full-viewport (100svh) band with its copy centred, which on
+     a phone is a screen of empty navy around one heading. */
+  .ga-page #ga-cta {
+    min-height: 0;
+    padding-top: clamp(64px, 16vw, 88px);
+    padding-bottom: clamp(64px, 16vw, 88px);
+  }
+
+  .ga-page #ga-contact {
+    padding-top: clamp(48px, 12vw, 72px);
+  }
+
+  /* The credo was a 110svh band with 128px padding and its text centred — on
+     a phone that put ~285px of blank above the quote and as much below. Size
+     it to the text; the top padding keeps clear of the absolute "03" index. */
+  .ga-page .ga-quote {
+    min-height: 0;
+    padding-top: 88px;
+    padding-bottom: clamp(56px, 14vw, 80px);
+  }
+
+  .ga-page .ga-quote-index {
+    top: 40px;
+  }
+
+  .ga-page .ga-tl-pin {
+    padding-top: clamp(48px, 12vw, 72px);
+  }
+
+  .ga-page .ga-skills-pin,
+  .ga-page .ga-flow-pin {
+    padding-top: clamp(48px, 12vw, 72px);
+    padding-bottom: clamp(48px, 12vw, 72px);
+  }
+
+  /* Timeline → Skills stacked three paddings (vertical list 4rem, last card
+     2rem, skills top up to 72px) plus a 100svh skills min-height. */
+  .ga-page .ga-tl-vertical {
+    padding-bottom: 0;
+  }
+
+  .ga-page .ga-tl-vcard:last-child {
+    padding-bottom: 0;
+  }
+
+  .ga-page .ga-skills-pin {
+    min-height: 0;
+    padding-top: clamp(40px, 6vw, 48px);
+  }
+
+  .ga-page .ga-arch-head,
+  .ga-page .ga-agent-head,
+  .ga-page .ga-learning-head,
+  .ga-page .ga-certs-head {
+    margin-bottom: 32px;
+  }
+
+  /* Label, heading and subtitle were stacked with no gap at all here. */
+  .ga-page .ga-modules-head {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ga-page .ga-modules-head + .ga-journey {
+    margin-top: 32px;
+  }
+
+  .ga-page .ga-footer-inner {
+    gap: 32px;
+  }
+}
+
+/* Agentic System on a phone: the satellite labels were 7px (0.44rem) with
+   0.12em tracking, which renders as unreadable mush ("MULTI-AOENT"), and the
+   edge pills clipped against the viewport. Readable 10px labels, tighter
+   tracking and a smaller icon keep every pill inside the canvas. */
+@media (max-width: 560px) {
+  .ga-page .ga-agent-node {
+    gap: 4px;
+    padding: 5px 8px;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+  }
+
+  .ga-page .ga-agent-node-icon {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+  }
+
+  .ga-page .ga-agent-center {
+    width: 112px;
+    height: 112px;
+  }
+
+  .ga-page .ga-agent-center-title {
+    font-size: 13px;
+    letter-spacing: 0.04em;
+  }
+
+  .ga-page .ga-agent-center-sub {
+    font-size: 8px;
+    letter-spacing: 0.12em;
+    line-height: 1.4;
+    text-align: center;
+  }
+}
+
+/* Desktop credo: 110svh left ~280px (1440×900) to ~380px (1920×1080) of blank
+   above and below the centred quote. 90svh keeps it a full-screen moment while
+   trimming ~100px each side. */
+@media (min-width: 900px) {
+  .ga-page .ga-quote {
+    min-height: 90svh;
+  }
+}

@@ -37,15 +37,16 @@ try {
   await client.db(dbName).command({ping: 1});
   console.log(`✓ Connected to database "${dbName}"`);
 
-  for (const name of ["enrollments", "consultations"]) {
+  // Both forms write to the backend's single `leads` collection.
+  for (const name of ["leads"]) {
     const collection = client.db(dbName).collection(name);
     const count = await collection.countDocuments();
-    const latest = await collection.find().sort({submittedAt: -1}).limit(3).toArray();
+    const latest = await collection.find().sort({createdAt: -1}).limit(3).toArray();
 
     console.log(`\n${name}: ${count} document(s)`);
     for (const doc of latest) {
       console.log(
-        `  · ${doc.submittedAt?.toISOString?.() ?? "?"} — ${doc.name} <${doc.email}> ${doc.program ? `[${doc.program}]` : ""}`,
+        `  · ${doc.createdAt?.toISOString?.() ?? "?"} — ${doc.type ?? ""} ${doc.name} <${doc.email}> ${doc.program ? `[${doc.program}]` : ""}`,
       );
     }
   }

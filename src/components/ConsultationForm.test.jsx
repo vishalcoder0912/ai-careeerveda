@@ -33,7 +33,7 @@ const fillValid = () => {
   fill("Select Program", "Data Analytics");
 };
 
-const submit = () => fireEvent.click(screen.getByRole("button", {name: /submit/i}));
+const submit = () => fireEvent.click(screen.getByRole("button", {name: /book my free consultation/i}));
 
 beforeEach(() => {
   localStorage.clear();
@@ -185,7 +185,7 @@ describe("consultation form submission", () => {
     fillValid();
     submit();
 
-    const button = screen.getByRole("button", {name: /submitting/i});
+    const button = screen.getByRole("button", {name: /booking/i});
     expect(button.disabled).toBe(true);
 
     release();

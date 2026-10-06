@@ -47,7 +47,8 @@
 }
 
 .jobs-page .jp-inner {
-  width: min(1400px, calc(100% - 48px));
+  /* The shared site container (site-theme.css tokens). */
+  width: min(calc(100% - 2 * var(--site-gutter, 24px)), var(--site-measure, 1280px));
   margin-inline: auto;
 }
 
@@ -481,7 +482,7 @@
 /* ── Laptop (1024px - 1280px): 2-col job grid, tighter toolbar ────────────── */
 @media (min-width: 1025px) and (max-width: 1280px) {
   .jobs-page .jp-inner {
-    width: min(1280px, calc(100% - 48px));
+    width: min(calc(100% - 2 * var(--site-gutter, 24px)), var(--site-measure, 1280px));
   }
 
   .jobs-hero {

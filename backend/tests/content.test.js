@@ -702,6 +702,55 @@ describe("every registered resource behaves the same way", () => {
   }
 });
 
+// Every resource the panel edits, walked through the full lifecycle the panel
+// drives: create → list → read → update → delete → trash → restore → purge.
+describe("full CRUD for every admin resource", () => {
+  const cases = [
+    ["programs", PUBLISHABLE_PROGRAM, "title"],
+    ["faculty", {name: "Test Mentor", discipline: "Product"}, "name"],
+    ["alumni", {name: "Test Alum", currentCompany: "Example"}, "name"],
+    ["jobs", {title: "Test Job", company: "Example"}, "title"],
+    ["policies", {title: "Test Policy", lead: "Scope."}, "title"],
+    ["faqs", {question: "Test question?", answer: "Test answer."}, "question"],
+  ];
+
+  for (const [resource, payload, field] of cases) {
+    it(`creates, reads, updates, deletes, restores and purges ${resource}`, async () => {
+      const token = await asSuperAdmin();
+      const base = `/api/v1/admin/${resource}`;
+      const auth = (r) => r.set("Authorization", `Bearer ${token}`);
+
+      const created = await auth(request(app).post(base)).send(payload);
+      expect(created.status).toBe(201);
+      const id = created.body.data._id;
+
+      const list = await auth(request(app).get(base));
+      expect(list.body.data.map((r) => r._id)).toContain(id);
+
+      const one = await auth(request(app).get(`${base}/${id}`));
+      expect(one.status).toBe(200);
+      expect(one.body.data[field]).toBe(payload[field]);
+
+      const updated = await auth(request(app).patch(`${base}/${id}`)).send({[field]: "Edited"});
+      expect(updated.status).toBe(200);
+      expect(updated.body.data[field]).toBe("Edited");
+
+      expect((await auth(request(app).delete(`${base}/${id}`))).status).toBe(200);
+      expect((await auth(request(app).get(base))).body.data.map((r) => r._id)).not.toContain(id);
+      const trash = await auth(request(app).get(base).query({deleted: "true"}));
+      expect(trash.body.data.map((r) => r._id)).toContain(id);
+
+      const restored = await auth(request(app).post(`${base}/${id}/restore`)).send({});
+      expect(restored.status).toBe(200);
+      expect(restored.body.data.deletedAt).toBeNull();
+
+      await auth(request(app).delete(`${base}/${id}`));
+      expect((await auth(request(app).delete(`${base}/${id}/permanent`))).status).toBe(200);
+      expect((await auth(request(app).get(`${base}/${id}`))).status).toBe(404);
+    });
+  }
+});
+
 // ── Trash, ordering and the edit guard ──────────────────────────────────────
 //
 // The admin panel promised "you can restore it afterwards" while having no way

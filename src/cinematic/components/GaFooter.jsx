@@ -14,7 +14,13 @@ export const GaFooter = () => {
 
         <div className="ga-footer-channels">
           {contactChannels.map((c) => (
-            <a className="ga-footer-channel" href={c.href} key={c.label} data-cursor>
+            <a
+              className="ga-footer-channel"
+              href={c.href}
+              key={c.label}
+              data-cursor
+              {...(c.external ? {target: "_blank", rel: "noopener noreferrer"} : {})}
+            >
               <span className="ga-channel-label">{c.label}</span>
               <span className="ga-channel-value">
                 <c.icon className="ga-channel-icon" size={16} strokeWidth={1.5} aria-hidden="true" />
@@ -27,6 +33,7 @@ export const GaFooter = () => {
         <div className="ga-footer-divider" aria-hidden="true" />
 
         <div className="ga-footer-base">
+          
           <p>PG Program in Generative AI &amp; Agentic AI</p>
           <a href="#ga-top" className="ga-footer-top" data-cursor>
             Back to top <uiIcons.ArrowUpRight size={14} aria-hidden="true" />
