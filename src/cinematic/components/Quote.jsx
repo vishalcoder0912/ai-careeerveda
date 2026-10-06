@@ -17,11 +17,15 @@ export const AIQuote = () => {
     const words = wordRefs.current.filter(Boolean);
     gsap.set(words, {opacity: 0});
 
+    // Below 900px the credo is sized to its text (~420px), so the desktop range
+    // spread the fade over the whole pass and the words only reached full
+    // strength once scrolled to the top. Finish by the time it is centred.
+    const compact = window.matchMedia("(max-width: 899px)").matches;
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
-        start: "top 80%",
-        end: "bottom 30%",
+        start: compact ? "top 90%" : "top 80%",
+        end: compact ? "center 55%" : "bottom 30%",
         scrub: 0.6,
       },
     });
