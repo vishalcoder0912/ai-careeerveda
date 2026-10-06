@@ -691,3 +691,84 @@ body .consultation-section .cv-grid-layer {
     justify-self: start;
   }
 }
+
+/* ── Polish + stacked-layout alignment ──────────────────────────────────────
+   Eyebrow reads as a credential badge rather than loose blue text. Below
+   1024px the copy block was pushed left (justify-self: start) while its text
+   centred, so the heading sat off the form's axis; both now share one centre
+   line. Phones get a calmer headline and a smaller form badge. */
+body .consultation-section .consultation-copy--panel .section-label {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 6px 10px;
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.06);
+}
+
+body .consultation-section .consultation-copy--panel .section-label::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
+}
+
+@media (max-width: 1024px) {
+  body .consultation-section .consultation-copy--panel {
+    justify-self: center !important;
+    width: 100%;
+    max-width: 600px !important;
+    margin-inline: auto !important;
+    text-align: center;
+  }
+
+  body .consultation-section .consultation-copy--panel .consultation-headline,
+  body .consultation-section .consultation-copy--panel > p:not(.section-label) {
+    margin-inline: auto !important;
+  }
+
+  body .consultation-section .consultation-form {
+    width: 100%;
+    margin-inline: auto !important;
+  }
+}
+
+@media (max-width: 599px) {
+  body .consultation-section .consultation-copy--panel .consultation-headline {
+    font-size: clamp(28px, 8vw, 32px) !important;
+    line-height: 1.12 !important;
+  }
+
+  body .consultation-section .consultation-copy--panel > p:not(.section-label) {
+    font-size: 15px !important;
+  }
+
+  body .consultation-section .consultation-form .consultation-form__head {
+    grid-template-columns: 44px minmax(0, 1fr) !important;
+    gap: 14px !important;
+    align-items: center;
+  }
+
+  body .consultation-section .consultation-form .consultation-form__badge {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 12px !important;
+  }
+
+  body .consultation-section .consultation-form .consultation-form__head h3 {
+    font-size: 20px !important;
+    line-height: 1.2 !important;
+  }
+}
+
+
+/* Directly after the pinned press lane, the section's generic 112px top
+   padding (plus a stray 40px margin on phones) stacked on the lane's own
+   spacing into a large blank band. */
+body .home-defer-press + .consultation-section {
+  margin-top: 0 !important;
+  padding-top: clamp(40px, 5vw, 72px) !important;
+}
