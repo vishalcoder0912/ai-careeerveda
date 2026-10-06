@@ -43,6 +43,10 @@
   color: #000000;
 }
 
+.site-footer .brand-name .cv-career {
+  color: #ffffff;
+}
+
 /* Vertical gradient across the glyphs themselves. background-clip: text is why
    the fill has to be transparent — the text becomes a window onto the gradient. */
 .brand-name .cv-veda {
