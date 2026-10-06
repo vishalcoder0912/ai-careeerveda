@@ -32,7 +32,7 @@ COPY public ./public
 COPY scripts ./scripts
 COPY src ./src
 
-ARG VITE_PUBLIC_API_BASE_URL=""
+ARG VITE_PUBLIC_API_BASE_URL="https://backend.careerveda.in/api/v1"
 ENV VITE_PUBLIC_API_BASE_URL=${VITE_PUBLIC_API_BASE_URL}
 
 RUN npm run build
