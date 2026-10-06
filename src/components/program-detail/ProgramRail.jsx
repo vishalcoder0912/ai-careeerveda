@@ -17,7 +17,7 @@ const ProgramRail = ({activeId}) => {
       program,
       index,
       isActive,
-      href: `/programs/${program.id}`,
+      href: program.landingPath || `/programs/${program.id}`,
     };
   });
 
