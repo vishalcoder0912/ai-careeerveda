@@ -8,7 +8,15 @@ const isAnalyze = process.env.ANALYZE === "true";
 
 export default defineConfig(({mode}) => {
   // "" loads every variable, not just the VITE_-prefixed ones.
-  loadEnv(mode, process.cwd(), "");
+  const env = loadEnv(mode, process.cwd(), "");
+
+  // A production bundle without an API base silently refuses every lead form
+  // submission. CI builds blank on purpose (static prerender), so warn, not fail.
+  if (mode === "production" && !env.VITE_PUBLIC_API_BASE_URL) {
+    console.warn(
+      "\n⚠  VITE_PUBLIC_API_BASE_URL is empty: this build serves static data only and its forms will refuse submissions. Do not deploy it.\n",
+    );
+  }
 
   return {
     plugins: [react(), tailwindcss(), isAnalyze && visualizer({
