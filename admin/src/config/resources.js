@@ -249,6 +249,13 @@ export const RESOURCES = {
       {name: "salaryRange", label: "Salary range", kind: "text", group: "Details"},
       {name: "applicationUrl", label: "Application URL", kind: "text", publish: true, group: "Details"},
       {name: "source", label: "Source", kind: "text", group: "Details"},
+      {
+        name: "postedDate",
+        label: "Posted date",
+        kind: "date",
+        group: "Details",
+        hint: 'Shown on the job card as "Posted <date>". Leave blank to hide it.',
+      },
     ],
   },
 
