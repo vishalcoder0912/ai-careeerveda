@@ -102,6 +102,12 @@ export const contentPlugin = (schema, {slugSource = "title", searchFields = []} 
   schema.statics.slugSource = slugSource;
   schema.statics.searchFields = searchFields;
 
+  // save() then only succeeds if nobody else saved the record since it was
+  // loaded (Mongoose checks __v in the update filter). The revision check in
+  // content.service.js catches a stale client; this catches two requests that
+  // load the same record within milliseconds of each other.
+  schema.set("optimisticConcurrency", true);
+
   schema.set("toJSON", {virtuals: true, versionKey: false});
   schema.set("toObject", {virtuals: true, versionKey: false});
 };

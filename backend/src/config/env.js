@@ -63,6 +63,9 @@ const schema = z.object({
   IMAGEKIT_PRIVATE_KEY: z.string().optional(),
   IMAGEKIT_URL_ENDPOINT: z.string().optional(),
 
+  // A hop count ("1", "2") or an Express trust-proxy list ("loopback, 10.0.0.0/8").
+  TRUST_PROXY: z.string().default("1"),
+
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"]).default("info"),
 });
 
@@ -91,6 +94,7 @@ export const env = {
   ...raw,
   allowedOrigins,
   isProduction: raw.NODE_ENV === "production",
+  trustProxy: /^\d+$/.test(raw.TRUST_PROXY.trim()) ? Number(raw.TRUST_PROXY) : raw.TRUST_PROXY,
   isTest: raw.NODE_ENV === "test",
   // Firestore detection and config
   isFirestore: raw.MONGODB_URI.includes(".firestore.goog") || raw.MONGODB_URI.startsWith("firestore://"),

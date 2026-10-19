@@ -144,6 +144,8 @@ const ResourceList = () => {
   const canRead = Boolean(resource && can(resourcePermission(resource, "read")));
   const canCreate = Boolean(resource && can(resourcePermission(resource, "create")));
   const canUpdate = Boolean(resource && can(resourcePermission(resource, "update")));
+  // Going live is its own grant: editors send work for review, admins publish.
+  const canPublish = canUpdate && can("content.publish");
   const canDelete = Boolean(resource && can(resourcePermission(resource, "delete")));
   const canBulk = canUpdate || canDelete;
 
@@ -462,7 +464,7 @@ const ResourceList = () => {
         <button type="button" className="btn btn--small" onClick={() => navigate(`/${resource.name}/${item._id}`)}>
           {canUpdate ? "Edit" : "View"}
         </button>
-        {canUpdate ? (
+        {(item.status === "published" ? canUpdate : canPublish) ? (
           <button type="button" className="btn btn--small" disabled={busy} onClick={() => togglePublish(item)}>
             {/* On a listing awaiting review this button IS the approve action —
                 publishing is what approval means, and it still has to clear the
@@ -482,7 +484,7 @@ const ResourceList = () => {
             Send for review
           </button>
         ) : null}
-        {canUpdate && item.status === "in-review" ? (
+        {canPublish && item.status === "in-review" ? (
           <button type="button" className="btn btn--small btn--danger" disabled={busy} onClick={() => askReject(item)}>
             Reject
           </button>
@@ -598,9 +600,11 @@ const ResourceList = () => {
             <>
               {canUpdate ? (
                 <>
-                  <button type="button" className="btn" disabled={busy} onClick={() => askBulk(() => api.bulkStatus(selected, "published"), "Publish", "publish")}>
-                    Publish
-                  </button>
+                  {canPublish ? (
+                    <button type="button" className="btn" disabled={busy} onClick={() => askBulk(() => api.bulkStatus(selected, "published"), "Publish", "publish")}>
+                      Publish
+                    </button>
+                  ) : null}
                   <button type="button" className="btn" disabled={busy} onClick={() => askBulk(() => api.bulkStatus(selected, "draft"), "Unpublish", "unpublish")}>
                     Unpublish
                   </button>

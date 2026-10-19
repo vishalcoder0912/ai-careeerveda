@@ -653,3 +653,17 @@ body .site-footer {
     animation-duration: 0.01ms !important;
   }
 }
+
+/* Stacked tablet hero (861–1024): robot, copy and stats share one centre line
+   and one 720px measure. The label ring is hidden in this range, so the glass
+   frame no longer bulges past the stage — its old -41px bottom reached 17px
+   into the copy card below a 24px gap. */
+@media (min-width: 861px) and (max-width: 1024px) {
+  body .spline-page.spline-page--grid .hero-spline-stage::before {
+    inset: 0;
+  }
+
+  body .spline-page.spline-page--grid .stat-strip {
+    width: min(100% - 48px, 720px) !important;
+  }
+}

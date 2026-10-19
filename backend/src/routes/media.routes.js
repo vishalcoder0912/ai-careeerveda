@@ -8,7 +8,7 @@ import {requirePermission, requireSuperAdmin} from "../middleware/authorize.js";
 import {validate} from "../middleware/validate.js";
 import {uploadLimiter, adminLimiter} from "../middleware/rateLimit.js";
 import {PERMISSIONS} from "../config/permissions.js";
-import {MAX_UPLOAD_BYTES, ALLOWED_FOLDERS} from "../services/imagekit.service.js";
+import {MAX_UPLOAD_BYTES, ALLOWED_FOLDERS, isImageKitUrl} from "../services/imagekit.service.js";
 import {stripTags} from "../utils/sanitize.js";
 import {badRequest} from "../utils/apiError.js";
 
@@ -59,15 +59,16 @@ const updateBody = z.object({
     .object({x: z.number().min(0).max(1), y: z.number().min(0).max(1)})
     .optional(),
   // The delivery URL may be rewritten (account moves, CDN changes), but only
-  // to an http(s) address — a javascript: value in an image src is an XSS
-  // vector on some renderers. fileId stays immutable: it is the handle for
-  // deleting the remote object and must describe the bytes actually stored.
-  url: z
+  // to another ImageKit address — the same rule /from-url applies, so an edit
+  // cannot point a library image at an arbitrary tracker or a javascript: URI.
+  // fileId stays immutable: it is the handle for deleting the remote object and
+  // must describe the bytes actually stored.
+  url: z.string().max(1000).refine(isImageKitUrl, "Only ImageKit URLs (ik.imagekit.io) are allowed").optional(),
+  thumbnailUrl: z
     .string()
     .max(1000)
-    .refine((value) => /^https?:\/\//i.test(value), "URL must start with http(s)")
+    .refine((value) => value === "" || isImageKitUrl(value), "Only ImageKit URLs (ik.imagekit.io) are allowed")
     .optional(),
-  thumbnailUrl: z.string().max(1000).optional(),
 });
 
 mediaRouter.use(authenticate);

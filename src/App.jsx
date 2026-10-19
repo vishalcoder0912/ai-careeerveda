@@ -1,4 +1,4 @@
-import {useEffect, lazy} from "react";
+import {useEffect, useRef, lazy} from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
@@ -47,8 +47,18 @@ const ScrollToTop = () => {
   // Null when smooth scrolling is off (reduced motion) — the native branch is
   // the whole path then, not an error case.
   const lenis = useLenis();
+  // The location this effect last handled. Starts as the landing location, so
+  // the first mount does NOT reset: the page arrives as prerendered HTML, a
+  // phone visitor scrolls it while the JS loads, and resetting on boot yanked
+  // them back to the hero a second later — the section they were reading
+  // vanished. A fresh load already starts at the top (scrollRestoration is
+  // manual). Keyed on path + hash so Lenis attaching later is not a navigation.
+  const handled = useRef(pathname + hash);
 
   useEffect(() => {
+    const location = pathname + hash;
+    if (handled.current === location) return;
+    handled.current = location;
     if (hash) return;
 
     // The reset must go through Lenis when Lenis drives the page. A native

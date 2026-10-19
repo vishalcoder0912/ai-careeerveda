@@ -1,3 +1,5 @@
+import {isIP} from "node:net";
+
 import {Router} from "express";
 
 import {requireSuperAdmin} from "../middleware/authorize.js";
@@ -35,15 +37,22 @@ securityRouter.get("/metrics", (req, res) => {
 securityRouter.post("/block", (req, res) => {
   const {ip, durationMs, reason} = req.body;
 
-  if (!ip || typeof ip !== "string") {
+  // A real address only: the value becomes a stored row and a lookup key.
+  // Blocking the caller's own address would lock the operator out mid-incident.
+  const durationOk =
+    durationMs === undefined || (Number.isFinite(durationMs) && durationMs > 0);
+  if (typeof ip !== "string" || !isIP(ip) || ip === req.ip || !durationOk) {
     return res.status(400).json({
       success: false,
-      error: {code: "VALIDATION_ERROR", message: "ip is required and must be a string"},
+      error: {
+        code: "VALIDATION_ERROR",
+        message: "ip must be a valid address other than your own, and durationMs a positive number",
+      },
       meta: {requestId: req.id},
     });
   }
 
-  blockIP(ip, {durationMs, reason});
+  blockIP(ip, {durationMs, reason: typeof reason === "string" ? reason : undefined});
   return res.json({
     success: true,
     data: {message: `IP ${ip} blocked`},

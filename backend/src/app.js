@@ -32,8 +32,12 @@ import {metricsMiddleware} from "./services/metrics.js";
 export const createApp = ({extraRouters = []} = {}) => {
   const app = express();
 
- 
-  app.set("trust proxy", 1);
+  // How many proxy hops sit in front of this process. Every per-IP control
+  // (rate limits, the blocklist, the anomaly counters) keys on req.ip, so this
+  // must equal the real hop count: one too few and every visitor shares the
+  // proxy's address and one bucket; one too many and a client can spoof its IP
+  // with X-Forwarded-For. Cloud Run alone is 1; Cloudflare in front of it is 2.
+  app.set("trust proxy", env.trustProxy);
 
   // Advertising Express and its version is free reconnaissance.
   app.disable("x-powered-by");

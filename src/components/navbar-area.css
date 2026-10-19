@@ -717,11 +717,6 @@ body header.site-nav .nav-container .site-nav-brand .brand-name .cv-career {
   color: #0f172a !important;
 }
 
-body header.site-nav .nav-container .brand .brand-tagline,
-body header.site-nav .nav-container .site-nav-brand .brand-tagline {
-  color: #0e9488 !important;
-}
-
 /* Desktop scrolled: cancel the legacy fade-to-pill completely and keep the
    three-zone grid doing its job — brand and CTA stay put, the pill stays a
    quiet transparent track on the same light bar. */

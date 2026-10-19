@@ -4,6 +4,17 @@
    can never bleed into the rest of the site.
    Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â */
 
+/* Readable-text floor for phones and tablets. The page's mono labels, chips and
+   kickers are sized 0.5–0.66rem (8–10.5px) for the desktop composition; every
+   one of those declarations is written max(var(--ga-fs-floor, 0px), …), so on
+   desktop the floor is 0 and nothing changes, and below 900px none of them
+   renders under 11px. */
+@media (max-width: 900px) {
+  .ga-page {
+    --ga-fs-floor: 11px;
+  }
+}
+
 .ga-page {
   --ga-bg: #090807;
   --ga-bg-2: #11100e;
@@ -108,7 +119,7 @@
   align-items: center;
   gap: 0.8rem;
   font-family: var(--ga-mono);
-  font-size: 0.68rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.68rem);
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--ga-gold);
@@ -138,7 +149,7 @@
   align-items: center;
   gap: 0.6rem;
   font-family: var(--ga-mono);
-  font-size: 0.68rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.68rem);
   letter-spacing: 0.26em;
   text-transform: uppercase;
   padding: var(--btn-pad);
@@ -407,7 +418,7 @@
 
 .ga-brand-text small {
   font-family: var(--ga-mono);
-  font-size: 0.52rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.52rem);
   letter-spacing: 0.3em;
   color: var(--ga-ink-3);
   text-transform: uppercase;
@@ -420,7 +431,7 @@
 
 .ga-nav-links a {
   font-family: var(--ga-mono);
-  font-size: 0.62rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.62rem);
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--ga-ink-2);
@@ -685,7 +696,7 @@
   align-items: center;
   gap: 1.1rem;
   font-family: var(--ga-mono);
-  font-size: 0.66rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.66rem);
   letter-spacing: 0.34em;
   color: var(--ga-ink-2);
   text-transform: uppercase;
@@ -947,7 +958,7 @@
 .ga-tl-tags em {
   font-family: var(--ga-mono);
   font-style: normal;
-  font-size: 0.62rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.62rem);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--ga-gold-bright);
@@ -1000,7 +1011,7 @@
 
 .ga-tl-caption-title {
   font-family: var(--ga-mono);
-  font-size: 0.66rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.66rem);
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--ga-ink-2);
@@ -1008,7 +1019,7 @@
 
 .ga-tl-caption-hint {
   font-family: var(--ga-mono);
-  font-size: 0.54rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.54rem);
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--ga-ink-3);
@@ -1096,7 +1107,7 @@
 
 .ga-skill-id {
   font-family: var(--ga-mono);
-  font-size: 0.62rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.62rem);
   letter-spacing: 0.22em;
   color: var(--ga-gold);
 }
@@ -1138,7 +1149,7 @@
 
 .ga-skill-stack li {
   font-family: var(--ga-mono);
-  font-size: 0.56rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.56rem);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ga-ink-2);
@@ -1203,7 +1214,7 @@
   top: 3.2rem;
   left: clamp(1.2rem, 4vw, 3.5rem);
   font-family: var(--ga-mono);
-  font-size: 0.68rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.68rem);
   letter-spacing: 0.3em;
   color: var(--ga-ink-3);
 }
@@ -1241,7 +1252,7 @@
   margin-top: 2.4rem;
   font-family: var(--ga-mono);
   font-style: normal;
-  font-size: 0.62rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.62rem);
   letter-spacing: 0.34em;
   text-transform: uppercase;
   color: var(--ga-ink-3);
@@ -1336,7 +1347,7 @@
 
 .ga-layer-index {
   font-family: var(--ga-mono);
-  font-size: 0.58rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.58rem);
   letter-spacing: 0.26em;
   text-transform: uppercase;
   color: var(--ga-ink-3);
@@ -1569,7 +1580,7 @@
 
 .ga-agent-center-sub {
   font-family: var(--ga-mono);
-  font-size: 0.5rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.5rem);
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: #f97316;
@@ -1587,7 +1598,7 @@
   z-index: 2;
   color: #163b73;
   font-family: var(--ga-sans);
-  font-size: 0.66rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.66rem);
   font-weight: 600;
   letter-spacing: 0.12em;
   white-space: nowrap;
@@ -1713,7 +1724,7 @@
 
 .ga-step-index {
   font-family: var(--ga-mono);
-  font-size: 0.56rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.56rem);
   letter-spacing: 0.24em;
   color: var(--ga-ink-3);
   width: 2rem;
@@ -1738,7 +1749,7 @@
 .ga-step-body em {
   font-family: var(--ga-mono);
   font-style: normal;
-  font-size: 0.54rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.54rem);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--ga-ink-3);
@@ -1782,7 +1793,7 @@
 
 .ga-flow-caption {
   font-family: var(--ga-mono);
-  font-size: 0.56rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.56rem);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--ga-ink-3);
@@ -1890,7 +1901,7 @@
 
 .ga-gallery-tag {
   font-family: var(--ga-mono);
-  font-size: 0.66rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.66rem);
   letter-spacing: 0.32em;
   text-transform: uppercase;
   color: var(--ga-ink-2);
@@ -1904,7 +1915,7 @@
 
 .ga-gallery-head-r {
   font-family: var(--ga-mono);
-  font-size: 0.58rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.58rem);
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--ga-ink-3);
@@ -2035,7 +2046,7 @@
   display: block;
   margin-top: 0.42rem;
   font-family: var(--ga-mono);
-  font-size: 0.5rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.5rem);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--ga-gold);
@@ -2058,7 +2069,7 @@
   gap: 0.5rem;
   margin-top: 0.7rem;
   font-family: var(--ga-mono);
-  font-size: 0.56rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.56rem);
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--ga-gold-bright);
@@ -2158,7 +2169,7 @@
 
 .ga-gallery-sidel span {
   font-family: var(--ga-mono);
-  font-size: 0.5rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.5rem);
   letter-spacing: 0.34em;
   text-transform: uppercase;
   color: rgba(240, 169, 63, 0.4);
@@ -2177,7 +2188,7 @@
 .ga-gallery-foot-l,
 .ga-gallery-foot-r {
   font-family: var(--ga-mono);
-  font-size: 0.54rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.54rem);
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--ga-ink-3);
@@ -2188,7 +2199,7 @@
   z-index: 12;
   text-align: center;
   font-family: var(--ga-mono);
-  font-size: 0.52rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.52rem);
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--ga-ink-3);
@@ -2365,7 +2376,7 @@
 
 .ga-orbit-core__label {
   font-family: var(--ga-mono);
-  font-size: 0.56rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.56rem);
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--ga-gold);
@@ -2382,7 +2393,7 @@
 
 .ga-orbit-core__domain {
   font-family: var(--ga-mono);
-  font-size: 0.54rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.54rem);
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--ga-ink-3);
@@ -2432,7 +2443,7 @@
 
 .ga-careers-panel__count {
   font-family: var(--ga-mono);
-  font-size: 0.62rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.62rem);
   letter-spacing: 0.3em;
   color: var(--ga-ink-3);
 }
@@ -2453,7 +2464,7 @@
 
 .ga-careers-panel__role p {
   font-family: var(--ga-mono);
-  font-size: 0.66rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.66rem);
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--ga-gold);
@@ -2483,7 +2494,7 @@
 
 .ga-salary-loc {
   font-family: var(--ga-mono);
-  font-size: 0.62rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.62rem);
   letter-spacing: 0.26em;
   color: var(--ga-ink-3);
 }
@@ -2504,7 +2515,7 @@
 .ga-salary-source {
   margin-top: 0.3rem;
   font-family: var(--ga-mono);
-  font-size: 0.56rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.56rem);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--ga-ink-3);
@@ -2519,7 +2530,7 @@
 
 .ga-skill-label {
   font-family: var(--ga-mono);
-  font-size: 0.62rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.62rem);
   letter-spacing: 0.26em;
   text-transform: uppercase;
   color: var(--ga-ink-3);
@@ -2623,7 +2634,7 @@
 
 .ga-stat-label {
   font-family: var(--ga-mono);
-  font-size: 0.62rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.62rem);
   letter-spacing: 0.26em;
   text-transform: uppercase;
   color: var(--ga-gold-bright);
@@ -2720,7 +2731,7 @@
   right: 1.2rem;
   top: 1.2rem;
   font-family: var(--ga-mono);
-  font-size: 0.6rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.6rem);
   letter-spacing: 0.2em;
   color: var(--ga-ink-3);
 }
@@ -2825,7 +2836,7 @@
 
 .ga-cert-kicker {
   font-family: var(--ga-mono);
-  font-size: 0.54rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.54rem);
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--ga-gold);
@@ -2835,7 +2846,7 @@
 
 .ga-cert-mark {
   font-family: var(--ga-mono);
-  font-size: 0.6rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.6rem);
   color: var(--ga-ink-3);
   margin-top: 0.3rem;
   letter-spacing: 0.16em;
@@ -2856,7 +2867,7 @@
 
 .ga-cert-focus {
   font-family: var(--ga-mono);
-  font-size: 0.58rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.58rem);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--ga-ink-2);
@@ -3018,7 +3029,7 @@
 
 .ga-cta-meta {
   font-family: var(--ga-mono);
-  font-size: 0.56rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.56rem);
   letter-spacing: 0.26em;
   text-transform: uppercase;
   color: var(--ga-ink-3);
@@ -3088,7 +3099,7 @@
 
 .ga-channel-label {
   font-family: var(--ga-mono);
-  font-size: 0.56rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.56rem);
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--ga-ink-3);
@@ -3119,7 +3130,7 @@
   flex-wrap: wrap;
   gap: 1rem;
   font-family: var(--ga-mono);
-  font-size: 0.56rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.56rem);
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: var(--ga-ink-3);
@@ -3267,7 +3278,7 @@
   }
 
   .ga-tl-v-body .ga-tl-tags em {
-    font-size: 0.62rem;
+    font-size: max(var(--ga-fs-floor, 0px), 0.62rem);
     padding: 0.32rem 0.6rem;
   }
 
@@ -3336,7 +3347,7 @@
   }
 
   .ga-agent-node {
-    font-size: 0.5rem;
+    font-size: max(var(--ga-fs-floor, 0px), 0.5rem);
     padding: 0.4rem 0.55rem;
   }
 
@@ -3387,7 +3398,7 @@
     top: 0.7rem;
     right: 0.8rem;
     font-family: var(--ga-mono);
-    font-size: 0.46rem;
+    font-size: max(var(--ga-fs-floor, 0px), 0.46rem);
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--ga-gold);
@@ -3530,7 +3541,7 @@
   }
 
   .ga-agent-node {
-    font-size: 0.44rem;
+    font-size: max(var(--ga-fs-floor, 0px), 0.44rem);
     padding: 0.32rem 0.45rem;
   }
 
@@ -3579,7 +3590,7 @@
 
   .ga-page .ga-orbit .ga-orbit-core__label,
   .ga-page .ga-orbit .ga-orbit-core__domain {
-    font-size: 0.6rem;
+    font-size: max(var(--ga-fs-floor, 0px), 0.6rem);
   }
 
   .ga-page .ga-orbit .ga-orbit-node,
@@ -4003,7 +4014,7 @@
   flex: 1;
   min-width: 0;
   font-family: var(--ga-mono);
-  font-size: clamp(0.48rem, 0.52vw, 0.58rem);
+  font-size: max(var(--ga-fs-floor, 0px), clamp(0.48rem, 0.52vw, 0.58rem));
   letter-spacing: 0.16em;
   text-transform: uppercase;
   text-align: right;
@@ -4025,7 +4036,7 @@
 
 .ga-gallery-screen-kicker {
   font-family: var(--ga-mono);
-  font-size: clamp(0.52rem, 0.6vw, 0.66rem);
+  font-size: max(var(--ga-fs-floor, 0px), clamp(0.52rem, 0.6vw, 0.66rem));
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--ga-acc, var(--ga-gold));
@@ -4046,7 +4057,7 @@
 .ga-gallery-screen-chips em {
   font-family: var(--ga-mono);
   font-style: normal;
-  font-size: clamp(0.48rem, 0.52vw, 0.58rem);
+  font-size: max(var(--ga-fs-floor, 0px), clamp(0.48rem, 0.52vw, 0.58rem));
   letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 0.22rem 0.5rem;
@@ -4077,7 +4088,7 @@
 .ga-gallery-num {
   flex-shrink: 0;
   font-family: var(--ga-mono);
-  font-size: clamp(0.54rem, 0.6vw, 0.66rem);
+  font-size: max(var(--ga-fs-floor, 0px), clamp(0.54rem, 0.6vw, 0.66rem));
   letter-spacing: 0.2em;
   color: var(--ga-acc, var(--ga-gold));
 }
@@ -4089,7 +4100,7 @@
   margin-top: auto;
   padding-top: 0.1rem;
   font-family: var(--ga-mono);
-  font-size: clamp(0.5rem, 0.56vw, 0.62rem);
+  font-size: max(var(--ga-fs-floor, 0px), clamp(0.5rem, 0.56vw, 0.62rem));
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--ga-ink-2);
@@ -4172,20 +4183,20 @@
 }
 
 [data-state="active"] .ga-gallery-screen-kicker {
-  font-size: clamp(0.62rem, 0.72vw, 0.8rem);
+  font-size: max(var(--ga-fs-floor, 0px), clamp(0.62rem, 0.72vw, 0.8rem));
 }
 
 [data-state="active"] .ga-gallery-screen-chips em {
-  font-size: clamp(0.58rem, 0.64vw, 0.72rem);
+  font-size: max(var(--ga-fs-floor, 0px), clamp(0.58rem, 0.64vw, 0.72rem));
   padding: 0.3rem 0.72rem;
 }
 
 [data-state="active"] .ga-gallery-num {
-  font-size: clamp(0.68rem, 0.76vw, 0.84rem);
+  font-size: max(var(--ga-fs-floor, 0px), clamp(0.68rem, 0.76vw, 0.84rem));
 }
 
 [data-state="active"] .ga-gallery-cta {
-  font-size: clamp(0.62rem, 0.7vw, 0.78rem);
+  font-size: max(var(--ga-fs-floor, 0px), clamp(0.62rem, 0.7vw, 0.78rem));
   color: var(--ga-ink);
   opacity: 1;
 }
@@ -4258,7 +4269,7 @@
   transform: translateX(-50%);
   z-index: 30;
   font-family: var(--ga-mono);
-  font-size: 0.56rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.56rem);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: rgba(138, 127, 111, 0.75);
@@ -4287,7 +4298,7 @@
 
 .ga-gal-label {
   font-family: var(--ga-mono);
-  font-size: 0.58rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.58rem);
   letter-spacing: 0.34em;
   text-transform: uppercase;
   color: var(--ga-ink-2);
@@ -4306,7 +4317,7 @@
   align-items: flex-end;
   gap: 0.22rem;
   font-family: var(--ga-mono);
-  font-size: 0.52rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.52rem);
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--ga-ink-3);
@@ -4325,7 +4336,7 @@
   gap: 0.62rem;
   z-index: 30;
   font-family: var(--ga-mono);
-  font-size: 0.5rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.5rem);
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--ga-ink-3);
@@ -4379,7 +4390,7 @@
   justify-content: space-between;
   gap: 2rem;
   font-family: var(--ga-mono);
-  font-size: 0.52rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.52rem);
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--ga-ink-3);

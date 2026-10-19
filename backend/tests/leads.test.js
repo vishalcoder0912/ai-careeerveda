@@ -16,6 +16,7 @@ const VALID = {
   email: "asha@example.com",
   mobile: "9217801191",
   userType: "Student",
+  consent: true,
 };
 
 const submit = (payload = {}, headers = {}) => {
@@ -118,17 +119,24 @@ describe("honeypot", () => {
   });
 });
 
+// A repeat is dropped silently: the caller gets exactly the response a new
+// lead gets, so the endpoint cannot be used to test whether a phone number is
+// already in the database.
+const expectSilentDuplicate = (first, second) => {
+  expect(second.status).toBe(201);
+  expect(second.body.data).toEqual(first.body.data);
+  expect(second.body.data).toEqual({ok: true});
+};
+
 describe("one submission per phone number", () => {
-  it("allows one submission and refuses the second on the same phone", async () => {
+  it("allows one submission and silently drops the second on the same phone", async () => {
     await publishedProgram();
     const payload = {type: "enrollment", program: "PG Program in Product Management"};
 
-    expect((await submit(payload)).status).toBe(201);
+    const first = await submit(payload);
+    expect(first.status).toBe(201);
 
-    const second = await submit(payload);
-    expect(second.status).toBe(409);
-    expect(second.body.error.code).toBe("ALREADY_SUBMITTED");
-
+    expectSilentDuplicate(first, await submit(payload));
     expect(await Lead.countDocuments({})).toBe(1);
   });
 
@@ -136,10 +144,9 @@ describe("one submission per phone number", () => {
     await publishedProgram();
     const payload = {type: "enrollment", program: "PG Program in Product Management"};
 
-    await submit(payload);
+    const first = await submit(payload);
 
-    const second = await submit({...payload, email: "second@example.com"});
-    expect(second.status).toBe(409);
+    expectSilentDuplicate(first, await submit({...payload, email: "second@example.com"}));
     expect(await Lead.countDocuments({})).toBe(1);
   });
 
@@ -153,24 +160,40 @@ describe("one submission per phone number", () => {
     expect(await Lead.countDocuments({})).toBe(2);
   });
 
-  it("refuses a consultation when the phone already submitted an enrollment", async () => {
+  it("drops a consultation when the phone already submitted an enrollment", async () => {
     await publishedProgram();
     const payload = {type: "enrollment", program: "PG Program in Product Management"};
 
-    expect((await submit(payload)).status).toBe(201);
+    const first = await submit(payload);
+    expect(first.status).toBe(201);
 
-    const consultation = await submit({type: "consultation"});
-    expect(consultation.status).toBe(409);
-    expect(consultation.body.error.code).toBe("ALREADY_SUBMITTED");
+    expectSilentDuplicate(first, await submit({type: "consultation"}));
     expect(await Lead.countDocuments({})).toBe(1);
   });
 
   it("is not fooled by +91 formatting differences", async () => {
-    expect((await submit({mobile: "9217801191"})).status).toBe(201);
+    const first = await submit({mobile: "9217801191"});
+    expect(first.status).toBe(201);
 
-    const second = await submit({mobile: "+91 92178 01191"});
-    expect(second.status).toBe(409);
+    expectSilentDuplicate(first, await submit({mobile: "+91 92178 01191"}));
     expect(await Lead.countDocuments({})).toBe(1);
+  });
+});
+
+describe("consent", () => {
+  it("stores nothing when consent is missing", async () => {
+    const {consent, ...withoutConsent} = VALID;
+    expect(consent).toBe(true);
+
+    const response = await request(app).post("/api/v1/public/leads").send(withoutConsent);
+
+    expect(response.status).toBe(400);
+    expect(await Lead.countDocuments({})).toBe(0);
+  });
+
+  it("records the consent it was given", async () => {
+    await submit();
+    expect((await Lead.findOne({})).consent).toBe(true);
   });
 });
 
@@ -206,7 +229,7 @@ describe("idempotency", () => {
 
     expect(first.status).toBe(201);
     expect(second.status).toBe(201);
-    expect(second.body.data.deduplicated).toBe(true);
+    expectSilentDuplicate(first, second);
     expect(await Lead.countDocuments({})).toBe(1);
   });
 
@@ -217,11 +240,11 @@ describe("idempotency", () => {
     expect(await Lead.countDocuments({})).toBe(2);
   });
 
-  it("refuses a rapid repeat of the same form outright rather than flagging it", async () => {
-    expect((await submit()).status).toBe(201);
+  it("drops a rapid repeat of the same form outright rather than flagging it", async () => {
+    const first = await submit();
+    expect(first.status).toBe(201);
 
-    const second = await submit();
-    expect(second.status).toBe(409);
+    expectSilentDuplicate(first, await submit());
 
     const leads = await Lead.find().sort({createdAt: 1});
     expect(leads).toHaveLength(1);

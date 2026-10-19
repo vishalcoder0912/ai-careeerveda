@@ -109,7 +109,7 @@ describe("rate limiters", () => {
 
     const budgets = {
       authLimiter: 10,
-      formLimiter: 15,
+      formLimiter: 5,
       uploadLimiter: 30,
       publicLimiter: 200,
       adminLimiter: 300,

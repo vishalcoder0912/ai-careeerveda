@@ -93,14 +93,27 @@ adminSchema.methods.isLocked = function isLocked() {
 
 // Returns the lock duration earned by the current attempt count, or null while
 // the account is still below the first threshold.
+//
+// $inc in the database, not `+= 1; save()`. Argon2 verification is slow, so
+// parallel wrong guesses all loaded the same count and all saved count+1 —
+// twenty concurrent attempts registered as one, and the lockout never fired.
 adminSchema.methods.registerFailedLogin = async function registerFailedLogin() {
-  this.failedLoginAttempts += 1;
+  const Model = this.constructor;
+  const updated = await Model.findOneAndUpdate(
+    {_id: this._id},
+    {$inc: {failedLoginAttempts: 1}},
+    {new: true, projection: {failedLoginAttempts: 1}},
+  ).lean();
+
+  this.failedLoginAttempts = updated ? updated.failedLoginAttempts : this.failedLoginAttempts + 1;
 
   const step = [...LOCK_STEPS].reverse().find(({attempts}) => this.failedLoginAttempts >= attempts);
 
-  if (step) this.lockedUntil = new Date(Date.now() + step.minutes * 60 * 1000);
+  if (step) {
+    this.lockedUntil = new Date(Date.now() + step.minutes * 60 * 1000);
+    await Model.updateOne({_id: this._id}, {$set: {lockedUntil: this.lockedUntil}});
+  }
 
-  await this.save();
   return step ? step.minutes : null;
 };
 

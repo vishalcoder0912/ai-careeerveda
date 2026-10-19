@@ -464,8 +464,14 @@ body .spline-page .stat-strip span {
     grid-row: 1 !important;
   }
 
+  /* Centred under the robot and as wide as the stat strip below. The desktop
+     rule pins it start-aligned at 620px, which in this stacked layout left the
+     copy hugging the left edge under a centred robot. */
   body .spline-page .hero-copy {
     grid-row: 2 !important;
+    justify-self: center;
+    width: min(100%, 720px);
+    max-width: 720px;
   }
 
   body .spline-page .hero-spline-stage {

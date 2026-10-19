@@ -328,7 +328,7 @@
 
 .ga-page .ga-tl-caption-title {
   font-family: var(--ga-mono);
-  font-size: 0.6rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.6rem);
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: #33486b;
@@ -341,7 +341,7 @@
   padding-left: 1.4rem;
   border-left: 1px solid rgba(37, 99, 235, 0.22);
   font-family: var(--ga-mono);
-  font-size: 0.54rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.54rem);
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: #64748b;
@@ -384,7 +384,7 @@
 
 .ga-page .ga-tl-caption-title {
   font-family: var(--ga-mono);
-  font-size: 0.66rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.66rem);
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: #102a5c;
@@ -887,7 +887,7 @@
   .ga-page .ga-step-index {
     flex: 0 0 auto;
     width: 1.7rem;
-    font-size: 0.5rem;
+    font-size: max(var(--ga-fs-floor, 0px), 0.5rem);
   }
 
   .ga-page .ga-step-body {
@@ -901,7 +901,7 @@
   }
 
   .ga-page .ga-step-body em {
-    font-size: clamp(0.44rem, 0.34rem + 0.28vh, 0.54rem);
+    font-size: max(var(--ga-fs-floor, 0px), clamp(0.44rem, 0.34rem + 0.28vh, 0.54rem));
     line-height: 1.35;
   }
 }
@@ -1117,7 +1117,7 @@
 
 .ga-page .ga-gallery-lid .ga-gallery-screen-route {
   color: #8296bb;
-  font-size: clamp(0.44rem, 0.48vw, 0.54rem);
+  font-size: max(var(--ga-fs-floor, 0px), clamp(0.44rem, 0.48vw, 0.54rem));
   letter-spacing: 0.12em;
 }
 
@@ -1135,7 +1135,7 @@
   flex-wrap: wrap;
   gap: 0.28rem;
   font-family: var(--ga-mono);
-  font-size: clamp(0.42rem, 0.46vw, 0.52rem);
+  font-size: max(var(--ga-fs-floor, 0px), clamp(0.42rem, 0.46vw, 0.52rem));
   line-height: 1.5;
 }
 
@@ -1355,7 +1355,7 @@ body.ga-gallery-active .ga-burger {
 
 .ga-page .ga-orbit-core__label {
   color: #93c5fd;
-  font-size: 0.5rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.5rem);
   letter-spacing: 0.2em;
   line-height: 1.5;
   text-wrap: balance;
@@ -1370,7 +1370,7 @@ body.ga-gallery-active .ga-burger {
 
 .ga-page .ga-orbit-core__domain {
   color: #cbd9f2;
-  font-size: 0.5rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.5rem);
   letter-spacing: 0.14em;
   line-height: 1.5;
   text-wrap: balance;
@@ -1393,12 +1393,12 @@ body.ga-gallery-active .ga-burger {
   }
 
   .ga-page .ga-orbit-core__label {
-    font-size: 0.44rem;
+    font-size: max(var(--ga-fs-floor, 0px), 0.44rem);
     letter-spacing: 0.16em;
   }
 
   .ga-page .ga-orbit-core__domain {
-    font-size: 0.44rem;
+    font-size: max(var(--ga-fs-floor, 0px), 0.44rem);
     letter-spacing: 0.1em;
   }
 }
@@ -1606,7 +1606,7 @@ body.ga-gallery-active .ga-burger {
 .ga-page .ga-cert-stage {
   margin-top: 0.5rem;
   font-family: var(--ga-mono);
-  font-size: 0.58rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.58rem);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: #64748b;
@@ -1623,7 +1623,7 @@ body.ga-gallery-active .ga-burger {
   background: rgba(37, 99, 235, 0.07);
   color: #2563eb;
   font-family: var(--ga-mono);
-  font-size: 0.6rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.6rem);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   transition: background 0.35s var(--ga-ease), color 0.35s var(--ga-ease),
@@ -2121,7 +2121,7 @@ body.ga-gallery-active .ga-burger {
   .ga-page .ga-agent-node {
     gap: 4px;
     padding: 5px 8px;
-    font-size: 10px;
+    font-size: max(var(--ga-fs-floor, 0px), 10px);
     letter-spacing: 0.04em;
     line-height: 1.2;
   }
@@ -2143,7 +2143,7 @@ body.ga-gallery-active .ga-burger {
   }
 
   .ga-page .ga-agent-center-sub {
-    font-size: 8px;
+    font-size: max(var(--ga-fs-floor, 0px), 8px);
     letter-spacing: 0.12em;
     line-height: 1.4;
     text-align: center;

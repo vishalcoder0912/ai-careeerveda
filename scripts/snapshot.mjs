@@ -251,7 +251,18 @@ async function snapshot(context, route) {
       nodes.map((node) => node.outerHTML).join("\n    "),
     );
 
-    return {body, jsonLd};
+    // The stylesheets of every lazy section the snapshot rendered. Vite adds
+    // these <link>s to the head only when a section's chunk loads, so the HTML
+    // template names just the entry CSS. Without them the snapshot showed
+    // LearnerOutcomes, PressSection, TrustedCompanies and the rest unstyled —
+    // the home page laid out ~3x taller than the app — and when React took over
+    // the page collapsed under a phone visitor who had scrolled while it
+    // loaded: the section they were reading jumped off screen.
+    const stylesheets = await page.$$eval('link[rel="stylesheet"]', (nodes) =>
+      nodes.map((node) => node.getAttribute("href")).filter(Boolean),
+    );
+
+    return {body, jsonLd, stylesheets};
   } finally {
     await page.close();
   }
@@ -269,7 +280,7 @@ const targetFor = (loc) =>
 // body (a re-run without a rebuild in between) is left alone rather than having
 // a second copy nested inside the first — and because both writes are gated on
 // that one check, the schema cannot be appended twice either.
-function inject(html, {body, jsonLd}) {
+function inject(html, {body, jsonLd, stylesheets = []}) {
   // An empty #root, however its emptiness is written: bare, or holding nothing
   // but whitespace and comments. The second form matters — a comment left
   // inside the div (as a note about the poster that used to live there) made
@@ -284,6 +295,14 @@ function inject(html, {body, jsonLd}) {
 
   let out = html.replace(root[0], `<div id="root">${body}</div>`);
   if (jsonLd) out = out.replace("</head>", `    ${jsonLd}\n  </head>`);
+
+  // Only those the template does not already link. Vite's chunk loader checks
+  // for an existing <link> by href, so the app does not fetch these twice.
+  const missingCss = stylesheets.filter((href) => !out.includes(`href="${href}"`));
+  if (missingCss.length > 0) {
+    const links = missingCss.map((href) => `<link rel="stylesheet" crossorigin href="${href}">`);
+    out = out.replace("</head>", `    ${links.join("\n    ")}\n  </head>`);
+  }
 
   return out;
 }

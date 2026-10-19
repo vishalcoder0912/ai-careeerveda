@@ -31,9 +31,9 @@ const SplineFallback = () => {
 // own WebGL canvas, and ~1 MB across three third-party hosts (unpkg,
 // spline.design, a Google CDN) — about 80% of the home page's total weight.
 //
-// Desktop loads it automatically, behind the two gates in the effect below (on
-// screen, then idle). Phones and tablets show the still and load the live scene
-// on a tap: measured on a throttled phone, the idle scene alone pinned the main
+// Everyone starts on the still. Desktop loads the live scene when the cursor
+// first enters the robot, phones and tablets on a tap — then behind the two gates
+// in the effect below (on screen, then idle). On a phone it is never automatic: measured on a throttled phone, the idle scene alone pinned the main
 // thread and dropped page scrolling to a few frames a second.
 //
 // The still is the only robot, with no tap to upgrade, where the live scene
@@ -80,8 +80,10 @@ const SplineHeroScene = ({sceneUrl}) => {
   // the visitor taps it. Profiled on a 4x-throttled phone, the idle scene alone
   // held the main thread at ~865ms of every second and dropped scrolling to
   // ~2fps — the whole page felt heavy for an animation most visitors scroll
-  // past. Desktop keeps loading it automatically, as before.
-  const [wantsLive,setWantsLive] = useState(() => !isPhone());
+  // past. Desktop starts on the still too and boots the scene the first time the
+  // cursor reaches the robot: ~3.5 MB of Spline runtime and a live WebGL canvas
+  // are paid for by the visitors who go to play with it, not by every page view.
+  const [wantsLive,setWantsLive] = useState(false);
 
   useEffect(() => {
     if (shouldSkipScene() || !wantsLive) {
@@ -153,8 +155,8 @@ const SplineHeroScene = ({sceneUrl}) => {
   // (reduced-motion / save-data / 2g / an iframe that failed to boot), a phone
   // or tablet that has not tapped for 3D yet, and that same device while the
   // tapped scene boots — so the robot never blinks out to a loader ring.
-  const awaitingTap = !showFallback && !wantsLive;
-  const showPoster = showFallback || awaitingTap || (isMobile && !isLoaded);
+  const awaitingTap = isMobile && !showFallback && !wantsLive;
+  const showPoster = showFallback || awaitingTap || !isLoaded;
   // Desktop drives the robot with a cursor, which can hover over the scene without
   // committing to it, so there the frame takes pointer events as normal. On touch
   // it takes them only once the visitor has asked for it.
@@ -176,6 +178,7 @@ const SplineHeroScene = ({sceneUrl}) => {
       className="hero-visual-shell"
       role="img"
       aria-label="CareerVeda industry-led career and placement system"
+      onPointerEnter={isMobile ? undefined : () => setWantsLive(true)}
     >
       {/* The stage is the single local coordinate system: the robot is centred
           in it and every floating label is anchored to it, so the whole
@@ -184,13 +187,6 @@ const SplineHeroScene = ({sceneUrl}) => {
           the responsive rules move around. */}
       <div className="hero-spline-stage">
         <div className="spline-glow" aria-hidden="true" />
-
-        {!isLoaded && !showPoster && (
-          <div className="spline-loader">
-            <div className="loader-orbit" />
-            <span>Loading CareerVeda Visual</span>
-          </div>
-        )}
 
         {shouldRender && (
           <div

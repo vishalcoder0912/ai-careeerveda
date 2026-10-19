@@ -45,6 +45,8 @@ beforeEach(() => {
   jest.spyOn(RefreshToken, "create").mockResolvedValue({});
   jest.spyOn(RefreshToken, "updateMany").mockResolvedValue({});
   jest.spyOn(RefreshToken, "findOne").mockResolvedValue(null);
+  // The claim succeeds unless a test says another request won the race.
+  jest.spyOn(RefreshToken, "findOneAndUpdate").mockResolvedValue({});
 });
 
 describe("signAccessToken / verifyAccessToken", () => {
@@ -270,18 +272,39 @@ describe("rotateRefreshToken", () => {
     expect(RefreshToken.updateMany).not.toHaveBeenCalled();
   });
 
-  it("marks the presented token spent before issuing the replacement", async () => {
-    const doc = refreshDoc();
-    RefreshToken.findOne.mockResolvedValue(doc);
+  it("marks the presented token spent with one conditional write before issuing the replacement", async () => {
+    RefreshToken.findOne.mockResolvedValue(refreshDoc({_id: "token-1"}));
 
     const result = await rotateRefreshToken("live-token");
 
     expect(result.outcome).toBe(ROTATION_OUTCOME.OK);
     expect(result.family).toBe("family-1");
-    expect(doc.usedAt).toBeInstanceOf(Date);
-    expect(doc.revokedAt).toBeInstanceOf(Date);
-    expect(doc.revokedReason).toBe("rotated");
-    expect(doc.save).toHaveBeenCalled();
+    expect(RefreshToken.findOneAndUpdate).toHaveBeenCalledWith(
+      {_id: "token-1", usedAt: null, revokedAt: null},
+      {
+        $set: {
+          usedAt: expect.any(Date),
+          revokedAt: expect.any(Date),
+          revokedReason: "rotated",
+        },
+      },
+      {new: true},
+    );
+  });
+
+  it("treats the loser of a concurrent rotation as reuse and burns the family", async () => {
+    // Both requests read the token unused; the other one claimed it first.
+    RefreshToken.findOne.mockResolvedValue(refreshDoc({_id: "token-1"}));
+    RefreshToken.findOneAndUpdate.mockResolvedValue(null);
+
+    const result = await rotateRefreshToken("raced-token");
+
+    expect(result.outcome).toBe(ROTATION_OUTCOME.REUSE);
+    expect(result.issue).toBeUndefined();
+    expect(RefreshToken.updateMany).toHaveBeenCalledWith(
+      {family: "family-1", revokedAt: null},
+      expect.objectContaining({$set: expect.objectContaining({revokedReason: "reuse-detected"})}),
+    );
   });
 
   it("issues the replacement inside the same family", async () => {

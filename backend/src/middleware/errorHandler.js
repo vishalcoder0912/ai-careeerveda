@@ -34,6 +34,15 @@ const normalise = (error) => {
     return new ApiError(400, "VALIDATION_ERROR", "Request validation failed", {fields});
   }
 
+  // optimisticConcurrency: someone else saved this record between our load and
+  // our save. Same shape as the service's revision conflict, so the admin panel
+  // shows its usual "reload and reapply" prompt.
+  if (error instanceof mongoose.Error.VersionError) {
+    return new ApiError(409, "CONFLICT", "This record was changed by someone else. Reload and reapply your edit.", {
+      fields: {revision: "Changed by someone else"},
+    });
+  }
+
   // A malformed ObjectId in a path parameter is the caller's mistake, not ours.
   // Reporting it as 404 rather than 400 also avoids confirming which id formats
   // are real, which is a small enumeration win.

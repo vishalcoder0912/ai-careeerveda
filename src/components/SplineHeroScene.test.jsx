@@ -131,9 +131,24 @@ describe("SplineHeroScene touch gate", () => {
     expect(hint()).not.toBeNull();
   });
 
+  it("starts desktop on the still and loads the scene when the cursor reaches the robot", () => {
+    asDesktop();
+    render(<SplineHeroScene sceneUrl="https://example.test/scene" />);
+
+    expect(poster()).not.toBeNull();
+    expect(document.querySelector("iframe")).toBeNull();
+
+    fireEvent.pointerEnter(document.querySelector(".hero-visual-shell"));
+    // The still holds the robot's place until the scene has booted.
+    expect(poster()).not.toBeNull();
+    fireEvent.load(document.querySelector("iframe"));
+    expect(poster()).toBeNull();
+  });
+
   it("never covers the scene on desktop, where the frame is interactive from the start", () => {
     asDesktop();
     render(<SplineHeroScene sceneUrl="https://example.test/scene" />);
+    fireEvent.pointerEnter(document.querySelector(".hero-visual-shell"));
 
     expect(frame()).not.toBeNull();
     expect(frame().className).toContain("is-interactive");

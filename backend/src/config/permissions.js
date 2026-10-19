@@ -33,6 +33,11 @@ export const PERMISSIONS = Object.freeze({
   // that soft-deleting content and erasing it from the database are different
   // grants. Only super-admin holds this.
   CONTENT_PURGE: "content.purge",
+
+  // Making content public (publish, schedule, approve from review). Separate
+  // from *.update so an editor's work goes through the review queue and an
+  // admin decides what visitors see. Taking content down stays with update.
+  CONTENT_PUBLISH: "content.publish",
 });
 
 const ALL = Object.values(PERMISSIONS);
@@ -51,7 +56,8 @@ const VIEWER_PERMISSIONS = [
   PERMISSIONS.FORMS_READ,
 ];
 
-// Content people. They can write and publish content, but cannot touch other
+// Content people. They write content and send it for review (an admin
+// publishes it), but cannot touch other
 // accounts, roles, site settings or the audit trail — an editor who is phished
 // must not be able to escalate or cover their tracks.
 const EDITOR_PERMISSIONS = [
@@ -72,6 +78,7 @@ const EDITOR_PERMISSIONS = [
 const ADMIN_PERMISSIONS = [
   ...EDITOR_PERMISSIONS,
   PERMISSIONS.PROGRAMS_DELETE,
+  PERMISSIONS.CONTENT_PUBLISH,
   PERMISSIONS.POLICIES_MANAGE,
   PERMISSIONS.FORMS_UPDATE,
   PERMISSIONS.FORMS_EXPORT,

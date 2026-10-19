@@ -18,10 +18,12 @@
 .blog-article {
   position: relative;
   /* The shared site container (site-theme.css tokens). */
-  width: min(calc(100% - 2 * var(--site-gutter, 24px)), var(--site-measure, 1280px));
-  margin-inline: auto;
+  /* Full-bleed, with the shared container (gutter + centred measure) as
+     inline padding, so the text lines up with every other page. */
+  --ba-inline: max(var(--site-gutter, 24px), calc((100% - var(--site-measure, 1280px)) / 2));
+  width: 100%;
   /* The header is in flow above this, so this IS the header→breadcrumb gap. */
-  padding: 56px 0 clamp(40px, 5vw, 64px);
+  padding: 56px var(--ba-inline) clamp(40px, 5vw, 64px);
   color: var(--ps-ink);
 
   /* Shared desktop geometry — the reading column, the sticky rail and the gap
@@ -581,8 +583,7 @@
       column flexes down from 820px rather than squeezing the rail. ─────── */
 @media (min-width: 901px) and (max-width: 1439px) {
   .blog-article {
-    width: min(calc(100% - 2 * var(--site-gutter, 24px)), var(--site-measure, 1280px));
-    padding: 48px 0 clamp(36px, 4vw, 56px);
+    padding-block: 48px clamp(36px, 4vw, 56px);
 
     --ba-content: 820px;
     --ba-rail: 200px;
@@ -612,8 +613,7 @@
       collapsible "On this page" accordion above the prose. ───────────────── */
 @media (max-width: 900px) {
   .blog-article {
-    width: min(calc(100% - 2 * var(--site-gutter, 24px)), var(--site-measure, 1280px));
-    padding: 40px 0 clamp(32px, 4vw, 48px);
+    padding-block: 40px clamp(32px, 4vw, 48px);
   }
 
   .blog-article::before {
@@ -658,10 +658,6 @@
 
 /* ── Mobile (≤640px): 16px outer gutters, stacked related cards ──────────── */
 @media (max-width: 640px) {
-  .blog-article {
-    width: min(calc(100% - 2 * var(--site-gutter, 24px)), var(--site-measure, 1280px));
-  }
-
   .ba-crumbs {
     margin-bottom: 22px;
     font-size: 12px;
@@ -781,9 +777,6 @@
    follow the column (all read --ba-content). */
 @media (min-width: 901px) {
   .blog-article {
-    /* The article's own backdrop is the visible white panel; keep the text
-       off its edge. Replaces the old ~90px centring inset per side. */
-    padding-inline: 40px;
     --ba-content: calc(100% - var(--ba-rail) - var(--ba-gap));
     --ba-layout: 100%;
     --ba-offset: 0px;

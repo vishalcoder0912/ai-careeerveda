@@ -63,3 +63,8 @@ dbg-deck.mjs
 debug-*.mjs
 debug-hero-*.png
 shot-*.png
+
+# Root-level scratch from probing/debug sessions (local only, never committed)
+/_*.mjs
+/_*.png
+/probe-*.json

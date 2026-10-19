@@ -78,7 +78,7 @@ export const createPublishableProgram = async (request, headers, title) => {
       duration: "6 Months",
       mentorship: ["Expert Trainers"],
       format: "Live Online",
-      image: {url: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/data-c3b60741.jpg"},
+      image: {url: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/programs/data-c3b60741.jpg"},
       overview: ["Overview point"],
       curriculum: ["Curriculum point"],
       outcomes: ["Outcome point"],

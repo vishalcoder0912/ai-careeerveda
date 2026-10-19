@@ -340,7 +340,7 @@
   border-radius: 999px;
   color: var(--ga-ink-2);
   font-family: var(--ga-mono);
-  font-size: 0.58rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.58rem);
   letter-spacing: 0.18em;
   padding: 0.42rem 0.8rem;
   transition: border-color 0.3s, color 0.3s;
@@ -379,7 +379,7 @@
   font-style: normal;
   color: var(--ga-ink-3);
   font-family: var(--ga-mono);
-  font-size: 0.6rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.6rem);
   letter-spacing: 0.2em;
   text-transform: uppercase;
 }
@@ -640,7 +640,7 @@
 .ga-journey-motif {
   color: var(--ga-ink-3);
   font-family: var(--ga-sans);
-  font-size: 0.68rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.68rem);
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -799,7 +799,7 @@
 .ga-journey-build-label {
   color: var(--ga-gold);
   font-family: var(--ga-sans);
-  font-size: 0.62rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.62rem);
   font-weight: 800;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -858,7 +858,7 @@
   font-style: normal;
   color: var(--ga-gold);
   font-family: var(--ga-sans);
-  font-size: 0.68rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.68rem);
   font-weight: 600;
 }
 
@@ -1518,7 +1518,7 @@
 }
 
 .ga-journey-build-label {
-  font-size: 0.66rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.66rem);
 }
 
 .ga-project p {
@@ -1717,7 +1717,7 @@ stat tiles and job-card careers.
 
 .ga-role-domain {
   font-family: var(--ga-mono);
-  font-size: 0.6rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.6rem);
   letter-spacing: 0.22em;
   text-transform: uppercase;
   padding: 0.45rem 0.9rem;
@@ -1762,7 +1762,7 @@ stat tiles and job-card careers.
   background: linear-gradient(135deg, #f97316, #ea580c);
   color: #ffffff;
   font-family: var(--ga-sans);
-  font-size: 0.66rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.66rem);
   font-weight: 700;
   letter-spacing: 0.1em;
 }
@@ -1775,7 +1775,7 @@ stat tiles and job-card careers.
 
 .ga-career-row > span:last-child {
   font-family: var(--ga-mono);
-  font-size: 0.56rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.56rem);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   padding: 0.4rem 0.75rem;
@@ -1787,7 +1787,7 @@ stat tiles and job-card careers.
 
 .ga-careers-caption {
   font-family: var(--ga-sans);
-  font-size: 0.68rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.68rem);
   letter-spacing: 0.16em;
 }
 
@@ -1821,7 +1821,7 @@ stat tiles and job-card careers.
 
 .ga-stat-label {
   font-weight: 700;
-  font-size: 0.62rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.62rem);
   letter-spacing: 0.2em;
   margin-top: 0.55rem;
 }
@@ -1843,7 +1843,7 @@ stat tiles and job-card careers.
   border: 1px solid rgba(249, 115, 22, 0.35);
   color: #f97316;
   font-family: var(--ga-sans);
-  font-size: 0.64rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.64rem);
   font-weight: 700;
   letter-spacing: 0.1em;
 }

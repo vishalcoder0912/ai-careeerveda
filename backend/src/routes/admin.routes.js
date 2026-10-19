@@ -7,6 +7,7 @@ import {requirePermission, requireSuperAdmin} from "../middleware/authorize.js";
 import {validate} from "../middleware/validate.js";
 import {adminLimiter} from "../middleware/rateLimit.js";
 import {PERMISSIONS} from "../config/permissions.js";
+import {CONTENT_STATUS} from "../models/plugins/contentPlugin.js";
 import {
   listQuery,
   idParam,
@@ -22,6 +23,14 @@ import {
 } from "../validators/content.validators.js";
 
 export const adminRouter = Router();
+
+// Bulk status is one route for both directions; only the direction that makes
+// records public needs the publish grant.
+const GOES_PUBLIC = new Set([CONTENT_STATUS.PUBLISHED, CONTENT_STATUS.SCHEDULED]);
+const requirePublishForPublicStatus = (request, response, next) =>
+  GOES_PUBLIC.has(request.body.status)
+    ? requirePermission(PERMISSIONS.CONTENT_PUBLISH)(request, response, next)
+    : next();
 
 // Authentication for everything under /admin, applied at the router rather than
 // per route. A new route added below is protected by default; forgetting to add
@@ -57,6 +66,7 @@ for (const resource of Object.values(RESOURCES)) {
     "/bulk/status",
     validate({body: bulkStatusBody}),
     requirePermission(update),
+    requirePublishForPublicStatus,
     controller.bulkStatus,
   );
   router.post(
@@ -94,7 +104,7 @@ for (const resource of Object.values(RESOURCES)) {
   router.post(
     "/:id/publish",
     validate({params: idParam, body: publishBody}),
-    requirePermission(update),
+    requirePermission(update, PERMISSIONS.CONTENT_PUBLISH),
     controller.publish,
   );
   router.post("/:id/unpublish", validate({params: idParam}), requirePermission(update), controller.unpublish);

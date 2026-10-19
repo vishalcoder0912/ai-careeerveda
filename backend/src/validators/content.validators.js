@@ -372,9 +372,12 @@ export const bulkBody = z.object({
   ids: z.array(objectId).min(1).max(100),
 });
 
+// "scheduled" is excluded: a bulk change carries no date, and a scheduled
+// record without scheduledAt never matches the publisher's sweep — it would sit
+// in the admin list as "scheduled" forever. Scheduling goes through /publish.
 export const bulkStatusBody = z.object({
   ids: z.array(objectId).min(1).max(100),
-  status: z.enum(CONTENT_STATUSES),
+  status: z.enum(CONTENT_STATUSES).refine((value) => value !== "scheduled", "Schedule records one at a time."),
 });
 
 export const reorderBody = z.object({

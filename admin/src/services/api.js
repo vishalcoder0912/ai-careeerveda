@@ -19,15 +19,17 @@ const setTokens = ({accessToken: access, csrfToken: csrf}) => {
   if (csrf !== undefined) {
     csrfToken = csrf;
     // Persist the CSRF token so restoreSession can find it even when the
-    // httpOnly cookie is invisible to document.cookie (WebKit cross-port).
-    try { sessionStorage.setItem(CSRF_STORAGE_KEY, csrf); } catch { /* ignored */ }
+    // cookie is invisible to document.cookie (WebKit cross-port). localStorage,
+    // not sessionStorage: every tab shares one refresh cookie, so after one tab
+    // rotates the session the others must be able to read the matching token.
+    try { localStorage.setItem(CSRF_STORAGE_KEY, csrf); } catch { /* ignored */ }
   }
 };
 
 const clearTokens = () => {
   accessToken = null;
   csrfToken = null;
-  try { sessionStorage.removeItem(CSRF_STORAGE_KEY); } catch { /* ignored */ }
+  try { localStorage.removeItem(CSRF_STORAGE_KEY); } catch { /* ignored */ }
 };
 
 export class ApiError extends Error {
@@ -59,22 +61,38 @@ const parse = async (response) => {
 
 let refreshing = null;
 
+const storedCsrf = () => {
+  try { return localStorage.getItem(CSRF_STORAGE_KEY); } catch { return null; }
+};
+
+const doRefresh = () => {
+  // Another tab may have rotated the session while this one waited for the
+  // lock; its CSRF token is the one that matches the cookie now.
+  const csrf = storedCsrf() || csrfToken;
+  return fetch(`${BASE}/auth/refresh`, {
+    method: "POST",
+    credentials: "include",
+    headers: csrf ? {"X-CSRF-Token": csrf} : {},
+  }).then(async (response) => {
+    if (!response.ok) throw new ApiError(response.status, "REFRESH_FAILED", "Session expired");
+    const body = await response.json();
+    setTokens(body.data);
+    return body.data;
+  });
+};
+
 const refreshSession = async () => {
   if (!refreshing) {
-    refreshing = fetch(`${BASE}/auth/refresh`, {
-      method: "POST",
-      credentials: "include",
-      headers: csrfToken ? {"X-CSRF-Token": csrfToken} : {},
-    })
-      .then(async (response) => {
-        if (!response.ok) throw new ApiError(response.status, "REFRESH_FAILED", "Session expired");
-        const body = await response.json();
-        setTokens(body.data);
-        return body.data;
-      })
-      .finally(() => {
-        refreshing = null;
-      });
+    // `refreshing` dedupes within this tab; the Web Lock serialises across
+    // tabs. The server treats a refresh token presented twice as theft and
+    // ends every session, so two tabs refreshing at once must take turns.
+    const run = typeof navigator !== "undefined" && navigator.locks
+      ? navigator.locks.request("cv-auth-refresh", doRefresh)
+      : doRefresh();
+
+    refreshing = run.finally(() => {
+      refreshing = null;
+    });
   }
 
   return refreshing;
@@ -166,7 +184,7 @@ export const logout = async () => {
 // Called once on boot. The access token is gone after a page refresh, but the
 // httpOnly refresh cookie is not, so this is what makes a reload keep you
 // signed in. The CSRF token is read from its (deliberately readable) cookie,
-// falling back to sessionStorage for WebKit which may hide cross-port cookies
+// falling back to localStorage for WebKit which may hide cross-port cookies
 // from document.cookie.
 export const restoreSession = async () => {
   const cookieCsrf = document.cookie
@@ -174,11 +192,7 @@ export const restoreSession = async () => {
     .find((entry) => entry.startsWith("cv_csrf="))
     ?.split("=")[1];
 
-  const storedCsrf = (() => {
-    try { return sessionStorage.getItem(CSRF_STORAGE_KEY); } catch { return null; }
-  })();
-
-  const csrf = cookieCsrf || storedCsrf;
+  const csrf = cookieCsrf || storedCsrf();
   if (!csrf) return null;
 
   csrfToken = csrf;

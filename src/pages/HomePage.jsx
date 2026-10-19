@@ -1,4 +1,4 @@
-import { lazy } from "react";
+import { lazy, useEffect, useState } from "react";
 import Hero from "../components/Hero";
 import DeferUntilVisible from "../components/DeferUntilVisible";
 import { Reveal, StaggerGroup, StaggerItem } from "../components/motionPrimitives";
@@ -20,7 +20,44 @@ import "../components/website-new-theme.css";
 const TrustedCompanies = lazy(() => import("../components/TrustedCompanies"));
 const RecommendedCourses = lazy(() => import("../components/Recommended/RecommendedCourses1"));
 const LearnerOutcomes = lazy(() => import("../components/LearnerOutcomes"));
-const ConsultationForm = lazy(() => import("../components/ConsultationForm"));
+// Not behind DeferUntilVisible like the sections around it. The page is served
+// as a prerendered snapshot and React re-renders it on boot; a deferred form was
+// an empty box at that moment, so on a phone the card a visitor was already
+// looking at vanished until it was scrolled "near" and its chunk arrived. The
+// download now starts as soon as this module loads (~5 KB), so it is normally
+// ready by the first render.
+//
+// Still a separate chunk, deliberately: that keeps consultation-form.css
+// loading after the main stylesheet, which is the order the 15 other files that
+// style .consultation-form were written against. Bundled eagerly, a shared
+// `display: flex` rule won the tie and squeezed every field to half width.
+//
+// Not React.lazy either: lazy() always suspends on its first render even when
+// the chunk is already loaded, and React then holds the boundary back ~300 ms —
+// a visible blank right at the handover. This renders the form in the very
+// first commit whenever the (preloaded, see scripts/preload-routes.mjs) chunk
+// has arrived, and waits for it otherwise.
+let LoadedConsultationForm = null;
+const consultationFormReady = import("../components/ConsultationForm").then((module) => {
+  LoadedConsultationForm = module.default;
+});
+
+const ConsultationForm = () => {
+  const [Form, setForm] = useState(() => LoadedConsultationForm);
+
+  useEffect(() => {
+    if (Form) return undefined;
+    let live = true;
+    consultationFormReady.then(() => {
+      if (live) setForm(() => LoadedConsultationForm);
+    });
+    return () => {
+      live = false;
+    };
+  }, [Form]);
+
+  return Form ? <Form /> : null;
+};
 const PressSection = lazy(() => import("../components/PressSection"));
 
 const HomePage = () => {
@@ -123,9 +160,9 @@ const HomePage = () => {
               programs, and receive placement support from a professional career platform
             </p>
           </Reveal>
-          <DeferUntilVisible className="home-defer-form">
+          <div className="home-defer-form">
             <ConsultationForm />
-          </DeferUntilVisible>
+          </div>
         </div>
       </section>
 

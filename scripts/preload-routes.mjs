@@ -72,6 +72,15 @@ const ROUTE_PAGES = {
   "/escalation-policy": "PolicyPage",
 };
 
+// Lazy chunks a route needs on screen at boot, beyond its page. The home
+// page's consultation form is its own chunk (so its CSS keeps loading after the
+// main stylesheet), but it renders in the first paint of a visitor who scrolled
+// the prerendered page — so it must race the boot like a page chunk does, or
+// the card they were looking at blanks until it lands.
+const ROUTE_EXTRA_CHUNKS = {
+  "/": ["src/components/ConsultationForm.jsx"],
+};
+
 const pageForRoute = (loc) => {
   if (ROUTE_PAGES[loc]) return ROUTE_PAGES[loc];
   if (/^\/programs\/[^/]+\/?$/.test(loc)) return "ProgramDetailPage";
@@ -100,7 +109,11 @@ let injected = 0;
 
 for (const route of routes) {
   const page = pageForRoute(route.loc);
-  if (!page || !pageChunks[page]) continue;
+  const entries = [
+    page && pageChunks[page],
+    ...(ROUTE_EXTRA_CHUNKS[route.loc] ?? []).map((id) => manifest[id]),
+  ].filter(Boolean);
+  if (entries.length === 0) continue;
 
   const target =
     route.loc === "/" ? path.join(DIST, "index.html") : path.join(DIST, route.loc, "index.html");
@@ -110,7 +123,14 @@ for (const route of routes) {
   // Idempotent: a re-run without a rebuild must not stack a second set.
   if (html.includes("data-route-preload")) continue;
 
-  const {files, css} = assetsFor(pageChunks[page]);
+  const seen = new Set();
+  const files = [];
+  const css = [];
+  for (const entry of entries) {
+    const assets = assetsFor(entry, seen);
+    files.push(...assets.files);
+    css.push(...assets.css);
+  }
   // Manifest "file"/"css" paths are relative to dist/ and already begin with
   // assets/ — do not prepend another segment.
   const tags = [

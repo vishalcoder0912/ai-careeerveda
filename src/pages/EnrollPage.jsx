@@ -114,6 +114,8 @@ const EnrollPage = () => {
         ...values,
         type: "enrollment",
         source: "enroll-page-form",
+        // Given by pressing submit under the notice below the button.
+        consent: true,
         sourcePage: window.location.pathname,
       });
 
@@ -260,6 +262,11 @@ const EnrollPage = () => {
                   {isSubmitting ? "Submitting…" : "Submit application"}
                 </button>
               </div>
+
+              <p className="consultation-consent">
+                By submitting, you agree to be contacted about your application and to our{" "}
+                <a href="/privacy-policy">Privacy Policy</a>.
+              </p>
 
               {message && (
                 <p

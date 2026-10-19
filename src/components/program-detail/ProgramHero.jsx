@@ -143,7 +143,13 @@ const ProgramHero = ({program, applyHref}) => {
         </div>
 
         {meta.length > 0 && (
-          <Reveal className="pd-meta" amount={0.1}>
+          <Reveal
+            className="pd-meta"
+            amount={0.1}
+            role="region"
+            aria-label="Program key information"
+            tabIndex={0}
+          >
             {meta.map((item) => (
               <div className="pd-meta__item" key={item.label}>
                 <MetaIcon name={item.icon} />

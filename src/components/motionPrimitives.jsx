@@ -19,6 +19,19 @@ import "./motion-primitives.css";
    `amount` maps to the IntersectionObserver threshold; a non-numeric value
    ("some", as BlogPage passes) means "any part visible" and becomes 0. */
 
+// Whether the visitor has scrolled since the app started. Registered when this
+// module loads, i.e. during boot, before anything renders.
+let scrolledSinceBoot = false;
+if (typeof window !== "undefined") {
+  window.addEventListener(
+    "scroll",
+    () => {
+      scrolledSinceBoot = true;
+    },
+    {once: true, passive: true},
+  );
+}
+
 const useInViewOnce = ({ref, amount, rootMargin}) => {
   const [inView, setInView] = useState(false);
 
@@ -31,14 +44,21 @@ const useInViewOnce = ({ref, amount, rootMargin}) => {
   // before the first paint: boot-time, above-fold content renders visible
   // immediately.
   //
-  // Gated on scrollY being at the top: a section that mounted because a
-  // READING visitor scrolled to it (every DeferUntilVisible child) must keep
-  // its observer-driven entrance — that reveal is the animation, and this hook
-  // has no business cancelling it.
+  // Gated on the visitor not having scrolled since boot: a section that
+  // mounted because a READING visitor scrolled to it (every DeferUntilVisible
+  // child) must keep its observer-driven entrance — that reveal is the
+  // animation, and this hook has no business cancelling it.
+  //
+  // Not gated on scrollY > 0, as it used to be. A phone visitor scrolls the
+  // prerendered page while the JS is still loading; when React then re-renders
+  // over it, everything they were looking at was hidden and faded back in —
+  // the content on screen visibly disappeared. What they can already see stays.
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el || typeof window === "undefined") return undefined;
-    if (window.scrollY > 0) return undefined;
+    // At the top (the original rule, which also covers a client-side route
+    // change after ScrollToTop) or still where the visitor was when JS booted.
+    if (window.scrollY > 0 && scrolledSinceBoot) return undefined;
     const rect = el.getBoundingClientRect();
     const viewport = window.innerHeight || document.documentElement.clientHeight;
     if (rect.top < viewport && rect.bottom > 0) {

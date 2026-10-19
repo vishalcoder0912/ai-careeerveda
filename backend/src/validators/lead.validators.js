@@ -40,7 +40,12 @@ export const submitLeadSchema = z.object({
   userType: z.enum(USER_TYPES).optional(),
 
   program: text(300).optional().default(""),
-  message: text(4000).optional().default(""),
+  // Link-stuffed messages are the signature of form spam; no applicant needs
+  // more than a couple of URLs to tell us about themselves.
+  message: text(4000)
+    .refine((value) => (value.match(/https?:\/\/|www\./gi) || []).length <= 2, "Please include at most two links.")
+    .optional()
+    .default(""),
 
   sourcePage: text(300).optional().default(""),
   source: text(120).optional().default(""),
@@ -55,7 +60,12 @@ export const submitLeadSchema = z.object({
     })
     .optional(),
 
-  consent: z.boolean().optional().default(false),
+  // Required and must be true. A lead is personal data stored to be contacted
+  // about; under India's DPDP Act that needs the person's consent, so a
+  // submission without it is not stored at all.
+  consent: z.literal(true, {
+    errorMap: () => ({message: "Please agree to be contacted about your enquiry."}),
+  }),
 
   // The honeypot. Hidden in the markup, so a person never fills it in and a
   // bot that fills every field does. Kept as `company` — the name the existing

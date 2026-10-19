@@ -14,7 +14,8 @@
 
 .program-detail {
   --pd-ink: #0f172a;
-  --pd-muted: #5a6474;
+  --pd-ink-strong: #0b122a;
+  --pd-muted: #475569;
   --pd-soft: #f4f7fb;
   --pd-canvas: #ffffff;
   --pd-line: #e3e9f1;
@@ -336,7 +337,7 @@ body main.page-shell.program-detail {
 }
 
 .pd-btn--ghost {
-  color: var(--pd-ink);
+  color: var(--pd-ink-strong);
   border-color: var(--pd-line-strong);
   background: var(--pd-canvas);
 }
@@ -479,6 +480,7 @@ body main.page-shell.program-detail {
   border-radius: 999px;
   border: 1px solid var(--pd-line);
   background: var(--pd-canvas);
+  color: var(--pd-ink-strong);
   font-weight: 600;
 }
 
@@ -573,6 +575,9 @@ body main.page-shell.program-detail {
   padding: 12px 0;
   border-top: 1px solid var(--pd-line);
   border-bottom: 1px solid var(--pd-line);
+  outline: none;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
 }
 
 .pd-meta__item {
@@ -2398,7 +2403,7 @@ body main.page-shell.program-detail {
 }
 
 .pd-cta .pd-btn--ghost {
-  color: var(--pd-ink);
+  color: var(--pd-ink-strong);
   border-color: var(--pd-line-strong);
   background: var(--pd-canvas);
 }

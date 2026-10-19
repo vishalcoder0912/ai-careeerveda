@@ -19,6 +19,7 @@ const validLead = {
   name: "Priya Sharma",
   email: "priya@example.com",
   mobile: "9217801191",
+  consent: true,
 };
 
 describe("submitLeadSchema", () => {
@@ -39,7 +40,7 @@ describe("submitLeadSchema", () => {
     });
   });
 
-  it("defaults type, text fields and consent, so the form can send a minimal body", () => {
+  it("defaults type and text fields, so the form can send a minimal body", () => {
     const parsed = parse(submitLeadSchema, validLead);
 
     expect(parsed).toMatchObject({
@@ -48,8 +49,23 @@ describe("submitLeadSchema", () => {
       message: "",
       source: "",
       sourcePage: "",
-      consent: false,
+      consent: true,
     });
+  });
+
+  it("refuses a lead without consent, or with consent declined", () => {
+    const {consent, ...withoutConsent} = validLead;
+    expect(consent).toBe(true);
+    expect(() => parse(submitLeadSchema, withoutConsent)).toThrow("Please agree to be contacted");
+    expect(() => parse(submitLeadSchema, {...validLead, consent: false})).toThrow();
+  });
+
+  it("refuses a message stuffed with links, the signature of form spam", () => {
+    const spam = "deals at http://a.example http://b.example www.c.example";
+    expect(() => parse(submitLeadSchema, {...validLead, message: spam})).toThrow("at most two links");
+    expect(parse(submitLeadSchema, {...validLead, message: "my portfolio: https://me.example"}).message).toBe(
+      "my portfolio: https://me.example",
+    );
   });
 
   it("trims and lowercases the email the way the dedup key expects", () => {

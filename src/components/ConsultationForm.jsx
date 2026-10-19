@@ -1,6 +1,5 @@
 import {useState} from "react";
 import {Reveal} from "./motionPrimitives";
-import {programCatalog} from "../data/programCatalog";
 import {useContentList} from "../hooks/useContent";
 import {adaptProgram} from "../lib/contentAdapters";
 import {submitLead} from "../lib/publicApi";
@@ -46,10 +45,13 @@ const ConsultationForm = () => {
   // The picker lists exactly the published programs, so a program added in the
   // admin panel is selectable here without a code change — and one that is
   // unpublished stops being offered.
-  const {items: programs} = useContentList("programs", {
-    fallback: programCatalog,
-    adapt: adaptProgram,
-  });
+  //
+  // No static fallback list. The catalog file is a 110 KB chunk, and pulling it
+  // in is why this form was lazy-loaded — which made it vanish on phones while
+  // the app booted over the prerendered page. The fallback bought nothing: with
+  // no API reachable the form cannot submit anyway, and the snapshot already
+  // carries the options for the moment before the API answers.
+  const {items: programs} = useContentList("programs", {adapt: adaptProgram});
 
   const [values, setValues] = useState(EMPTY);
   const [errors, setErrors] = useState({});
@@ -93,6 +95,8 @@ const ConsultationForm = () => {
         ...values,
         type: "consultation",
         source: "home-consultation-form",
+        // Given by pressing submit under the notice in the footer.
+        consent: true,
         sourcePage: window.location.pathname,
       });
 
@@ -250,6 +254,10 @@ const ConsultationForm = () => {
             <path d="M8 11V7a4 4 0 0 1 8 0v4" />
           </svg>
           Your details are secure. No spam, ever.
+        </p>
+        <p className="consultation-consent">
+          By booking, you agree to be contacted about your enquiry and to our{" "}
+          <a href="/privacy-policy">Privacy Policy</a>.
         </p>
       </div>
 

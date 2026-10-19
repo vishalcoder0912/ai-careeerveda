@@ -80,10 +80,20 @@ describe("ResourceList permissions", () => {
     expect(await screen.findByText("Read-only program")).toBeInTheDocument();
     expect(screen.getByRole("link", {name: /new program/i})).toBeInTheDocument();
     expect(screen.getByRole("button", {name: "Edit"})).toBeInTheDocument();
-    expect(screen.getByRole("button", {name: "Publish"})).toBeInTheDocument();
+    // Editors send work for review; going live needs content.publish.
+    expect(screen.queryByRole("button", {name: "Publish"})).not.toBeInTheDocument();
+    expect(screen.getByRole("button", {name: "Send for review"})).toBeInTheDocument();
     expect(screen.getByRole("button", {name: "Duplicate"})).toBeInTheDocument();
     expect(screen.queryByRole("button", {name: "Delete"})).not.toBeInTheDocument();
     expect(screen.getByRole("checkbox", {name: /select/i})).toBeInTheDocument();
+  });
+
+  it("offers Publish to an account holding content.publish", async () => {
+    testState.permissions = ["programs.read", "programs.update", "content.publish"];
+    renderList();
+
+    expect(await screen.findByText("Read-only program")).toBeInTheDocument();
+    expect(screen.getByRole("button", {name: "Publish"})).toBeInTheDocument();
   });
 
   it("can move from a valid resource to an unknown route without changing hook order", async () => {

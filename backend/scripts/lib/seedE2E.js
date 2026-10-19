@@ -26,7 +26,7 @@ export const SEEDED_PROGRAM = Object.freeze({
   duration: "6 Months",
   mentorship: ["Expert Trainers"],
   format: "Live Online",
-  image: {url: "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/data-c3b60741.jpg", alt: "Seeded"},
+  image: {url: "https://ik.imagekit.io/ojoijfoinsdnfoodsnf/careerveda/programs/data-c3b60741.jpg", alt: "Seeded"},
   overview: ["Seeded overview point"],
   curriculum: ["Seeded curriculum point"],
   outcomes: ["Seeded outcome point"],

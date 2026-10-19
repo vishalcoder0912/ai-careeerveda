@@ -66,10 +66,14 @@ export const submit = async (request, response, next) => {
     // Idempotency: a retried request with the same key returns the original
     // result instead of creating a second lead. Checked before anything else
     // so a network retry is cheap.
-    const idempotencyKey = request.get("idempotency-key") || null;
+    // Shape-checked because it is stored: an unbounded header would let one
+    // request write arbitrary bytes into every lead row. A malformed key is
+    // ignored rather than refused, so the submission itself still lands.
+    const rawKey = request.get("idempotency-key");
+    const idempotencyKey = rawKey && /^[\w-]{1,128}$/.test(rawKey) ? rawKey : null;
     if (idempotencyKey) {
-      const existing = await Lead.findOne({idempotencyKey});
-      if (existing) return created(response, {ok: true, id: existing._id, deduplicated: true});
+      const existing = await Lead.findOne({idempotencyKey}).select("_id");
+      if (existing) return created(response, {ok: true});
     }
 
     // The phone number is the primary key: one submission per phone, ever. Any
@@ -77,16 +81,12 @@ export const submit = async (request, response, next) => {
     // correction — is refused as this same person. The unique index on mobileKey
     // is what actually carries this guarantee; the check here just answers fast
     // with a human message instead of a database error.
+    //
+    // The refusal is silent: a duplicate gets the exact response a new lead
+    // gets. A distinct 409 told anyone with curl whether a given phone number
+    // was in our database — an enumeration oracle over people's contact data.
     const existingByPhone = await Lead.findOne({mobileKey}).select("_id");
-    if (existingByPhone) {
-      return next(
-        new ApiError(
-          409,
-          "ALREADY_SUBMITTED",
-          "You've already shared your details with us. Our team has them and will reach out — no need to submit again.",
-        ),
-      );
-    }
+    if (existingByPhone) return created(response, {ok: true});
 
     // The program must be one that actually exists and is published. Reading
     // from the database rather than a second hard-coded list means a program
@@ -109,7 +109,7 @@ export const submit = async (request, response, next) => {
       }
     }
 
-    const lead = await Lead.create({
+    await Lead.create({
       type,
       name: body.name,
       email: body.email,
@@ -131,25 +131,21 @@ export const submit = async (request, response, next) => {
     // 201 only after the write resolved. The frontend must never be told a
     // submission was saved when it was not — a silently dropped applicant is
     // worse than a visible failure.
-    return created(response, {ok: true, id: lead._id});
+    // No id in the body: every success path answers identically, so the
+    // response cannot distinguish a new lead from a deduplicated one.
+    return created(response, {ok: true});
   } catch (error) {
     // A duplicate idempotency key means a concurrent retry won the race. That
     // is a success from the caller's point of view, not an error.
     if (error && error.code === 11000 && error.keyPattern && error.keyPattern.idempotencyKey) {
-      return created(response, {ok: true, deduplicated: true});
+      return created(response, {ok: true});
     }
     // A duplicate mobileKey is the same person racing themselves: two retries
     // of the same phone arrived simultaneously and both passed the check above.
     // The first won the write; the second gets the same refusal the sequential
     // path gave, not a database error.
     if (error && error.code === 11000 && error.keyPattern && error.keyPattern.mobileKey) {
-      return next(
-        new ApiError(
-          409,
-          "ALREADY_SUBMITTED",
-          "You've already shared your details with us. Our team has them and will reach out — no need to submit again.",
-        ),
-      );
+      return created(response, {ok: true});
     }
     return next(error);
   }

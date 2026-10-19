@@ -1,7 +1,70 @@
-import rateLimit from "express-rate-limit";
+import rateLimit, {MemoryStore} from "express-rate-limit";
+import mongoose from "mongoose";
 
+import {RateLimit} from "../models/RateLimit.js";
 import {env} from "../config/env.js";
 import {tooManyRequests} from "../utils/apiError.js";
+
+// Counters shared by every instance. Cloud Run runs up to ten copies of this
+// process, and an in-memory counter is per copy — "10 logins per 15 minutes"
+// silently became up to 100. The budgets that guard credentials and writes
+// (auth, forms) therefore count in MongoDB; the cheap read limits stay in
+// memory, where a per-instance budget is an acceptable approximation.
+//
+// While the database is not connected (boot, an outage, unit tests) the store
+// counts in memory instead of failing the request — a degraded limit beats
+// refusing every login because the counter is unreachable.
+class SharedStore {
+  constructor(prefix) {
+    this.prefix = prefix;
+    this.fallback = new MemoryStore();
+  }
+
+  init(options) {
+    this.windowMs = options.windowMs;
+    this.fallback.init(options);
+  }
+
+  get collection() {
+    return mongoose.connection.readyState === 1 ? RateLimit.collection : null;
+  }
+
+  async increment(key) {
+    const collection = this.collection;
+    if (!collection) return this.fallback.increment(key);
+
+    const now = new Date();
+    const live = {$gt: ["$resetAt", now]};
+    // One atomic upsert: restarts the window when it has lapsed, otherwise
+    // adds one. Two instances counting the same IP cannot both read 9.
+    const document = await collection.findOneAndUpdate(
+      {_id: `${this.prefix}:${key}`},
+      [
+        {
+          $set: {
+            hits: {$cond: [live, {$add: ["$hits", 1]}, 1]},
+            resetAt: {$cond: [live, "$resetAt", new Date(now.getTime() + this.windowMs)]},
+          },
+        },
+      ],
+      {upsert: true, returnDocument: "after"},
+    );
+
+    return {totalHits: document.hits, resetTime: document.resetAt};
+  }
+
+  async decrement(key) {
+    const collection = this.collection;
+    if (!collection) return this.fallback.decrement(key);
+    await collection.updateOne({_id: `${this.prefix}:${key}`}, {$inc: {hits: -1}});
+  }
+
+  async resetKey(key) {
+    const collection = this.collection;
+    if (!collection) return this.fallback.resetKey(key);
+    await collection.deleteOne({_id: `${this.prefix}:${key}`});
+  }
+}
 
 // Limits are per route category rather than one global number, because the
 // budgets are genuinely different: a public listing page may be polled by every
@@ -35,14 +98,18 @@ export const authLimiter = rateLimit({
   ...base,
   windowMs: 15 * 60 * 1000,
   limit: 10,
+  store: new SharedStore("auth"),
   handler: handler("Too many attempts. Please wait a few minutes and try again."),
 });
 
-// Public form submissions. Low, because each one writes a lead row.
+// Public form submissions. Low, because each one writes a lead row: a person
+// fills in a form once or twice, so five an hour per network is generous for
+// people and a hard ceiling for a script.
 export const formLimiter = rateLimit({
   ...base,
   windowMs: 60 * 60 * 1000,
-  limit: 15,
+  limit: 5,
+  store: new SharedStore("form"),
   handler: handler("Too many submissions from this network. Please try again later."),
 });
 

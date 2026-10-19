@@ -123,10 +123,22 @@ export const rotateRefreshToken = async (presentedToken, {userAgent, ip} = {}) =
   // Mark used before minting the replacement. If the process dies between the
   // two, the user has to log in again — annoying, and strictly better than a
   // live token whose consumption was never recorded.
-  existing.usedAt = new Date();
-  existing.revokedAt = new Date();
-  existing.revokedReason = "rotated";
-  await existing.save();
+  //
+  // Claimed with one conditional write, not findOne-then-save: two requests
+  // racing with the same token both passed the usedAt check above and both got
+  // a fresh token. Only the request whose filter still matches wins; the loser
+  // is a reuse, exactly as if it had arrived a second later.
+  const now = new Date();
+  const claimed = await RefreshToken.findOneAndUpdate(
+    {_id: existing._id, usedAt: null, revokedAt: null},
+    {$set: {usedAt: now, revokedAt: now, revokedReason: "rotated"}},
+    {new: true},
+  );
+
+  if (!claimed) {
+    await revokeFamily(existing.family, "reuse-detected");
+    return {outcome: ROTATION_OUTCOME.REUSE, family: existing.family, adminId: existing.admin};
+  }
 
   return {
     outcome: ROTATION_OUTCOME.OK,

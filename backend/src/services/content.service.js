@@ -211,12 +211,15 @@ export const createContent = async (Model, data, {actor}) => {
   return document;
 };
 
-const saveRevision = async (resource, document, actor, changeNote = "") => {
+// `snapshot` is the record's state as plain data, taken before any edit. The
+// caller saves the record first and only then calls this, so a save refused by
+// validation or a concurrency conflict leaves no orphan revision behind.
+const saveRevision = async (resource, snapshot, actor, changeNote = "") => {
   await ContentRevision.create({
     resource,
-    documentId: document._id,
-    revision: document.revision,
-    snapshot: document.toObject(),
+    documentId: snapshot._id,
+    revision: snapshot.revision,
+    snapshot,
     changedBy: actor ? actor._id : null,
     changeNote,
   });
@@ -224,7 +227,7 @@ const saveRevision = async (resource, document, actor, changeNote = "") => {
   // Trim beyond the cap. Old revisions are dropped oldest-first.
   const stale = await ContentRevision.find({
     resource: {$eq: resource},
-    documentId: {$eq: document._id},
+    documentId: {$eq: snapshot._id},
   })
     .sort({revision: -1})
     .skip(REVISION_LIMIT)
@@ -289,8 +292,9 @@ export const updateContent = async (Model, id, data, {actor, resource, expectedR
     );
   }
 
-  // Snapshot BEFORE mutating, so the revision holds the previous state.
-  await saveRevision(resource, document, actor);
+  // Snapshot BEFORE mutating, so the revision holds the previous state. It is
+  // written only after the save below succeeds.
+  const before = document.toObject();
 
   // The batch date is one site-wide value. Whether this save changed it is
   // judged against the snapshot above, not against the payload: the editor
@@ -336,6 +340,7 @@ export const updateContent = async (Model, id, data, {actor, resource, expectedR
   }
 
   await document.save();
+  await saveRevision(resource, before, actor);
 
   // One program's batch date is every program's batch date: push the saved
   // date and mode to the rest of the catalogue immediately, so an editor who
@@ -494,8 +499,8 @@ export const rollback = async (Model, id, revisionNumber, {actor, resource}) => 
 
   if (!target) throw notFound("That revision does not exist");
 
-  // The current state is itself snapshotted first, so a rollback is undoable.
-  await saveRevision(resource, document, actor, `Before rollback to revision ${revisionNumber}`);
+  // The current state is itself snapshotted, so a rollback is undoable.
+  const before = document.toObject();
 
   const snapshot = {...target.snapshot};
   // Identity, lifecycle and audit fields are never restored from a snapshot —
@@ -512,6 +517,7 @@ export const rollback = async (Model, id, revisionNumber, {actor, resource}) => 
   document.updatedBy = actor ? actor._id : null;
   document.revision += 1;
   await document.save();
+  await saveRevision(resource, before, actor, `Before rollback to revision ${revisionNumber}`);
 
   return document;
 };

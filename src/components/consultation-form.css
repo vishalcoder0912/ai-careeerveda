@@ -82,7 +82,7 @@
   background: rgba(28, 54, 74, 0.72);
   color: rgba(255, 255, 255, 0.92);
   font-family: inherit;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   line-height: 1.2;
   outline: none;
@@ -141,7 +141,7 @@
   border-radius: 12px 0 0 12px;
   background: rgba(22, 40, 56, 0.9);
   color: rgba(255, 255, 255, 0.92);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 650;
   letter-spacing: 0.02em;
 }
@@ -451,7 +451,7 @@ body .consultation-section .consultation-form select {
   border-radius: 12px !important;
   background: rgba(28, 53, 71, 0.82) !important;
   color: rgba(255, 255, 255, 0.92) !important;
-  font-size: 14px !important;
+  font-size: 16px !important;
   font-weight: 500 !important;
   transition:
     border-color 160ms ease,
@@ -501,7 +501,7 @@ body .consultation-section .consultation-form .phone-field__prefix {
   border-radius: 12px 0 0 12px !important;
   background: rgba(28, 53, 71, 0.82) !important;
   color: rgba(255, 255, 255, 0.82) !important;
-  font-size: 14px !important;
+  font-size: 16px !important;
   font-weight: 650 !important;
 }
 
@@ -771,4 +771,19 @@ body .consultation-section .consultation-copy--panel .section-label::before {
 body .home-defer-press + .consultation-section {
   margin-top: 0 !important;
   padding-top: clamp(40px, 5vw, 72px) !important;
+}
+
+/* Consent notice under the submit button on the consultation and enrol forms.
+   Inherits the surrounding text colour so it reads on both the dark home form
+   and the light enrol page. */
+.consultation-consent {
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  opacity: 0.72;
+}
+
+.consultation-consent a {
+  color: inherit;
+  text-decoration: underline;
 }

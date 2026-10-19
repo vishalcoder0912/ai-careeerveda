@@ -164,7 +164,7 @@
 }
 
 .ga-cert-studio-meta dt {
-  font-size: 0.62rem;
+  font-size: max(var(--ga-fs-floor, 0px), 0.62rem);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: #64748b;

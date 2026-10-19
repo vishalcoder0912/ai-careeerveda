@@ -39,8 +39,10 @@
  * the right one over it, which is what gives the two sides slightly different
  * depth rather than a symmetrical pair of smudges.
  *
- * Animated on transform only, so the blur is rasterised once and the drift
- * costs a composite rather than a re-blur every frame. */
+ * Static. They used to drift (transform keyframes, 26s/34s), and although the
+ * clouds themselves only composited, every backdrop-filter glass panel above
+ * them had to re-blur its backdrop on every frame of the drift. Profiled on the
+ * home page that alone held scrolling at ~8fps; still, it is a steady 60. */
 .cv-grid-layer::before,
 .cv-grid-layer::after {
   content: "";
@@ -53,7 +55,6 @@
      its drift keyframes was re-blurred every frame. The softness now comes
      from the gradients themselves, which fade over their full radius. */
   opacity: 0.58;
-  will-change: transform;
 }
 
 .cv-grid-layer::before {
@@ -61,7 +62,6 @@
   background:
     radial-gradient(closest-side circle at 44% 24%, rgba(37, 99, 235, 0.11), rgba(37, 99, 235, 0.04) 55%, transparent 100%),
     radial-gradient(closest-side circle at 58% 66%, rgba(37, 99, 235, 0.08), rgba(37, 99, 235, 0.03) 55%, transparent 100%);
-  animation: cv-cloud-drift-a 26s ease-in-out infinite alternate;
 }
 
 .cv-grid-layer::after {
@@ -69,28 +69,6 @@
   background:
     radial-gradient(closest-side circle at 56% 30%, rgba(124, 58, 237, 0.08), rgba(124, 58, 237, 0.03) 55%, transparent 100%),
     radial-gradient(closest-side circle at 42% 72%, rgba(85, 199, 255, 0.09), rgba(85, 199, 255, 0.035) 55%, transparent 100%);
-  animation: cv-cloud-drift-b 34s ease-in-out infinite alternate;
-}
-
-@keyframes cv-cloud-drift-a {
-  to {
-    transform: translate3d(4vw, 6vh, 0) scale(1.12);
-  }
-}
-
-@keyframes cv-cloud-drift-b {
-  to {
-    transform: translate3d(-3vw, -7vh, 0) scale(1.09);
-  }
-}
-
-/* The clouds are still drawn — they are the colour, not the motion. Only the
-   drift stops. */
-@media (prefers-reduced-motion: reduce) {
-  .cv-grid-layer::before,
-  .cv-grid-layer::after {
-    animation: none;
-  }
 }
 
 /* Keeps the arrangement to this page, so the layer and the lifted children

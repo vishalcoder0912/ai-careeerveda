@@ -27,6 +27,8 @@ import "../src/models/Media.js";
 import "../src/models/Policy.js";
 import "../src/models/Program.js";
 import "../src/models/RefreshToken.js";
+import "../src/models/RateLimit.js";
+import "../src/models/BlockedIp.js";
 
 const DRY_RUN = process.argv.includes("--dry-run");
 

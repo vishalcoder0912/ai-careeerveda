@@ -35,6 +35,8 @@ const ResourceEditor = () => {
   const canRead = Boolean(resource && can(resourcePermission(resource, "read")));
   const canCreate = Boolean(resource && can(resourcePermission(resource, "create")));
   const canUpdate = Boolean(resource && can(resourcePermission(resource, "update")));
+  // Going live is its own grant: editors send work for review, admins publish.
+  const canPublish = canUpdate && can("content.publish");
   const canManageMedia = can("media.manage");
   const canWrite = isNew ? canCreate : canUpdate;
 
@@ -225,7 +227,7 @@ const ResourceEditor = () => {
     // The route is also reachable by typing its URL. Keep the write guard at
     // the action boundary as well as hiding the controls, so an Enter key in a
     // read-only form cannot turn into a rejected API call.
-    if (!canWrite || (thenPublish && !canUpdate)) return;
+    if (!canWrite || (thenPublish && !canPublish)) return;
 
     setSaving(true);
     setFieldErrors({});
@@ -562,7 +564,7 @@ const ResourceEditor = () => {
               >
                 {saving ? "Saving…" : "Save draft"}
               </button>
-              {!isNew && record && canUpdate ? (
+              {!isNew && record && (record.status === "published" ? canUpdate : canPublish) ? (
                 <button
                   type="button"
                   className="btn btn--primary"
@@ -576,7 +578,7 @@ const ResourceEditor = () => {
                 >
                   {record.status === "published" ? "Unpublish" : "Publish"}
                 </button>
-              ) : isNew && canUpdate ? (
+              ) : isNew && canPublish ? (
                 <button
                   type="button"
                   className="btn btn--primary"
