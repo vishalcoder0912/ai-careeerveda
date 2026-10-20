@@ -2,8 +2,8 @@
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(circle at 14% 18%, rgba(16, 185, 129, 0.12), transparent 28%),
-    linear-gradient(180deg, #f8fffb 0%, #ffffff 46%, #f7faf9 100%) !important;
+    radial-gradient(circle at 14% 18%, rgba(37, 99, 235, 0.08), transparent 28%),
+    linear-gradient(180deg, #fafcff 0%, #ffffff 46%, #f5f8ff 100%) !important;
 }
 
 .program-showcase-section::before {
@@ -13,7 +13,7 @@
   width: clamp(160px, 20vw, 280px);
   height: clamp(160px, 20vw, 280px);
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.12), rgba(14, 165, 233, 0.08));
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(14, 165, 233, 0.08));
   filter: blur(8px);
   pointer-events: none;
 }
@@ -70,8 +70,8 @@
   height: 38px;
   place-items: center;
   border-radius: 14px;
-  background: #e8faf2;
-  color: #047857;
+  background: #eff6ff;
+  color: #1d4ed8;
   font-size: 0.8rem;
   font-weight: 800;
 }
@@ -88,7 +88,7 @@
   overflow-y: auto;
   flex: 1;
   scrollbar-width: thin;
-  scrollbar-color: rgba(15, 118, 110, 0.15) transparent;
+  scrollbar-color: rgba(37, 99, 235, 0.15) transparent;
 }
 
 .program-track-item {
@@ -118,24 +118,24 @@
 
 .program-track-item:hover {
   transform: translateX(4px);
-  border-color: rgba(16, 185, 129, 0.15);
-  background: linear-gradient(135deg, #ecfdf5, #ffffff);
-  box-shadow: 0 8px 20px rgba(15, 118, 110, 0.08);
+  border-color: rgba(37, 99, 235, 0.15);
+  background: linear-gradient(135deg, #eff6ff, #ffffff);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.08);
 }
 
 .program-track-item.is-previewed {
-  border-color: rgba(16, 185, 129, 0.2);
-  background: linear-gradient(135deg, #ecfdf5, #ffffff);
-  box-shadow: 0 8px 24px rgba(15, 118, 110, 0.1);
+  border-color: rgba(37, 99, 235, 0.2);
+  background: linear-gradient(135deg, #eff6ff, #ffffff);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.1);
   transform: translateX(4px);
 }
 
 .program-track-item.is-active {
-  border-color: rgba(16, 185, 129, 0.4);
-  background: linear-gradient(135deg, #ecfdf5, #ffffff);
+  border-color: rgba(37, 99, 235, 0.4);
+  background: linear-gradient(135deg, #eff6ff, #ffffff);
   box-shadow:
-    0 8px 24px rgba(15, 118, 110, 0.12),
-    0 0 0 1px rgba(16, 185, 129, 0.15);
+    0 8px 24px rgba(37, 99, 235, 0.12),
+    0 0 0 1px rgba(37, 99, 235, 0.15);
   transform: translateX(6px);
 }
 
@@ -145,8 +145,8 @@
   inset: 10px auto 10px -16px;
   width: 3px;
   border-radius: 999px;
-  background: #0e9488;
-  box-shadow: 0 0 8px rgba(14, 148, 136, 0.4);
+  background: #2563eb;
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.4);
 }
 
 .track-number {
@@ -164,9 +164,9 @@
 }
 
 .track-number--selected {
-  background: #053b37;
+  background: #102a5c;
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(5, 59, 55, 0.2);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
 }
 
 .track-text {
@@ -211,8 +211,8 @@
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 18px;
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(247, 253, 250, 0.92)),
-    radial-gradient(circle at 86% 18%, rgba(16, 185, 129, 0.12), transparent 26%);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 251, 255, 0.92)),
+    radial-gradient(circle at 86% 18%, rgba(37, 99, 235, 0.12), transparent 26%);
   box-shadow: 0 4px 20px rgba(7, 59, 102, 0.06);
   transition: box-shadow 0.3s ease;
   overflow: hidden;
@@ -225,7 +225,7 @@
   bottom: -120px;
   width: 310px;
   height: 310px;
-  border: 34px solid rgba(15, 118, 110, 0.06);
+  border: 34px solid rgba(37, 99, 235, 0.06);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -268,13 +268,13 @@
 }
 
 .category-badge {
-  background: #ecfdf5;
-  color: #047857;
+  background: #eff6ff;
+  color: #1d4ed8;
 }
 
 .admissions-badge {
   background: #f8fafc;
-  color: #0f766e;
+  color: #1d4ed8;
 }
 
 /* ── Head ────────────────────────────────── */
@@ -290,7 +290,7 @@
 
 .section-label {
   margin: 0;
-  color: #10b981;
+  color: #2563eb;
   font-size: 0.72rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -300,8 +300,10 @@
 .program-detail-head :is(h3, h2) {
   max-width: 700px;
   margin: 6px 0 10px;
-  color: #071a18;
-  font-size: clamp(1.6rem, 3.8vw, 2.4rem);
+  color: #102a5c;
+  /* The title column sits beside the image; at 2.4rem "Management" split
+     mid-word ("Managemen / t"). */
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
   line-height: 1.1;
   letter-spacing: -0.03em;
   word-wrap: break-word;
@@ -312,12 +314,12 @@
    targets the span itself, so it wins over the parent h2's colour even when a
    theme layer forces that colour with !important. */
 .program-accent {
-  color: #0e9488;
+  color: #2563eb;
 }
 
 .program-subtitle {
   display: block;
-  color: #0f766e;
+  color: #1d4ed8;
   font-size: clamp(0.92rem, 1.6vw, 1.12rem);
   font-weight: 600;
 }
@@ -330,9 +332,9 @@
   place-items: center;
   border-radius: 30px;
   background:
-    linear-gradient(135deg, rgba(16, 185, 129, 0.14), rgba(14, 165, 233, 0.08)),
+    linear-gradient(135deg, rgba(37, 99, 235, 0.14), rgba(14, 165, 233, 0.08)),
     #ffffff;
-  box-shadow: inset 0 0 0 1px rgba(15, 118, 110, 0.12), 0 20px 48px rgba(15, 118, 110, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.12), 0 20px 48px rgba(37, 99, 235, 0.14);
   flex-shrink: 0;
 }
 
@@ -340,8 +342,8 @@
   width: 42%;
   height: 42%;
   border-radius: 50%;
-  background: #10b981;
-  box-shadow: 0 0 0 12px rgba(16, 185, 129, 0.12), 0 0 36px rgba(16, 185, 129, 0.58);
+  background: #ff5a0a;
+  box-shadow: 0 0 0 12px rgba(255, 90, 10, 0.12), 0 0 36px rgba(255, 90, 10, 0.5);
   animation: programPulse 2.4s ease-in-out infinite;
 }
 
@@ -366,7 +368,7 @@
   border-radius: 16px;
   overflow: hidden;
   background: #ffffff;
-  box-shadow: inset 0 0 0 1px rgba(15, 118, 110, 0.12), 0 20px 48px rgba(15, 118, 110, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.12), 0 20px 48px rgba(37, 99, 235, 0.14);
   flex-shrink: 0;
 }
 
@@ -430,7 +432,7 @@
 }
 
 .program-meta-icon {
-  color: #0e9488;
+  color: #2563eb;
   flex-shrink: 0;
 }
 
@@ -448,7 +450,7 @@
 }
 
 .program-meta-item strong {
-  color: #071a18;
+  color: #102a5c;
   font-size: 0.86rem;
   font-weight: 800;
   line-height: 1.3;
@@ -531,7 +533,7 @@
 }
 
 .tab-pill.is-active {
-  color: #0e9488;
+  color: #2563eb;
 }
 
 .tab-pill::after {
@@ -545,7 +547,7 @@
 }
 
 .tab-pill.is-active::after {
-  background: #0e9488;
+  background: #2563eb;
 }
 
 /* ── Tab panes ───────────────────────────── */
@@ -582,8 +584,8 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #10b981;
-  box-shadow: 0 0 0 5px rgba(16, 185, 129, 0.1);
+  background: #2563eb;
+  box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.1);
 }
 
 /* Jobs tab — real openings that match the track, each with its apply link. */
@@ -620,8 +622,8 @@
   flex-shrink: 0;
   padding: 6px 12px;
   border-radius: 999px;
-  background: #ecfdf5;
-  color: #0e9488;
+  background: #eff6ff;
+  color: #2563eb;
   font-size: 0.72rem;
   font-weight: 800;
   text-decoration: none;
@@ -629,7 +631,7 @@
 }
 
 .program-job__apply:hover {
-  background: #0e9488;
+  background: #2563eb;
   color: #ffffff;
   transform: translateY(-1px);
 }
@@ -710,16 +712,16 @@
 .program-fees-tab__link {
   display: inline-block;
   margin-top: 18px;
-  color: #0e9488;
+  color: #2563eb;
   font-size: 0.82rem;
   font-weight: 800;
   text-decoration: none;
-  border-bottom: 1px solid rgba(14, 148, 136, 0.3);
+  border-bottom: 1px solid rgba(37, 99, 235, 0.3);
   transition: border-color 0.2s ease;
 }
 
 .program-fees-tab__link:hover {
-  border-color: #0e9488;
+  border-color: #2563eb;
 }
 
 /* FAQs tab — the site's real Q&A, first four. */
@@ -764,8 +766,8 @@
   width: 22px;
   height: 22px;
   border-radius: 999px;
-  background: #ecfdf5;
-  color: #0e9488;
+  background: #eff6ff;
+  color: #2563eb;
   font-size: 1rem;
   font-weight: 800;
   line-height: 1;
@@ -774,7 +776,7 @@
 
 .program-faq-mini details[open] summary::after {
   transform: rotate(45deg);
-  background: #0e9488;
+  background: #2563eb;
   color: #ffffff;
 }
 
@@ -802,10 +804,10 @@
   align-items: center;
   gap: 6px;
   padding: 7px 12px;
-  border: 1px solid rgba(15, 118, 110, 0.12);
+  border: 1px solid rgba(37, 99, 235, 0.12);
   border-radius: 999px;
-  background: rgba(236, 253, 245, 0.7);
-  color: #0f766e;
+  background: rgba(239, 246, 255, 0.7);
+  color: #1d4ed8;
   font-size: 0.74rem;
   font-weight: 800;
 }
@@ -847,7 +849,7 @@
 
 .program-pricing strong {
   margin-top: 3px;
-  color: #071a18;
+  color: #102a5c;
   font-size: 1.4rem;
   letter-spacing: -0.03em;
 }
@@ -867,18 +869,18 @@
   min-height: 48px;
   padding: 0 22px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #0e9488, #0b6bcb);
+  background: linear-gradient(120deg, #3b82f6, #1d4ed8);
   color: #ffffff;
   font-size: 0.85rem;
   font-weight: 900;
   text-decoration: none;
-  box-shadow: 0 12px 28px rgba(14, 148, 136, 0.24);
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.24);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .cta-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 18px 38px rgba(14, 148, 136, 0.3);
+  box-shadow: 0 18px 38px rgba(37, 99, 235, 0.3);
 }
 
 .cta-secondary {
@@ -888,9 +890,9 @@
   min-height: 48px;
   padding: 0 18px;
   border-radius: 999px;
-  border: 1px solid rgba(14, 148, 136, 0.25);
+  border: 1px solid rgba(37, 99, 235, 0.25);
   background: transparent;
-  color: #0e9488;
+  color: #2563eb;
   font-size: 0.82rem;
   font-weight: 800;
   text-decoration: none;
@@ -898,8 +900,8 @@
 }
 
 .cta-secondary:hover {
-  background: rgba(236, 253, 245, 0.5);
-  border-color: rgba(14, 148, 136, 0.4);
+  background: rgba(239, 246, 255, 0.5);
+  border-color: rgba(37, 99, 235, 0.4);
   transform: translateY(-1px);
 }
 
@@ -938,7 +940,7 @@
 
 .program-highlights-eyebrow {
   margin: 0;
-  color: #0e9488;
+  color: #2563eb;
   font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -977,7 +979,7 @@
 }
 
 .program-highlight-row .hl-value {
-  color: #071a18;
+  color: #102a5c;
   font-size: 0.9rem;
   font-weight: 800;
   line-height: 1.4;
@@ -1011,7 +1013,7 @@
 }
 
 .program-highlight-fee span {
-  color: #0e9488;
+  color: #2563eb;
   font-size: 0.72rem;
   font-weight: 700;
 }
@@ -1024,7 +1026,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #047857;
+  color: #1d4ed8;
   font-size: 0.7rem;
   font-weight: 800;
 }
@@ -1034,8 +1036,8 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #10b981;
-  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
+  background: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
 }
 
 .program-highlight-emi p {
@@ -1168,7 +1170,7 @@
     background: none;
     box-shadow: none;
     border-radius: 0;
-    color: #10b981;
+    color: #2563eb;
     font-size: 1.05rem;
     font-weight: 800;
   }
