@@ -8,6 +8,7 @@ import {useContentList} from "../hooks/useContent";
 import {adaptAlumniReview} from "../lib/contentAdapters";
 import {cdnImage} from "../lib/imageCdn";
 import BrandLogo from "../components/BrandLogo";
+import BrandWord from "../components/BrandWord";
 
 // The dome gallery renders every alumni portrait at once and drags them around in
 // 3D; the partner trail runs its own GSAP loop. Both sit well below the hero.
@@ -123,7 +124,7 @@ const AlumniPage = () => {
       <section className="page-section">
         <div className="ps-inner">
           <Reveal className="page-cta">
-            <h2>Become part of the CareerVeda alumni story</h2>
+            <h2>Become part of the <BrandWord /> alumni story</h2>
             <p>Start a program today and join a network built on mentorship, referrals, and lifelong support</p>
             <div className="page-hero__actions">
               <Link className="page-btn page-btn--primary" to="/enroll">Enroll Now</Link>
