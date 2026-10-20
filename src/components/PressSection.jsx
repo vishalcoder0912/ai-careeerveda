@@ -1,156 +1,110 @@
-import {memo, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
-import {motion, useMotionValueEvent, useReducedMotion, useScroll, useSpring, useTransform} from "framer-motion";
+import {memo, useEffect, useMemo, useRef, useState} from "react";
+import {useInView, useReducedMotion} from "framer-motion";
 import {Reveal} from "./motionPrimitives";
+import ScrollStack, {ScrollStackItem} from "./ScrollStack";
+import BrandWord from "./BrandWord";
 import {pressArticles, pressLogos, pressOutlets} from "../data/pressArticles";
 import {cdnImage} from "../lib/imageCdn";
 import "./press-section.css";
 
-// The shorthand for a story's accent tokens. Used for the card surfaces, the
-// grid highlight behind the active story, and the progress rail's active dot.
+// Accent tokens per story card — the card surface wash, tag and stat colour.
 const ACCENTS = {
-  placement: {
-    main: "#2563eb",
-    deep: "#1d4ed8",
-    soft: "rgba(37, 99, 235, 0.07)",
-    glow: "rgba(37, 99, 235, 0.11)",
-  },
-  recognition: {
-    main: "#0f9f8f",
-    deep: "#0e8074",
-    soft: "rgba(15, 159, 143, 0.08)",
-    glow: "rgba(15, 159, 143, 0.12)",
-  },
-  coverage: {
-    main: "#7c3aed",
-    deep: "#6d28d9",
-    soft: "rgba(124, 58, 237, 0.07)",
-    glow: "rgba(124, 58, 237, 0.11)",
-  },
+  placement: {main: "#2563eb", deep: "#1d4ed8", soft: "rgba(37, 99, 235, 0.07)"},
+  recognition: {main: "#ea580c", deep: "#c2410c", soft: "rgba(234, 88, 12, 0.07)"},
+  coverage: {main: "#4f46e5", deep: "#4338ca", soft: "rgba(79, 70, 229, 0.07)"},
 };
 
-// The closing "Coverage" chapter has no article record of its own — it is the
-// long tail of outlets as a media wall, the same card the old section used.
-const COVERAGE_STORY = {
-  outlets: pressOutlets,
-};
-
-// Three chapters = three stops on the timeline. Recognized placement milestone,
-// then the recognition story, then the media wall. Order matters: the pitch is
-// PLACEMENT SUCCESS → RECOGNITION → MEDIA COVERAGE.
+// PLACEMENT SUCCESS → RECOGNITION → MEDIA COVERAGE. The last card has no
+// article record of its own; it is the media wall of every outlet.
 const stories = [
-  {
-    id: pressArticles[0].id,
-    kind: "story",
-    accentClass: "placement",
-    accent: ACCENTS.placement,
-    article: pressArticles[0],
-  },
-  {
-    id: pressArticles[1].id,
-    kind: "story",
-    accentClass: "recognition",
-    accent: ACCENTS.recognition,
-    article: pressArticles[1],
-  },
-  {
-    id: "coverage",
-    kind: "wall",
-    accentClass: "coverage",
-    accent: ACCENTS.coverage,
-    article: COVERAGE_STORY,
-  },
+  {id: pressArticles[0].id, kind: "story", accentClass: "placement", article: pressArticles[0]},
+  {id: pressArticles[1].id, kind: "story", accentClass: "recognition", article: pressArticles[1]},
+  {id: "coverage", kind: "wall", accentClass: "coverage", article: {outlets: pressOutlets}},
 ];
 
-// The storytelling mechanic is the same on every screen — a pinned stage that
-// scrubs three story cards along a horizontal lane as the visitor scrolls.
-// The lane adapts itself to the viewport (CSS, press-section.css): the cards
-// are as wide as their screen deserves, so a phone reads a full-bleed story
-// that the next one slides in from the right, and a desktop reads the wide
-// two-column spread. No layout mode-switching — the scroll scrubs a translateX
-// on every screen.
-//
-// A logo chip is 76x18 at most. Press logos tend to arrive as whatever the outlet
-// sends — often a full-resolution PNG — so an ImageKit URL pasted into pressLogos
-// is resized on the way out rather than shipping a 200 KB masthead to paint a
-// thumbnail. Non-ImageKit URLs (a local /press/*.png) pass through untouched.
-const LOGO_WIDTH = 160;
+// Logo chips render at most ~120x36; ImageKit URLs are resized on the way out.
+const LOGO_WIDTH = 240;
 
-// One outlet chip, used by the per-story "Featured in" row and the closing
-// media wall — so a logo added to pressLogos appears in both without being wired
-// up twice. A missing/broken logo degrades to the outlet's name rather than a
-// broken-image icon.
-const OutletChip = memo(({source}) => {
+const initials = (name) =>
+  name
+    .replace(/^the\s+/i, "")
+    .split(/[\s-]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0].toUpperCase())
+    .join("");
+
+// A press badge: the outlet's logo on a white plate (or its monogram when the
+// logo is missing or fails), the outlet name, and a small "featured" check.
+// Used by each story's "Featured in" row and by the media wall.
+const OutletBadge = memo(({source, size = "sm"}) => {
   const [logoFailed, setLogoFailed] = useState(false);
   const logo = pressLogos[source.name];
   const showLogo = Boolean(logo) && !logoFailed;
 
   return (
     <a
-      className={showLogo ? "has-logo" : undefined}
+      className={`press-badge press-badge--${size}`}
       href={source.url}
       target="_blank"
       rel="noopener noreferrer"
+      title={`Read on ${source.name}`}
     >
-      {showLogo ? (
-        <img
-          className="press-logo"
-          src={cdnImage(logo, LOGO_WIDTH)}
-          alt={source.name}
-          width={LOGO_WIDTH}
-          height={36}
-          loading="lazy"
-          decoding="async"
-          onError={() => setLogoFailed(true)}
-        />
-      ) : (
-        source.name
-      )}
+      <span className="press-badge__plate">
+        {showLogo ? (
+          <img
+            src={cdnImage(logo, LOGO_WIDTH)}
+            alt=""
+            width={LOGO_WIDTH}
+            height={72}
+            loading="lazy"
+            decoding="async"
+            onError={() => setLogoFailed(true)}
+          />
+        ) : (
+          <span className="press-badge__mono" aria-hidden="true">{initials(source.name)}</span>
+        )}
+        <span className="press-badge__check" aria-hidden="true">
+          <svg viewBox="0 0 12 12">
+            <path d="M2.4 6.2 4.9 8.6 9.6 3.6" />
+          </svg>
+        </span>
+      </span>
+      <span className="press-badge__name">{source.name}</span>
     </a>
   );
 });
 
-// A stat value like "300+" or "20+ LPA" or "68%": count the numeric core up
-// from zero the first time the story holding it takes the stage, keeping the
-// suffix steady. Runs once per card (pinned via startedRef), honours reduced
-// motion, and falls back to the literal string for anything non-numeric.
+// "300+", "20+ LPA", "68%": counts the number up once the card is in view,
+// keeping the suffix. Non-numeric values and reduced motion show as written.
 const STAT_NUM_RE = /^([\d.,]+)(.*)$/;
 
 const PressCount = ({children, active}) => {
   const reducedMotion = useReducedMotion();
   const value = String(children ?? "");
   const parsed = useMemo(() => STAT_NUM_RE.exec(value), [value]);
-  const [display, setDisplay] = useState(() => {
-    if (!parsed || reducedMotion) return value;
-    return `0${parsed[2]}`;
-  });
+  const [display, setDisplay] = useState(() => (!parsed || reducedMotion ? value : `0${parsed[2]}`));
 
   useEffect(() => {
-    if (!parsed || reducedMotion) return;
-    if (!active) return;
-
+    if (!parsed || reducedMotion || !active) return undefined;
     const target = parseFloat(parsed[1].replace(/,/g, ""));
-    if (!Number.isFinite(target)) return;
+    if (!Number.isFinite(target)) return undefined;
     const suffix = parsed[2];
-    const DURATION = 1150;
     const start = performance.now();
     let raf = 0;
     const tick = (now) => {
-      const t = Math.max(0, Math.min(1, (now - start) / DURATION));
-      const eased = 1 - Math.pow(1 - t, 3);
-      setDisplay(`${Math.round(target * eased).toLocaleString("en-US")}${suffix}`);
+      const t = Math.min(1, (now - start) / 1150);
+      setDisplay(`${Math.round(target * (1 - Math.pow(1 - t, 3))).toLocaleString("en-US")}${suffix}`);
       if (t < 1) raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [parsed, value, active, reducedMotion]);
+  }, [parsed, active, reducedMotion]);
 
   return <strong>{display}</strong>;
 };
 
-// The body of one story, mode-agnostic. The pinned lane and the reduced-motion
-// narrative render the same inner content — the caller supplies the wrapper —
-// so a content edit can never drift between layouts.
-const StoryBody = memo(({article, kind, entered}) => {
+const StoryBody = ({article, kind, entered}) => {
   if (kind === "wall") {
     return (
       <div className="press-story__inner press-story__inner--center">
@@ -160,12 +114,12 @@ const StoryBody = memo(({article, kind, entered}) => {
         </span>
         <h3 className="press-story__title">Featured across India&apos;s media</h3>
         <p className="press-story__excerpt">
-          CareerVeda&apos;s placement milestones and upskilling programs have been covered by
-          publications nationwide.
+          CareerVeda&apos;s placement milestones and upskilling programs have been covered by publications
+          nationwide.
         </p>
-        <div className="press-wall-grid">
+        <div className="press-wall">
           {article.outlets.map((source) => (
-            <OutletChip key={source.name} source={source} />
+            <OutletBadge key={source.name} source={source} size="lg" />
           ))}
         </div>
       </div>
@@ -213,205 +167,93 @@ const StoryBody = memo(({article, kind, entered}) => {
 
       <div className="press-story__sources">
         <small>Featured in</small>
-        {article.sources.map((source) => (
-          <OutletChip key={source.name} source={source} />
-        ))}
+        <div className="press-story__badges">
+          {article.sources.map((source) => (
+            <OutletBadge key={source.name} source={source} />
+          ))}
+        </div>
       </div>
     </div>
   );
-});
+};
 
-const storyAccentStyle = (story) => ({
-  "--accent": story.accent.main,
-  "--accent-deep": story.accent.deep,
-  "--accent-soft": story.accent.soft,
-});
-
-// One card on the pinned lane. `distance` — how far the scroll progress is
-// from this story's stop — drives scale, opacity, ring presence and stacking
-// order, so the active story is always the large, legible, topmost one while
-// its neighbours recede. The whole lane is scrubbed end-to-end by the
-// visitor's scroll — nothing pops in and out.
-const LANE_END = 0.8;
-
-const StoryLaneCard = memo(({story, index, total, scrollYProgress, isActive}) => {
-  const center = index / (total - 1);
-  const distance = useTransform(scrollYProgress, (value) => Math.abs(value - center));
-  const scale = useTransform(distance, [0, 0.45], [1, 0.93]);
-  const opacity = useTransform(distance, [0, 0.45], [1, 0.62]);
-  const zIndex = useTransform(distance, [0, 0.45], [12, 6]);
-
-  // A leaving story drifts a little further left rather than cutting hard to
-  // its dimmed rest position — a tiny residual slant as the next one arrives.
-  const x = useTransform(distance, [0, 0.5], [0, -34]);
-
-  // Set ONCE, the first time the card owns the stage, so the stat count-up
-  // runs a single time. There is deliberately no CSS entrance on the content:
-  // the card is already visible while it slides in, and a fade-from-zero on
-  // activation blanked it mid-handoff, which read as the section re-rendering.
-  const [entered, setEntered] = useState(false);
-  if (isActive && !entered) setEntered(true);
+// One story card. Stats count up the first time it scrolls into view.
+const StoryCard = ({story}) => {
+  const ref = useRef(null);
+  const entered = useInView(ref, {once: true, amount: 0.35});
+  const accent = ACCENTS[story.accentClass];
 
   return (
-    <motion.article
-      className={`press-story press-story--${story.accentClass}${isActive ? " is-active" : ""}${entered ? " is-entered" : ""}`}
-      style={{zIndex, scale, opacity, x, ...storyAccentStyle(story)}}
+    <article
+      ref={ref}
+      className={`press-story press-story--${story.accentClass}`}
+      style={{"--accent": accent.main, "--accent-deep": accent.deep, "--accent-soft": accent.soft}}
     >
       <StoryBody article={story.article} kind={story.kind} entered={entered} />
-    </motion.article>
+    </article>
   );
-});
+};
 
-// The section's heading. Story 1 is the dominant visual when the reader
-// arrives, which is the whole point of the pinned stage; the heading sits in
-// normal flow above it and scrolls away as the section pins.
-const PressSection = () => {
-  const reducedMotion = useReducedMotion();
-  const animated = !reducedMotion;
+// Phones and short screens read the stories as a plain column: a card taller
+// than the space under the pin would hide its own bottom while stacked.
+const STACK_QUERY = "(min-width: 900px) and (min-height: 640px)";
 
-  const scrollRef = useRef(null);
-  const trackRef = useRef(null);
-  const stepRef = useRef(0); // one card width + the track gap, in px (lane only)
-  const storyCount = stories.length;
-
-  const [active, setActive] = useState(0);
-
-  const {scrollYProgress} = useScroll({
-    target: scrollRef,
-    // The whole pinned run: the section's tall wrapper starts at the top of
-    // the viewport and ends at the bottom.
-    offset: ["start start", "end end"],
-  });
-
-  // The scrub is sprung, not raw: the lane keeps gliding a beat after the
-  // fingers stop, so the story hand-offs feel weighty rather than clutching
-  // to the scrollbar. Over-damped (damping > 2*sqrt(stiffness*mass)), so it
-  // settles without an overshoot that would park a card off-centre.
-  // Softer than it was (120/26/0.6) so a hand-off glides rather than tracks
-  // the scrollbar. Still over-damped: critical damping is 2·√(70·0.7) ≈ 14.
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 70,
-    damping: 20,
-    mass: 0.7,
-  });
-  const progress = animated ? smoothProgress : scrollYProgress;
-
-  // The lane finishes its slide at LANE_END of the pinned run and holds the
-  // last card still for the remainder. Mapped 1:1, the last card only reached
-  // its stop on the run's final pixel — the same moment the pin released — so
-  // on phones it was always caught half off the right edge, and the next
-  // section rose before the card had landed.
-  const laneProgress = useTransform(progress, (value) => Math.min(1, value / LANE_END));
-
-  // The lane slides so that timeline stop `i` lands in the active column:
-  // x = -i * step. `step` is measured, not state, so a resize never re-renders
-  // the tree — the transform simply reads the fresh number on its next scroll
-  // evaluation.
-  const trackX = useTransform(laneProgress, (value) => -stepRef.current * (storyCount - 1) * value);
-
-  useMotionValueEvent(laneProgress, "change", (value) => {
-    setActive(value < 0.25 ? 0 : value < 0.75 ? 1 : 2);
-  });
-
-  // Measure the lane step (card width + gap). Triggered on mount, font settle
-  // and resize; the width is vw-derived so fonts changing cannot move it, but
-  // re-measuring is cheap and keeps the maths honest.
-  useLayoutEffect(() => {
-    const track = trackRef.current;
-    if (!track) return undefined;
-
-    const measure = () => {
-      const card = track.querySelector(".press-story");
-      if (!card) return;
-      const style = window.getComputedStyle(track);
-      const gap = parseFloat(style.columnGap || "") || parseFloat(style.gap || "") || 0;
-      stepRef.current = Math.round(card.getBoundingClientRect().width + gap);
-
-      // The stage is viewport-tall with the card centred, so when the pin
-      // releases, half the leftover height sits empty under the last card
-      // before the next section starts. Expose it so the CSS can pull the next
-      // section up by that much (press-section.css, --press-spare).
-      const stage = track.closest(".press-stage");
-      const cards = track.querySelectorAll(".press-story");
-      const last = cards[cards.length - 1];
-      if (stage && last && scrollRef.current) {
-        const spare = Math.max(0, Math.round((stage.clientHeight - last.offsetHeight) / 2));
-        scrollRef.current.style.setProperty("--press-spare", `${spare}px`);
-      }
-    };
-
-    measure();
-    const frame = window.requestAnimationFrame(measure);
-    window.addEventListener("resize", measure);
-    if (document.fonts?.ready) document.fonts.ready.then(measure).catch(() => {});
-    return () => {
-      window.cancelAnimationFrame(frame);
-      window.removeEventListener("resize", measure);
-    };
+const useStacking = () => {
+  const [stack, setStack] = useState(() =>
+    typeof window !== "undefined" ? window.matchMedia(STACK_QUERY).matches : false,
+  );
+  useEffect(() => {
+    const query = window.matchMedia(STACK_QUERY);
+    const onChange = () => setStack(query.matches);
+    query.addEventListener("change", onChange);
+    return () => query.removeEventListener("change", onChange);
   }, []);
+  return stack;
+};
+
+const PressSection = () => {
+  const stacking = useStacking();
 
   return (
-    <section
-      id="press"
-      className={`press-section${animated ? " press-storytelling press-storytelling--lane" : " press-storytelling--static"}`}
-    >
+    <section id="press" className={`press-section${stacking ? " press-section--stacked" : ""}`}>
       <Reveal className="press-section-heading">
         <span className="label">Media Coverage</span>
-        <h2>CareerVeda in the News</h2>
-        <p>
-          Featured across India&apos;s leading publications for placement outcomes and
-          upskilling excellence.
-        </p>
+        <h2>
+            <BrandWord /> in the News
+          </h2>
+        <p>Featured across India&apos;s leading publications for placement outcomes and upskilling excellence.</p>
       </Reveal>
 
-      <div className="press-scroll" ref={scrollRef}>
-        <div className="press-stage">
-          {animated && (
-            <div className="press-grid" aria-hidden="true">
-              {stories.map((story, index) => (
-                <motion.span
-                  key={story.id}
-                  className={`press-grid__glow press-grid__glow--${index}${index === active ? " is-active" : ""}`}
-                  style={{
-                    // The glow rides the same track as the cards on every screen.
-                    x: trackX,
-                    "--glow": story.accent.glow,
-                  }}
-                />
-              ))}
-            </div>
-          )}
-
-          {animated ? (
-            <motion.div className="press-track" ref={trackRef} style={{x: trackX}}>
-              {stories.map((story, index) => (
-                <StoryLaneCard
-                  key={story.id}
-                  story={story}
-                  index={index}
-                  total={storyCount}
-                  scrollYProgress={laneProgress}
-                  isActive={index === active}
-                />
-              ))}
-            </motion.div>
-          ) : (
-            <div className="press-track" ref={trackRef}>
-              {stories.map((story, index) => (
-                <Reveal key={story.id} className="press-story-slot" amount={0.12}>
-                  <article
-                    className={`press-story press-story--${story.accentClass}${index === 0 ? " is-active" : ""}`}
-                    style={storyAccentStyle(story)}
-                  >
-<StoryBody article={story.article} kind={story.kind} />
-                  </article>
-                </Reveal>
-              ))}
-            </div>
-          )}
-
+      {stacking ? (
+        // Window scroll so the cards pin as the page scrolls. Lenis already
+        // smooths the wheel site-wide, so the stack's own smoothing is off.
+        <ScrollStack
+          className="press-stack"
+          useWindowScroll
+          smoothScroll={false}
+          stackPosition="12%"
+          itemDistance={80}
+          itemStackDistance={26}
+          itemScale={0.04}
+          baseScale={0.9}
+          dimAmount={0.04}
+          holdDistance={140}
+        >
+          {stories.map((story) => (
+            <ScrollStackItem key={story.id} itemClassName="press-stack__card">
+              <StoryCard story={story} />
+            </ScrollStackItem>
+          ))}
+        </ScrollStack>
+      ) : (
+        <div className="press-list">
+          {stories.map((story) => (
+            <Reveal key={story.id} amount={0.12}>
+              <StoryCard story={story} />
+            </Reveal>
+          ))}
         </div>
-      </div>
+      )}
     </section>
   );
 };
