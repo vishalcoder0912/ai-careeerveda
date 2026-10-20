@@ -34,6 +34,8 @@ import "../components/page-shell.css";
 import "../components/program-detail.css";
 import "../components/program-effects.css";
 
+const SPOTLIGHT_CARDS = ".pd-gain, .pd-track, .pd-job, .pd-mentor";
+
 // One page, nine programs. Every section below is driven by the program's
 // record in programCatalog.js (or the API's answer for it) and skipped when
 // that program has no data for it, so a thin program renders a short page
@@ -98,6 +100,65 @@ const ProgramDetailPage = ({slug: providedSlug}) => {
     });
   }, [program, programDescription, landingHref]);
 
+  // Pointer effects, one delegated listener (program-effects.css paints them):
+  // - spotlight cards get the cursor position as --mx/--my;
+  // - the hero image tilts towards the cursor via --tx/--ty;
+  // - primary buttons lean a few pixels towards it ("magnetic").
+  // Tilt and magnet are skipped for reduced motion; the glow is static colour.
+  useEffect(() => {
+    const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let tilted = null;
+    let magnet = null;
+
+    const release = () => {
+      if (tilted) {
+        tilted.style.setProperty("--tx", "0");
+        tilted.style.setProperty("--ty", "0");
+        tilted = null;
+      }
+      if (magnet) {
+        magnet.style.translate = "";
+        magnet = null;
+      }
+    };
+
+    const onMove = (event) => {
+      const card = event.target.closest?.(SPOTLIGHT_CARDS);
+      if (card) {
+        const box = card.getBoundingClientRect();
+        card.style.setProperty("--mx", `${event.clientX - box.left}px`);
+        card.style.setProperty("--my", `${event.clientY - box.top}px`);
+      }
+      if (calm) return;
+
+      const frame = event.target.closest?.(".pd-visual-frame");
+      const button = event.target.closest?.(".pd-btn--primary");
+      if (frame !== tilted || button !== magnet) release();
+
+      if (frame) {
+        const box = frame.getBoundingClientRect();
+        // -0.5…0.5 across the image.
+        frame.style.setProperty("--tx", ((event.clientX - box.left) / box.width - 0.5).toFixed(3));
+        frame.style.setProperty("--ty", ((event.clientY - box.top) / box.height - 0.5).toFixed(3));
+        tilted = frame;
+      }
+      if (button) {
+        const box = button.getBoundingClientRect();
+        const dx = (event.clientX - box.left - box.width / 2) * 0.18;
+        const dy = (event.clientY - box.top - box.height / 2) * 0.3;
+        button.style.translate = `${dx.toFixed(1)}px ${dy.toFixed(1)}px`;
+        magnet = button;
+      }
+    };
+
+    document.addEventListener("pointermove", onMove, {passive: true});
+    document.addEventListener("pointerleave", release);
+    return () => {
+      document.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerleave", release);
+    };
+  }, []);
+
   // Course structured data — the schema that can earn a rich result in search
   // for a program page. Removed on unmount by useJsonLd, so navigating to
   // another program does not leave the previous one's Course data behind.
@@ -149,6 +210,7 @@ const ProgramDetailPage = ({slug: providedSlug}) => {
 
   return (
     <main className={`spline-page page-shell program-detail${themeClass}`}>
+      <div className="pd-progress" aria-hidden="true" />
       <div className="pd-layout">
         <div className="pd-layout__main">
           <ProgramHero program={program} applyHref={applyHref} />
