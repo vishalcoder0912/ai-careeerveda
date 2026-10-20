@@ -631,3 +631,168 @@
     transition: none;
   }
 }
+
+/* ── Clarity pass ──────────────────────────────────────────────────────────
+   `body .jobs-page …` out-ranks careerveda-light-theme.css (`body .x`). */
+
+/* Hero: the header is already in flow, so 100–160px of top padding left a
+   blank band; the orange smear under it read as a stray artefact. */
+body .jobs-page .jobs-hero {
+  padding: clamp(36px, 5vw, 64px) 0 clamp(24px, 3vw, 36px);
+}
+
+body .jobs-page .jobs-hero::after {
+  display: none;
+}
+
+/* Toolbar: search on its own row, three labelled filters beneath it. */
+body .jobs-page .jobs-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  padding: 0 0 22px;
+}
+
+body .jobs-page .jobs-search__icon {
+  color: #64748b;
+}
+
+body .jobs-page .jobs-filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+body .jobs-page .jobs-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+body .jobs-page .jobs-filter__label {
+  color: #33486b;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+body .jobs-page .jobs-filters__select {
+  width: 100%;
+}
+
+body .jobs-page .jobs-count-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+body .jobs-page .jobs-filters__clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* One explanation of the LinkedIn button, instead of "via LinkedIn Jobs" on
+   every card. */
+body .jobs-page .jobs-live-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0 0 20px;
+  padding: 12px 16px;
+  border: 1px solid #d6e4fb;
+  border-radius: 12px;
+  background: #f1f7ff;
+  color: #33486b;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+body .jobs-page .jobs-live-note svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: #2563eb;
+}
+
+body .jobs-page .jobs-live-note strong {
+  color: #102a5c;
+}
+
+/* Card: icon meta row, salary as its own emphasised line. */
+body .jobs-page .job-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+body .jobs-page .job-card__meta li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #536987;
+  font-size: 13.5px;
+}
+
+body .jobs-page .job-card__meta svg {
+  flex-shrink: 0;
+  color: #2563eb;
+}
+
+body .jobs-page .job-card__salary {
+  margin: 12px 0 0;
+  color: #102a5c;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+body .jobs-page .job-card__footer {
+  align-items: center;
+}
+
+body .jobs-page .job-card__date {
+  color: #64748b;
+  font-size: 13px;
+}
+
+/* Seventy identical gradient buttons shouted over the content. Outline by
+   default, filled on hover / when the card is hovered. */
+body .jobs-page .job-card__apply {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border: 1.5px solid #2563eb;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #2563eb;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: none;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+body .jobs-page .job-card:hover .job-card__apply,
+body .jobs-page .job-card__apply:focus-visible {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.25);
+}
+
+@media (max-width: 860px) {
+  body .jobs-page .jobs-filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 481px) and (max-width: 860px) {
+  body .jobs-page .jobs-filters {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
