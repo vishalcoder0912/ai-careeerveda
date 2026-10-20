@@ -7,6 +7,7 @@ import { stats, faqs as staticFaqs } from "../data/siteData";
 import { useContentList } from "../hooks/useContent";
 import { adaptFaq, adaptAlumniReview } from "../lib/contentAdapters";
 import { faqSchema, useJsonLd } from "../lib/structuredData";
+import BrandWord from "../components/BrandWord";
 import "../components/SplineLanding.css";
 import "../components/careerveda-hero-refinement.css";
 import "../components/cinematic-interactions.css";
@@ -163,7 +164,7 @@ const HomePage = () => {
             <p className="section-label">ISO Certified Career Platform</p>
             <h2 className="consultation-headline">
               Transform Your Career with{" "}
-              <span className="cv-typewriter-accent">CareerVeda</span>
+              <BrandWord />
             </h2>
             <p>
               Master cutting-edge technologies with industry experts, get certified
