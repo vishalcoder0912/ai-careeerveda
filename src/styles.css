@@ -49,6 +49,20 @@
    slate-color-system.css's dark !important rules by specificity. */
 @import "./components/careerveda-light-theme.css";
 
+/* ONE FONT, every route: Manrope. The section sheets each set their own family
+   (Inter, Poppins, Georgia, Cormorant, monospace — many with !important), so
+   this rule sits in a cascade layer: an !important declaration in a layer
+   outranks every unlayered !important one, whatever its specificity. Inter is
+   only a fallback — its rupee subset supplies ₹ if Manrope has no glyph. Code
+   keeps a monospace face so it stays readable as code. */
+@layer site-font {
+  *:not(code, pre, kbd, samp, code *, pre *),
+  *::before,
+  *::after {
+    font-family: "Manrope", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif !important;
+  }
+}
+
 /* Shared route-level contract: page chunks may load their own styles after the
    layout. Keep the shell and outer header transparent; the compact nav links
    pill remains the only navbar surface. */

@@ -108,30 +108,13 @@
         unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
       }
     </style>
-    <!-- Preload primary variable font files for fast render -->
-    <link
-      rel="preload"
-      as="font"
-      type="font/woff2"
-      href="/fonts/inter-var-latin.woff2"
-      crossorigin
-    />
+    <!-- Manrope is the one site font (see the font rule in styles.css). -->
     <link
       rel="preload"
       as="font"
       type="font/woff2"
       href="/fonts/manrope-var-latin.woff2"
       crossorigin
-    />
-
-    <!-- Cormorant Garamond — the editorial serif used by the Generative AI / Agentic
-         AI cinematic experience (/generative-ai route). Loaded only as needed via
-         webfont; the rest of the site does not reference it. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Manrope:wght@300;400;500;600;700&display=swap"
     />
 
     <!-- The student photo is the home hero's LCP element at every width, so it

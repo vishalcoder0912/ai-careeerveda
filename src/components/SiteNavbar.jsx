@@ -269,7 +269,7 @@ const SiteNavbar = ({navItems}) => {
 
           <div className="mobile-navbar-actions">
             <Link className="nav-cta" to="/enroll" onClick={closeMenu}>
-              Enroll Now
+              Enroll Now <span className="nav-cta__arrow" aria-hidden="true">→</span>
             </Link>
 
             <button

@@ -717,14 +717,33 @@ body header.site-nav .nav-container .site-nav-brand .brand-name .cv-career {
   color: #0f172a !important;
 }
 
-/* Desktop scrolled: cancel the legacy fade-to-pill completely and keep the
-   three-zone grid doing its job — brand and CTA stay put, the pill stays a
-   quiet transparent track on the same light bar. */
+/* Desktop scrolled: the bar itself disappears, the brand and Enroll Now fade
+   out, and only the nav links remain as a floating light-glass pill. The grid
+   tracks are held (not collapsed) so the pill stays centered with no shift;
+   the delayed visibility also takes the hidden links out of the tab order. */
 @media (min-width: 1024px) {
+  body header.site-nav.is-scrolled,
+  body header.site-nav.is-compact {
+    background: transparent !important;
+    background-color: transparent !important;
+    border-bottom-color: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+  }
+
   body header.site-nav.is-scrolled .nav-container,
   body header.site-nav.is-compact .nav-container {
     padding-top: 0 !important;
     height: var(--navbar-height-scrolled, 70px) !important;
+  }
+
+  body header.site-nav .nav-container .brand,
+  body header.site-nav .nav-container .site-nav-brand,
+  body header.site-nav .nav-container a.nav-cta {
+    transition:
+      opacity 320ms cubic-bezier(0.33, 1, 0.68, 1),
+      transform 320ms cubic-bezier(0.33, 1, 0.68, 1) !important;
   }
 
   body header.site-nav.is-scrolled .nav-container .brand,
@@ -733,28 +752,42 @@ body header.site-nav .nav-container .site-nav-brand .brand-name .cv-career {
   body header.site-nav.is-compact .nav-container .brand,
   body header.site-nav.is-compact .nav-container .site-nav-brand,
   body header.site-nav.is-compact .nav-container a.nav-cta {
-    opacity: 1 !important;
-    transform: none !important;
-    visibility: visible !important;
-    pointer-events: auto !important;
-    transition: none !important;
+    opacity: 0 !important;
+    transform: translateY(-6px) scale(0.97) !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transition:
+      opacity 320ms cubic-bezier(0.33, 1, 0.68, 1),
+      transform 320ms cubic-bezier(0.33, 1, 0.68, 1),
+      visibility 0s linear 320ms !important;
   }
 
   body header.site-nav.is-scrolled .nav-container nav.site-nav-links,
   body header.site-nav.is-compact .nav-container nav.site-nav-links {
-    height: 50px !important;
-    padding: 4px 6px !important;
-    background: transparent !important;
-    border-color: transparent !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    box-shadow: none !important;
+    height: 52px !important;
+    padding: 5px 8px !important;
+    background: rgba(255, 255, 255, 0.86) !important;
+    border: 1px solid rgba(7, 59, 102, 0.1) !important;
+    backdrop-filter: blur(16px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
+    box-shadow: 0 10px 32px rgba(7, 59, 102, 0.1) !important;
   }
 
   body header.site-nav.is-scrolled .nav-container nav.site-nav-links::after,
   body header.site-nav.is-compact .nav-container nav.site-nav-links::after {
     content: none !important;
     display: none !important;
+  }
+}
+
+@media (min-width: 1024px) and (prefers-reduced-motion: reduce) {
+  body header.site-nav .nav-container .brand,
+  body header.site-nav .nav-container .site-nav-brand,
+  body header.site-nav .nav-container a.nav-cta,
+  body header.site-nav.is-scrolled .nav-container .brand,
+  body header.site-nav.is-scrolled .nav-container .site-nav-brand,
+  body header.site-nav.is-scrolled .nav-container a.nav-cta {
+    transition: none !important;
   }
 }
 
@@ -768,4 +801,40 @@ body header.site-nav .nav-container .site-nav-brand .brand-name .cv-career {
     border: 1px solid rgba(7, 59, 102, 0.1) !important;
     box-shadow: 0 6px 24px rgba(7, 59, 102, 0.08) !important;
   }
+}
+
+/* ---------- Header: compact white bar, orange CTA ----------
+   At the top of the page the header is a plain white bar with a hairline and
+   the links sit directly on it (no capsule). Scrolled, the desktop rules above
+   still take over and float the links as a pill. The extra .site-nav in each
+   selector out-ranks the light-theme sheet's !important rules. */
+body header.site-nav.site-nav:not(.is-scrolled):not(.is-compact) {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e0ebfa !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+body header.site-nav.site-nav:not(.is-scrolled):not(.is-compact) .nav-container nav.site-nav-links {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+body header.site-nav.site-nav .nav-container a.nav-cta {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  background: #ff5a0a !important;
+  background-image: none !important;
+  box-shadow: 0 8px 20px rgba(255, 90, 10, 0.24) !important;
+  color: #ffffff !important;
+}
+
+body header.site-nav.site-nav .nav-container a.nav-cta:hover {
+  background: #e84d00 !important;
 }

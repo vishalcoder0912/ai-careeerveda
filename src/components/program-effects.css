@@ -161,13 +161,116 @@
   padding: 22px 0 10px;
 }
 
+/* ── Component-library patterns (Magic UI / 21st.dev style), CSS only ──── */
+
+/* Shimmer button: a soft light sweeps across the primary CTA. */
+.pd-btn--primary {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.pd-btn--primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.38) 50%, transparent 65%);
+  transform: translateX(-120%);
+  animation: pd-shimmer 3.2s ease-in-out infinite;
+}
+
+@keyframes pd-shimmer {
+  60%,
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+/* Live badge: pulsing dot in front of "Admissions Open". */
+.pd-badge--status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pd-badge--status::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 0 currentColor;
+  animation: pd-live 1.8s ease-out infinite;
+}
+
+@keyframes pd-live {
+  70%,
+  100% {
+    box-shadow: 0 0 0 7px transparent;
+  }
+}
+
+/* Border beam: a light travels around the pricing card's edge. */
+@property --pd-beam {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.pd-fee-total {
+  position: relative;
+  background:
+    radial-gradient(520px 240px at 50% 0%, rgba(37, 99, 235, 0.08), transparent 70%),
+    var(--pd-soft);
+}
+
+.pd-fee-total::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  padding: 1.5px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--pd-beam), transparent 0 78%, #60a5fa 88%, #f97316 94%, transparent 100%);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: pd-beam 6s linear infinite;
+}
+
+@keyframes pd-beam {
+  to {
+    --pd-beam: 360deg;
+  }
+}
+
+/* Dot pattern behind the closing CTA, faded towards the edges. */
+.pd-cta__panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: radial-gradient(rgba(37, 99, 235, 0.18) 1px, transparent 1px);
+  background-size: 18px 18px;
+  mask-image: radial-gradient(ellipse 60% 70% at 50% 50%, #000 20%, transparent 75%);
+  pointer-events: none;
+}
+
+.pd-cta__panel > * {
+  position: relative;
+  z-index: 1;
+}
+
 /* ── Reduced motion: kill the new motion, keep the data ─────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
   .pd-hero__glow::before,
   .pd-hero__glow::after,
   .pd-hero .pd-badge,
-  .pd-hero .pd-visual-frame {
+  .pd-hero .pd-visual-frame,
+  .pd-btn--primary::after,
+  .pd-badge--status::before,
+  .pd-fee-total::before {
     animation: none;
   }
 

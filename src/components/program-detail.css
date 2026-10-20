@@ -2952,3 +2952,36 @@ html.pd-vt::view-transition-old(root),
 html.pd-vt::view-transition-new(root) {
   animation: none;
 }
+
+/* ---------- Seamless hero under the navbar ----------
+   The hero's colour pools used to start exactly at the navbar's bottom edge,
+   leaving a flat band (the bare page colour) above a tinted hero — a visible
+   seam under the transparent navbar. The hero now runs up beneath the navbar
+   so the bar sits on the same colour as the hero, with the content kept where
+   it was by the matching extra padding. */
+.pd-layout .pd-hero {
+  margin-top: calc(-1 * var(--navbar-height, 78px));
+  padding-top: calc(var(--navbar-height, 78px) + clamp(28px, 4vw, 56px));
+}
+
+@media (max-width: 900px) {
+  .pd-layout .pd-hero {
+    padding-top: calc(var(--navbar-height, 78px) + clamp(24px, 4vw, 40px));
+  }
+}
+
+/* The drifting glow is clipped by the hero's bottom edge, which cut the purple
+   pool off in a hard line above the skills ticker. Fade it out first. */
+.pd-hero__glow {
+  -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 220px), transparent);
+  mask-image: linear-gradient(180deg, #000 calc(100% - 220px), transparent);
+}
+
+/* The section tabs spanned the main column (gutter to gutter) while the hero
+   bleeds to the screen edge and the content sits in .pd-inner — three
+   different widths. Bleed the bar like the hero; the links stay on the
+   content edge through .pd-inner inside it. */
+.pd-layout .pd-section-nav {
+  margin-inline: calc(-1 * var(--pd-gutter));
+  padding-inline: var(--pd-gutter);
+}
