@@ -697,14 +697,14 @@ body header.site-nav .nav-container nav.site-nav-links a {
 body header.site-nav .nav-container nav.site-nav-links a:hover,
 body header.site-nav .nav-container nav.site-nav-links a:focus-visible {
   color: #0f172a !important;
-  background: rgba(14, 148, 136, 0.09) !important;
+  background: rgba(37, 99, 235, 0.08) !important;
   box-shadow: none !important;
 }
 
 body header.site-nav .nav-container nav.site-nav-links a.is-active {
-  color: #0e9488 !important;
-  background: rgba(14, 148, 136, 0.1) !important;
-  box-shadow: inset 0 0 0 1px rgba(14, 148, 136, 0.14) !important;
+  color: #2563eb !important;
+  background: rgba(37, 99, 235, 0.08) !important;
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.16) !important;
 }
 
 body header.site-nav .nav-container .brand,
