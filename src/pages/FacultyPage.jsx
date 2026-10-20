@@ -4,6 +4,7 @@ import { useCinematicInteractions } from "../hooks/useCinematicInteractions";
 import { Reveal, StaggerGroup, StaggerItem } from "../components/motionPrimitives";
 import DeferUntilVisible from "../components/DeferUntilVisible";
 import { differentiators, supportTracks, careerSteps } from "../data/siteData";
+import BrandWord from "../components/BrandWord";
 
 // Decorative mini-icons for the support track cards. Each is a 24px line glyph
 // that inherits the card's accent colour via currentColor, so the cards keep the
@@ -187,7 +188,7 @@ const FacultyPage = () => {
       <section className="section-block strategy-section">
         <Reveal className="section-heading compact">
           <p className="section-label">Shaping Tomorrow with Today's Strategies</p>
-          <h2>Discover the unique features that set CareerVeda apart in professional training</h2>
+          <h2>Discover the unique features that set <BrandWord /> apart in professional training</h2>
         </Reveal>
         <div className="strategy-layout">
           <div className="project-number">
