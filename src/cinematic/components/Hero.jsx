@@ -3,19 +3,10 @@ import {gsap} from "gsap";
 import {addTween, reducedMotionNow} from "../fx/registry";
 import {useMagneticHover} from "../fx/hooks";
 import {ArrowDownRight} from "lucide-react";
-
-const HERO_LINES = ["GEN AI &", "AGENTIC AI ENGINEERING"];
-
-const HERO_BADGES = [
-  "24 WEEKS",
-  "6 MONTHS",
-  "PROJECT-DRIVEN",
-  "GPU-ENABLED",
-  "PRODUCTION-ORIENTED",
-  "HACKATHON-FIRST",
-];
+import {useCinematic} from "../content";
 
 export const HeroSection = () => {
+  const {hero} = useCinematic();
   const rootRef = useRef(null);
   const bgRef = useRef(null);
   const streakRef = useRef(null);
@@ -75,21 +66,21 @@ export const HeroSection = () => {
       <div className="ga-hero-streak" ref={streakRef} aria-hidden="true" />
 
       <div className="ga-hero-extra ga-hero-extra-l" ref={extraLeft}>
-        <span className="ga-meta">6-MONTH PROFESSIONAL PROGRAM</span>
+        <span className="ga-meta">{hero.metaLeft}</span>
         <span className="ga-hero-rule" />
       </div>
       <div className="ga-hero-extra ga-hero-extra-r" ref={extraRight}>
-        <span className="ga-meta">Batch 2026 · Applications open</span>
+        <span className="ga-meta">{hero.metaRight}</span>
       </div>
 
       <div className="ga-hero-content">
         <div className="ga-hero-eyebrow">
           <span className="ga-eyebrow-line" />
-          <span>CAREERVEDA · PROFESSIONAL PROGRAM</span>
+          <span>{hero.eyebrow}</span>
         </div>
 
-        <h1 className="ga-hero-title" aria-label="PG Program in Gen AI and Agentic AI Engineering">
-          {HERO_LINES.map((line, i) => (
+        <h1 className="ga-hero-title" aria-label={hero.ariaLabel}>
+          {hero.title.map((line, i) => (
             <span
               key={line}
               className={`ga-hero-line${i === 1 ? " ga-hero-line-italic" : ""}`}
@@ -103,30 +94,20 @@ export const HeroSection = () => {
         </h1>
 
         <p className="ga-hero-sub" ref={subRef}>
-          Build AI. Break AI. Measure AI. Secure AI. Deploy AI — from Python to production agents.
+          {hero.sub}
         </p>
 
         <div className="ga-hero-badges" ref={subRef} aria-hidden="true">
-          {HERO_BADGES.map((b) => <span key={b}>{b}</span>)}
+          {hero.badges.map((b) => <span key={b}>{b}</span>)}
         </div>
 
         <div className="ga-hero-stats" ref={statsRef}>
-          <span className="ga-hero-stat">
-            <strong>24 Weeks</strong>
-            <em>Duration</em>
-          </span>
-          <span className="ga-hero-stat">
-            <strong>Expert AI Mentors</strong>
-            <em>Mentorship</em>
-          </span>
-          <span className="ga-hero-stat">
-            <strong>Live Online</strong>
-            <em>Format</em>
-          </span>
-          <span className="ga-hero-stat">
-            <strong>10,000+</strong>
-            <em>Learners</em>
-          </span>
+          {hero.stats.map(([value, label]) => (
+            <span className="ga-hero-stat" key={label}>
+              <strong>{value}</strong>
+              <em>{label}</em>
+            </span>
+          ))}
         </div>
 
         <div className="ga-hero-ctas" ref={ctaRef}>
@@ -146,10 +127,10 @@ export const HeroSection = () => {
 
       <img
         className="ga-hero-side-image"
-        src="/images/agentic-ai-robot.jpg"
+        src={hero.image}
         alt=""
-        width="1200"
-        height="900"
+        width="1600"
+        height="1200"
         decoding="async"
         aria-hidden="true"
       />
