@@ -1,4 +1,5 @@
 import {useMemo, useState} from "react";
+import {ArrowUpRight, Briefcase, Building2, Clock, Info, MapPin, Search, X} from "lucide-react";
 import {jobs as staticJobs} from "../data/jobsData";
 import {useContentList} from "../hooks/useContent";
 import {adaptJob, LINKEDIN_SOURCE} from "../lib/contentAdapters";
@@ -41,6 +42,14 @@ const workModes = ["All", "On-site", "Hybrid", "Remote"];
 
 const jobTypes = ["All", "Full-time", "Internship", "Contract"];
 
+// "2026-05-05" -> "5 May 2026". Parsed as a calendar date, not a UTC instant,
+// so no timezone can shift it a day.
+const formatPosted = (iso) => {
+  const [y, m, d] = String(iso).split("-").map(Number);
+  if (!y || !m || !d) return iso;
+  return new Date(y, m - 1, d).toLocaleDateString("en-IN", {day: "numeric", month: "short", year: "numeric"});
+};
+
 const JobsPage = () => {
   // Listings the admin panel publishes, newest first. Filtering below stays
   // client-side: the whole board is well under the API's 100-record page, and
@@ -52,8 +61,17 @@ const JobsPage = () => {
   const [workMode, setWorkMode] = useState("All");
   const [jobType, setJobType] = useState("All");
 
+  // How many listings each category matches, shown in the dropdown.
+  const categoryCounts = useMemo(() => {
+    const counts = {All: jobs.length};
+    for (const [name, pattern] of Object.entries(CATEGORY_PATTERNS)) {
+      counts[name] = jobs.filter((job) => pattern.test(job.title)).length;
+    }
+    return counts;
+  }, [jobs]);
+
   const filteredJobs = useMemo(() => {
-    return jobs.filter((job) => {
+    const matches = jobs.filter((job) => {
       if (search) {
         const q = search.toLowerCase();
         const matchesSearch =
@@ -71,6 +89,8 @@ const JobsPage = () => {
 
       return true;
     });
+    // Newest first. ISO dates compare correctly as strings; undated sort last.
+    return matches.sort((a, b) => String(b.postedDate || "").localeCompare(String(a.postedDate || "")));
   }, [jobs, search, category, workMode, jobType]);
 
   const clearFilters = () => {
@@ -99,7 +119,7 @@ const JobsPage = () => {
 
         <div className="jobs-toolbar">
           <div className="jobs-search">
-            <span className="jobs-search__icon" aria-hidden="true">&#x1F50D;</span>
+            <Search className="jobs-search__icon" size={18} aria-hidden="true" />
             <label htmlFor="job-search" className="sr-only">Search jobs</label>
             <input
               id="job-search"
@@ -112,56 +132,71 @@ const JobsPage = () => {
           </div>
 
           <div className="jobs-filters">
-            <label htmlFor="filter-category" className="sr-only">Category</label>
-            <select
-              id="filter-category"
-              className="jobs-filters__select"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
-              {categories.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
+            <div className="jobs-filter">
+              <label htmlFor="filter-category" className="jobs-filter__label">Category</label>
+              <select
+                id="filter-category"
+                className="jobs-filters__select"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                {categories.map((c) => (
+                  <option key={c} value={c} disabled={c !== "All" && !categoryCounts[c]}>
+                    {c === "All" ? "All categories" : c} ({categoryCounts[c] || 0})
+                  </option>
+                ))}
+              </select>
+            </div>
 
-            <label htmlFor="filter-workmode" className="sr-only">Work mode</label>
-            <select
-              id="filter-workmode"
-              className="jobs-filters__select"
-              value={workMode}
-              onChange={(e) => setWorkMode(e.target.value)}
-            >
-              {workModes.map((m) => (
-                <option key={m} value={m}>{m}</option>
-              ))}
-            </select>
+            <div className="jobs-filter">
+              <label htmlFor="filter-workmode" className="jobs-filter__label">Work mode</label>
+              <select
+                id="filter-workmode"
+                className="jobs-filters__select"
+                value={workMode}
+                onChange={(e) => setWorkMode(e.target.value)}
+              >
+                {workModes.map((m) => (
+                  <option key={m} value={m}>{m === "All" ? "Any work mode" : m}</option>
+                ))}
+              </select>
+            </div>
 
-            <label htmlFor="filter-jobtype" className="sr-only">Job type</label>
-            <select
-              id="filter-jobtype"
-              className="jobs-filters__select"
-              value={jobType}
-              onChange={(e) => setJobType(e.target.value)}
-            >
-              {jobTypes.map((t) => (
-                <option key={t} value={t}>{t}</option>
-              ))}
-            </select>
-
-            {hasActiveFilters && (
-              <button className="jobs-filters__clear" onClick={clearFilters} type="button">
-                &#x2715; Clear filters
-              </button>
-            )}
+            <div className="jobs-filter">
+              <label htmlFor="filter-jobtype" className="jobs-filter__label">Job type</label>
+              <select
+                id="filter-jobtype"
+                className="jobs-filters__select"
+                value={jobType}
+                onChange={(e) => setJobType(e.target.value)}
+              >
+                {jobTypes.map((t) => (
+                  <option key={t} value={t}>{t === "All" ? "Any job type" : t}</option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
         <div className="jobs-count-row">
           <p className="jobs-count" role="status">
             Showing <strong>{filteredJobs.length}</strong>{" "}
-            {filteredJobs.length === 1 ? "job" : "jobs"}
+            {filteredJobs.length === 1 ? "job" : "jobs"} · newest first
           </p>
+          {hasActiveFilters && (
+            <button className="jobs-filters__clear" onClick={clearFilters} type="button">
+              <X size={14} aria-hidden="true" /> Clear filters
+            </button>
+          )}
         </div>
+
+        <p className="jobs-live-note">
+          <Info size={16} aria-hidden="true" />
+          <span>
+            <strong>See latest openings</strong> opens a live LinkedIn search for that role and city,
+            sorted newest first and limited to posts from the past 3 days.
+          </span>
+        </p>
 
         <div className="jobs-grid">
           {filteredJobs.length > 0 ? (
@@ -174,13 +209,14 @@ const JobsPage = () => {
 
                 <div className="job-card__company">{job.company}</div>
 
-                <div className="job-card__meta">
-                  <span>&#x1F4CD; {job.location}</span>
-                  <span>&#x1F3E2; {job.workMode}</span>
-                  <span>&#x1F4C5; {job.experience}</span>
-                  <span>&#x1F4CB; {job.jobType}</span>
-                  {job.salary && <span className="job-card__salary">{job.salary}</span>}
-                </div>
+                <ul className="job-card__meta">
+                  <li><MapPin size={15} aria-hidden="true" />{job.location}</li>
+                  <li><Building2 size={15} aria-hidden="true" />{job.workMode}</li>
+                  <li><Briefcase size={15} aria-hidden="true" />{job.experience}</li>
+                  <li><Clock size={15} aria-hidden="true" />{job.jobType}</li>
+                </ul>
+
+                {job.salary && <p className="job-card__salary">{job.salary}</p>}
 
                 <p className="job-card__description">{job.description}</p>
 
@@ -192,12 +228,7 @@ const JobsPage = () => {
 
                 <div className="job-card__footer">
                   <span className="job-card__date">
-                    {job.postedDate && `Posted ${job.postedDate}`}
-                    {job.source && (
-                      <span className="job-card__source">
-                        {job.postedDate ? " · " : ""}via {job.source}
-                      </span>
-                    )}
+                    {job.postedDate && `Listed ${formatPosted(job.postedDate)}`}
                   </span>
                   <a
                     className="job-card__apply"
@@ -206,21 +237,22 @@ const JobsPage = () => {
                     rel="noopener noreferrer"
                     title={
                       job.source === LINKEDIN_SOURCE
-                        ? `Search live "${job.title}" openings on ${job.source}`
+                        ? `Newest "${job.title}" posts on LinkedIn (past 3 days)`
                         : `Apply for ${job.title} at ${job.company}`
                     }
                   >
-                    {job.source === LINKEDIN_SOURCE ? "View Jobs on LinkedIn" : "Apply Now"} &#x2192;
+                    {job.source === LINKEDIN_SOURCE ? "See latest openings" : "Apply Now"}
+                    <ArrowUpRight size={16} aria-hidden="true" />
                   </a>
                 </div>
               </article>
             ))
           ) : (
             <div className="jobs-empty" role="status">
-              <div className="jobs-empty__icon" aria-hidden="true">&#x1F50D;</div>
+              <Search className="jobs-empty__icon" size={32} aria-hidden="true" />
               <p className="jobs-empty__text">No jobs match your current filters.</p>
               <button className="jobs-empty__action" onClick={clearFilters} type="button">
-                &#x2715; Clear all filters
+                <X size={14} aria-hidden="true" /> Clear all filters
               </button>
             </div>
           )}
@@ -228,9 +260,9 @@ const JobsPage = () => {
 
         <p
           className="jobs-thirdparty-note"
-          title="These listings are aggregated for reference from publicly available third-party job platforms. CareerVeda does not own, post, or guarantee any of these openings, and the company names shown are illustrative. Selecting Apply Now opens a live search on LinkedIn Jobs — always confirm the role and employer on the official source before applying or sharing personal information."
+          title="These listings are aggregated for reference from publicly available third-party job platforms. CareerVeda does not own, post, or guarantee any of these openings, and the company names shown are illustrative. Selecting See latest openings opens a live search on LinkedIn Jobs — always confirm the role and employer on the official source before applying or sharing personal information."
         >
-          <span aria-hidden="true">&#x2139;</span> Aggregated from third-party job sites &middot; for reference only
+          <Info size={14} aria-hidden="true" /> Aggregated from third-party job sites &middot; for reference only
         </p>
       </div>
     </main>
