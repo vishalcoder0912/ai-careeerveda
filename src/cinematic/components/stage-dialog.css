@@ -1,0 +1,508 @@
+/* Curriculum stage dialog (ModuleGrid). Site palette: navy #102a5c, blue
+   #2563eb, orange #ff5a0a, hairline #e0ebfa. Bar and footer stay put; only the
+   middle scrolls. On phones it becomes a full-height sheet. */
+
+.ga-stage-dialog {
+  width: min(880px, calc(100vw - 32px));
+  max-width: none;
+  max-height: min(88vh, 920px);
+  /* A global reset zeroes dialog margins, which pinned it to the top-left;
+     auto margins in the top layer centre it again. */
+  inset: 0;
+  margin: auto;
+  padding: 0;
+  border: 1px solid #e0ebfa;
+  border-radius: 24px;
+  background: #ffffff;
+  color: #102a5c;
+  box-shadow: 0 40px 100px rgba(16, 42, 92, 0.28);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(16px) scale(0.98);
+  transition:
+    opacity 0.3s ease,
+    transform 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+    overlay 0.36s allow-discrete,
+    display 0.36s allow-discrete;
+}
+
+.ga-stage-dialog[open] {
+  opacity: 1;
+  transform: none;
+}
+
+@starting-style {
+  .ga-stage-dialog[open] {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+}
+
+.ga-stage-dialog::backdrop {
+  background: rgba(11, 22, 48, 0);
+  backdrop-filter: blur(0);
+  transition:
+    background 0.3s ease,
+    backdrop-filter 0.3s ease,
+    overlay 0.36s allow-discrete,
+    display 0.36s allow-discrete;
+}
+
+.ga-stage-dialog[open]::backdrop {
+  background: rgba(11, 22, 48, 0.55);
+  backdrop-filter: blur(5px);
+}
+
+@starting-style {
+  .ga-stage-dialog[open]::backdrop {
+    background: rgba(11, 22, 48, 0);
+    backdrop-filter: blur(0);
+  }
+}
+
+.ga-stage {
+  display: flex;
+  flex-direction: column;
+  max-height: min(88vh, 920px);
+}
+
+/* ── Top bar: back + close ─────────────────────────────────────────── */
+
+.ga-stage-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid #e0ebfa;
+  background: #ffffff;
+}
+
+.ga-stage-back,
+.ga-stage-close,
+.ga-stage-foot button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #e0ebfa;
+  background: #ffffff;
+  color: #102a5c;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.ga-stage-back {
+  min-height: 40px;
+  padding: 0 16px 0 12px;
+  border-radius: 999px;
+}
+
+.ga-stage-close {
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.ga-stage-back:hover,
+.ga-stage-close:hover,
+.ga-stage-foot button:not(:disabled):hover {
+  border-color: rgba(37, 99, 235, 0.35);
+  background: #f1f7ff;
+  color: #2563eb;
+}
+
+.ga-stage-back:hover {
+  transform: translateX(-2px);
+}
+
+.ga-stage-back:focus-visible,
+.ga-stage-close:focus-visible,
+.ga-stage-foot button:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.4);
+  outline-offset: 2px;
+}
+
+/* ── Scrolling body ────────────────────────────────────────────────── */
+
+.ga-stage-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 28px clamp(18px, 4vw, 36px) 32px;
+}
+
+.ga-stage-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+  padding: 24px;
+  border-radius: 20px;
+  background:
+    radial-gradient(420px 200px at 100% 0%, rgba(255, 90, 10, 0.1), transparent 70%),
+    linear-gradient(135deg, #f1f7ff, #ffffff 70%);
+  border: 1px solid #e0ebfa;
+}
+
+.ga-stage-num {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 800;
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.3);
+}
+
+.ga-stage-kicker {
+  margin: 0 0 6px;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ga-stage-title {
+  margin: 0;
+  color: #102a5c;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.ga-stage-desc {
+  margin: 10px 0 0;
+  color: #536987;
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+
+/* At-a-glance chips */
+.ga-stage-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0 26px;
+  padding: 0;
+  list-style: none;
+}
+
+.ga-stage-stats li {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border: 1px solid #e0ebfa;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #536987;
+  font-size: 13.5px;
+}
+
+.ga-stage-stats li svg {
+  color: #2563eb;
+}
+
+.ga-stage-stats strong {
+  color: #102a5c;
+  font-weight: 800;
+}
+
+.ga-stage-stats .ga-stage-motif {
+  border-color: rgba(255, 90, 10, 0.3);
+  background: rgba(255, 90, 10, 0.08);
+  color: #e84d00;
+  font-weight: 700;
+}
+
+/* ── Weeks: a vertical timeline ────────────────────────────────────── */
+
+.ga-stage-weeks {
+  position: relative;
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ga-stage-weeks::before {
+  content: "";
+  position: absolute;
+  left: 23px;
+  top: 24px;
+  bottom: 24px;
+  border-left: 2px dashed #d6e4f7;
+}
+
+.ga-stage-week {
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  opacity: 0;
+  animation: ga-stage-week-in 0.4s ease forwards;
+}
+
+.ga-stage-week:nth-child(2) { animation-delay: 60ms; }
+.ga-stage-week:nth-child(3) { animation-delay: 120ms; }
+.ga-stage-week:nth-child(4) { animation-delay: 180ms; }
+.ga-stage-week:nth-child(n + 5) { animation-delay: 240ms; }
+
+@keyframes ga-stage-week-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ga-stage-week-id {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid #cfe0fb;
+  border-radius: 14px;
+  background: #f1f7ff;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: 0 0 0 5px #ffffff;
+}
+
+.ga-stage-week-main {
+  padding: 16px 18px;
+  border: 1px solid #e0ebfa;
+  border-radius: 16px;
+  background: #ffffff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ga-stage-week:hover .ga-stage-week-main {
+  border-color: rgba(37, 99, 235, 0.3);
+  box-shadow: 0 12px 28px rgba(16, 42, 92, 0.08);
+}
+
+.ga-stage-week-main h4 {
+  margin: 0 0 10px;
+  color: #102a5c;
+  font-size: 16.5px;
+  font-weight: 700;
+}
+
+.ga-stage-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ga-stage-topics li {
+  padding: 5px 11px;
+  border-radius: 8px;
+  background: #f4f7fb;
+  color: #33486b;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.ga-stage-build {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 90, 10, 0.06);
+  color: #33486b;
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+
+.ga-stage-build svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: #ff5a0a;
+}
+
+.ga-stage-build b {
+  margin-right: 4px;
+  color: #e84d00;
+  font-weight: 700;
+}
+
+/* ── Footer: previous / next stage ─────────────────────────────────── */
+
+.ga-stage-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border-top: 1px solid #e0ebfa;
+  background: #fafcff;
+}
+
+.ga-stage-foot button {
+  min-height: 42px;
+  max-width: 48%;
+  padding: 0 16px;
+  border-radius: 12px;
+}
+
+.ga-stage-foot button span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ga-stage-foot button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* The cards now open the dialog, so they no longer expand in place. */
+.ga-page .ga-journey-weeks-count {
+  color: #2563eb;
+  font-weight: 700;
+}
+
+/* ── Phones: full-height sheet ─────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .ga-stage-dialog {
+    width: 100vw;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    transform: translateY(24px);
+  }
+
+  .ga-stage {
+    height: 100%;
+    max-height: none;
+  }
+
+  .ga-stage-head {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 18px;
+  }
+
+  .ga-stage-num {
+    width: 52px;
+    height: 52px;
+    font-size: 20px;
+  }
+
+  .ga-stage-back span,
+  .ga-stage-foot button span {
+    font-size: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ga-stage-dialog,
+  .ga-stage-dialog::backdrop {
+    transition: none;
+  }
+
+  .ga-stage-week {
+    opacity: 1;
+    animation: none;
+  }
+}
+
+/* ── Stage icons (Fluent 3D) on the cards and in the dialog header ─── */
+
+.ga-page .ga-journey-art {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  padding: 7px;
+  border: 1px solid #e0ebfa;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #f1f7ff, #ffffff);
+  object-fit: contain;
+  box-shadow: 0 10px 22px -12px rgba(16, 42, 92, 0.25);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+
+.ga-page .ga-journey-cell:hover .ga-journey-art {
+  transform: translateY(-3px) rotate(-6deg) scale(1.06);
+  box-shadow: 0 16px 28px -12px rgba(37, 99, 235, 0.35);
+}
+
+.ga-page .ga-journey-lock-card .ga-journey-art {
+  border-style: dashed;
+  border-color: rgba(37, 99, 235, 0.3);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.ga-stage-head {
+  position: relative;
+}
+
+.ga-stage-art {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 16px rgba(16, 42, 92, 0.18));
+}
+
+/* Keep the title clear of the icon. */
+.ga-stage-head > div {
+  padding-right: 84px;
+}
+
+@media (max-width: 640px) {
+  .ga-page .ga-journey-art {
+    width: 48px;
+    height: 48px;
+    padding: 6px;
+  }
+
+  .ga-stage-art {
+    width: 52px;
+    height: 52px;
+  }
+
+  .ga-stage-head > div {
+    padding-right: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ga-page .ga-journey-cell:hover .ga-journey-art {
+    transform: none;
+  }
+}
+
+/* "+6" bonus-weeks badge on the locked Labs card. */
+.ga-page .ga-journey-num-lock {
+  color: #ffffff;
+  font-weight: 800;
+}
