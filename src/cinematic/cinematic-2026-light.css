@@ -2158,3 +2158,49 @@ body.ga-gallery-active .ga-burger {
     min-height: 90svh;
   }
 }
+
+/* ── Home-page typography + alignment pass ────────────────────────────────
+   The font already matches the home page (Manrope, forced site-wide by the
+   site-font layer in styles.css). Desktop labels were sized 8–10px; nothing on
+   the page drops below 11px now. */
+.ga-page {
+  --ga-fs-floor: 11px;
+}
+
+/* Hero title: max-width was 24ch of the h1's 16px base (~260px), which broke
+   the title onto five lines. Two lines, home-hero weight, blue accent line. */
+.ga-page .ga-hero-title {
+  max-width: none;
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.035em;
+}
+
+.ga-page .ga-hero-line,
+.ga-page .ga-hero-line:nth-child(2) {
+  padding-left: 0;
+  font-size: clamp(2.4rem, 4.2vw, 3.7rem);
+  font-style: normal;
+  text-shadow: none;
+}
+
+@media (min-width: 900px) {
+  /* The badges row and the stats rule ran under the hero image. */
+  .ga-page .ga-hero-badges,
+  .ga-page .ga-hero-stats {
+    max-width: min(780px, 60%);
+  }
+
+  /* "6-month professional program" sat underneath the Download Brochure
+     button; the eyebrow above the title already says it. */
+  .ga-page .ga-hero-extra-l {
+    display: none;
+  }
+}
+
+/* Closed stage cards were stretched to the open card's height, leaving two
+   large empty boxes beside it. */
+.ga-page .ga-journey-grid {
+  align-items: start;
+}
+
