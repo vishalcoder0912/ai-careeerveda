@@ -5,6 +5,7 @@ import {Program} from "../models/Program.js";
 import {publishedFilter} from "../models/plugins/contentPlugin.js";
 import {AUDIT_ACTIONS} from "../models/AuditLog.js";
 import {recordAudit} from "../services/audit.service.js";
+import {sendHiringEmails} from "../services/mail.service.js";
 import {env} from "../config/env.js";
 import {csvSafe, escapeRegex} from "../utils/sanitize.js";
 import {ok, created, paginated} from "../utils/respond.js";
@@ -109,7 +110,7 @@ export const submit = async (request, response, next) => {
       }
     }
 
-    await Lead.create({
+    const lead = await Lead.create({
       type,
       name: body.name,
       email: body.email,
@@ -117,6 +118,9 @@ export const submit = async (request, response, next) => {
       userType: body.userType || "",
       program: body.program || "",
       message: body.message || "",
+      organization: body.organization || "",
+      positions: body.positions || "",
+      recruitmentMode: body.recruitmentMode || "",
       emailKey,
       mobileKey,
       source: body.source || "",
@@ -127,6 +131,8 @@ export const submit = async (request, response, next) => {
       userAgent: String(request.get("user-agent") || "").slice(0, 400),
       idempotencyKey,
     });
+
+    if (type === "hiring") sendHiringEmails(lead);
 
     // 201 only after the write resolved. The frontend must never be told a
     // submission was saved when it was not — a silently dropped applicant is
@@ -166,7 +172,9 @@ const buildLeadFilter = (query) => {
 
   const type = LEAD_TYPES.find((allowed) => allowed === query.type);
   const status = LEAD_STATUSES.find((allowed) => allowed === query.status);
-  if (type) filter.type = type;
+  // Hiring enquiries have their own admin page, so the general inbox leaves
+  // them out unless they are asked for by type.
+  filter.type = type || {$ne: "hiring"};
   if (status) filter.status = status;
 
   // Strict true, not truthiness: the schema hands over a real boolean, and
@@ -189,7 +197,13 @@ const buildLeadFilter = (query) => {
     // check above stops it being an object. Only the value is caller-derived —
     // every key in `filter` is written by this function.
     const pattern = new RegExp(escapeRegex(search), "i");
-    filter.$or = [{name: pattern}, {email: pattern}, {mobile: pattern}, {program: pattern}];
+    filter.$or = [
+      {name: pattern},
+      {email: pattern},
+      {mobile: pattern},
+      {program: pattern},
+      {organization: pattern},
+    ];
   }
 
   return filter;
@@ -311,6 +325,9 @@ const CSV_COLUMNS = [
   ["User type", (lead) => lead.userType],
   ["Program", (lead) => lead.program],
   ["Message", (lead) => lead.message],
+  ["Organization", (lead) => lead.organization],
+  ["Positions", (lead) => lead.positions],
+  ["Recruitment mode", (lead) => lead.recruitmentMode],
   ["Status", (lead) => lead.status],
   ["Source", (lead) => lead.source],
   ["Source page", (lead) => lead.sourcePage],
@@ -369,18 +386,21 @@ export const exportCsv = async (request, response, next) => {
 export const stats = async (request, response, next) => {
   try {
     const todayStart = new Date(startOfTodayIST());
+    // Same split as the list: ?type=hiring for the hiring page, everything
+    // else for the general inbox.
+    const scope = {archived: false, type: request.query.type === "hiring" ? "hiring" : {$ne: "hiring"}};
 
     const [byStatus, byType, total, recent, todayCount, byUserType] = await Promise.all([
-      Lead.aggregate([{$match: {archived: false}}, {$group: {_id: "$status", count: {$sum: 1}}}]),
-      Lead.aggregate([{$match: {archived: false}}, {$group: {_id: "$type", count: {$sum: 1}}}]),
-      Lead.countDocuments({archived: false}),
+      Lead.aggregate([{$match: scope}, {$group: {_id: "$status", count: {$sum: 1}}}]),
+      Lead.aggregate([{$match: scope}, {$group: {_id: "$type", count: {$sum: 1}}}]),
+      Lead.countDocuments(scope),
       Lead.countDocuments({
-        archived: false,
+        ...scope,
         createdAt: {$gt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)},
       }),
-      Lead.countDocuments({archived: false, createdAt: {$gte: todayStart}}),
+      Lead.countDocuments({...scope, createdAt: {$gte: todayStart}}),
       Lead.aggregate([
-        {$match: {archived: false, userType: {$ne: ""}}},
+        {$match: {...scope, userType: {$ne: ""}}},
         {$group: {_id: "$userType", count: {$sum: 1}}},
       ]),
     ]);

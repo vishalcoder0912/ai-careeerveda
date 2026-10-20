@@ -63,6 +63,15 @@ const schema = z.object({
   IMAGEKIT_PRIVATE_KEY: z.string().optional(),
   IMAGEKIT_URL_ENDPOINT: z.string().optional(),
 
+  // Hiring-enquiry emails. Leave SMTP_HOST blank to skip sending entirely.
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.coerce.number().int().positive().default(587),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASS: z.string().optional(),
+  MAIL_FROM: z.string().optional(),
+  // Where the admissions team is notified of each hiring enquiry.
+  LEAD_NOTIFY_EMAIL: z.string().optional(),
+
   // A hop count ("1", "2") or an Express trust-proxy list ("loopback, 10.0.0.0/8").
   TRUST_PROXY: z.string().default("1"),
 

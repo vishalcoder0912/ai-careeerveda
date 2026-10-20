@@ -24,7 +24,10 @@ const formatTime = (value) =>
 const formatDateTime = (value) =>
   `${new Date(value).toLocaleDateString()}, ${formatTime(value)}`;
 
-const Leads = () => {
+// `hiring` turns this into the "Hire From Us" page: locked to hiring leads,
+// with the organization in place of the type column. The general inbox
+// (no prop) never shows hiring leads — the API leaves them out.
+const Leads = ({hiring = false}) => {
   const {can} = useAuth();
   const toast = useToast();
   // The dashboard links here as /leads?type=enrollment, so the filter starts
@@ -38,7 +41,7 @@ const Leads = () => {
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
-  const [type, setType] = useState(() => params.get("type") || "");
+  const [type, setType] = useState(() => (hiring ? "hiring" : params.get("type") || ""));
   const [page, setPage] = useState(1);
   const [open, setOpen] = useState(null);
   const [note, setNote] = useState("");
@@ -80,7 +83,7 @@ const Leads = () => {
           status: status || undefined,
           type: type || undefined,
         }),
-        leadsApi.stats(),
+        leadsApi.stats(hiring ? {type: "hiring"} : undefined),
       ]);
       setStats(statsResponse.data);
 
@@ -105,7 +108,7 @@ const Leads = () => {
         const count = after - before;
         const newest = listResponse.data[0];
         if (newest && firstPage && newest._id !== items[0]?._id) {
-          toast.success(`New ${newest.type} lead from ${newest.name}.`);
+          toast.success(`New ${newest.type} lead from ${hiring ? newest.organization : newest.name}.`);
         } else {
           toast.success(`${count} new ${count === 1 ? "lead" : "leads"} in the inbox.`);
         }
@@ -121,7 +124,7 @@ const Leads = () => {
     } finally {
       inFlight.current = false;
     }
-  }, [toast]);
+  }, [toast, hiring]);
 
   useEffect(() => {
     const id = setInterval(poll, POLL_INTERVAL_MS);
@@ -141,10 +144,10 @@ const Leads = () => {
   // flash the skeleton over rows the user is looking at.
   const refreshStats = useCallback(() => {
     leadsApi
-      .stats()
+      .stats(hiring ? {type: "hiring"} : undefined)
       .then((summary) => setStats(summary.data))
       .catch(() => {});
-  }, []);
+  }, [hiring]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -243,7 +246,7 @@ const Leads = () => {
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
-      anchor.download = `careerveda-leads-${new Date().toISOString().slice(0, 10)}.csv`;
+      anchor.download = `careerveda-${hiring ? "hiring" : "leads"}-${new Date().toISOString().slice(0, 10)}.csv`;
       document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();
@@ -259,7 +262,7 @@ const Leads = () => {
     <div className="page">
       <div className="page-head">
         <div>
-          <h1>Leads</h1>
+          <h1>{hiring ? "Hiring enquiries" : "Leads"}</h1>
           <p className="page-sub">
             {meta.total} records
             <span className="live-indicator" title="New submissions appear automatically">
@@ -280,7 +283,7 @@ const Leads = () => {
           <div className="panel-head">
             <div>
               <span className="section-kicker">Enquiries</span>
-              <h2 id="lead-stats-title">Enrollment inquiries</h2>
+              <h2 id="lead-stats-title">{hiring ? "Organizations hiring from us" : "Enrollment inquiries"}</h2>
             </div>
             <span className="panel-caption">{stats.total} total</span>
           </div>
@@ -310,7 +313,7 @@ const Leads = () => {
       <div className="toolbar">
         <input
           type="search"
-          placeholder="Search name, email, phone…"
+          placeholder={hiring ? "Search organization, name, email…" : "Search name, email, phone…"}
           aria-label="Search leads"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
@@ -323,19 +326,28 @@ const Leads = () => {
             </option>
           ))}
         </select>
-        <select value={type} onChange={(event) => setType(event.target.value)} aria-label="Type">
-          <option value="">All types</option>
-          <option value="consultation">Consultation</option>
-          <option value="enrollment">Enrollment</option>
-          <option value="contact">Contact</option>
-          <option value="newsletter">Newsletter</option>
-        </select>
+        {hiring ? null : (
+          <select value={type} onChange={(event) => setType(event.target.value)} aria-label="Type">
+            <option value="">All types</option>
+            <option value="consultation">Consultation</option>
+            <option value="enrollment">Enrollment</option>
+            <option value="contact">Contact</option>
+            <option value="newsletter">Newsletter</option>
+          </select>
+        )}
       </div>
 
       {loading ? <Skeleton /> : null}
       {!loading && error ? <ErrorState error={error} onRetry={load} /> : null}
       {!loading && !error && items.length === 0 ? (
-        <EmptyState title="No leads yet" body="Submissions from the public forms appear here." />
+        <EmptyState
+          title={hiring ? "No hiring enquiries yet" : "No leads yet"}
+          body={
+            hiring
+              ? "Submissions from the website's Hire From Us form appear here."
+              : "Submissions from the public forms appear here."
+          }
+        />
       ) : null}
 
       {!loading && !error && items.length > 0 ? (
@@ -345,9 +357,10 @@ const Leads = () => {
             <thead>
               <tr>
                 <th scope="col">Received</th>
-                <th scope="col">Name</th>
+                {hiring ? <th scope="col">Organization</th> : null}
+                <th scope="col">{hiring ? "Contact" : "Name"}</th>
                 <th scope="col">Email</th>
-                <th scope="col">Type</th>
+                <th scope="col">{hiring ? "Positions" : "Type"}</th>
                 <th scope="col">Program</th>
                 <th scope="col">Status</th>
                 <th scope="col">Actions</th>
@@ -360,9 +373,10 @@ const Leads = () => {
                     <span className="cell-date">{new Date(lead.createdAt).toLocaleDateString()}</span>
                     <span className="cell-time muted">{formatTime(lead.createdAt)}</span>
                   </td>
-                  <td data-label="Name">{lead.name}</td>
+                  {hiring ? <td data-label="Organization">{lead.organization || "—"}</td> : null}
+                  <td data-label={hiring ? "Contact" : "Name"}>{lead.name}</td>
                   <td data-label="Email">{lead.email}</td>
-                  <td data-label="Type">{lead.type}</td>
+                  <td data-label={hiring ? "Positions" : "Type"}>{hiring ? lead.positions || "—" : lead.type}</td>
                   <td data-label="Program">{lead.program || "—"}</td>
                   <td data-label="Status">
                     <select
@@ -439,8 +453,21 @@ const Leads = () => {
               <dd>{open.mobile}</dd>
               <dt>Type</dt>
               <dd>{open.type}</dd>
-              <dt>User type</dt>
-              <dd>{open.userType || "—"}</dd>
+              {open.type === "hiring" ? (
+                <>
+                  <dt>Organization</dt>
+                  <dd>{open.organization || "—"}</dd>
+                  <dt>Positions</dt>
+                  <dd>{open.positions || "—"}</dd>
+                  <dt>Recruitment mode</dt>
+                  <dd>{open.recruitmentMode || "—"}</dd>
+                </>
+              ) : (
+                <>
+                  <dt>User type</dt>
+                  <dd>{open.userType || "—"}</dd>
+                </>
+              )}
               <dt>Program</dt>
               <dd>{open.program || "—"}</dd>
               <dt>Source page</dt>

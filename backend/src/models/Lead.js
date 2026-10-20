@@ -11,7 +11,17 @@ import mongoose from "mongoose";
 // The phone number is the primary key: it is unique across every lead, so the
 // same person can never fill in any form a second time.
 
-export const LEAD_TYPES = ["consultation", "enrollment", "contact", "newsletter"];
+export const LEAD_TYPES = ["consultation", "enrollment", "contact", "newsletter", "hiring"];
+
+// The "Hire From Us" employer form. Exported so the validator and the site
+// offer the same choices.
+export const HIRING_POSITIONS = ["1-5", "6-15", "16-30", "Other"];
+export const RECRUITMENT_MODES = [
+  "On-campus Interview",
+  "Virtual Interview",
+  "Internship placement",
+  "Direct Hire",
+];
 export const LEAD_STATUSES = ["new", "contacted", "qualified", "converted", "closed", "spam"];
 
 const noteSchema = new mongoose.Schema(
@@ -34,6 +44,11 @@ const leadSchema = new mongoose.Schema(
 
     program: {type: String, default: "", maxlength: 300},
     message: {type: String, default: "", maxlength: 4000},
+
+    // Hiring leads only; empty on every other type.
+    organization: {type: String, default: "", maxlength: 200},
+    positions: {type: String, default: "", maxlength: 20},
+    recruitmentMode: {type: String, default: "", maxlength: 60},
 
     // Normalised lookup keys. Indexed together because the cap check queries
     // them with $or on every enrollment submission.

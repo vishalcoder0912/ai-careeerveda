@@ -1,6 +1,6 @@
 import {z} from "zod";
 
-import {LEAD_TYPES, LEAD_STATUSES} from "../models/Lead.js";
+import {LEAD_TYPES, LEAD_STATUSES, HIRING_POSITIONS, RECRUITMENT_MODES} from "../models/Lead.js";
 import {stripTags} from "../utils/sanitize.js";
 
 // Field rules match api/_db.js so the browser's instant feedback and the
@@ -16,62 +16,80 @@ const USER_TYPES = ["Student", "Working Professional", "Career Switcher"];
 
 const text = (max) => z.string().max(max).transform(stripTags);
 
-export const submitLeadSchema = z.object({
-  type: z.enum(LEAD_TYPES).optional().default("consultation"),
+export const submitLeadSchema = z
+  .object({
+    type: z.enum(LEAD_TYPES).optional().default("consultation"),
 
-  name: text(120).refine((value) => value.length > 0, "Please enter your name."),
+    name: text(120).refine((value) => value.length > 0, "Please enter your name."),
 
-  email: z
-    .string()
-    .max(254)
-    .trim()
-    .toLowerCase()
-    .refine((value) => EMAIL_PATTERN.test(value), "That email doesn't look right."),
+    email: z
+      .string()
+      .max(254)
+      .trim()
+      .toLowerCase()
+      .refine((value) => EMAIL_PATTERN.test(value), "That email doesn't look right."),
 
-  mobile: z
-    .string()
-    .max(30)
-    .trim()
-    .refine(
-      (value) => MOBILE_PATTERN.test(value.replace(/[-\s]/g, "")),
-      "That mobile number doesn't look right.",
-    ),
+    mobile: z
+      .string()
+      .max(30)
+      .trim()
+      .refine(
+        (value) => MOBILE_PATTERN.test(value.replace(/[-\s]/g, "")),
+        "That mobile number doesn't look right.",
+      ),
 
-  userType: z.enum(USER_TYPES).optional(),
+    userType: z.enum(USER_TYPES).optional(),
 
-  program: text(300).optional().default(""),
-  // Link-stuffed messages are the signature of form spam; no applicant needs
-  // more than a couple of URLs to tell us about themselves.
-  message: text(4000)
-    .refine((value) => (value.match(/https?:\/\/|www\./gi) || []).length <= 2, "Please include at most two links.")
-    .optional()
-    .default(""),
+    program: text(300).optional().default(""),
+    // Link-stuffed messages are the signature of form spam; no applicant needs
+    // more than a couple of URLs to tell us about themselves.
+    message: text(4000)
+      .refine((value) => (value.match(/https?:\/\/|www\./gi) || []).length <= 2, "Please include at most two links.")
+      .optional()
+      .default(""),
 
-  sourcePage: text(300).optional().default(""),
-  source: text(120).optional().default(""),
+    // Hiring form. Required for that type by the refine below.
+    organization: text(200).optional().default(""),
+    positions: z.enum(HIRING_POSITIONS).optional(),
+    recruitmentMode: z.enum(RECRUITMENT_MODES).optional(),
 
-  utm: z
-    .object({
-      source: text(200).optional().default(""),
-      medium: text(200).optional().default(""),
-      campaign: text(200).optional().default(""),
-      term: text(200).optional().default(""),
-      content: text(200).optional().default(""),
-    })
-    .optional(),
+    sourcePage: text(300).optional().default(""),
+    source: text(120).optional().default(""),
 
-  // Required and must be true. A lead is personal data stored to be contacted
-  // about; under India's DPDP Act that needs the person's consent, so a
-  // submission without it is not stored at all.
-  consent: z.literal(true, {
-    errorMap: () => ({message: "Please agree to be contacted about your enquiry."}),
-  }),
+    utm: z
+      .object({
+        source: text(200).optional().default(""),
+        medium: text(200).optional().default(""),
+        campaign: text(200).optional().default(""),
+        term: text(200).optional().default(""),
+        content: text(200).optional().default(""),
+      })
+      .optional(),
 
-  // The honeypot. Hidden in the markup, so a person never fills it in and a
-  // bot that fills every field does. Kept as `company` — the name the existing
-  // forms already use.
-  company: z.string().max(200).optional(),
-});
+    // Required and must be true. A lead is personal data stored to be contacted
+    // about; under India's DPDP Act that needs the person's consent, so a
+    // submission without it is not stored at all.
+    consent: z.literal(true, {
+      errorMap: () => ({message: "Please agree to be contacted about your enquiry."}),
+    }),
+
+    // The honeypot. Hidden in the markup, so a person never fills it in and a
+    // bot that fills every field does. Kept as `company` — the name the existing
+    // forms already use.
+    company: z.string().max(200).optional(),
+  })
+  .superRefine((lead, context) => {
+    if (lead.type !== "hiring") return;
+    const required = {
+      organization: "Please enter your organization name.",
+      program: "Please choose a program.",
+      positions: "Please choose how many positions.",
+      recruitmentMode: "Please choose a recruitment mode.",
+    };
+    for (const [field, message] of Object.entries(required)) {
+      if (!lead[field]) context.addIssue({code: "custom", path: [field], message});
+    }
+  });
 
 export const leadListQuery = z.object({
   page: z.coerce.number().int().min(1).max(10000).optional().default(1),

@@ -263,7 +263,7 @@ export const leadsApi = {
   update: (id, body) => api.patch(`/admin/leads/${id}`, body),
   remove: (id) => api.delete(`/admin/leads/${id}`),
   addNote: (id, note) => api.post(`/admin/leads/${id}/notes`, {body: note}),
-  stats: () => api.get("/admin/leads/stats"),
+  stats: (query) => api.get("/admin/leads/stats", query),
   // The export is a file download, so it cannot be a plain <a href> — that
   // would be an unauthenticated request with no Bearer header. Fetched with
   // credentials, then handed to the browser as a blob.

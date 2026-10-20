@@ -116,6 +116,23 @@ describe("submitLeadSchema", () => {
   it("requires consent to be a boolean when present", () => {
     expect(() => parse(submitLeadSchema, {...validLead, consent: "yes"})).toThrow();
   });
+
+  it("requires the employer fields on a hiring lead, and only there", () => {
+    const hiring = {
+      ...validLead,
+      type: "hiring",
+      organization: "Acme Corp",
+      program: "Data Analyst",
+      positions: "6-15",
+      recruitmentMode: "Direct Hire",
+    };
+
+    expect(parse(submitLeadSchema, hiring)).toMatchObject(hiring);
+    expect(() => parse(submitLeadSchema, {...hiring, organization: ""})).toThrow("organization");
+    expect(() => parse(submitLeadSchema, {...hiring, positions: undefined})).toThrow("positions");
+    expect(() => parse(submitLeadSchema, {...hiring, recruitmentMode: "Carrier pigeon"})).toThrow();
+    expect(() => parse(submitLeadSchema, validLead)).not.toThrow();
+  });
 });
 
 describe("leadListQuery", () => {

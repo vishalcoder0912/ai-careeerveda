@@ -79,6 +79,14 @@ const Shell = () => {
             </Guarded>
           }
         />
+        <Route
+          path="/hiring"
+          element={
+            <Guarded permission="forms.read">
+              <Leads key="hiring" hiring />
+            </Guarded>
+          }
+        />
         <Route path="/profile" element={<Profile />} />
         <Route path="/403" element={<Forbidden />} />
         <Route path="*" element={<NotFound />} />

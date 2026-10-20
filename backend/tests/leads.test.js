@@ -356,6 +356,32 @@ describe("admin lead management", () => {
     expect(response.body.data).toHaveLength(1);
     expect(response.body.data[0].type).toBe("enrollment");
   });
+
+  it("keeps hiring enquiries out of the general inbox and on their own page", async () => {
+    await publishedProgram();
+    await submit({type: "consultation"});
+    await submit({
+      type: "hiring",
+      email: "hr@acme.com",
+      mobile: "9876543210",
+      organization: "Acme Corp",
+      program: "PG Program in Product Management",
+      positions: "1-5",
+      recruitmentMode: "Direct Hire",
+    });
+    const token = await asAdmin();
+    const get = (path) => request(app).get(path).set("Authorization", `Bearer ${token}`);
+
+    const inbox = await get("/api/v1/admin/leads");
+    expect(inbox.body.data.map((lead) => lead.type)).toEqual(["consultation"]);
+
+    const hiring = await get("/api/v1/admin/leads?type=hiring");
+    expect(hiring.body.data).toHaveLength(1);
+    expect(hiring.body.data[0].organization).toBe("Acme Corp");
+
+    expect((await get("/api/v1/admin/leads/stats")).body.data.total).toBe(1);
+    expect((await get("/api/v1/admin/leads/stats?type=hiring")).body.data.total).toBe(1);
+  });
 });
 
 describe("CSV export", () => {
