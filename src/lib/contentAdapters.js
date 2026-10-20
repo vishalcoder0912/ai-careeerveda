@@ -213,16 +213,37 @@ export const adaptBlogPost = (record) => ({
 // postings from the past 3 days and sortBy=DD puts the newest first, so the
 // link always lands on current openings however old the listing here is.
 export const LINKEDIN_SOURCE = "LinkedIn Jobs";
+const LINKEDIN_RECENT = "r259200";
 export const linkedInSearchUrl = (title, location = "") => {
   const isRemote = /remote/i.test(location);
   const params = new URLSearchParams({
     keywords: title,
     location: isRemote || !location ? "India" : location,
-    f_TPR: "r259200",
+    f_TPR: LINKEDIN_RECENT,
     sortBy: "DD",
   });
   if (isRemote) params.set("f_WT", "2");
   return `https://www.linkedin.com/jobs/search/?${params.toString()}`;
+};
+
+// Listings saved in the panel before the search link carried f_TPR/sortBy
+// still hold a bare "keywords + location" LinkedIn search, which opens on
+// LinkedIn's "most relevant, any date" results. Upgrade any saved LinkedIn
+// *search* link to newest-first, past 3 days; an explicit time window already
+// on the link is kept. Employer URLs and single LinkedIn postings pass through.
+export const freshLinkedInSearch = (url) => {
+  let parsed;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return url;
+  }
+  if (!/(^|\.)linkedin\.com$/i.test(parsed.hostname) || !parsed.pathname.startsWith("/jobs/search")) {
+    return url;
+  }
+  parsed.searchParams.set("sortBy", "DD");
+  if (!parsed.searchParams.has("f_TPR")) parsed.searchParams.set("f_TPR", LINKEDIN_RECENT);
+  return parsed.toString();
 };
 
 // A listing saved in the panel without an application URL used to render
@@ -230,7 +251,7 @@ export const linkedInSearchUrl = (title, location = "") => {
 // employer's email, then to a live LinkedIn search for the role.
 const jobApplyLink = (record) => {
   if (/^https?:\/\//i.test(record.applicationUrl || "")) {
-    return {applyUrl: record.applicationUrl, source: record.source || ""};
+    return {applyUrl: freshLinkedInSearch(record.applicationUrl), source: record.source || ""};
   }
   if (record.applicationEmail) {
     return {applyUrl: `mailto:${record.applicationEmail}`, source: record.source || ""};
