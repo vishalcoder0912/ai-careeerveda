@@ -1,0 +1,273 @@
+/* "The AI skills curve" — grouped horizontal bars, light theme.
+   Series colours were run through the dataviz palette validator against white:
+   teal #0f9f8f (Average) and indigo #4f46e5 (AI-upskilled) pass lightness,
+   chroma, colour-blind separation and 3:1 contrast. Text never wears them. */
+
+.skills-curve {
+  --sc-average: #0f9f8f;
+  --sc-upskilled: #4f46e5;
+  --sc-ink: var(--cv-navy, #102a5c);
+  --sc-muted: #6b7a94;
+  --sc-grid: #e6ebf4;
+
+  width: min(calc(100% - 2 * var(--site-gutter, 24px)), var(--site-measure, 1280px));
+  margin: 0 auto;
+  padding: clamp(48px, 7vw, 96px) 0;
+}
+
+.skills-curve__head {
+  max-width: 720px;
+  margin: 0 auto clamp(28px, 4vw, 44px);
+  text-align: center;
+}
+
+.skills-curve__eyebrow {
+  display: inline-flex;
+  padding: 8px 13px;
+  border: 1px solid #c8dcff;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--cv-blue, #2563eb);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.skills-curve__head h2 {
+  margin: 18px 0 14px;
+  color: var(--sc-ink);
+  font-size: clamp(30px, 3.8vw, 50px);
+  line-height: 1.08;
+}
+
+.skills-curve__head h2 span {
+  background: linear-gradient(100deg, #2563eb, #7c3aed);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.skills-curve__head p {
+  margin: 0;
+  color: #526682;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.skills-curve__card {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: clamp(20px, 3vw, 36px);
+  border: 1px solid rgba(16, 42, 92, 0.08);
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 24px 70px rgba(16, 42, 92, 0.08);
+}
+
+.skills-curve__caption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px 20px;
+  margin-bottom: 28px;
+  color: var(--sc-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.skills-curve__legend {
+  display: inline-flex;
+  gap: 16px;
+  color: var(--sc-ink);
+}
+
+.skills-curve__legend span,
+.skills-curve__tip span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.skills-curve i {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.skills-curve i.is-average {
+  background: var(--sc-average);
+}
+
+.skills-curve i.is-upskilled {
+  background: var(--sc-upskilled);
+}
+
+/* ── Plot ── label column + bar track; the grid spans the track only. */
+
+.skills-curve__plot {
+  --label-w: 190px;
+  position: relative;
+  display: grid;
+  gap: 18px;
+  padding-bottom: 28px;
+}
+
+.skills-curve__grid {
+  position: absolute;
+  inset: 0 64px 0 var(--label-w);
+  pointer-events: none;
+}
+
+.skills-curve__grid span {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-left: 1px solid var(--sc-grid);
+}
+
+/* Tick value under the plot, centred on its gridline. */
+.skills-curve__grid em {
+  position: absolute;
+  bottom: 0;
+  transform: translateX(-50%);
+  color: var(--sc-muted);
+  font-size: 0.72rem;
+  font-style: normal;
+}
+
+.skills-curve__row {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--label-w) 1fr;
+  align-items: center;
+  padding-right: 64px;
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+.skills-curve__row.is-active {
+  background: rgba(37, 99, 235, 0.04);
+}
+
+.skills-curve__label {
+  padding-right: 16px;
+  color: var(--sc-ink);
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.skills-curve__bars {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  padding: 6px 0;
+}
+
+.skills-curve__bar {
+  position: relative;
+  width: var(--w);
+  height: 14px;
+  border-radius: 0 4px 4px 0;
+  animation: skills-grow 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.skills-curve__bar.is-average {
+  background: var(--sc-average);
+}
+
+.skills-curve__bar.is-upskilled {
+  background: var(--sc-upskilled);
+  animation-delay: 0.08s;
+}
+
+.skills-curve__bar b {
+  position: absolute;
+  left: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--sc-ink);
+  font-size: 0.76rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.skills-curve__bar.is-average b {
+  color: var(--sc-muted);
+  font-weight: 500;
+}
+
+@keyframes skills-grow {
+  from {
+    width: 0;
+  }
+}
+
+/* ── Hover tooltip ── */
+
+.skills-curve__tip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  z-index: 2;
+  display: grid;
+  gap: 4px;
+  min-width: 190px;
+  padding: 10px 12px;
+  border: 1px solid var(--sc-grid);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 12px 30px rgba(16, 42, 92, 0.14);
+  color: var(--sc-ink);
+  font-size: 0.8rem;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.skills-curve__tip em {
+  color: var(--sc-ink);
+  font-style: normal;
+  font-weight: 700;
+}
+
+.skills-curve__note {
+  margin: 8px 0 0;
+  color: var(--sc-muted);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.skills-curve .visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skills-curve__bar {
+    animation: none;
+  }
+}
+
+/* Phones: label above its bars, full-width track. */
+@media (max-width: 640px) {
+  .skills-curve__plot {
+    --label-w: 0px;
+  }
+
+  .skills-curve__row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .skills-curve__grid {
+    display: none;
+  }
+
+  .skills-curve__tip {
+    display: none;
+  }
+}

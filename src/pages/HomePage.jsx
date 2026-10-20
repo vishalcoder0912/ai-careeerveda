@@ -20,6 +20,8 @@ import "../components/website-new-theme.css";
 const TrustedCompanies = lazy(() => import("../components/TrustedCompanies"));
 const RecommendedCourses = lazy(() => import("../components/Recommended/RecommendedCourses1"));
 const LearnerOutcomes = lazy(() => import("../components/LearnerOutcomes"));
+const CareerRoiCalculator = lazy(() => import("../components/CareerRoiCalculator"));
+const AiSkillsCurve = lazy(() => import("../components/AiSkillsCurve"));
 // Not behind DeferUntilVisible like the sections around it. The page is served
 // as a prerendered snapshot and React re-renders it on boot; a deferred form was
 // an empty box at that moment, so on a phone the card a visitor was already
@@ -132,6 +134,14 @@ const HomePage = () => {
           stats → programs transition. */}
       <DeferUntilVisible className="home-defer-programs" margin="-150px">
         <RecommendedCourses />
+      </DeferUntilVisible>
+
+      <DeferUntilVisible minHeight={640}>
+        <AiSkillsCurve />
+      </DeferUntilVisible>
+
+      <DeferUntilVisible minHeight={640}>
+        <CareerRoiCalculator />
       </DeferUntilVisible>
 
       <DeferUntilVisible minHeight={520}>
