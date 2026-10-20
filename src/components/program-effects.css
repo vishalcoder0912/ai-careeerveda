@@ -32,8 +32,9 @@
   width: 540px;
   height: 540px;
   left: -160px;
-  top: -280px;
-  background: radial-gradient(circle, rgba(37, 99, 235, 0.38), transparent 70%);
+  /* Starts below the transparent navbar so the bar sits on the flat page colour. */
+  top: 120px;
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.2), transparent 70%);
   animation: pd-glow-drift-a 16s ease-in-out infinite alternate;
 }
 
@@ -42,7 +43,7 @@
   height: 480px;
   right: -140px;
   bottom: -240px;
-  background: radial-gradient(circle, rgba(124, 58, 237, 0.34), transparent 70%);
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.2), transparent 70%);
   animation: pd-glow-drift-b 19s ease-in-out infinite alternate;
 }
 
@@ -261,6 +262,253 @@
   z-index: 1;
 }
 
+/* Spotlight cards: a soft glow follows the cursor (--mx/--my come from
+   ProgramDetailPage). */
+.pd-gain,
+.pd-track,
+.pd-job,
+.pd-mentor {
+  position: relative;
+  isolation: isolate;
+}
+
+.pd-gain::after,
+.pd-track::after,
+.pd-job::after,
+.pd-mentor::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgba(37, 99, 235, 0.1), transparent 65%);
+  opacity: 0;
+  transition: opacity 260ms ease;
+  pointer-events: none;
+}
+
+.pd-gain:hover::after,
+.pd-track:hover::after,
+.pd-job:hover::after,
+.pd-mentor:hover::after {
+  opacity: 1;
+}
+
+.pd-gain {
+  transition: border-color 220ms ease, transform 220ms ease;
+}
+
+.pd-gain:hover {
+  border-color: rgba(37, 99, 235, 0.3);
+  transform: translateY(-2px);
+}
+
+.pd-gain__check {
+  transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pd-gain:hover .pd-gain__check {
+  transform: scale(1.18) rotate(-8deg);
+}
+
+/* Animated gradient text on the program name in the hero. */
+.pd-hero .pd-accent {
+  background: linear-gradient(90deg, #2563eb, #4f46e5, #0ea5e9, #2563eb);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: pd-gradient-text 8s linear infinite;
+}
+
+@keyframes pd-gradient-text {
+  to {
+    background-position: 300% 0;
+  }
+}
+
+/* Industry chips lift and tint on hover. */
+.pd-industry {
+  transition: transform 200ms ease, border-color 200ms ease, color 200ms ease, box-shadow 220ms ease;
+}
+
+.pd-industry:hover {
+  transform: translateY(-2px);
+  border-color: rgba(37, 99, 235, 0.35);
+  color: var(--pd-teal);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.12);
+}
+
+/* Salary bars grow up from the axis as the chart scrolls into view. Browsers
+   without scroll-driven animations just show the bars. */
+@supports (animation-timeline: view()) {
+  .pd-salary-col__bar {
+    transform-origin: bottom;
+    animation: pd-bar-grow linear both;
+    animation-timeline: view();
+    animation-range: entry 10% cover 40%;
+  }
+}
+
+@keyframes pd-bar-grow {
+  from {
+    transform: translateX(-50%) scaleY(0);
+  }
+  to {
+    transform: translateX(-50%) scaleY(1);
+  }
+}
+
+/* ── Premium touches borrowed (lightly) from the Gen AI page ────────────── */
+
+/* Reading progress: a thin blue→orange line along the top of the window.
+   Scroll-driven, so browsers without scroll timelines simply don't show it. */
+.pd-progress {
+  display: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  .pd-progress {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1001;
+    height: 3px;
+    background: linear-gradient(90deg, #2563eb, #4f46e5 60%, #ff5a0a);
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+    pointer-events: none;
+    animation: pd-progress linear both;
+    animation-timeline: scroll(root);
+  }
+}
+
+@keyframes pd-progress {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Hero image: tilts and shifts towards the cursor (--tx/--ty from
+   ProgramDetailPage, -0.5…0.5) with a soft glare that follows it. */
+.pd-hero .pd-visual-frame img {
+  transform:
+    perspective(1000px)
+    rotateY(calc(var(--tx, 0) * 7deg))
+    rotateX(calc(var(--ty, 0) * -7deg))
+    translate(calc(var(--tx, 0) * -10px), calc(var(--ty, 0) * -10px))
+    scale(1.04);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pd-hero .pd-visual-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    420px circle at calc(50% + var(--tx, 0) * 100%) calc(50% + var(--ty, 0) * 100%),
+    rgba(255, 255, 255, 0.22),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.pd-hero .pd-visual-frame:hover::after {
+  opacity: 1;
+}
+
+/* Magnetic primary buttons: ProgramDetailPage sets `translate`, which stacks
+   with the hover lift's transform. Ease it so the pull feels soft. */
+.pd-btn--primary {
+  transition:
+    translate 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 200ms ease,
+    box-shadow 220ms ease,
+    background 220ms ease;
+}
+
+/* Section labels: the short rule before each eyebrow draws in on scroll. */
+@supports (animation-timeline: view()) {
+  .pd-eyebrow::before {
+    transform-origin: left center;
+    animation: pd-rule-draw linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 100%;
+  }
+}
+
+@keyframes pd-rule-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Mentor photos ease in on hover (the card already clips them). */
+.pd-mentor__photo {
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pd-mentor:hover .pd-mentor__photo {
+  transform: scale(1.05);
+}
+
+/* The testimonial's quote mark drifts gently. */
+.pd-proof__mark {
+  animation: pd-float 5s ease-in-out infinite;
+}
+
+/* Gen AI page touches, lighter: numbered section labels ("01 / OVERVIEW")
+   and section titles that fill with ink as they scroll into view. */
+.program-detail {
+  counter-reset: pd-section;
+}
+
+.program-detail .pd-section {
+  counter-increment: pd-section;
+}
+
+/* Flex order: rule line, number, label text. */
+.program-detail .pd-section .pd-heading > .pd-eyebrow::before {
+  order: -2;
+}
+
+.program-detail .pd-section .pd-heading > .pd-eyebrow::after,
+.program-detail .pd-section .pd-curriculum__eyebrow::after {
+  content: counter(pd-section, decimal-leading-zero) " /";
+  order: -1;
+  color: #ff5a0a;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+@supports (animation-timeline: view()) {
+  .program-detail .pd-heading h2 {
+    /* Sized to the text so the sweep runs across the words, not empty column. */
+    width: fit-content;
+    max-width: 100%;
+    background: linear-gradient(90deg, #102a5c 50%, #b9c6db 50%) 100% 0 / 200% 100% no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: pd-ink-fill linear both;
+    animation-timeline: view();
+    animation-range: entry 15% cover 40%;
+  }
+}
+
+@keyframes pd-ink-fill {
+  to {
+    background-position: 0 0;
+  }
+}
+
 /* ── Reduced motion: kill the new motion, keep the data ─────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
@@ -270,8 +518,34 @@
   .pd-hero .pd-visual-frame,
   .pd-btn--primary::after,
   .pd-badge--status::before,
-  .pd-fee-total::before {
+  .pd-fee-total::before,
+  .pd-hero .pd-accent,
+  .pd-salary-col__bar,
+  .pd-progress,
+  .pd-eyebrow::before,
+  .pd-proof__mark {
     animation: none;
+  }
+
+  .pd-progress {
+    display: none;
+  }
+
+  .program-detail .pd-heading h2 {
+    animation: none;
+    background: none;
+    color: var(--pd-ink);
+  }
+
+  .pd-hero .pd-visual-frame img,
+  .pd-mentor:hover .pd-mentor__photo {
+    transform: none;
+  }
+
+  .pd-gain:hover,
+  .pd-industry:hover,
+  .pd-gain:hover .pd-gain__check {
+    transform: none;
   }
 
   .pd-outcome:hover,
