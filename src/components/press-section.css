@@ -770,3 +770,215 @@
     content: none;
   }
 }
+/* ================================================================
+   SCROLL STACK + PRESS BADGES
+   The three stories stack (ScrollStack, React Bits) on desktop; phones and
+   short screens read them as a plain column (.press-list).
+   ================================================================ */
+
+.press-section .press-stack {
+  max-width: 1100px;
+  margin: clamp(24px, 3vw, 40px) auto 0;
+}
+
+.press-section .press-stack .scroll-stack__inner {
+  padding-inline: 0;
+}
+
+/* The card shell from ScrollStack: let the story card supply its own surface. */
+.press-section .press-stack__card {
+  height: auto;
+  padding: 0;
+  border-radius: 28px;
+  background: transparent;
+  color: inherit;
+  box-shadow: 0 -18px 50px -30px rgba(16, 42, 92, 0.35);
+}
+
+.press-section .press-stack .press-story {
+  max-height: calc(100vh - 14vh - 72px);
+}
+
+.press-section .press-list {
+  display: grid;
+  gap: clamp(18px, 3vw, 28px);
+  max-width: 1000px;
+  margin: clamp(24px, 4vw, 40px) auto 0;
+}
+
+.press-section .press-story__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* ---- press badge: logo plate + name + "featured" check ---- */
+.press-section .press-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 6px;
+  border: 1px solid #e0ebfa;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #102a5c;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 6px 16px -10px rgba(16, 42, 92, 0.3);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.press-section .press-badge::after {
+  content: none;
+}
+
+.press-section .press-badge:hover,
+.press-section .press-badge:focus-visible {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent, #2563eb) 45%, #e0ebfa);
+  background: #ffffff;
+  box-shadow: 0 12px 24px -12px color-mix(in srgb, var(--accent, #2563eb) 55%, transparent);
+}
+
+.press-section .press-badge:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.35);
+  outline-offset: 2px;
+}
+
+.press-section .press-badge__plate {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 36px;
+  flex-shrink: 0;
+  border: 1px solid #edf2fa;
+  border-radius: 9px;
+  background: #ffffff;
+}
+
+.press-section .press-badge__plate img {
+  max-width: 56px;
+  max-height: 28px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.press-section .press-badge__mono {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent-soft, rgba(37, 99, 235, 0.08));
+  color: var(--accent, #2563eb);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.press-section .press-badge__check {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: var(--accent, #2563eb);
+  box-shadow: 0 2px 6px rgba(16, 42, 92, 0.25);
+}
+
+.press-section .press-badge__check svg {
+  width: 9px;
+  height: 9px;
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Media wall: larger stacked badges in a grid. */
+.press-section .press-wall {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 14px;
+  width: 100%;
+  margin-top: clamp(18px, 2.4vw, 28px);
+}
+
+.press-section .press-badge--lg {
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 12px 14px;
+  text-align: center;
+}
+
+.press-section .press-badge--lg .press-badge__plate {
+  width: 100%;
+  height: 64px;
+}
+
+.press-section .press-badge--lg .press-badge__plate img {
+  max-width: 120px;
+  max-height: 44px;
+}
+
+.press-section .press-badge--lg .press-badge__mono {
+  font-size: 20px;
+}
+
+@media (max-width: 560px) {
+  .press-section .press-wall {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .press-section .press-badge {
+    transition: none;
+  }
+
+  .press-section .press-badge:hover {
+    transform: none;
+  }
+}
+
+/* Heading side by side on desktop: label + title on the left, the paragraph
+   on the right, sharing the stack's 1100px width and baseline. */
+@media (min-width: 900px) {
+  .press-section .press-section-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    grid-template-areas:
+      "label label"
+      "title text";
+    column-gap: clamp(32px, 5vw, 72px);
+    align-items: end;
+    max-width: 1100px;
+    margin-inline: auto;
+    text-align: left;
+  }
+
+  .press-section .press-section-heading .label {
+    grid-area: label;
+  }
+
+  .press-section .press-section-heading h2 {
+    grid-area: title;
+    margin: 12px 0 0;
+  }
+
+  .press-section .press-section-heading p {
+    grid-area: text;
+    margin: 0;
+    padding: 4px 0 6px 24px;
+    border-left: 2px solid #e0ebfa;
+  }
+}
