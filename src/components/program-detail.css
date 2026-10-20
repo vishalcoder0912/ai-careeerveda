@@ -54,7 +54,8 @@ body main.page-shell.program-detail {
      sections paint their own gradients inside .pd-layout, so the outer canvas
      is a single flat colour, the same colour that sits behind the transparent
      navbar, and the page reads as one continuous light field. */
-  background-color: #fafcff !important;
+  /* White, the same as the site header bar above it. */
+  background-color: #ffffff !important;
   background-image: none !important;
 }
 
@@ -85,6 +86,14 @@ body main.page-shell.program-detail {
 @media (min-width: 768px) {
   .pd-layout {
     --pd-gutter: 32px;
+  }
+}
+
+/* Desktop: the navbar is min(100% - 80px, 1440px), so a 40px gutter puts the
+   breadcrumb and hero under the logo and the content edge under Enroll Now. */
+@media (min-width: 1024px) {
+  .pd-layout {
+    --pd-gutter: 40px;
   }
 }
 
@@ -262,14 +271,15 @@ body main.page-shell.program-detail {
      hero to the closing CTA. Capped and centred so desktop content never
      stretches across a wide screen. */
   width: 100%;
-  max-width: 1200px;
+  /* The navbar's cap, so content edges line up with the logo and CTA. */
+  max-width: 1440px;
   margin-inline: auto;
 }
 
 /* The ticker strip sits outside any .pd-inner; give it the same box so its
    edges line up with the hero and sections above and below it. */
 .pd-layout .pd-marquee {
-  max-width: 1200px;
+  max-width: 1440px;
   margin-inline: auto;
 }
 
@@ -441,8 +451,8 @@ body main.page-shell.program-detail {
   /* One shade with the rest of the page: no white/gradient slab here, just the
      same #fafcff backdrop with two soft accent pools of light. */
   background:
-    radial-gradient(820px 440px at 96% -8%, rgba(37, 99, 235, 0.12), transparent 62%),
-    radial-gradient(720px 420px at -6% 20%, rgba(37, 99, 235, 0.14), transparent 60%);
+    radial-gradient(820px 440px at 96% 30%, rgba(37, 99, 235, 0.06), transparent 62%),
+    radial-gradient(720px 420px at -6% 45%, rgba(37, 99, 235, 0.06), transparent 60%);
 }
 
 .pd-crumbs {
