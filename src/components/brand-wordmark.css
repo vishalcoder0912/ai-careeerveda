@@ -84,3 +84,27 @@
     letter-spacing: 0.18em;
   }
 }
+
+/* "CareerVeda" in headings and copy (BrandWord.jsx): the lockup's colours at
+   the surrounding text's size and weight. The fill-color resets undo any
+   gradient-text treatment a parent heading applies. */
+.cv-word {
+  font-weight: inherit;
+  white-space: nowrap;
+}
+
+.cv-word .cv-word__career {
+  font-weight: inherit;
+  color: #000000;
+  -webkit-text-fill-color: #000000;
+  background: none;
+}
+
+.cv-word .cv-word__veda {
+  font-weight: inherit;
+  background-image: linear-gradient(180deg, #2fc8f5 0%, #178dd2 50%, #0b5daa 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
