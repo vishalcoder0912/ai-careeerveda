@@ -109,6 +109,22 @@ describe("adaptJob", () => {
     expect(fallback.source).toBe("LinkedIn Jobs");
   });
 
+  it("upgrades a saved bare LinkedIn search to newest-first, past 3 days", () => {
+    // Records seeded before the link carried these params opened LinkedIn's
+    // "most relevant, any date" results instead of the latest posts.
+    const saved = "https://www.linkedin.com/jobs/search/?keywords=Private+Equity+Analyst&location=Mumbai%2C+Maharashtra";
+    const params = new URL(adaptJob({...record, applicationUrl: saved}).applyUrl).searchParams;
+    expect(params.get("keywords")).toBe("Private Equity Analyst");
+    expect(params.get("location")).toBe("Mumbai, Maharashtra");
+    expect(params.get("sortBy")).toBe("DD");
+    expect(params.get("f_TPR")).toBe("r259200");
+
+    // A window someone set on purpose is kept; employer links are untouched.
+    const weekly = new URL(adaptJob({...record, applicationUrl: `${saved}&f_TPR=r604800`}).applyUrl);
+    expect(weekly.searchParams.get("f_TPR")).toBe("r604800");
+    expect(adaptJob({...record, applicationUrl: "https://example.com/apply"}).applyUrl).toBe("https://example.com/apply");
+  });
+
   it("prints the posted date as a date, not an ISO timestamp", () => {
     // The card prints this verbatim: "Posted 2026-07-13", not
     // "Posted 2026-07-13T00:00:00.000Z".
