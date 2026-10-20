@@ -3,7 +3,6 @@ import {
   Blocks,
   Cpu,
   ServerCog,
-  MessageSquare,
   Bot,
   Database,
   Network,
@@ -35,7 +34,6 @@ import {
   Orbit,
   Fingerprint,
   Globe,
-  Search,
   Gauge,
   Lock,
   TrendingUp,
@@ -181,18 +179,25 @@ export const agentSystemNode = {
   label: "AI AGENT",
 };
 
+/* Node art: Microsoft Fluent Emoji 3D (MIT), 128px webp in
+   public/images/agent-system/. `alt` is empty on purpose — the label beside
+   each image already names it. */
+const agentArt = (name) => `/images/agent-system/${name}.webp`;
+
 export const agentSatellites = [
-  {label: "USER", icon: MessageSquare},
-  {label: "SECURITY", icon: ShieldCheck},
-  {label: "LLM", icon: Cpu},
-  {label: "EVAL", icon: Radar},
-  {label: "MEMORY", icon: Database},
-  {label: "MULTI-AGENT", icon: Network},
-  {label: "TOOLS", icon: Puzzle},
-  {label: "GPU", icon: Gauge},
-  {label: "RAG", icon: Search},
-  {label: "API", icon: Code2},
+  {label: "USER", img: agentArt("user")},
+  {label: "SECURITY", img: agentArt("security")},
+  {label: "LLM", img: agentArt("llm")},
+  {label: "EVAL", img: agentArt("eval")},
+  {label: "MEMORY", img: agentArt("memory")},
+  {label: "MULTI-AGENT", img: agentArt("multi-agent")},
+  {label: "TOOLS", img: agentArt("tools")},
+  {label: "GPU", img: agentArt("gpu")},
+  {label: "RAG", img: agentArt("rag")},
+  {label: "API", img: agentArt("api")},
 ];
+
+export const agentCenterArt = agentArt("agent");
 
 /* ────────────────────────────────────────────────────────────────────────────
    CAREERVEDA SIGNATURE MODEL — ten living stages
