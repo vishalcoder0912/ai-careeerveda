@@ -1,0 +1,308 @@
+/* Living Workflow (AgentWorkflow). New ga-wf-* names so none of the older
+   ga-flow / ga-step layers apply. Site palette: navy #102a5c, blue #2563eb,
+   orange #ff5a0a, hairline #e0ebfa. Side padding matches the other sections. */
+
+.ga-page .ga-wf {
+  position: relative;
+}
+
+.ga-page .ga-wf-pin {
+  display: flex;
+  align-items: center;
+  min-height: 100svh;
+  padding: clamp(88px, 11vh, 110px) clamp(1.2rem, 4vw, 3.5rem) clamp(40px, 6vh, 64px);
+  box-sizing: border-box;
+}
+
+.ga-page .ga-wf-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: clamp(32px, 5vw, 80px);
+  align-items: center;
+  width: 100%;
+}
+
+/* ── Left: heading, current-step card, agent loop ──────────────────── */
+
+.ga-page .ga-wf-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ga-page .ga-wf-intro .ga-display {
+  margin: 0;
+  font-size: clamp(2.2rem, 4vw, 3.6rem);
+}
+
+.ga-page .ga-wf-lead {
+  max-width: 46ch;
+  margin: 0;
+  color: #536987;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.ga-page .ga-wf-focus {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  margin-top: 10px;
+  padding: 22px 22px 26px;
+  border: 1px solid #e0ebfa;
+  border-radius: 20px;
+  background:
+    radial-gradient(360px 160px at 100% 0%, rgba(255, 90, 10, 0.08), transparent 70%),
+    linear-gradient(135deg, #f1f7ff, #ffffff 75%);
+  box-shadow: 0 20px 50px rgba(16, 42, 92, 0.08);
+  overflow: hidden;
+}
+
+.ga-page .ga-wf-focus-num {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 800;
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.3);
+  animation: ga-wf-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes ga-wf-pop {
+  from {
+    transform: scale(0.8);
+    opacity: 0.4;
+  }
+}
+
+.ga-page .ga-wf-focus-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ga-page .ga-wf-focus-kicker {
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ga-page .ga-wf-focus-text strong {
+  color: #102a5c;
+  font-size: clamp(1.4rem, 2.2vw, 1.8rem);
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.ga-page .ga-wf-focus-text > span:last-child {
+  color: #536987;
+  font-size: 15px;
+}
+
+.ga-page .ga-wf-progress {
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  bottom: 12px;
+  height: 4px;
+  border-radius: 999px;
+  background: #e0ebfa;
+  overflow: hidden;
+}
+
+.ga-page .ga-wf-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2563eb, #ff5a0a);
+  transition: width 0.4s ease;
+}
+
+/* The agent loop as connected chips. */
+.ga-page .ga-wf-pipeline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ga-page .ga-wf-pipeline li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid #e0ebfa;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #33486b;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.ga-page .ga-wf-pipeline li + li::before {
+  content: "→";
+  margin-left: -2px;
+  margin-right: 2px;
+  color: #93b4ec;
+}
+
+/* ── Right: the ten steps ──────────────────────────────────────────── */
+
+.ga-page .ga-wf-steps {
+  position: relative;
+  display: grid;
+  gap: clamp(4px, 0.8vh, 8px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Rail behind the step numbers. */
+.ga-page .ga-wf-steps::before {
+  content: "";
+  position: absolute;
+  left: 33px;
+  top: 22px;
+  bottom: 22px;
+  border-left: 2px dashed #d6e4f7;
+}
+
+.ga-page .ga-wf-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: clamp(7px, 1.1vh, 12px) 16px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.ga-page .ga-wf-step-num {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #cfe0fb;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #2563eb;
+  font-size: 12.5px;
+  font-weight: 800;
+  box-shadow: 0 0 0 4px #ffffff;
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.ga-page .ga-wf-step-text {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+  min-width: 0;
+}
+
+.ga-page .ga-wf-step-text strong {
+  color: #102a5c;
+  font-size: clamp(15px, 1.25vw, 17px);
+  font-weight: 700;
+}
+
+.ga-page .ga-wf-step-text span {
+  color: #536987;
+  font-size: 14px;
+}
+
+/* Done: ticked, quietly blue. */
+.ga-page .ga-wf-step.is-done .ga-wf-step-num {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #ffffff;
+}
+
+/* Current: lifted white card with a blue edge. */
+.ga-page .ga-wf-step.is-on {
+  border-color: rgba(37, 99, 235, 0.35);
+  background: #ffffff;
+  box-shadow: 0 14px 34px rgba(16, 42, 92, 0.1);
+  transform: translateX(6px);
+}
+
+.ga-page .ga-wf-step.is-on .ga-wf-step-num {
+  border-color: #ff5a0a;
+  background: #ff5a0a;
+  color: #ffffff;
+  box-shadow: 0 0 0 4px #ffffff, 0 0 0 8px rgba(255, 90, 10, 0.15);
+}
+
+/* Still ahead: readable, just softer. */
+.ga-page .ga-wf-step.is-next {
+  opacity: 0.62;
+}
+
+/* ── Tablets and phones: one column, no pin ────────────────────────── */
+
+@media (max-width: 899px) {
+  .ga-page .ga-wf-pin {
+    min-height: 0;
+    padding: clamp(56px, 12vw, 80px) clamp(1rem, 5vw, 2rem);
+  }
+
+  .ga-page .ga-wf-inner {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  /* The list carries the current step on its own here. */
+  .ga-page .ga-wf-focus {
+    display: none;
+  }
+
+  .ga-page .ga-wf-step {
+    padding: 12px 14px;
+  }
+
+  .ga-page .ga-wf-step-text {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ga-page .ga-wf-step.is-on {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ga-page .ga-wf-step,
+  .ga-page .ga-wf-step-num,
+  .ga-page .ga-wf-progress span {
+    transition: none;
+  }
+
+  .ga-page .ga-wf-focus-num {
+    animation: none;
+  }
+
+  .ga-page .ga-wf-step.is-next {
+    opacity: 1;
+  }
+}
