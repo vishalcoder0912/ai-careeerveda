@@ -1,0 +1,375 @@
+/* "Hire From Us" popup. Native <dialog>, so focus trapping, Escape and the top
+   layer come from the browser. The open/close motion is pure CSS: a transition
+   with @starting-style; browsers without it simply open without the animation. */
+
+.hire-dialog {
+  width: min(640px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 24px;
+  background: var(--site-bg, #fff);
+  color: var(--site-ink, #101828);
+  box-shadow: var(--site-shadow-strong, 0 24px 70px rgba(16, 24, 64, 0.14));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  opacity: 0;
+  transform: translateY(18px) scale(0.97);
+  transition:
+    opacity 0.32s ease,
+    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    overlay 0.42s allow-discrete,
+    display 0.42s allow-discrete;
+}
+
+.hire-dialog[open] {
+  opacity: 1;
+  transform: none;
+}
+
+@starting-style {
+  .hire-dialog[open] {
+    opacity: 0;
+    transform: translateY(18px) scale(0.97);
+  }
+}
+
+.hire-dialog::backdrop {
+  background: rgba(11, 16, 43, 0);
+  backdrop-filter: blur(0);
+  transition:
+    background 0.32s ease,
+    backdrop-filter 0.32s ease,
+    overlay 0.42s allow-discrete,
+    display 0.42s allow-discrete;
+}
+
+.hire-dialog[open]::backdrop {
+  background: rgba(11, 16, 43, 0.55);
+  backdrop-filter: blur(4px);
+}
+
+@starting-style {
+  .hire-dialog[open]::backdrop {
+    background: rgba(11, 16, 43, 0);
+    backdrop-filter: blur(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hire-dialog,
+  .hire-dialog::backdrop {
+    transition: none;
+  }
+}
+
+.hire-form {
+  display: grid;
+  gap: 18px;
+  padding: 28px;
+}
+
+.hire-form__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.hire-form__head h2 {
+  margin: 0 0 6px;
+  font-size: 1.6rem;
+  color: var(--site-navy, #10183f);
+}
+
+.hire-form__head p {
+  margin: 0;
+  color: var(--site-body, #4b5565);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.hire-close {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--site-border, #e6ebf4);
+  border-radius: 50%;
+  background: var(--site-soft, #f8fafc);
+  color: var(--site-ink, #101828);
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.hire-close:hover {
+  background: var(--site-orange-soft, #fff4ec);
+  transform: rotate(90deg);
+}
+
+.hire-close svg,
+.hire-success svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hire-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 16px;
+}
+
+.hire-field {
+  display: grid;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--site-body, #4b5565);
+}
+
+.hire-field--full {
+  grid-column: 1 / -1;
+}
+
+.hire-field em,
+.hire-choices em {
+  margin-left: 2px;
+  font-style: normal;
+  color: var(--site-orange, #f97316);
+}
+
+.hire-field input,
+.hire-field select,
+.hire-field textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--site-border, #e6ebf4);
+  border-radius: 12px;
+  background: var(--site-soft, #f8fafc);
+  color: var(--site-ink, #101828);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.hire-field textarea {
+  resize: vertical;
+}
+
+.hire-field input:focus,
+.hire-field select:focus,
+.hire-field textarea:focus {
+  outline: none;
+  border-color: var(--site-orange, #f97316);
+  background: var(--site-bg, #fff);
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+}
+
+.hire-field [aria-invalid="true"] {
+  border-color: #dc2626;
+}
+
+.hire-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.hire-choices legend {
+  width: 100%;
+  margin-bottom: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--site-body, #4b5565);
+}
+
+.hire-chip input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hire-chip span {
+  display: inline-block;
+  padding: 9px 16px;
+  border: 1px solid var(--site-border, #e6ebf4);
+  border-radius: 999px;
+  background: var(--site-soft, #f8fafc);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.hire-chip:hover span {
+  border-color: var(--site-orange, #f97316);
+}
+
+.hire-chip input:checked + span {
+  background: var(--site-orange, #f97316);
+  border-color: var(--site-orange, #f97316);
+  color: #fff;
+}
+
+.hire-chip input:focus-visible + span {
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.3);
+}
+
+.hire-choices .field-error,
+.hire-field .field-error {
+  width: 100%;
+  color: #dc2626;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.hire-submit {
+  width: 100%;
+  padding: 14px 20px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--site-orange, #f97316);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+a.hire-submit {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+}
+
+.hire-mail-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.hire-submit--ghost {
+  background: var(--site-bg, #fff);
+  box-shadow: inset 0 0 0 1px var(--site-border, #e6ebf4);
+  color: var(--site-ink, #101828);
+}
+
+.hire-submit--ghost:hover:not(:disabled) {
+  background: var(--site-soft, #f8fafc);
+}
+
+.hire-mail-label {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.hire-mail-label a {
+  color: var(--site-blue, #1d5fd3);
+}
+
+.hire-link {
+  border: 0;
+  background: none;
+  color: var(--site-body, #4b5565);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.hire-submit:hover:not(:disabled) {
+  background: var(--site-orange-dark, #ea580c);
+  transform: translateY(-1px);
+}
+
+.hire-submit:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.hire-consent {
+  margin: -6px 0 0;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--site-body, #4b5565);
+}
+
+.hire-consent a {
+  color: var(--site-blue, #1d5fd3);
+}
+
+.hire-status {
+  margin: 0;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.hire-status--error {
+  color: #dc2626;
+}
+
+.hire-success {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding: 24px 0 8px;
+  text-align: center;
+  animation: hire-pop 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hire-success svg {
+  width: 56px;
+  height: 56px;
+  color: #16a34a;
+}
+
+.hire-success p {
+  margin: 0;
+  color: var(--site-body, #4b5565);
+}
+
+@keyframes hire-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+
+.hire-honeypot {
+  position: absolute !important;
+  left: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
+@media (max-width: 560px) {
+  .hire-form {
+    padding: 22px 18px;
+  }
+
+  .hire-grid {
+    grid-template-columns: 1fr;
+  }
+}

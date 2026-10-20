@@ -49,8 +49,7 @@ const MobileNavItem = ({number, label, description, active, onClick, to, href, i
       <a
         className={cls}
         href={href}
-        target="_blank"
-        rel="noopener noreferrer"
+        {...(href.startsWith("http") && {target: "_blank", rel: "noopener noreferrer"})}
         onClick={onClick}
         style={style}
       >

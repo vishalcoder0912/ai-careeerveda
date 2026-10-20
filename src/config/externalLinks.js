@@ -15,10 +15,10 @@
 //    e.g. "https://lms.careerveda.in"
 export const LMS_URL = "https://careervedaopcprivatelimited.edmingle.com/";
 
-// 2) "Hire From Us" — the Google Form employers fill in.
-//    Open the form → Send → the link (🔗) tab → copy the URL.
-//    e.g. "https://docs.google.com/forms/d/e/XXXXXXXX/viewform"
-export const HIRE_FROM_US_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdAfc4cxb9x8ir9M3wcJ-WcsBZxPoLtVfAkN9OIYmVTh71dXA/viewform?usp=publish-editor";
+// 2) "Hire From Us" — opens the on-site popup (HireFromUsDialog.jsx), which
+//    saves to the admin panel's Leads inbox and emails both sides. Any link
+//    to this href opens it.
+export const HIRE_FROM_US_HREF = "#hire-from-us";
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -26,7 +26,7 @@ export const HIRE_FROM_US_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdAfc4
 // external link later means adding one entry here and nothing else.
 export const externalLinks = [
   {label: "Access Your LMS", href: LMS_URL, description: "Log in and continue learning"},
-  {label: "Hire From Us", href: HIRE_FROM_US_URL, description: "Recruit from our talent pool"},
+  {label: "Hire From Us", href: HIRE_FROM_US_HREF, description: "Recruit from our talent pool"},
 ].filter((link) => link.href);
 
 // ─────────────────────────────────────────────────────────────────────────────

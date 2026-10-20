@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import SiteNavbar from "./SiteNavbar";
 import SocialLinks from "./SocialLinks";
 import WhatsAppButton from "./WhatsAppButton";
+import HireFromUsDialog from "./HireFromUsDialog";
 import CareerVedaBackground from "./background/CareerVedaBackground";
 import { navItems } from "../data/siteData";
 import { Link } from "react-router-dom";
@@ -97,7 +98,11 @@ const Layout = () => {
               closes the reverse-tabnabbing hole target="_blank" opens. Both are
               absent from the list until a URL is filled in — see externalLinks.js. */}
           {externalLinks.map(({label, href}) => (
-            <a key={label} href={href} target="_blank" rel="noopener noreferrer">
+            <a
+              key={label}
+              href={href}
+              {...(href.startsWith("http") && {target: "_blank", rel: "noopener noreferrer"})}
+            >
               {label}
             </a>
           ))}
@@ -130,6 +135,7 @@ const Layout = () => {
           and must stay tappable while a route chunk loads. It reads the route
           itself to decide which message to prefill — see config/whatsapp.js. */}
       <WhatsAppButton />
+      <HireFromUsDialog />
     </CareerVedaBackground>
   );
 };

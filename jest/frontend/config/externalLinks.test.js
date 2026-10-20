@@ -8,14 +8,13 @@
 
 import {describe, it, expect} from "@jest/globals";
 
-import {LMS_URL, HIRE_FROM_US_URL, externalLinks, socialLinks} from "../../../src/config/externalLinks";
+import {LMS_URL, HIRE_FROM_US_HREF, externalLinks, socialLinks} from "../../../src/config/externalLinks";
 
 describe("the two hand-edited destinations", () => {
-  it("points the LMS and the hiring form at https URLs", () => {
+  it("points the LMS at https and the hiring form at the on-site popup", () => {
     expect(LMS_URL).toMatch(/^https:\/\//);
-    expect(HIRE_FROM_US_URL).toMatch(/^https:\/\//);
     expect(LMS_URL).not.toContain("http://");
-    expect(HIRE_FROM_US_URL).not.toContain("http://");
+    expect(HIRE_FROM_US_HREF).toBe("#hire-from-us");
   });
 });
 
@@ -30,7 +29,7 @@ describe("externalLinks — footer and mobile drawer", () => {
   it("gives every link the label, href and description a footer row needs", () => {
     for (const link of externalLinks) {
       expect(link.label).toBeTruthy();
-      expect(link.href).toMatch(/^https:\/\//);
+      expect(link.href).toMatch(/^(https:\/\/|#)/);
       expect(link.description).toBeTruthy();
     }
   });
