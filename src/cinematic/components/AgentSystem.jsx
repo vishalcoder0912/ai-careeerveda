@@ -1,6 +1,6 @@
 import {useEffect, useRef} from "react";
 import {reducedMotionNow} from "../fx/registry";
-import {agentSatellites} from "../data";
+import {agentSatellites, agentCenterArt} from "../data";
 import {SectionLabel} from "./Atmosphere";
 
 const CX = 50;
@@ -203,9 +203,7 @@ export const AgentSystem = () => {
         </svg>
 
         <div className="ga-agent-center" data-cursor="cta">
-          <span className="ga-agent-center-icon">
-            <OrbitSVG />
-          </span>
+          <img className="ga-agent-center-art" src={agentCenterArt} alt="" width="48" height="48" />
           <span className="ga-agent-center-title">AI AGENT</span>
           <span className="ga-agent-center-sub">reason · act · observe</span>
         </div>
@@ -219,7 +217,7 @@ export const AgentSystem = () => {
               style={{left: `${pos.x}%`, top: `${pos.y}%`, transform: `translate(-50%, -50%)`}}
               data-cursor
             >
-              <s.icon className="ga-agent-node-icon" size={16} strokeWidth={1.6} aria-hidden="true" />
+              <img className="ga-agent-node-art" src={s.img} alt="" width="40" height="40" loading="lazy" />
               <span>{s.label}</span>
             </div>
           );
@@ -228,14 +226,5 @@ export const AgentSystem = () => {
     </section>
   );
 };
-
-const OrbitSVG = () => (
-  <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
-    <circle cx="12" cy="12" r="3" />
-    <ellipse cx="12" cy="12" rx="10" ry="4.6" />
-    <ellipse cx="12" cy="12" rx="10" ry="4.6" transform="rotate(60 12 12)" />
-    <ellipse cx="12" cy="12" rx="10" ry="4.6" transform="rotate(120 12 12)" />
-  </svg>
-);
 
 export default AgentSystem;
