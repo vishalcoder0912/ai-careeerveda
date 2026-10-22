@@ -1,3 +1,4 @@
+import {Suspense, lazy, useEffect, useRef, useState} from "react";
 import {Link} from "react-router-dom";
 import {
   ArrowRight,
@@ -39,8 +40,71 @@ const STAT_ICONS = {
   "Professional Mentors": UserCheck,
 };
 
-const Hero = ({stats}) => (
-  <section id="top" className="hh" aria-labelledby="hh-title">
+// three.js is ~730 KB, so the brain is its own chunk, fetched only after the
+// page has loaded (the headline is the LCP) and paused while the hero is off
+// screen. Without WebGL the CSS halo alone stands in.
+const HeroBrain = lazy(() => import("./HeroBrain"));
+
+const hasWebGL = () => {
+  try {
+    return Boolean(document.createElement("canvas").getContext("webgl2"));
+  } catch {
+    return false;
+  }
+};
+
+const HeroBrainLayer = ({hostRef}) => {
+  const stageRef = useRef(null);
+  const [mode, setMode] = useState(null);
+  const [onScreen, setOnScreen] = useState(true);
+
+  useEffect(() => {
+    if (!hasWebGL()) return undefined;
+    const phone = window.matchMedia("(max-width: 767px)").matches;
+    const weak = (navigator.hardwareConcurrency || 8) <= 4;
+    const next = {
+      still: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+      phone,
+      count: phone ? 3800 : weak ? 5500 : 9000,
+    };
+
+    const start = () => setMode(next);
+    if (document.readyState === "complete") start();
+    else window.addEventListener("load", start, {once: true});
+    return () => window.removeEventListener("load", start);
+  }, []);
+
+  useEffect(() => {
+    if (!mode || typeof IntersectionObserver === "undefined") return undefined;
+    const observer = new IntersectionObserver(([entry]) => setOnScreen(entry.isIntersecting));
+    observer.observe(stageRef.current);
+    return () => observer.disconnect();
+  }, [mode]);
+
+  return (
+    <div className="hh-orbit" ref={stageRef} aria-hidden="true">
+      {mode && (
+        <Suspense fallback={null}>
+          {/* 0.36: the middle of the visual's open column, past the card on
+              the right. Phones stack the card below, so centre it there. */}
+          <HeroBrain
+            centerX={mode.phone ? 0.5 : 0.36}
+            count={mode.count}
+            still={mode.still}
+            scrollDepth={mode.phone ? 0 : 1}
+            active={onScreen}
+            hostRef={hostRef}
+          />
+        </Suspense>
+      )}
+    </div>
+  );
+};
+
+const Hero = ({stats}) => {
+  const sectionRef = useRef(null);
+  return (
+  <section id="top" className="hh" aria-labelledby="hh-title" ref={sectionRef}>
     <div className="hh-inner">
       <div className="hh-copy">
         <p className="hh-eyebrow">
@@ -80,28 +144,7 @@ const Hero = ({stats}) => (
       </div>
 
       <div className="hh-visual">
-        <p className="hh-note" aria-hidden="true">
-          Better Skills <span>✦</span>
-          <br />
-          Bigger Opportunities
-          <svg viewBox="0 0 60 40" className="hh-note__arrow">
-            <path d="M4 6c18 2 34 10 44 26" />
-            <path d="M40 30l8 3 1-9" />
-          </svg>
-        </p>
-
-        <figure className="hh-photo">
-          {/* AI-generated hero image. */}
-          <img
-            src="/images/hero-student.webp"
-            srcSet="/images/hero-student-600.webp 600w, /images/hero-student.webp 855w"
-            sizes="(max-width: 767px) 92vw, 40vw"
-            width="855"
-            height="984"
-            alt="A smiling CareerVeda student holding a laptop, with her backpack on"
-            fetchPriority="high"
-          />
-        </figure>
+        <HeroBrainLayer hostRef={sectionRef} />
 
         <aside className="hh-path" aria-labelledby="hh-path-title">
           <h2 id="hh-path-title">Your Career Path</h2>
@@ -139,6 +182,7 @@ const Hero = ({stats}) => (
       })}
     </ul>
   </section>
-);
+  );
+};
 
 export default Hero;

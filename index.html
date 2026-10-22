@@ -117,17 +117,6 @@
       crossorigin
     />
 
-    <!-- The student photo is the home hero's LCP element at every width, so it
-         starts fetching with the page instead of after React mounts. -->
-    <link
-      rel="preload"
-      as="image"
-      href="/images/hero-student.webp"
-      imagesrcset="/images/hero-student-600.webp 600w, /images/hero-student.webp 855w"
-      imagesizes="(max-width: 767px) 92vw, 40vw"
-      fetchpriority="high"
-    />
-
     <title>Online PG Programs with Placement Assistance | CareerVeda</title>
 
     <!-- Google Analytics 4. send_page_view is off because this is a single-page

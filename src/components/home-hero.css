@@ -1,4 +1,4 @@
-/* Home hero — two-column hero (copy | student photo + career-path card) and a
+/* Home hero — two-column hero (copy | 3D neural brain + career-path card) and a
    five-up stats panel. Every selector is under .hh so none of the older hero
    sheets (SplineLanding.css and friends target .hero-*) reach it. */
 
@@ -164,69 +164,41 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) clamp(210px, 40%, 250px);
   align-items: start;
-  min-height: 460px;
+  min-height: 520px;
 }
 
-
-
-
-
-.hh-photo {
-  position: relative;
-  z-index: 1;
-  grid-column: 1 / -1;
-  grid-row: 1;
-  width: 74%;
-  margin: 0;
-  align-self: end;
-  justify-self: start;
-  margin-left: 4%;
-}
-
-.hh-photo img {
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 855 / 984;
-  object-fit: cover;
-  object-position: 50% 20%;
-}
-
-.hh-note {
+/* The 3D neural brain (HeroBrain.jsx). The deep-blue core is CSS so the
+   stage reads as finished before three.js arrives, and when WebGL is
+   missing; the particles glow against it and thin out onto the page. */
+.hh-orbit {
   position: absolute;
-  z-index: 3;
-  left: 0;
-  top: 6%;
-  margin: 0;
-  padding: 10px 14px;
-  border: 1px solid var(--hh-border);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 12px 30px rgba(16, 42, 92, 0.12);
-  backdrop-filter: blur(6px);
-  color: var(--hh-bright);
-  font-size: 15px;
-  font-style: italic;
-  font-weight: 700;
-  line-height: 1.3;
-  transform: rotate(-4deg);
+  z-index: 0;
+  inset: -6% -6% -4% -12%;
+  pointer-events: none;
+  background: radial-gradient(
+    closest-side circle at 36% 50%,
+    rgba(10, 28, 78, 0.95) 0%,
+    rgba(14, 40, 104, 0.85) 45%,
+    rgba(29, 78, 216, 0.25) 72%,
+    transparent 100%
+  );
 }
 
-.hh-note span {
-  color: var(--hh-orange);
-  font-size: 15px;
+.hh-orbit canvas {
+  animation: hh-orbit-in 1.4s ease-out both;
+  /* Stars and motes fade out before the canvas edge instead of being cut. */
+  mask-image: radial-gradient(closest-side, #000 72%, transparent);
 }
 
-.hh-note__arrow {
-  position: absolute;
-  right: -40px;
-  bottom: -22px;
-  width: 46px;
-  fill: none;
-  stroke: var(--hh-bright);
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+@keyframes hh-orbit-in {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: none; }
+}
+
+/* The card floats at its own depth: HeroBrain writes --hh-p (0–1, hero
+   scroll progress). */
+.hh-path {
+  translate: 0 calc(var(--hh-p, 0) * -56px);
 }
 
 .hh-path {
@@ -390,7 +362,7 @@
     display: none;
   }
 
-  /* The visual is narrow here, so drop the card below her face. */
+  /* The visual is narrow here, so drop the card to the bottom corner. */
   .hh-path {
     align-self: end;
     margin: 0 0 6%;
@@ -489,15 +461,22 @@
     margin-top: var(--hh-space-4);
   }
 
-  /* A shorter landscape crop that keeps her whole head in frame. */
-  .hh-photo {
-    width: 100%;
-    margin-left: 0;
+  /* The brain takes its own row above the card instead of sitting behind. */
+  .hh-orbit {
+    position: relative;
+    inset: auto;
+    height: min(82vw, 340px);
+    background: radial-gradient(
+      closest-side circle at 50% 50%,
+      rgba(10, 28, 78, 0.95) 0%,
+      rgba(14, 40, 104, 0.85) 45%,
+      rgba(29, 78, 216, 0.25) 72%,
+      transparent 100%
+    );
   }
 
-  .hh-photo img {
-    aspect-ratio: 4 / 3;
-    object-position: 50% 4%;
+  .hh-path {
+    translate: none;
   }
 
   /* The four steps in one row: icon over title. */
@@ -530,8 +509,7 @@
   }
 
   .hh-path small,
-  .hh-path ol::before,
-  .hh-note {
+  .hh-path ol::before {
     display: none;
   }
 

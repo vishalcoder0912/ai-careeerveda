@@ -1,0 +1,298 @@
+/* NeuralStory: the midnight scroll stage under the home hero. Everything is
+   under .ns. Two layouts share one DOM: .ns--cinematic (sticky stage, beats
+   layered over the canvas, GSAP drives their opacity) and .ns--static (phones
+   and reduced motion: canvas, then the beats stacked as ordinary content). */
+
+.ns {
+  --ns-night: #040a1c;
+  --ns-text: #f5f8ff;
+  --ns-muted: #b4c3e2;
+  --ns-cyan: #67e8f9;
+  --ns-orange: #ff5a0a;
+  --ns-orange-dark: #e84d00;
+
+  position: relative;
+  color: var(--ns-text);
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.ns-stage {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 55% 60% at 50% 50%, #0d2152 0%, rgba(13, 33, 82, 0) 70%),
+    var(--ns-night);
+}
+
+.ns-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.ns-canvas canvas {
+  animation: ns-in 1.6s ease-out both;
+}
+
+@keyframes ns-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* The page dissolves into midnight above the stage and back out below it. */
+.ns-fade {
+  height: 160px;
+  /* Through blue rather than grey on the way between navy and white. */
+  background: linear-gradient(var(--ns-night), rgba(29, 78, 216, 0.22) 60%, transparent);
+}
+
+.ns-fade--in {
+  background: linear-gradient(transparent, rgba(29, 78, 216, 0.22) 40%, var(--ns-night));
+}
+
+/* ── Copy ─────────────────────────────────────────────────────────── */
+
+.ns-eyebrow {
+  margin: 0 0 12px;
+  color: var(--ns-cyan);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.ns h2 {
+  margin: 0;
+  color: var(--ns-text);
+  font-family: "Manrope", "Inter", system-ui, sans-serif;
+  font-size: clamp(32px, 4.2vw, 60px);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.ns-copy p:not(.ns-eyebrow) {
+  margin: 16px 0 0;
+  color: var(--ns-muted);
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.ns-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.ns-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 0 26px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.ns-btn--primary {
+  background: var(--ns-orange);
+  color: #fff;
+  box-shadow: 0 14px 34px rgba(255, 90, 10, 0.32);
+}
+
+.ns-btn--primary:hover {
+  background: var(--ns-orange-dark);
+  transform: translateY(-1px);
+}
+
+.ns-btn--ghost {
+  border: 1.5px solid rgba(180, 195, 226, 0.45);
+  color: var(--ns-text);
+}
+
+.ns-btn--ghost:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.ns-btn:focus-visible {
+  outline: 3px solid rgba(103, 232, 249, 0.6);
+  outline-offset: 3px;
+}
+
+/* ── Laptop ───────────────────────────────────────────────────────── */
+
+.ns-laptop {
+  width: 100%;
+  transform-origin: 50% 100%;
+  transform-style: preserve-3d;
+}
+
+.ns-laptop__screen {
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: 10px solid #0b1222;
+  border-bottom-width: 14px;
+  border-radius: 18px 18px 6px 6px;
+  background: #0b1222;
+  box-shadow:
+    0 0 0 1px rgba(148, 197, 255, 0.22),
+    0 40px 120px rgba(37, 99, 235, 0.35);
+}
+
+.ns-laptop__screen img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+.ns-laptop__base {
+  position: relative;
+  height: 16px;
+  margin: 0 -8%;
+  border-radius: 2px 2px 16px 16px;
+  background: linear-gradient(#d6deea, #8391a7);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.5);
+}
+
+/* The thumb notch. */
+.ns-laptop__base::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 14%;
+  height: 6px;
+  border-radius: 0 0 8px 8px;
+  background: #a3b0c4;
+  transform: translateX(-50%);
+}
+
+/* ── Cinematic layout ─────────────────────────────────────────────── */
+
+.ns--cinematic .ns-track {
+  height: 560vh;
+}
+
+.ns--cinematic .ns-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+}
+
+.ns--cinematic .ns-beat {
+  position: absolute;
+}
+
+/* Hidden until the timeline fades them in. The device beat stays visible
+   itself (GSAP's autoAlpha inherits visibility) and hides its children. */
+.ns--cinematic .ns-beat:not(.ns-beat--device) {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.ns--cinematic .ns-beat--open {
+  left: 50%;
+  bottom: 12vh;
+  width: min(820px, 86vw);
+  text-align: center;
+  translate: -50% 0;
+}
+
+.ns--cinematic .ns-beat--approach,
+.ns--cinematic .ns-beat--final {
+  left: max(6vw, calc((100vw - 1280px) / 2));
+  top: 50%;
+  width: min(480px, 40vw);
+  translate: 0 -50%;
+}
+
+.ns--cinematic .ns-beat--side {
+  right: max(6vw, calc((100vw - 1280px) / 2));
+  top: 50%;
+  width: min(480px, 40vw);
+  translate: 0 -50%;
+}
+
+.ns--cinematic .ns-beat--device {
+  left: 50%;
+  top: 50%;
+  display: grid;
+  justify-items: center;
+  gap: 28px;
+  width: min(760px, 58vw, 92vh);
+  text-align: center;
+  translate: -50% -46%;
+  perspective: 1600px;
+}
+
+.ns--cinematic .ns-beat--device h2 {
+  font-size: clamp(28px, 3vw, 44px);
+}
+
+.ns--cinematic .ns-beat--device .ns-copy,
+.ns--cinematic .ns-laptop {
+  visibility: hidden;
+  opacity: 0;
+}
+
+/* ── Static layout: phones and reduced motion ─────────────────────── */
+
+.ns--static .ns-stage {
+  padding-bottom: 32px;
+}
+
+.ns--static .ns-canvas {
+  position: relative;
+  height: min(70svh, 460px);
+  mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
+}
+
+.ns--static .ns-beat {
+  width: min(100% - 32px, 640px);
+  margin: 0 auto;
+  padding: 28px 0;
+}
+
+.ns--static .ns-beat + .ns-beat {
+  border-top: 1px solid rgba(148, 197, 255, 0.14);
+}
+
+.ns--static h2 {
+  font-size: clamp(28px, 7.4vw, 40px);
+}
+
+.ns--static .ns-copy p:not(.ns-eyebrow) {
+  font-size: 16px;
+}
+
+.ns--static .ns-beat--device {
+  display: grid;
+  gap: 24px;
+}
+
+.ns--static .ns-laptop {
+  width: 88%;
+  margin: 0 auto;
+}
+
+@media (max-width: 479px) {
+  .ns-actions .ns-btn {
+    flex: 1 1 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ns-btn,
+  .ns-canvas canvas {
+    transition: none;
+    animation: none;
+  }
+}

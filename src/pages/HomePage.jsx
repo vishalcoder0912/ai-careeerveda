@@ -62,6 +62,7 @@ const ConsultationForm = () => {
   return Form ? <Form /> : null;
 };
 const PressSection = lazy(() => import("../components/PressSection"));
+const NeuralStory = lazy(() => import("../components/neural/NeuralStory"));
 
 const HomePage = () => {
   const pageRef = useCinematicInteractions();
@@ -120,6 +121,12 @@ const HomePage = () => {
 
       <div className="scroll-progress" aria-hidden="true" />
       <Hero stats={stats} />
+
+      {/* The scroll-driven brain story. three.js and GSAP arrive with it, so
+          it waits until the reader is close. */}
+      <DeferUntilVisible margin="600px">
+        <NeuralStory />
+      </DeferUntilVisible>
 
       {/* Negative margin. This section sits close enough behind the hero that a
           phone's initial viewport already intersects its placeholder — even at

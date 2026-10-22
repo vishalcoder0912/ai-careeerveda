@@ -1,4 +1,4 @@
-// The home hero: copy, the student photo with the career-path card, and the
+// The home hero: copy, the neural-brain stage with the career-path card, and the
 // stats panel — which must show exactly the numbers handed to it.
 
 import {describe, it, expect, afterEach} from "vitest";
@@ -33,11 +33,11 @@ describe("Hero", () => {
     expect(screen.getByRole("link", {name: /get in touch/i}).getAttribute("href")).toBe("/#consultation");
   });
 
-  it("shows the student photo, not the old robot", () => {
+  it("shows the brain stage, not the student photo or the old robot", () => {
     renderHero();
 
-    const photo = screen.getByRole("img", {name: /student/i});
-    expect(photo.getAttribute("src")).toBe("/images/hero-student.webp");
+    expect(document.querySelector(".hh-orbit")).not.toBeNull();
+    expect(screen.queryByRole("img", {name: /student/i})).toBeNull();
     expect(document.querySelector(".hero-visual-shell")).toBeNull();
   });
 
