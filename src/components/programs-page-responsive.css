@@ -1203,3 +1203,321 @@
   }
 }
 
+/* === Program studio: phone design =========================================
+   App-like layout instead of a squeezed desktop card: pill switcher,
+   full-bleed artwork with the badges laid over it, tinted fact tiles, a
+   segmented tab control, numbered points and a dark enrolment card for price
+   and CTAs. The !important flags only answer the theme files
+   (careerveda-light-theme.css, slate-color-system.css). */
+@media (max-width: 599px) {
+  /* Rail: compact pills, the selected one filled navy */
+  .program-showcase-section .program-sidebar {
+    padding: 4px 0 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .program-showcase-section .program-sidebar-head {
+    padding: 0 2px 10px;
+  }
+
+  /* Every track visible at once: a two-column grid instead of a sideways
+     scroll that showed one and a half chips. */
+  .program-showcase-section .program-rail-hint {
+    display: none;
+  }
+
+  .program-showcase-section .program-track-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 2px 0 6px;
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .program-showcase-section .track-prefix {
+    display: none;
+  }
+
+  .program-showcase-section .program-track-item {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 8px;
+    width: auto;
+    min-height: 60px;
+    padding: 8px 10px 8px 8px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  }
+
+  .program-showcase-section .program-track-item.is-active {
+    border-color: #102a5c;
+    background: #102a5c;
+    box-shadow: 0 10px 24px rgba(16, 42, 92, 0.28);
+  }
+
+  .program-showcase-section .program-track-item.is-active::after {
+    display: none;
+  }
+
+  .program-showcase-section .program-track-item.is-active .track-text strong {
+    color: #ffffff;
+  }
+
+  .program-showcase-section .program-track-item.is-active .track-text small {
+    color: #93c5fd;
+  }
+
+  .program-showcase-section .program-track-item .track-number {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    font-size: 0.66rem;
+  }
+
+  .program-showcase-section .program-track-item .track-text strong {
+    -webkit-line-clamp: 3;
+    font-size: 0.76rem;
+    line-height: 1.25;
+  }
+
+  .program-showcase-section .program-track-item .track-text small {
+    overflow: hidden;
+    font-size: 0.6rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .program-showcase-section .program-track-item.is-active .track-number {
+    background: rgba(255, 255, 255, 0.16);
+    box-shadow: none;
+  }
+
+  /* Card: artwork runs edge to edge across the top */
+  .program-showcase-section .program-detail-card {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(15, 23, 42, 0.07);
+    box-shadow: 0 12px 32px rgba(16, 42, 92, 0.08);
+  }
+
+  .program-showcase-section .program-head-visual {
+    width: calc(100% + 32px);
+    margin: -18px -16px 0;
+  }
+
+  .program-showcase-section .program-head-media {
+    position: relative;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  /* Fade the artwork into the card instead of a hard edge. */
+  .program-showcase-section .program-head-media::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    height: 40%;
+    background: linear-gradient(180deg, transparent, #ffffff);
+    pointer-events: none;
+  }
+
+  .program-showcase-section .program-head-media img {
+    display: block;
+    width: 100%;
+    border-radius: 0;
+    object-fit: cover;
+  }
+
+  /* The scroll parallax opens a gap at the edge of a full-bleed banner. */
+  .program-showcase-section .program-media-parallax {
+    transform: none !important;
+  }
+
+  /* Badges sit on the artwork, only when there is artwork: without it they
+     would land on the title. */
+  .program-showcase-section .program-detail-card:has(.program-head-visual) .program-card-topline {
+    position: absolute;
+    z-index: 2;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    margin: 0;
+  }
+
+  .program-showcase-section .program-detail-card:has(.program-head-visual) :is(.category-badge, .admissions-badge) {
+    border: 0;
+    background: rgba(255, 255, 255, 0.92);
+    color: #102a5c;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+  }
+
+  .program-showcase-section .program-head-text .section-label {
+    margin-bottom: 6px;
+    font-size: 0.68rem;
+  }
+
+  .program-showcase-section .program-subtitle {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.95rem;
+  }
+
+  /* Facts: four tinted tiles */
+  .program-showcase-section .program-meta-strip {
+    gap: 8px;
+    padding: 0;
+    border: 0;
+  }
+
+  .program-showcase-section .program-meta-strip .program-meta-item,
+  .program-showcase-section .program-meta-strip .program-meta-item + .program-meta-item,
+  .program-showcase-section .program-meta-strip .program-meta-item:nth-child(odd) {
+    gap: 10px;
+    padding: 12px;
+    border: 0;
+    border-radius: 14px;
+    background: #f3f7ff;
+  }
+
+  .program-showcase-section .program-meta-icon {
+    box-sizing: content-box;
+    padding: 7px;
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.12);
+  }
+
+  /* Tabs: segmented control */
+  .program-showcase-section .program-tabs {
+    width: 100%;
+    margin-inline: 0;
+    padding: 4px;
+    gap: 4px;
+    border: 0;
+    border-radius: 14px;
+    background: #eef2f9;
+    scroll-padding-inline: 4px;
+  }
+
+  .program-showcase-section .tab-pill {
+    min-height: 40px;
+    padding: 6px 14px;
+    border-radius: 10px;
+  }
+
+  .program-showcase-section .tab-pill::after {
+    display: none;
+  }
+
+  .program-showcase-section .program-detail-card.tabs-open .tab-pill.is-active {
+    color: #102a5c !important;
+    background: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.1) !important;
+  }
+
+  .program-showcase-section .program-detail-card.tabs-open .program-tabs {
+    margin-bottom: 14px;
+  }
+
+  /* Points: numbered steps */
+  .program-showcase-section .program-detail-list {
+    counter-reset: point;
+  }
+
+  .program-showcase-section .program-detail-list li {
+    counter-increment: point;
+    /* !important answers mobile-responsiveness.css. */
+    padding: 12px 14px 12px 50px !important;
+    border-color: rgba(15, 23, 42, 0.06);
+    background: #fbfcff;
+  }
+
+  .program-showcase-section .program-detail-list li::before {
+    content: counter(point, decimal-leading-zero);
+    top: 11px;
+    left: 12px;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: #102a5c;
+    box-shadow: none;
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 800;
+  }
+
+  /* Enrolment card: dark, so price and CTAs read as the next step */
+  .program-showcase-section .program-highlights {
+    border: 0;
+    background:
+      radial-gradient(circle at 100% 0%, rgba(59, 130, 246, 0.45), transparent 55%),
+      linear-gradient(160deg, #0b1f4a 0%, #102a5c 100%);
+    box-shadow: 0 18px 40px rgba(11, 31, 74, 0.3);
+  }
+
+  .program-showcase-section .program-highlights-head {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .program-showcase-section .program-highlights :is(.program-highlights-eyebrow, .hl-label, .program-highlight-fee small) {
+    color: #93c5fd !important;
+  }
+
+  .program-showcase-section .program-highlights :is(.hl-value, .program-highlight-fee strong) {
+    color: #ffffff !important;
+  }
+
+  .program-showcase-section .program-highlight-fee {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .program-showcase-section .program-highlight-fee strong {
+    font-size: 2rem;
+  }
+
+  .program-showcase-section .program-highlight-fee span,
+  .program-showcase-section .program-highlight-emi p {
+    color: #cbd5e1 !important;
+  }
+
+  .program-showcase-section .emi-badge {
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: rgba(52, 211, 153, 0.16);
+    color: #6ee7b7;
+  }
+
+  .program-showcase-section .emi-badge::before {
+    background: #34d399;
+    box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.25);
+  }
+
+  .program-showcase-section .program-highlights-cta {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .program-showcase-section .program-explorer .program-highlights-cta .cta-primary {
+    border: 0;
+    color: #102a5c !important;
+    background: #ffffff !important;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25) !important;
+  }
+
+  .program-showcase-section .program-explorer .program-highlights-cta .cta-secondary {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff !important;
+    background: transparent !important;
+  }
+}
+

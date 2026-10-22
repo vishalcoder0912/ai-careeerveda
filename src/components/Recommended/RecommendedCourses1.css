@@ -688,10 +688,20 @@
 /* ── Mobile: single column, featured first ────────────────────────────────── */
 
 @media (max-width: 680px) {
+  /* No panel on a phone: a framed panel inside the page gutter left the cards
+     ~300px wide. The cards now run gutter to gutter like every other section. */
   .recommended-courses-section {
-    width: min(100% - 24px, 1240px);
-    padding: 26px 16px 30px;
-    border-radius: 26px;
+    width: calc(100% - 2 * var(--site-gutter, 16px));
+    padding: 8px 0 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  .recommended-courses-section::after {
+    display: none;
   }
 
   .rc-grid {

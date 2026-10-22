@@ -1,19 +1,19 @@
-import {contactChannels, uiIcons} from "../data";
+import {uiIcons} from "../data";
+import {Lines, useCinematic} from "../content";
 
 export const GaFooter = () => {
+  const {footer, programTitle} = useCinematic();
   return (
     <footer className="ga-footer" id="ga-contact">
       <div className="ga-footer-grid-bg" aria-hidden="true" />
 
       <div className="ga-footer-inner">
         <h2 className="ga-display ga-footer-title">
-          Let’s Build
-          <br />
-          <em>With AI.</em>
+          <Lines lines={footer.title} />
         </h2>
 
         <div className="ga-footer-channels">
-          {contactChannels.map((c) => (
+          {footer.channels.map((c) => (
             <a
               className="ga-footer-channel"
               href={c.href}
@@ -34,7 +34,7 @@ export const GaFooter = () => {
 
         <div className="ga-footer-base">
           
-          <p>PG Program in Generative AI &amp; Agentic AI</p>
+          <p>{programTitle}</p>
           <a href="#ga-top" className="ga-footer-top" data-cursor>
             Back to top <uiIcons.ArrowUpRight size={14} aria-hidden="true" />
           </a>

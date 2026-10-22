@@ -2,25 +2,15 @@ import {useEffect, useRef} from "react";
 import {ScrollTrigger} from "gsap/ScrollTrigger";
 import {createPinnedScrub} from "../fx/pinned";
 import {reducedMotionNow} from "../fx/registry";
-import {projectsData} from "../data";
+import {useCinematic} from "../content";
 import {SectionLabel} from "./Atmosphere";
 
 const MQ_DESKTOP = "(min-width: 900px)";
 
-const N = projectsData.length;
-
-/* Real category labels for the eight exhibited builds. Kept in the component
-   because they are editorial copy for this presentation, not new projects. */
-const CATEGORY = [
-  "Enterprise AI",
-  "Business Intelligence",
-  "Enterprise AI",
-  "Research Platform",
-  "Agent Protocols",
-  "Data Intelligence",
-  "Evaluation",
-  "Security",
-];
+/* The gallery is composed for exactly eight builds — eight slots, one scroll
+   order. Every program's projects.items therefore lists eight; each item's
+   category label comes from projects.categories at the same index. */
+const N = 8;
 
 /* The scroll sequence: the center hero is Enterprise Knowledge Copilot (index
    2) on entry, then each project takes a turn owning the center. */
@@ -59,8 +49,7 @@ const smoothstep = (t) => {
   return t * t * (3 - 2 * t);
 };
 
-const GalleryCard = ({project, index, state}) => {
-  const category = CATEGORY[index];
+const GalleryCard = ({project, index, state, category}) => {
   const num = `P${String(index + 1).padStart(2, "0")}`;
   return (
     <div
@@ -113,6 +102,8 @@ const GalleryCard = ({project, index, state}) => {
 };
 
 export const ProjectsSection = () => {
+  const {projects} = useCinematic();
+  const projectsData = projects.items;
   const sectionRef = useRef(null);
   const pinRef = useRef(null);
   const stageRef = useRef(null);
@@ -311,16 +302,11 @@ export const ProjectsSection = () => {
         </header>
 
         <div className="ga-gal-side ga-gal-side--left" aria-hidden="true">
-          <span>Ideas</span>
-          <span>Interfaces</span>
-          <span>Experiences</span>
-          <span>Real Impact</span>
+          {projects.sideLeft.map((t) => <span key={t}>{t}</span>)}
         </div>
 
         <div className="ga-gal-side ga-gal-side--right" aria-hidden="true">
-          <span>Foundation</span>
-          <span>Orchestration</span>
-          <span>Safety</span>
+          {projects.sideRight.map((t) => <span key={t}>{t}</span>)}
         </div>
 
         <div className="ga-gallery-stage" ref={stageRef}>
@@ -333,7 +319,7 @@ export const ProjectsSection = () => {
                   if (el) cardEls.current[i] = el;
                 }}
               >
-                <GalleryCard project={p} index={i} />
+                <GalleryCard project={p} index={i} category={projects.categories[i]} />
               </div>
             ))}
           </div>
@@ -343,8 +329,8 @@ export const ProjectsSection = () => {
         <p className="ga-gallery-note">scroll walks the gallery — hover a project to lift it</p>
 
         <footer className="ga-gal-foot">
-          <span className="ga-gal-foot-l">Real projects · real stories</span>
-          <span className="ga-gal-foot-r">Designing a brighter tomorrow</span>
+          <span className="ga-gal-foot-l">{projects.footLeft}</span>
+          <span className="ga-gal-foot-r">{projects.footRight}</span>
         </footer>
       </div>
 
@@ -356,7 +342,7 @@ export const ProjectsSection = () => {
             key={p.id}
             data-state={i === ORDER[0] ? "active" : "front"}
           >
-            <GalleryCard project={p} index={i} />
+            <GalleryCard project={p} index={i} category={projects.categories[i]} />
           </div>
         ))}
       </div>

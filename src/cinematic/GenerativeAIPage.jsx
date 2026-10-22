@@ -27,6 +27,7 @@ import {LearningExperience} from "./components/Learning";
 import {CertificationSection} from "./components/Certifications";
 import {FinalCTA} from "./components/FinalCta";
 import {GaFooter} from "./components/GaFooter";
+import {CinematicContext, genAiContent} from "./content";
 import "./cinematic.css";
 import "./cinematic-site-theme.css";
 import "./cinematic-2026-light.css";
@@ -35,7 +36,10 @@ import "./cinematic-2026-light.css";
    never for reduced-motion readers. Desktop renders exactly as before. */
 const MQ_MOBILE_MOTION = "(max-width: 899px) and (prefers-reduced-motion: no-preference)";
 
-export function GenerativeAIPage() {
+// The cinematic program page. Renders the Gen AI & Agentic AI flagship by
+// default; CinematicProgramPage passes another program's content (same shape,
+// see content.jsx) to render that program through the same sections.
+export function GenerativeAIPage({content = genAiContent}) {
   const lenis = useLenis();
   const [mobileMotion, setMobileMotion] = useState(false);
 
@@ -141,6 +145,7 @@ export function GenerativeAIPage() {
   }, [lenis]);
 
   return (
+    <CinematicContext.Provider value={content}>
     <div className="ga-page">
       <ParticleField />
       <FilmGrain />
@@ -174,6 +179,7 @@ export function GenerativeAIPage() {
 
       <GaFooter />
     </div>
+    </CinematicContext.Provider>
   );
 }
 

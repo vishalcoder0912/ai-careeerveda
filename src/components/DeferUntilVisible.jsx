@@ -40,9 +40,13 @@ const DeferUntilVisible = ({children, minHeight = 0, margin = "300px", className
     return () => observer.disconnect();
   }, [margin]);
 
+  // The placeholder height lasts only until the chunk arrives, so a section
+  // that renders nothing (e.g. no featured alumni) leaves no blank gap.
+  const placeholder = minHeight ? <div style={{minHeight}} /> : null;
+
   return (
-    <div ref={ref} className={className} style={minHeight ? {minHeight} : undefined}>
-      {isNear ? <Suspense fallback={null}>{children}</Suspense> : null}
+    <div ref={ref} className={className}>
+      {isNear ? <Suspense fallback={placeholder}>{children}</Suspense> : placeholder}
     </div>
   );
 };

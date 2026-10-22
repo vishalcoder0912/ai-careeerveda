@@ -28,12 +28,6 @@ export const pressArticles = [
       "CareerVeda Sets New Placement Benchmarks in Product Management & Analytics Programs",
     excerpt:
       "CareerVeda closed its latest placement season with standout results across its Product Management, Business Analytics, and Data Analytics programs  with over 68% of the Product Management batch placed within just 18 days, driven by practical, mentor-led learning.",
-    stats: [
-      ["300+", "Students placed"],
-      ["130+", "Recruiters"],
-      ["68%", "Placed in 18 days"],
-      ["20+ LPA", "Highest package"],
-    ],
     highlights: [
       "72%+ secured packages above 10 LPA",
       "Average package 10 LPA",

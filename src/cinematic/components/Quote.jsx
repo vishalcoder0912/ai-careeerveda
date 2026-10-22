@@ -1,10 +1,10 @@
 import {useEffect, useRef} from "react";
 import {gsap} from "gsap";
 import {reducedMotionNow} from "../fx/registry";
-
-const QUOTE_LINES = ["GOOD IDEAS", "BECOME SYSTEMS.", "GOOD SYSTEMS", "BECOME IMPACT."];
+import {useCinematic} from "../content";
 
 export const AIQuote = () => {
+  const {quote} = useCinematic();
   const sectionRef = useRef(null);
   const wordRefs = useRef([]);
   const tweenRef = useRef(null);
@@ -46,7 +46,7 @@ export const AIQuote = () => {
       <span className="ga-quote-index" aria-hidden="true">03</span>
 
       <blockquote className="ga-quote-text">
-        {QUOTE_LINES.map((line) => (
+        {quote.lines.map((line) => (
           <span className="ga-quote-line" key={line}>
             {line.split(" ").map((word, wi) => (
               <span
@@ -61,7 +61,7 @@ export const AIQuote = () => {
             ))}
           </span>
         ))}
-        <cite className="ga-quote-cite">— the operator’s credo</cite>
+        <cite className="ga-quote-cite">{quote.cite}</cite>
       </blockquote>
     </section>
   );

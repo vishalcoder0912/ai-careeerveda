@@ -1,6 +1,6 @@
-import {useEffect, useRef} from "react";
+import {useEffect, useMemo, useRef} from "react";
 import {reducedMotionNow} from "../fx/registry";
-import {agentSatellites, agentCenterArt} from "../data";
+import {Lines, useCinematic} from "../content";
 import {SectionLabel} from "./Atmosphere";
 
 const CX = 50;
@@ -21,18 +21,22 @@ const rimPoint = (ux, uy) => {
 /* Radial anchors across the 1:1 square. Kept mirrored left/right for symmetry
    and spaced to use ~10-88% of the canvas so nodes never crowd the hub or
    touch the edges. */
-const NODE_POS = {
-  USER: {x: 50, y: 10},
-  SECURITY: {x: 19, y: 22},
-  LLM: {x: 81, y: 22},
-  EVAL: {x: 11, y: 42},
-  MEMORY: {x: 89, y: 42},
-  "MULTI-AGENT": {x: 16, y: 63},
-  TOOLS: {x: 84, y: 63},
-  GPU: {x: 32, y: 82},
-  RAG: {x: 68, y: 82},
-  API: {x: 50, y: 88},
-};
+const NODE_POS = [
+  {x: 50, y: 10},
+  {x: 19, y: 22},
+  {x: 81, y: 22},
+  {x: 11, y: 42},
+  {x: 89, y: 42},
+  {x: 16, y: 63},
+  {x: 84, y: 63},
+  {x: 32, y: 82},
+  {x: 68, y: 82},
+  {x: 50, y: 88},
+];
+
+/* Ten anchors, filled in order — the nodes array of any program sits on the
+   same symmetric map. A shorter list simply leaves the last anchors empty. */
+const nodePos = (i) => NODE_POS[i] || {x: 50, y: 50};
 
 /* Quadratic bezier: hub rim → gentle control → node. Short, controlled curves. */
 const curveTo = (x0, y0, cxp, cyp, x1, y1) =>
@@ -47,8 +51,8 @@ const pointOn = (t, x0, y0, cxp, cyp, x1, y1) => {
 };
 
 const buildLinks = (satellites) =>
-  satellites.map((s) => {
-    const {x, y} = NODE_POS[s.label] || {x: 50, y: 50};
+  satellites.map((s, i) => {
+    const {x, y} = nodePos(i);
     const dx = x - CX;
     const dy = y - CY;
     const len = Math.hypot(dx, dy) || 1;
@@ -73,7 +77,6 @@ const buildLinks = (satellites) =>
     };
   });
 
-const LINKS = buildLinks(agentSatellites);
 
 /* Stable pseudo-random atmosphere specks — mostly pale blue, a few orange */
 const PARTICLES = Array.from({length: 19}, (_, i) => {
@@ -91,6 +94,9 @@ const PARTICLES = Array.from({length: 19}, (_, i) => {
 });
 
 export const AgentSystem = () => {
+  const {system} = useCinematic();
+  const agentSatellites = system.nodes;
+  const LINKS = useMemo(() => buildLinks(agentSatellites), [agentSatellites]);
   const svgRef = useRef(null);
   const packetLayerRef = useRef(null);
   const sceneRef = useRef(null);
@@ -156,20 +162,16 @@ export const AgentSystem = () => {
       document.removeEventListener("visibilitychange", onVis);
       packDots.forEach((p) => p.el.remove());
     };
-  }, []);
+  }, [LINKS]);
 
   return (
     <section className="ga-agent-section" id="ga-agents">
       <div className="ga-agent-head">
-        <SectionLabel index="06">System Visualization</SectionLabel>
+        <SectionLabel index="06">{system.label}</SectionLabel>
         <h2 className="ga-display">
-          The Agentic
-          <br />
-          System
+          <Lines lines={system.title} />
         </h2>
-        <p className="ga-sub">
-          AI that can reason, use tools, remember context and execute multi-step tasks.
-        </p>
+        <p className="ga-sub">{system.sub}</p>
       </div>
 
       <div className="ga-agent-system" ref={sceneRef} data-cursor="cta">
@@ -203,13 +205,13 @@ export const AgentSystem = () => {
         </svg>
 
         <div className="ga-agent-center" data-cursor="cta">
-          <img className="ga-agent-center-art" src={agentCenterArt} alt="" width="48" height="48" />
-          <span className="ga-agent-center-title">AI AGENT</span>
-          <span className="ga-agent-center-sub">reason · act · observe</span>
+          <img className="ga-agent-center-art" src={system.center.art} alt="" width="48" height="48" />
+          <span className="ga-agent-center-title">{system.center.title}</span>
+          <span className="ga-agent-center-sub">{system.center.sub}</span>
         </div>
 
-        {agentSatellites.map((s) => {
-          const pos = NODE_POS[s.label] || {x: 50, y: 50};
+        {agentSatellites.map((s, i) => {
+          const pos = nodePos(i);
           return (
             <div
               className="ga-agent-node"

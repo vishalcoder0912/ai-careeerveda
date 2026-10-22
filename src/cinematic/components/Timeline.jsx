@@ -1,12 +1,14 @@
 import {useEffect, useRef} from "react";
 import {reducedMotionNow} from "../fx/registry";
 import {createPinnedScrub} from "../fx/pinned";
-import {timelineData} from "../data";
+import {Lines, useCinematic} from "../content";
 import {SectionLabel} from "./Atmosphere";
 
 const MQ_DESKTOP = "(min-width: 900px)";
 
 export const TimelineSection = () => {
+  const {timeline} = useCinematic();
+  const timelineData = timeline.items;
   const sectionRef = useRef(null);
   const pinRef = useRef(null);
   const rowRef = useRef(null);
@@ -101,17 +103,15 @@ export const TimelineSection = () => {
       window.removeEventListener("resize", onResize);
       if (cleanup) cleanup();
     };
-  }, []);
+  }, [timelineData]);
 
   return (
     <section className="ga-timeline" id="ga-program" ref={sectionRef}>
       <div className="ga-tl-pin" ref={pinRef}>
         <div className="ga-tl-head">
-          <SectionLabel index="01">A Journey from Models to Agents</SectionLabel>
+          <SectionLabel index="01">{timeline.label}</SectionLabel>
           <h2 className="ga-display">
-            The Evolution
-            <br />
-            of Intelligence
+            <Lines lines={timeline.title} />
           </h2>
         </div>
 

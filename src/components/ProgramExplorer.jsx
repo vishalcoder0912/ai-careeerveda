@@ -218,6 +218,9 @@ const ProgramExplorer = () => {
           {PROGRAMS.map((program, index) => {
             const isActive = selectedId === program.id;
             const isPreviewed = previewId === program.id && !isActive;
+            // The shared "PG Program in" prefix gets its own span so the phone
+            // grid can drop it and fit every track name on screen.
+            const trackTitle = titleParts(program.title);
             return (
               <button
                 key={program.id}
@@ -240,7 +243,10 @@ const ProgramExplorer = () => {
                   {String(index + 1).padStart(2, "0")}
                 </span>
                 <div className="track-text">
-                  <strong>{program.title}</strong>
+                  <strong>
+                    {trackTitle.prefix && <span className="track-prefix">{trackTitle.prefix}</span>}
+                    {trackTitle.keyword}
+                  </strong>
                   <small>{program.category}</small>
                 </div>
               </button>

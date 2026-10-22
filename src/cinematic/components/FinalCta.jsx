@@ -1,9 +1,11 @@
-import {useEffect, useRef} from "react";
+import {Fragment, useEffect, useRef} from "react";
 import {reducedMotionNow} from "../fx/registry";
 import {useMagneticHover} from "../fx/hooks";
 import {SectionLabel} from "./Atmosphere";
+import {Lines, useCinematic} from "../content";
 
 export const FinalCTA = () => {
+  const {cta} = useCinematic();
   const streakRef = useRef(null);
   const magA = useMagneticHover(0.32);
   const magB = useMagneticHover(0.32);
@@ -37,17 +39,11 @@ export const FinalCTA = () => {
       </svg>
 
       <div className="ga-cta-inner">
-        <SectionLabel index="13">Admissions Open</SectionLabel>
+        <SectionLabel index="13">{cta.label}</SectionLabel>
         <h2 className="ga-display ga-cta-title">
-          Your AI
-          <br />
-          Journey
-          <br />
-          <em>Starts Here.</em>
+          <Lines lines={cta.title} />
         </h2>
-        <p className="ga-sub ga-cta-sub">
-          From understanding models to engineering intelligent systems.
-        </p>
+        <p className="ga-sub ga-cta-sub">{cta.sub}</p>
         <div className="ga-cta-actions">
           <a href="#ga-contact" className="ga-btn ga-btn-solid ga-btn-lg" data-cursor="cta" ref={magA}>
             Apply for the Program
@@ -57,7 +53,12 @@ export const FinalCTA = () => {
           </a>
         </div>
         <span className="ga-cta-meta">
-          <span>Batch starts soon</span> · <span>Seats limited</span> · <span>Scholarship review included</span>
+          {cta.meta.map((m, i) => (
+            <Fragment key={m}>
+              {i > 0 && " · "}
+              <span>{m}</span>
+            </Fragment>
+          ))}
         </span>
       </div>
     </section>

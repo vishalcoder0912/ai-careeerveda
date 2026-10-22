@@ -1,26 +1,25 @@
 import {useEffect, useRef, useState} from "react";
 import {AnimatePresence, motion, useReducedMotion} from "framer-motion";
 import {reducedMotionNow} from "../fx/registry";
-import {careerRoles} from "../data";
+import {Lines, useCinematic} from "../content";
 import {SectionLabel} from "./Atmosphere";
 
 const AUTOPLAY_MS = 3600;
 const NODE_R = 42;
-const ORBIT_STEP = 360 / careerRoles.length;
 const SALARY_EASE = [0.22, 1, 0.36, 1];
 
 /* Polar position of a role node around the orbit, top-first, as percentages
    of the orbit container (and matching viewBox units for the SVG lines). */
-const nodePoint = (i) => {
-  const rad = ((i * ORBIT_STEP - 90) * Math.PI) / 180;
+const nodePoint = (i, count) => {
+  const rad = ((i * (360 / count) - 90) * Math.PI) / 180;
   return {
     x: (50 + NODE_R * Math.cos(rad)).toFixed(3),
     y: (50 + NODE_R * Math.sin(rad)).toFixed(3),
   };
 };
 
-const RoleNode = ({role, index, active, onActivate}) => {
-  const p = nodePoint(index);
+const RoleNode = ({role, index, count, active, onActivate}) => {
+  const p = nodePoint(index, count);
   return (
     <button
       type="button"
@@ -74,12 +73,14 @@ const SalaryBlock = ({role}) =>
     <>
       <strong className="ga-salary">{role.salary}</strong>
       <span className="ga-salary-note">
-        {role.location} · {role.year} · 3–6 yrs
+        {role.location} · {role.year} · {role.years || "3–6 yrs"}
       </span>
     </>
   );
 
 export const CareerOutcomes = () => {
+  const {careers} = useCinematic();
+  const careerRoles = careers.roles;
   const [active, setActive] = useState(0);
   const hovering = useRef(false);
   const reduced = useReducedMotion();
@@ -202,7 +203,7 @@ export const CareerOutcomes = () => {
             focusable="false"
           >
             {careerRoles.map((c, i) => {
-              const p = nodePoint(i);
+              const p = nodePoint(i, careerRoles.length);
               const isActive = i === active;
               return (
                 <line
@@ -223,7 +224,7 @@ export const CareerOutcomes = () => {
           <span className="ga-orbit-ring ga-orbit-ring--ticks" aria-hidden="true" />
 
           {careerRoles.map((c, i) => (
-            <RoleNode key={c.role} role={c} index={i} active={i === active} onActivate={setActive} />
+            <RoleNode key={c.role} role={c} index={i} count={careerRoles.length} active={i === active} onActivate={setActive} />
           ))}
 
           <div className="ga-orbit-core">
@@ -237,15 +238,11 @@ export const CareerOutcomes = () => {
       </div>
 
       <header className="ga-careers-head ga-reveal ga-reveal-up">
-        <SectionLabel index="09">Outcomes</SectionLabel>
+        <SectionLabel index="09">{careers.label}</SectionLabel>
         <h2 className="ga-display">
-          Where This
-          <br />
-          Can Take You
+          <Lines lines={careers.title} />
         </h2>
-        <p className="ga-careers-lead">
-          The career paths this track opens — one role at a time.
-        </p>
+        <p className="ga-careers-lead">{careers.lead}</p>
       </header>
 
       <div className="ga-careers-panel ga-reveal ga-reveal-up">

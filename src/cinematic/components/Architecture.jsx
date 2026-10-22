@@ -2,10 +2,11 @@ import {useEffect, useRef} from "react";
 import {gsap} from "gsap";
 import {ScrollTrigger} from "gsap/ScrollTrigger";
 import {addTrigger, reducedMotionNow} from "../fx/registry";
-import {architectureLayers} from "../data";
+import {Lines, useCinematic} from "../content";
 import {SectionLabel} from "./Atmosphere";
 
 export const ProgramArchitecture = () => {
+  const {architecture} = useCinematic();
   const sectionRef = useRef(null);
   const trackRef = useRef(null);
   const lineRef = useRef(null);
@@ -82,13 +83,11 @@ export const ProgramArchitecture = () => {
   return (
     <section className="ga-arch" id="ga-architecture" ref={sectionRef}>
       <div className="ga-arch-head">
-        <SectionLabel index="04">Curriculum</SectionLabel>
+        <SectionLabel index="04">{architecture.label}</SectionLabel>
         <h2 className="ga-display">
-          The AI
-          <br />
-          Engineering Stack
+          <Lines lines={architecture.title} />
         </h2>
-        <p className="ga-sub">Eight layers, built in order — each one a foundation for the next.</p>
+        <p className="ga-sub">{architecture.sub}</p>
       </div>
 
       <div className="ga-arch-track" ref={trackRef}>
@@ -96,7 +95,7 @@ export const ProgramArchitecture = () => {
           <span className="ga-arch-line-fill" ref={fillRef} />
         </div>
         <div className="ga-arch-layers">
-          {architectureLayers.map((layer, i) => (
+          {architecture.layers.map((layer, i) => (
             <div className={`ga-layer${i % 2 ? " ga-layer-right" : ""}`} key={layer.layer}>
               <span className="ga-layer-dot" aria-hidden="true">
                 <i />

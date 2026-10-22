@@ -35,7 +35,7 @@ const initials = (name) =>
     .join("");
 
 // A press badge: the outlet's logo on a white plate (or its monogram when the
-// logo is missing or fails), the outlet name, and a small "featured" check.
+// logo is missing or fails) and a small "featured" check. No visible name.
 // Used by each story's "Featured in" row and by the media wall.
 const OutletBadge = memo(({source, size = "sm"}) => {
   const [logoFailed, setLogoFailed] = useState(false);
@@ -49,6 +49,7 @@ const OutletBadge = memo(({source, size = "sm"}) => {
       target="_blank"
       rel="noopener noreferrer"
       title={`Read on ${source.name}`}
+      aria-label={`Read on ${source.name}`}
     >
       <span className="press-badge__plate">
         {showLogo ? (
@@ -70,7 +71,6 @@ const OutletBadge = memo(({source, size = "sm"}) => {
           </svg>
         </span>
       </span>
-      <span className="press-badge__name">{source.name}</span>
     </a>
   );
 });
@@ -194,33 +194,38 @@ const StoryCard = ({story}) => {
   );
 };
 
-// Phones and short screens read the stories as a plain column: a card taller
-// than the space under the pin would hide its own bottom while stacked.
-const STACK_QUERY = "(min-width: 900px) and (min-height: 640px)";
+// The stack runs on every width. Only very short viewports (a phone held
+// sideways) fall back to a plain column — no card fits under the pin there.
+const STACK_QUERY = "(min-height: 560px)";
+// Phones and small tablets: the pin sits just under the 63px navbar and the
+// cards step down in smaller increments (press-section.css compacts them).
+const COMPACT_QUERY = "(max-width: 899px)";
 
-const useStacking = () => {
-  const [stack, setStack] = useState(() =>
-    typeof window !== "undefined" ? window.matchMedia(STACK_QUERY).matches : false,
+const useMedia = (query) => {
+  const [matches, setMatches] = useState(() =>
+    typeof window !== "undefined" ? window.matchMedia(query).matches : false,
   );
   useEffect(() => {
-    const query = window.matchMedia(STACK_QUERY);
-    const onChange = () => setStack(query.matches);
-    query.addEventListener("change", onChange);
-    return () => query.removeEventListener("change", onChange);
-  }, []);
-  return stack;
+    const list = window.matchMedia(query);
+    const onChange = () => setMatches(list.matches);
+    onChange();
+    list.addEventListener("change", onChange);
+    return () => list.removeEventListener("change", onChange);
+  }, [query]);
+  return matches;
 };
 
 const PressSection = () => {
-  const stacking = useStacking();
+  const stacking = useMedia(STACK_QUERY);
+  const compact = useMedia(COMPACT_QUERY);
 
   return (
     <section id="press" className={`press-section${stacking ? " press-section--stacked" : ""}`}>
       <Reveal className="press-section-heading">
         <span className="label">Media Coverage</span>
         <h2>
-            <BrandWord /> in the News
-          </h2>
+          <BrandWord /> in the News
+        </h2>
         <p>Featured across India&apos;s leading publications for placement outcomes and upskilling excellence.</p>
       </Reveal>
 
@@ -231,13 +236,13 @@ const PressSection = () => {
           className="press-stack"
           useWindowScroll
           smoothScroll={false}
-          stackPosition="12%"
-          itemDistance={80}
-          itemStackDistance={26}
-          itemScale={0.04}
+          stackPosition={compact ? 76 : "12%"}
+          itemDistance={compact ? 48 : 80}
+          itemStackDistance={compact ? 14 : 26}
+          itemScale={compact ? 0.03 : 0.04}
           baseScale={0.9}
           dimAmount={0.04}
-          holdDistance={140}
+          holdDistance={compact ? 80 : 140}
         >
           {stories.map((story) => (
             <ScrollStackItem key={story.id} itemClassName="press-stack__card">

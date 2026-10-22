@@ -816,8 +816,7 @@
 .press-section .press-badge {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 6px 14px 6px 6px;
+  padding: 5px;
   border: 1px solid #e0ebfa;
   border-radius: 14px;
   background: #ffffff;
@@ -850,8 +849,8 @@
   position: relative;
   display: grid;
   place-items: center;
-  width: 64px;
-  height: 36px;
+  width: 104px;
+  height: 44px;
   flex-shrink: 0;
   border: 1px solid #edf2fa;
   border-radius: 9px;
@@ -859,8 +858,8 @@
 }
 
 .press-section .press-badge__plate img {
-  max-width: 56px;
-  max-height: 28px;
+  max-width: 92px;
+  max-height: 34px;
   width: auto;
   height: auto;
   object-fit: contain;
@@ -913,10 +912,7 @@
 }
 
 .press-section .press-badge--lg {
-  flex-direction: column;
-  gap: 10px;
-  padding: 12px 12px 14px;
-  text-align: center;
+  padding: 8px;
 }
 
 .press-section .press-badge--lg .press-badge__plate {
@@ -980,5 +976,175 @@
     margin: 0;
     padding: 4px 0 6px 24px;
     border-left: 2px solid #e0ebfa;
+  }
+}
+
+/* ---- Stack on phones & small tablets ----
+   Cards ran 890–1,100px tall on a phone — taller than the screen — so a pinned
+   card hid its own bottom. Stacked, each card is compacted to fit under the
+   pin (76px) and, as a backstop, scrolls inside itself if it still runs over. */
+@media (max-width: 899px) {
+  .press-section--stacked .press-stack {
+    margin-top: 20px;
+  }
+
+  .press-section--stacked .press-stack .press-story {
+    /* 76px pin + 2 × 14px stack steps, plus a little air. */
+    max-height: calc(100svh - 76px - 32px);
+  }
+
+  .press-section--stacked .press-story__inner {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "copy"
+      "visual"
+      "sources";
+    row-gap: 14px;
+    padding: 20px 18px;
+  }
+
+  .press-section--stacked .press-story__title {
+    margin-top: 8px;
+    font-size: clamp(19px, 5.4vw, 24px);
+    line-height: 1.22;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+  }
+
+  .press-section--stacked .press-story__excerpt {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+  }
+
+  .press-section--stacked .press-story__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .press-section--stacked .press-story__stat {
+    padding: 10px 12px;
+  }
+
+  .press-section--stacked .press-story__stat strong {
+    font-size: 22px;
+  }
+
+  .press-section--stacked .press-story__stat span {
+    font-size: 11.5px;
+  }
+
+  .press-section--stacked .press-story__highlights {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .press-section--stacked .press-story__highlights li {
+    padding: 5px 10px;
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .press-section--stacked .press-story__sources {
+    gap: 8px;
+    padding-top: 12px;
+  }
+
+  .press-section--stacked .press-story__sources > small {
+    width: 100%;
+  }
+
+  .press-section--stacked .press-story__badges {
+    gap: 6px;
+  }
+
+  .press-section--stacked .press-badge {
+    padding: 4px;
+    border-radius: 11px;
+  }
+
+  .press-section--stacked .press-badge__plate {
+    width: 78px;
+    height: 34px;
+  }
+
+  .press-section--stacked .press-badge__plate img {
+    max-width: 68px;
+    max-height: 24px;
+  }
+
+  .press-section--stacked .press-story__inner--center .press-story__excerpt {
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .press-section--stacked .press-wall {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .press-section--stacked .press-badge--lg {
+    padding: 6px;
+  }
+
+  .press-section--stacked .press-badge--lg .press-badge__plate {
+    width: 100%;
+    height: 48px;
+  }
+
+  .press-section--stacked .press-badge--lg .press-badge__plate img {
+    max-width: 84px;
+    max-height: 32px;
+  }
+
+  .press-section--stacked .press-badge--lg .press-badge__check {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+/* Short phones (≈740px tall): two-line headline and excerpt, tighter stats. */
+@media (max-width: 899px) and (max-height: 780px) {
+  .press-section--stacked .press-story__inner {
+    row-gap: 10px;
+    padding: 16px 16px 18px;
+  }
+
+  .press-section--stacked .press-story__title,
+  .press-section--stacked .press-story__excerpt {
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .press-section--stacked .press-story__stat {
+    padding: 8px 10px;
+  }
+
+  .press-section--stacked .press-story__stat strong {
+    font-size: 19px;
+  }
+
+  .press-section--stacked .press-story__highlights {
+    margin-top: 8px;
+  }
+
+  .press-section--stacked .press-story__highlights li {
+    padding: 4px 9px;
+    font-size: 11.5px;
+  }
+
+  .press-section--stacked .press-badge {
+    padding-block: 3px;
   }
 }

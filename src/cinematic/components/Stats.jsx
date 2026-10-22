@@ -1,14 +1,15 @@
 import {useCountUp} from "../fx/hooks";
-import {statistics} from "../data";
+import {useCinematic} from "../content";
 import {SectionLabel} from "./Atmosphere";
 
 export const StatisticsSection = () => {
+  const {stats} = useCinematic();
   return (
     <section className="ga-stats" id="ga-stats">
       <div className="ga-stats-inner">
-        <SectionLabel index="10">Program Statistics</SectionLabel>
+        <SectionLabel index="10">{stats.label}</SectionLabel>
         <div className="ga-stats-grid">
-          {statistics.map((s) => (
+          {stats.items.map((s) => (
             <StatCell key={s.label} {...s} />
           ))}
         </div>

@@ -1,23 +1,22 @@
 import {useParallax} from "../fx/hooks";
-import {learningPillars} from "../data";
+import {Lines, useCinematic} from "../content";
 import {SectionLabel} from "./Atmosphere";
 
 export const LearningExperience = () => {
+  const {learning} = useCinematic();
   const gridPar = useParallax(-0.02);
 
   return (
     <section className="ga-learning" id="ga-learning">
       <div className="ga-learning-head">
-        <SectionLabel index="11">The Experience</SectionLabel>
+        <SectionLabel index="11">{learning.label}</SectionLabel>
         <h2 className="ga-display">
-          Learn.
-          <br />
-          Create. Achieve.
+          <Lines lines={learning.title} />
         </h2>
       </div>
 
       <div className="ga-learning-grid" ref={gridPar}>
-        {learningPillars.map((p, i) => (
+        {learning.items.map((p, i) => (
           <div
             className="ga-learning-card ga-reveal ga-reveal-up"
             key={p.title}

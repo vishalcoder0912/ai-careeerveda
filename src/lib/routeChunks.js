@@ -12,6 +12,11 @@ export const loadAlumniPage = () => import("../pages/AlumniPage");
 export const loadEnrollPage = () => import("../pages/EnrollPage");
 export const loadPolicyPage = () => import("../pages/PolicyPage");
 export const loadGenerativeAIPage = () => import("../cinematic/GenerativeAIPage");
+export const loadCinematicProgramPage = () => import("../cinematic/CinematicProgramPage");
+
+// Programs rendered through the cinematic template (CinematicProgramPage)
+// rather than the standard program page. App.jsx gives each one its own route.
+export const CINEMATIC_PROGRAMS = ["product-management"];
 
 const EXACT_ROUTES = {
   "/programs": loadProgramsPage,
@@ -38,6 +43,8 @@ export const loaderForPath = (pathname) => {
   // its URLs (/generative-ai and /programs/gen-ai-agentic-ai), so this slug
   // keeps the cinematic chunk instead of the detail-page one.
   if (/^\/programs\/gen-ai-agentic-ai\/?(?:[?#].*)?$/.test(pathname)) return loadGenerativeAIPage;
+  const slug = pathname.match(/^\/programs\/([^/?#]+)\/?(?:[?#].*)?$/)?.[1];
+  if (slug && CINEMATIC_PROGRAMS.includes(slug)) return loadCinematicProgramPage;
   // /programs/:slug — one chunk shared by every program page.
   if (/^\/programs\/[^/]+\/?$/.test(pathname)) return loadProgramDetailPage;
   if (/^\/blog\/[^/]+\/?$/.test(pathname)) return loadBlogDetailPage;

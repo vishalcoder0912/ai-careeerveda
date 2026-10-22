@@ -23,6 +23,7 @@ const BootMarker = () => {
 
 const ProgramsPage = lazy(routeChunks.loadProgramsPage);
 const GenerativeAIPage = lazy(routeChunks.loadGenerativeAIPage);
+const CinematicProgramPage = lazy(routeChunks.loadCinematicProgramPage);
 const ProgramDetailPage = lazy(routeChunks.loadProgramDetailPage);
 const JobsPage = lazy(routeChunks.loadJobsPage);
 const FacultyPage = lazy(routeChunks.loadFacultyPage);
@@ -191,6 +192,9 @@ const App = () => {
         <Routes>
         <Route path="/generative-ai" element={<GenerativeAIPage />} />
         <Route path="/programs/gen-ai-agentic-ai" element={<GenerativeAIPage />} />
+        {routeChunks.CINEMATIC_PROGRAMS.map((id) => (
+          <Route key={id} path={`/programs/${id}`} element={<CinematicProgramPage programId={id} />} />
+        ))}
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/programs" element={<ProgramsPage />} />

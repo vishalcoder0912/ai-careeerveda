@@ -1,10 +1,11 @@
 import {useEffect, useRef} from "react";
 import {gsap} from "gsap";
 import {reducedMotionNow} from "../fx/registry";
-import {skillCategories} from "../data";
+import {Lines, useCinematic} from "../content";
 import {SectionLabel} from "./Atmosphere";
 
 export const SkillsSection = () => {
+  const {skills} = useCinematic();
   const sectionRef = useRef(null);
   const pinRef = useRef(null);
   const cardsRef = useRef([]);
@@ -78,19 +79,17 @@ export const SkillsSection = () => {
     <section className="ga-skills" id="ga-stack" ref={sectionRef}>
       <div className="ga-skills-pin" ref={pinRef}>
         <div className="ga-skills-head">
-          <SectionLabel index="02">The Laboratory</SectionLabel>
+          <SectionLabel index="02">{skills.label}</SectionLabel>
           <h2 className="ga-display">
-            What You
-            <br />
-            Will Master
+            <Lines lines={skills.title} />
           </h2>
-          <p className="ga-sub">From prompts to autonomous systems — five domains, one engineering discipline.</p>
-          <p className="ga-meta ga-skills-tag">Practitioner · Builder · Operator</p>
+          <p className="ga-sub">{skills.sub}</p>
+          <p className="ga-meta ga-skills-tag">{skills.tag}</p>
         </div>
 
         <div className="ga-skills-body">
           <div className="ga-skills-grid">
-            {skillCategories.map((cat, i) => (
+            {skills.items.map((cat, i) => (
               <div
                 className={`ga-skill ga-skill-${cat.palette}`}
                 key={cat.id}

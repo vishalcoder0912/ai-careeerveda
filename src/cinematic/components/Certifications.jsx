@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {ArrowRight, Download} from "lucide-react";
 import {useParallax, useTilt} from "../fx/hooks";
-import {certificates, credentialNarrative, credentialRoadmap, proofPillars} from "../data";
+import {Lines, useCinematic} from "../content";
 import {SectionLabel} from "./Atmosphere";
 import {CertificateStudio} from "./CertificateStudio";
 
@@ -39,22 +39,19 @@ const CertificateCard = ({cert, index, onOpen}) => {
 };
 
 export const CertificationSection = () => {
+  const {certs} = useCinematic();
+  const {certificates, proofPillars, roadmap} = certs;
   const band = useParallax(0.03);
   const [active, setActive] = useState(null);
 
   return (
     <section className="ga-certs" id="ga-certs" ref={band}>
       <div className="ga-certs-head">
-        <SectionLabel index="12">Proof of Work</SectionLabel>
+        <SectionLabel index="12">{certs.label}</SectionLabel>
         <h2 className="ga-display">
-          Build Proof.
-          <br />
-          Not Just Knowledge.
+          <Lines lines={certs.title} />
         </h2>
-        <p className="ga-certs-lede">
-          Three postgraduate credentials, issued on completion. Pick one, put your name on it, and take it
-          with you.
-        </p>
+        <p className="ga-certs-lede">{certs.lede}</p>
       </div>
 
       <div className="ga-certs-row">
@@ -75,17 +72,16 @@ export const CertificationSection = () => {
         ))}
       </ul>
 
+      {/* Optional: only programs with a mapped external-credential roadmap. */}
+      {roadmap && (
       <div className="ga-roadmap ga-reveal">
         <div className="ga-roadmap-head">
-          <h3 className="ga-roadmap-title">10+ industry credentials, mapped to your 24 weeks</h3>
-          <p className="ga-roadmap-sub">
-            Learning from providers your next employer already recognises — earned in the module that
-            uses them, not collected in a separate tab.
-          </p>
+          <h3 className="ga-roadmap-title">{roadmap.title}</h3>
+          <p className="ga-roadmap-sub">{roadmap.sub}</p>
         </div>
 
         <ol className="ga-roadmap-list">
-          {credentialRoadmap.map((row) => (
+          {roadmap.rows.map((row) => (
             <li className="ga-roadmap-row" key={`${row.provider}-${row.credential}`}>
               <span className="ga-roadmap-stage">{row.stage}</span>
               <span className="ga-roadmap-weeks">{row.weeks}</span>
@@ -97,27 +93,21 @@ export const CertificationSection = () => {
         </ol>
 
         <p className="ga-roadmap-narrative">
-          {credentialNarrative.map((step, i) => (
+          {roadmap.narrative.map((step, i) => (
             <span className="ga-roadmap-step" key={step}>
               {step}
-              {i < credentialNarrative.length - 1 ? (
+              {i < roadmap.narrative.length - 1 ? (
                 <ArrowRight className="ga-roadmap-arrow" size={14} strokeWidth={1.6} aria-hidden="true" />
               ) : null}
             </span>
           ))}
         </p>
 
-        <p className="ga-roadmap-caveat">
-          Provider catalogues, badge requirements and promotional free-assessment offers change without
-          notice, so the live list is maintained on the course portal rather than printed as a permanent
-          promise. What is fixed is the target: ten or more industry credentials, one project per module,
-          and a repository that shows the work.
-        </p>
+        <p className="ga-roadmap-caveat">{roadmap.caveat}</p>
       </div>
+      )}
 
-      <p className="ga-certs-note">
-        A credential your future team can read — programs, projects and systems you can point to.
-      </p>
+      <p className="ga-certs-note">{certs.note}</p>
 
       <CertificateStudio cert={active} open={Boolean(active)} onClose={() => setActive(null)} />
     </section>

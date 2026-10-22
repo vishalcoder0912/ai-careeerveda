@@ -14,6 +14,8 @@ import {
   loadPolicyPage,
   loadProgramDetailPage,
   loadProgramsPage,
+  loadCinematicProgramPage,
+  CINEMATIC_PROGRAMS,
   loaderForPath,
 } from "./routeChunks";
 
@@ -26,7 +28,13 @@ describe("program route chunks — one chunk per course surface, shared the same
       if (program.id === "gen-ai-agentic-ai") {
         expect(loaderForPath(slugPath)).toBe(loadGenerativeAIPage);
         expect(loaderForPath(`${slugPath}/`)).toBe(loadGenerativeAIPage);
-        return;
+        continue;
+      }
+      // Programs with their own cinematic page warm that chunk instead.
+      if (CINEMATIC_PROGRAMS.includes(program.id)) {
+        expect(loaderForPath(slugPath)).toBe(loadCinematicProgramPage);
+        expect(loaderForPath(`${slugPath}#fee`)).toBe(loadCinematicProgramPage);
+        continue;
       }
       expect(loaderForPath(slugPath)).toBe(loadProgramDetailPage);
       expect(loaderForPath(`${slugPath}/`)).toBe(loadProgramDetailPage);
