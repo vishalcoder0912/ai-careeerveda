@@ -16,7 +16,18 @@ export const loadCinematicProgramPage = () => import("../cinematic/CinematicProg
 
 // Programs rendered through the cinematic template (CinematicProgramPage)
 // rather than the standard program page. App.jsx gives each one its own route.
-export const CINEMATIC_PROGRAMS = ["product-management"];
+export const CINEMATIC_PROGRAMS = [
+  "product-management",
+  "ai-systems-agentic-ai",
+  "gen-ai",
+  "business-analytics",
+  "data-analytics",
+  "investment-banking",
+  "data-science-ai",
+  "data-engineering",
+  "backend-engineering",
+  "cybersecurity",
+];
 
 const EXACT_ROUTES = {
   "/programs": loadProgramsPage,

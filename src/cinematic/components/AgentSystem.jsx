@@ -207,7 +207,9 @@ export const AgentSystem = () => {
         <div className="ga-agent-center" data-cursor="cta">
           <img className="ga-agent-center-art" src={system.center.art} alt="" width="48" height="48" />
           <span className="ga-agent-center-title">{system.center.title}</span>
-          <span className="ga-agent-center-sub">{system.center.sub}</span>
+          {/* The non-breaking space keeps each "·" with the word before it, so
+              the line never wraps to start on a separator. */}
+          <span className="ga-agent-center-sub">{system.center.sub.replaceAll(" · ", " · ")}</span>
         </div>
 
         {agentSatellites.map((s, i) => {

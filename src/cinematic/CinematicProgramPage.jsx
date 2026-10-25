@@ -7,12 +7,30 @@ import {absoluteUrl, OG_IMAGE} from "../config/siteMeta";
 import {composeTitle, programMeta} from "../config/pageMeta";
 import {GenerativeAIPage} from "./GenerativeAIPage";
 import {productManagementContent} from "./programs/productManagement";
+import {aiSystemsContent} from "./programs/aiSystems";
+import {genAiProgramContent} from "./programs/genAi";
+import {businessAnalyticsContent} from "./programs/businessAnalytics";
+import {dataAnalyticsContent} from "./programs/dataAnalytics";
+import {investmentBankingContent} from "./programs/investmentBanking";
+import {dataScienceContent} from "./programs/dataScience";
+import {dataEngineeringContent} from "./programs/dataEngineering";
+import {backendEngineeringContent} from "./programs/backendEngineering";
+import {cybersecurityContent} from "./programs/cybersecurity";
 
 /* Programs that render as a cinematic page instead of the standard program
    template. The slug list lives in lib/routeChunks.js too (CINEMATIC_PROGRAMS),
    so the right chunk is warmed on hover. */
-export const CINEMATIC_CONTENT = {
+const CINEMATIC_CONTENT = {
   "product-management": productManagementContent,
+  "ai-systems-agentic-ai": aiSystemsContent,
+  "gen-ai": genAiProgramContent,
+  "business-analytics": businessAnalyticsContent,
+  "data-analytics": dataAnalyticsContent,
+  "investment-banking": investmentBankingContent,
+  "data-science-ai": dataScienceContent,
+  "data-engineering": dataEngineeringContent,
+  "backend-engineering": backendEngineeringContent,
+  "cybersecurity": cybersecurityContent,
 };
 
 // The same search tags and structured data the standard program page writes
