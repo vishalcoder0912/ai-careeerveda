@@ -288,7 +288,9 @@ export default function AboutPage() {
 
                 <div className="about-project">
                   <small>REAL PROJECT · PROJECT 04</small>
-                  <h3>Customer Segmentation Dashboard</h3>
+                  {/* A label inside the illustrated product window, not a section of
+                      the page — as an h3 it sat in the outline above the real h2s. */}
+                  <p className="about-project-title">Customer Segmentation Dashboard</p>
                   <span className="about-project-status">In Progress · 3 / 4 milestones</span>
                   <div className="about-tasks">
                     {heroTasks.map(([icon, task, status]) => (

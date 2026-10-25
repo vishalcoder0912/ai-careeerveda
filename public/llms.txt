@@ -32,6 +32,7 @@ each program.
 - [Blog](https://careerveda.in/blog): career guides, skill roadmaps and industry trends.
 - [About](https://careerveda.in/about): what the organisation is and how it operates.
 - [Contact and admissions](https://careerveda.in/contact): admissions, fees and batch enquiries.
+- [Full program reference](https://careerveda.in/llms-full.txt): every program in full — facts, curriculum, outcomes and Q&A in one file.
 
 ## Frequently asked questions
 

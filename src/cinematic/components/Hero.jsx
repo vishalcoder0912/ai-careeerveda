@@ -5,8 +5,25 @@ import {useMagneticHover} from "../fx/hooks";
 import {ArrowDownRight} from "lucide-react";
 import {useCinematic} from "../content";
 
+// "PG Program in Data Analytics with Generative AI" → lead "PG Program in" and
+// the full name as the two-tone title, broken before its first "with" / "&" /
+// "and" (else before its last word) so it still reads as two lines.
+const PREFIX = /^((?:PG|Post Graduate) Program in)\s+(.+)$/i;
+
+const heroTitle = (hero) => {
+  const match = (hero.ariaLabel || "").match(PREFIX);
+  if (!match) return {lead: "", lines: hero.title};
+  const name = match[2];
+  let at = name.search(/ (with|&|and) /i);
+  // No connector: split before the last word, unless the name is too short to
+  // need two lines ("GEN AI").
+  if (at < 0 && name.length > 10) at = name.lastIndexOf(" ");
+  return {lead: match[1], lines: at > 0 ? [name.slice(0, at), name.slice(at + 1)] : [name]};
+};
+
 export const HeroSection = () => {
   const {hero} = useCinematic();
+  const title = heroTitle(hero);
   const rootRef = useRef(null);
   const bgRef = useRef(null);
   const streakRef = useRef(null);
@@ -79,8 +96,15 @@ export const HeroSection = () => {
           <span>{hero.eyebrow}</span>
         </div>
 
+        {/* Visual only: the h1's aria-label already carries the full name. */}
+        {title.lead && (
+          <p className="ga-hero-lead" aria-hidden="true">
+            {title.lead}
+          </p>
+        )}
+
         <h1 className="ga-hero-title" aria-label={hero.ariaLabel}>
-          {hero.title.map((line, i) => (
+          {title.lines.map((line, i) => (
             <span
               key={line}
               className={`ga-hero-line${i === 1 ? " ga-hero-line-italic" : ""}`}

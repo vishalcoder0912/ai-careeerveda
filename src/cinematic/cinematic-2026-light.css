@@ -2261,3 +2261,61 @@ body.ga-gallery-active .ga-burger {
     transform: none;
   }
 }
+
+/* ── Hero: "PG Program in" + full program name ─────────────────────────── */
+.ga-page .ga-hero-lead {
+  margin: 0 0 0.35rem;
+  color: #526682;
+  font-size: clamp(1rem, 1.5vw, 1.3rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+/* Full names run longer than the old two-word titles; keep both lines on the
+   left column at desktop and inside the gutter on a phone. */
+.ga-page .ga-hero-line,
+.ga-page .ga-hero-line:nth-child(2) {
+  display: block;
+  font-size: clamp(2rem, 3.6vw, 3.4rem);
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 900px) {
+  .ga-page .ga-hero-title {
+    max-width: min(780px, 60%);
+  }
+}
+
+@media (max-width: 899px) {
+  .ga-page .ga-hero-line,
+  .ga-page .ga-hero-line:nth-child(2) {
+    font-size: clamp(1.9rem, 8.4vw, 2.8rem);
+  }
+
+  /* Four stats wrapped 3 + 1 on a phone; a 2 × 2 grid keeps them lined up. */
+  .ga-page .ga-hero-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.1rem 1.5rem;
+    align-items: start;
+  }
+
+  /* The two CTAs stacked at different widths; make them one column, same width. */
+  .ga-page .ga-hero-ctas {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+  }
+
+  .ga-page .ga-hero-ctas .ga-btn {
+    justify-content: center;
+    width: 100%;
+  }
+
+  /* The eyebrow's rule pushed the wrapped text into a ragged second line. */
+  .ga-page .ga-hero-eyebrow {
+    flex-wrap: nowrap;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+  }
+}

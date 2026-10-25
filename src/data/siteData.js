@@ -7,13 +7,9 @@
   ["/about", "About"],
 ];
 
-export const stats = [
-  ["13,000+", "Successful Learners"],
-  ["900+", "Recruitment Partners"],
-  ["86%", "Average Salary Growth"],
-  ["300+", "Career Programs"],
-  ["200+", "Professional Mentors"],
-];
+// Lives in its own module so pageMeta.js (also loaded by the node prerender
+// scripts) can quote it without pulling in the rest of this file.
+export {stats} from "./stats.js";
 
 export const differentiators = [
   [

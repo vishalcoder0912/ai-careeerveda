@@ -796,3 +796,183 @@ body .jobs-page .job-card__apply:focus-visible {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+/* ---------- Admin-written listings ---------- */
+/* Text typed in the admin panel can hold a long unbroken string (a URL, a
+   pasted token), which no normal line break can split; it ran straight out of
+   the card. Break anywhere as a last resort, and let the grid item shrink. */
+.job-card {
+  min-width: 0;
+}
+.job-card__title,
+.job-card__company,
+.job-card__description,
+.job-card__skill,
+.job-card__meta li {
+  overflow-wrap: anywhere;
+}
+/* Cards stay the same height as their neighbours; the full description is in
+   the Apply dialog for listings that take applications here. */
+.job-card__description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  overflow: hidden;
+}
+
+/* ---------- Apply on CareerVeda ---------- */
+/* The card's apply control is a <button> for in-house jobs; reset the UA
+   button chrome so it matches the link version. */
+button.job-card__apply {
+  font: inherit;
+  cursor: pointer;
+  border: 0;
+}
+button.job-card__apply:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.job-card__badge--direct {
+  background: color-mix(in srgb, var(--jp-primary) 12%, transparent);
+  color: var(--jp-primary);
+}
+
+/* Every colour comes from the --jp-* tokens, so the dialog follows whichever
+   theme remaps them (careerveda-light-theme.css turns the page light). */
+.job-apply {
+  /* A global margin reset strips the UA's margin:auto, which is what centres a
+     modal <dialog>; without it the dialog pins to the top-left corner. */
+  margin: auto;
+  width: min(480px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  padding: 24px;
+  border: 1px solid var(--jp-border-active);
+  border-radius: 18px;
+  background: var(--jp-panel);
+  color: var(--jp-ink);
+  box-shadow: 0 30px 80px rgba(16, 24, 64, 0.25);
+}
+.job-apply::backdrop {
+  background: rgba(16, 42, 92, 0.45);
+  backdrop-filter: blur(2px);
+}
+.job-apply__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.job-apply__head h2 {
+  margin: 4px 0 2px;
+  font-size: 1.25rem;
+}
+.job-apply__eyebrow {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--jp-primary);
+}
+.job-apply__company {
+  margin: 0;
+  color: var(--jp-muted);
+}
+.job-apply__about {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--jp-border);
+}
+.job-apply__about p {
+  margin: 0;
+  max-height: 40vh;
+  overflow: auto;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  color: var(--jp-muted);
+}
+.job-apply__close {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border: 1px solid var(--jp-border);
+  border-radius: 10px;
+  background: var(--jp-field);
+  color: var(--jp-ink);
+  cursor: pointer;
+}
+.job-apply__form {
+  display: grid;
+  gap: 14px;
+}
+.job-apply__field {
+  display: grid;
+  gap: 6px;
+}
+.job-apply__field label {
+  font-size: 14px;
+  font-weight: 600;
+}
+.job-apply__field input {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--jp-border-active);
+  border-radius: 10px;
+  background: var(--jp-field);
+  color: var(--jp-ink);
+  font: inherit;
+}
+.job-apply__field input:focus-visible,
+.job-apply__close:focus-visible,
+.job-apply__consent input:focus-visible {
+  outline: 2px solid var(--jp-primary);
+  outline-offset: 2px;
+}
+.job-apply__field input[aria-invalid="true"] {
+  border-color: #dc2626;
+}
+.job-apply__field input::placeholder {
+  color: var(--jp-muted);
+}
+.job-apply__consent {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 14px;
+  color: var(--jp-muted);
+}
+.job-apply__consent input {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  flex: none;
+}
+.job-apply__error {
+  margin: 0;
+  font-size: 13px;
+  color: #dc2626;
+}
+.job-apply__trap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+.job-apply__done {
+  display: grid;
+  gap: 16px;
+}
+.job-apply__done p {
+  margin: 0;
+}

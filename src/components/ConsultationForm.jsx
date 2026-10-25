@@ -3,6 +3,7 @@ import {Reveal} from "./motionPrimitives";
 import {useContentList} from "../hooks/useContent";
 import {adaptProgram} from "../lib/contentAdapters";
 import {submitLead} from "../lib/publicApi";
+import {useTurnstile} from "../lib/useTurnstile";
 import {hasSubmittedPhone, rememberSubmittedPhone} from "../lib/submittedPhones";
 import "./consultation-form.css";
 
@@ -57,6 +58,7 @@ const ConsultationForm = () => {
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("idle"); // idle | submitting | success | error
   const [message, setMessage] = useState("");
+  const captcha = useTurnstile();
 
   const update = (event) => {
     const {name, value} = event.target;
@@ -98,7 +100,9 @@ const ConsultationForm = () => {
         // Given by pressing submit under the notice in the footer.
         consent: true,
         sourcePage: window.location.pathname,
+        turnstileToken: captcha.token,
       });
+      captcha.reset(); // tokens are single-use
 
       if (!result.ok) {
         // Surface the server's own field errors when it sends them.
@@ -114,6 +118,7 @@ const ConsultationForm = () => {
       setMessage("Thanks — our admissions team will reach out to you shortly.");
       setValues(EMPTY);
     } catch {
+      captcha.reset();
       // Network failure. Deliberately not a success message: a lead that
       // silently goes nowhere is worse than a visible error.
       setStatus("error");
@@ -233,6 +238,8 @@ const ConsultationForm = () => {
         autoComplete="off"
         aria-hidden="true"
       />
+
+      {captcha.widget}
 
       <div className="consultation-form__footer">
         <button type="submit" disabled={isSubmitting}>

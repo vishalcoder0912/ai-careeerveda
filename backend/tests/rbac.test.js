@@ -141,7 +141,7 @@ describe("permission enforcement over HTTP", () => {
   });
 
   it("requires all named permissions, not any of them", async () => {
-    // A viewer holds forms.read but not forms.export.
+    // A viewer holds neither forms.read nor forms.export.
     await createAdmin({email: "viewer@careerveda.test", role: ROLES.VIEWER});
     const {accessToken} = await login(probe, {email: "viewer@careerveda.test"});
 

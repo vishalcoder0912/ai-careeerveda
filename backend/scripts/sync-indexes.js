@@ -22,6 +22,7 @@ import "../src/models/ContentRevision.js";
 import "../src/models/Faculty.js";
 import "../src/models/Faq.js";
 import "../src/models/Job.js";
+import "../src/models/JobApplication.js";
 import "../src/models/Lead.js";
 import "../src/models/Media.js";
 import "../src/models/Policy.js";

@@ -85,9 +85,12 @@ for (const resource of Object.values(RESOURCES)) {
       // would let anyone enumerate unpublished content by guessing slugs.
       if (!document) return next(notFound(`${resource.label} not found`));
 
+      // The same exclusions as the listing, read from the one projection string,
+      // so the two endpoints cannot drift apart (this one used to miss
+      // nextBatchMode and __v).
       const payload = document.toJSON();
-      for (const field of ["createdBy", "updatedBy", "deletedBy", "deletedAt", "revision"]) {
-        delete payload[field];
+      for (const field of resource.publicProjection.split(" ")) {
+        delete payload[field.replace(/^-/, "")];
       }
 
       if (withCache(request, response, payload)) return undefined;

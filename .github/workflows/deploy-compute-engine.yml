@@ -1,15 +1,16 @@
-# CD — push to main → live on the Compute Engine VM.
+# CD — manual redeploy of the Compute Engine VM.
 #
-# The deployment model is pull-based: the VM itself polls origin/main every
-# 2 minutes (careerveda-autodeploy.timer) and runs deploy/deploy.sh when the
-# branch moved. That works with zero GitHub configuration and is the mechanism
-# that always runs.
+# Normal deployment is automatic and gated:
+#   push to dev → CI/CD (security, quality, e2e, build) → publish dev→main
+#   → the CI/CD `deploy` job (if CD_SSH_HOST is set) or the VM's 2-minute
+#     careerveda-autodeploy.timer pulls the tested main commit.
 #
-# This workflow is the optional "instant" trigger: instead of waiting up to 2
-# minutes for the next poll, it SSHes into the VM right after a push and runs
-# the same deploy script. It stays skipped until you add the repository
-# variable CD_SSH_HOST (Settings → Secrets and variables → Actions → Variables):
+# This workflow is only for an on-demand rebuild/restart of the commit that is
+# already on main — for example after editing /etc/careerveda/build.env. It
+# deliberately has no push trigger, so a direct push to main cannot deploy
+# code that CI has not seen.
 #
+# Required repository configuration (Settings → Secrets and variables → Actions):
 #   Variables:  CD_SSH_HOST   VM external IP (or DNS name)
 #               CD_SSH_USER   SSH user on the VM (e.g. deploy)
 #   Secret:     CD_SSH_KEY    private key whose public half is in that user's
@@ -20,9 +21,12 @@
 name: CD (Compute Engine)
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
+    inputs:
+      force:
+        description: Rebuild even when the VM is already on the newest main commit
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -33,12 +37,10 @@ concurrency:
 
 jobs:
   deploy:
-    name: Trigger deploy on VM
-    # Skipped silently while CD_SSH_HOST is unset — during testing the 2-minute
-    # autodeploy timer on the VM handles everything on its own.
+    name: Deploy main on VM
     if: vars.CD_SSH_HOST != ''
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.2.2
@@ -46,10 +48,20 @@ jobs:
           host: ${{ vars.CD_SSH_HOST }}
           username: ${{ vars.CD_SSH_USER || 'deploy' }}
           key: ${{ secrets.CD_SSH_KEY }}
-          script: sudo /opt/careerveda/deploy/deploy.sh
+          script: |
+            if [ "${{ inputs.force }}" = "true" ]; then
+              sudo FORCE=1 bash /opt/careerveda/deploy/deploy.sh
+            else
+              sudo bash /opt/careerveda/deploy/deploy.sh
+            fi
 
-      - name: Smoke check
+      - name: Wait for the live API
         run: |
-          sleep 5
-          curl -fsS --max-time 30 "http://${{ vars.CD_SSH_HOST }}/health" \
-            && echo "Site is live at http://${{ vars.CD_SSH_HOST }}/"
+          for attempt in $(seq 1 30); do
+            if curl -fsS --max-time 10 "http://${{ vars.CD_SSH_HOST }}/health"; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Site did not answer /health after deploy" >&2
+          exit 1

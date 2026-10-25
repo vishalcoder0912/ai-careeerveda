@@ -1,5 +1,13 @@
+import {stats} from "../data/stats.js";
 
 export const SITE_NAME = "CareerVeda";
+
+// The home snippet quotes the hero's own numbers, read from the same list the
+// stats panel renders, so the two cannot drift. Only the counts: the salary
+// figure stays on the page and out of every snippet (see the rules below).
+const stat = (label) => stats.find(([, l]) => l === label)?.[0];
+const LEARNERS = stat("Successful Learners");
+const PARTNERS = stat("Recruitment Partners");
 
 // Falls back to index.html's description for anything not listed here.
 export const DEFAULT_DESCRIPTION =
@@ -29,7 +37,9 @@ export const pageMeta = {
   "/": {
     title: "India's No 1 PG Program",
     description:
-      "Mentor-led online PG programs in data science, generative AI, analytics, product management and investment banking — live classes, projects, placement support.",
+      LEARNERS && PARTNERS
+        ? `Join ${LEARNERS} learners in mentor-led online PG programs in data science, generative AI, analytics and product management, with ${PARTNERS} recruitment partners.`
+        : "Mentor-led online PG programs in data science, generative AI, analytics, product management and investment banking — live classes, projects, placement support.",
   },
   "/programs": {
     title: "PG Programs & Certification Courses Online",

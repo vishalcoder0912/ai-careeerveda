@@ -1,0 +1,8 @@
+# Files that run on the Linux VM must keep LF line endings even when committed
+# from Windows: a CRLF shebang fails with "bad interpreter", and nginx/systemd
+# reject stray carriage returns.
+*.sh       text eol=lf
+*.service  text eol=lf
+*.timer    text eol=lf
+deploy/*   text eol=lf
+nginx.conf text eol=lf

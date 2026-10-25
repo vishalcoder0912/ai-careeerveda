@@ -504,7 +504,7 @@
 .legal-toc-links a.is-active { color: var(--ps-teal); }
 .legal-toc-links a.is-active::before { content: ""; position: absolute; left: -22px; top: 4px; width: 2px; height: calc(100% - 8px); background: var(--ps-teal); }
 
-.legal-article h3 {
+.legal-article h2 {
   margin-top: 8px;
   font-size: 21px;
   font-weight: 700;
@@ -623,7 +623,7 @@
   margin-top: 18px;
 }
 
-.legal-article .legal-group h4 {
+.legal-article .legal-group h3 {
   margin: 0;
   font-size: 15px;
   font-weight: 700;
@@ -740,7 +740,7 @@
     font-size: 13px;
   }
 
-  .legal-article h3 {
+  .legal-article h2 {
     font-size: 20px;
   }
 
@@ -837,7 +837,7 @@
     font-size: 14px;
   }
 
-  .legal-article h3 {
+  .legal-article h2 {
     font-size: 19px;
   }
 

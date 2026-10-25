@@ -64,6 +64,10 @@ debug-*.mjs
 debug-hero-*.png
 shot-*.png
 
+# Stray nested checkout and unused source image (not part of the app)
+full-stack-careerveda/
+hero_gurl image.png
+
 # Root-level scratch from probing/debug sessions (local only, never committed)
 /_*.mjs
 /_*.png

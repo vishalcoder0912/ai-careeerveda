@@ -6,6 +6,137 @@ import {ConfirmDialog} from "../components/ConfirmDialog";
 import {Modal} from "../components/Modal";
 import {Skeleton, EmptyState, ErrorState} from "../components/States";
 
+// ImageKit resizes on the fly from a `tr=` query; append it whether or not the
+// stored URL already carries a query string.
+const transformed = (url, transform) => `${url}${url.includes("?") ? "&" : "?"}tr=${transform}`;
+const kilobytes = (size) => Math.round((size || 0) / 1024);
+
+// The confirm shown before a delete. A referenced image can't be deleted (the
+// server refuses), so its dialog explains where it is used instead.
+const deleteConfirmFor = (media, references) => {
+  const blocked = references.length > 0;
+  return {
+    media,
+    references,
+    blocked,
+    title: blocked ? "This image is in use" : "Delete this image?",
+    body: blocked
+      ? `It is used by: ${references.map((entry) => entry.label).join(", ")}. Detach it there first.`
+      : `"${media.name}" will be moved to the archive.`,
+  };
+};
+
+const MediaGrid = ({items, onSelect}) => (
+  <ul className="media-grid">
+    {items.map((media) => (
+      <li key={media._id}>
+        <button type="button" className="media-tile" onClick={() => onSelect(media)}>
+          <img src={transformed(media.url, "w-320,f-auto,q-70")} alt={media.alt || media.name} loading="lazy" />
+          <span className="media-tile-name">{media.name}</span>
+          <span className="media-tile-meta">
+            {media.width}×{media.height} · {kilobytes(media.size)} KB
+          </span>
+        </button>
+      </li>
+    ))}
+  </ul>
+);
+
+const LibraryBody = ({loading, error, items, onRetry, onSelect}) => {
+  if (loading) return <Skeleton rows={4} />;
+  if (error) return <ErrorState error={error} onRetry={onRetry} />;
+  if (items.length === 0) return <EmptyState title="No images yet" body="Upload one to get started." />;
+  return <MediaGrid items={items} onSelect={onSelect} />;
+};
+
+// Sequential rather than parallel: the upload endpoint is rate-limited to
+// 30/minute, and firing a whole folder at once would trip it and report
+// failures for files that were merely too fast. One file failing is reported
+// and the rest carry on.
+const uploadAll = async (files, toast) => {
+  let uploaded = 0;
+  let duplicates = 0;
+  for (const file of Array.from(files)) {
+    try {
+      const response = await mediaApi.upload(file);
+      if (response.data.duplicate) duplicates += 1;
+      else uploaded += 1;
+    } catch (failure) {
+      toast.error(`${file.name}: ${failure.message}`);
+    }
+  }
+  if (uploaded > 0) toast.success(`Uploaded ${uploaded} image${uploaded === 1 ? "" : "s"}.`);
+  if (duplicates > 0) toast.toast(`${duplicates} already in the library.`);
+};
+
+const Pagination = ({page, meta, setPage}) => (
+  <nav className="pagination" aria-label="Pagination">
+    <button type="button" className="btn" disabled={page <= 1} onClick={() => setPage((value) => value - 1)}>
+      Previous
+    </button>
+    <span>
+      Page {meta.page} of {meta.totalPages}
+    </span>
+    <button type="button" className="btn" disabled={page >= meta.totalPages} onClick={() => setPage((value) => value + 1)}>
+      Next
+    </button>
+  </nav>
+);
+
+const MediaDetails = ({media, busy, onChange, onClose, onCopy, onDelete, onSave}) => (
+  <Modal className="dialog--wide" label="Image details" onClose={onClose}>
+    <div className="dialog-head">
+      <h2>Image details</h2>
+      <button type="button" className="btn btn--ghost" onClick={onClose} aria-label="Close">
+        ×
+      </button>
+    </div>
+
+    <img className="media-detail-image" src={transformed(media.url, "w-640,f-auto,q-80")} alt={media.alt || media.name} />
+
+    <label className="inline-label">
+      Name
+      <input value={media.name || ""} onChange={(event) => onChange({...media, name: event.target.value})} />
+    </label>
+    <label className="inline-label">
+      Alt text
+      <input
+        value={media.alt || ""}
+        placeholder="Describe the image for screen readers"
+        onChange={(event) => onChange({...media, alt: event.target.value})}
+      />
+    </label>
+    <label className="inline-label">
+      Caption
+      <input value={media.caption || ""} onChange={(event) => onChange({...media, caption: event.target.value})} />
+    </label>
+    <label className="inline-label">
+      URL
+      <input
+        value={media.url || ""}
+        placeholder="https://…"
+        onChange={(event) => onChange({...media, url: event.target.value})}
+      />
+    </label>
+
+    <p className="muted">
+      {media.width}×{media.height} · {media.mimeType} · {kilobytes(media.size)} KB · {media.folder}
+    </p>
+
+    <div className="dialog-actions">
+      <button type="button" className="btn" onClick={onCopy}>
+        Copy URL
+      </button>
+      <button type="button" className="btn btn--danger" onClick={onDelete}>
+        Delete
+      </button>
+      <button type="button" className="btn btn--primary" onClick={onSave} disabled={busy}>
+        {busy ? "Saving…" : "Save"}
+      </button>
+    </div>
+  </Modal>
+);
+
 const MediaLibrary = () => {
   const toast = useToast();
   const [items, setItems] = useState([]);
@@ -46,30 +177,13 @@ const MediaLibrary = () => {
     if (!files || files.length === 0) return;
 
     setUploading(true);
-    let uploaded = 0;
-    let duplicates = 0;
-
-    // Sequential rather than parallel: the upload endpoint is rate-limited to
-    // 30/minute, and firing a whole folder at once would trip it and report
-    // failures for files that were merely too fast.
     try {
-      for (const file of Array.from(files)) {
-        try {
-          const response = await mediaApi.upload(file);
-          if (response.data.duplicate) duplicates += 1;
-          else uploaded += 1;
-        } catch (failure) {
-          toast.error(`${file.name}: ${failure.message}`);
-        }
-      }
+      await uploadAll(files, toast);
     } finally {
       // finally, not a trailing statement: if anything above throws, the button
       // must not stay stuck on "Uploading…" forever.
       setUploading(false);
     }
-
-    if (uploaded > 0) toast.success(`Uploaded ${uploaded} image${uploaded === 1 ? "" : "s"}.`);
-    if (duplicates > 0) toast.toast(`${duplicates} already in the library.`);
     await load();
   };
 
@@ -102,16 +216,7 @@ const MediaLibrary = () => {
       // Non-fatal — the confirm still works, and the server remains the gate.
     }
 
-    setConfirm({
-      media,
-      references,
-      title: references.length > 0 ? "This image is in use" : "Delete this image?",
-      body:
-        references.length > 0
-          ? `It is used by: ${references.map((entry) => entry.label).join(", ")}. Detach it there first.`
-          : `"${media.name}" will be moved to the archive.`,
-      blocked: references.length > 0,
-    });
+    setConfirm(deleteConfirmFor(media, references));
   };
 
   const doDelete = async () => {
@@ -214,110 +319,23 @@ const MediaLibrary = () => {
         Drop images here to upload
       </div>
 
-      {loading ? <Skeleton rows={4} /> : null}
-      {!loading && error ? <ErrorState error={error} onRetry={load} /> : null}
-      {!loading && !error && items.length === 0 ? (
-        <EmptyState title="No images yet" body="Upload one to get started." />
-      ) : null}
+      <LibraryBody loading={loading} error={error} items={items} onRetry={load} onSelect={setSelected} />
 
-      {!loading && !error && items.length > 0 ? (
-        <ul className="media-grid">
-          {items.map((media) => (
-            <li key={media._id}>
-              <button type="button" className="media-tile" onClick={() => setSelected(media)}>
-                <img
-                  src={`${media.url}${media.url.includes("?") ? "&" : "?"}tr=w-320,f-auto,q-70`}
-                  alt={media.alt || media.name}
-                  loading="lazy"
-                />
-                <span className="media-tile-name">{media.name}</span>
-                <span className="media-tile-meta">
-                  {media.width}×{media.height} · {Math.round((media.size || 0) / 1024)} KB
-                </span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : null}
-
-      {meta.totalPages > 1 ? (
-        <nav className="pagination" aria-label="Pagination">
-          <button type="button" className="btn" disabled={page <= 1} onClick={() => setPage((value) => value - 1)}>
-            Previous
-          </button>
-          <span>
-            Page {meta.page} of {meta.totalPages}
-          </span>
-          <button type="button" className="btn" disabled={page >= meta.totalPages} onClick={() => setPage((value) => value + 1)}>
-            Next
-          </button>
-        </nav>
-      ) : null}
+      {meta.totalPages > 1 ? <Pagination page={page} meta={meta} setPage={setPage} /> : null}
 
       {selected ? (
-        <Modal className="dialog--wide" label="Image details" onClose={() => setSelected(null)}>
-            <div className="dialog-head">
-              <h2>Image details</h2>
-              <button type="button" className="btn btn--ghost" onClick={() => setSelected(null)} aria-label="Close">
-                ×
-              </button>
-            </div>
-
-            <img
-              className="media-detail-image"
-              src={`${selected.url}${selected.url.includes("?") ? "&" : "?"}tr=w-640,f-auto,q-80`}
-              alt={selected.alt || selected.name}
-            />
-
-            <label className="inline-label">
-              Name
-              <input value={selected.name || ""} onChange={(event) => setSelected({...selected, name: event.target.value})} />
-            </label>
-            <label className="inline-label">
-              Alt text
-              <input
-                value={selected.alt || ""}
-                placeholder="Describe the image for screen readers"
-                onChange={(event) => setSelected({...selected, alt: event.target.value})}
-              />
-            </label>
-            <label className="inline-label">
-              Caption
-              <input value={selected.caption || ""} onChange={(event) => setSelected({...selected, caption: event.target.value})} />
-            </label>
-            <label className="inline-label">
-              URL
-              <input
-                value={selected.url || ""}
-                placeholder="https://…"
-                onChange={(event) => setSelected({...selected, url: event.target.value})}
-              />
-            </label>
-
-            <p className="muted">
-              {selected.width}×{selected.height} · {selected.mimeType} · {Math.round((selected.size || 0) / 1024)} KB ·{" "}
-              {selected.folder}
-            </p>
-
-            <div className="dialog-actions">
-              <button
-                type="button"
-                className="btn"
-                onClick={() => {
-                  navigator.clipboard?.writeText(selected.url);
-                  toast.success("URL copied.");
-                }}
-              >
-                Copy URL
-              </button>
-              <button type="button" className="btn btn--danger" onClick={() => askDelete(selected)}>
-                Delete
-              </button>
-              <button type="button" className="btn btn--primary" onClick={saveMeta} disabled={busy}>
-                {busy ? "Saving…" : "Save"}
-              </button>
-            </div>
-        </Modal>
+        <MediaDetails
+          media={selected}
+          busy={busy}
+          onChange={setSelected}
+          onClose={() => setSelected(null)}
+          onCopy={() => {
+            navigator.clipboard?.writeText(selected.url);
+            toast.success("URL copied.");
+          }}
+          onDelete={() => askDelete(selected)}
+          onSave={saveMeta}
+        />
       ) : null}
 
       <ConfirmDialog

@@ -139,6 +139,9 @@ function inspect(file) {
     description: attr('meta[name="description"]', "content"),
     canonical: attr('link[rel="canonical"]', "href"),
     ogImage: attr('meta[property="og:image"]', "content"),
+    ogTitle: attr('meta[property="og:title"]', "content"),
+    ogDescription: attr('meta[property="og:description"]', "content"),
+    twitterTitle: attr('meta[name="twitter:title"]', "content"),
     schemas,
     words: text ? text.split(" ").length : 0,
     headings: root?.querySelectorAll("h1").length || 0,
@@ -158,6 +161,13 @@ for (const page of pages) {
   if (!page.description) errors.push(`${at}: no meta description`);
   if (!page.canonical) errors.push(`${at}: no canonical`);
   if (!page.ogImage) errors.push(`${at}: no og:image`);
+  // The share card must say what the page says. prerender.mjs once stopped
+  // replacing og:title at an apostrophe in the template, and every page shipped
+  // "<title>'s No 1 PG Program | CareerVeda" to WhatsApp, LinkedIn and Facebook
+  // while <title> itself was right — invisible to every check above.
+  if (page.ogTitle !== page.title) errors.push(`${at}: og:title "${page.ogTitle}" differs from <title>`);
+  if (page.twitterTitle !== page.title) errors.push(`${at}: twitter:title differs from <title>`);
+  if (page.ogDescription !== page.description) errors.push(`${at}: og:description differs from meta description`);
   if (page.headings === 0) errors.push(`${at}: no <h1>`);
   if (page.headings > 1) errors.push(`${at}: ${page.headings} <h1> elements`);
   if (page.schemas.includes("INVALID")) errors.push(`${at}: JSON-LD does not parse`);

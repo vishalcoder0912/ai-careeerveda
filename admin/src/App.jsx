@@ -8,6 +8,7 @@ import ResourceList from "./pages/ResourceList";
 import ResourceEditor from "./pages/ResourceEditor";
 import MediaLibrary from "./pages/MediaLibrary";
 import Leads from "./pages/Leads";
+import JobApplications from "./pages/JobApplications";
 import Profile from "./pages/Profile";
 
 const NotFound = () => (
@@ -84,6 +85,14 @@ const Shell = () => {
           element={
             <Guarded permission="forms.read">
               <Leads key="hiring" hiring />
+            </Guarded>
+          }
+        />
+        <Route
+          path="/job-applications"
+          element={
+            <Guarded permission="forms.read">
+              <JobApplications />
             </Guarded>
           }
         />

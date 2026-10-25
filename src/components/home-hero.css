@@ -6,8 +6,8 @@
   --hh-navy: #102a5c;
   --hh-blue: #2563eb;
   --hh-bright: #1677ff;
-  --hh-orange: #ff5a0a;
-  --hh-orange-dark: #e84d00;
+  --hh-orange: #c2410c; /* white text 5.18:1 (WCAG AA) */
+  --hh-orange-dark: #9a3412;
   --hh-body: #536987;
   --hh-surface: #f1f7ff;
   --hh-border: #e0ebfa;
@@ -81,10 +81,11 @@
   line-height: 1.65;
 }
 
+/* Two by two: four labels never fit one row of the copy column unbroken. */
 .hh-features {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--hh-space-2);
+  grid-template-columns: repeat(2, max-content);
+  gap: var(--hh-space-2) var(--hh-space-5);
   margin: 0 0 var(--hh-space-5);
   padding: 0;
   list-style: none;
@@ -131,14 +132,17 @@
   transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* Brand blue, matching the navbar's Enroll Now and every other primary
+   button. White text: 5.17:1 on #2563eb, 6.29:1 on #4f46e5. */
 .hh-btn--primary {
-  background: var(--hh-orange);
-  box-shadow: 0 10px 24px rgba(255, 90, 10, 0.25);
+  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.26);
   color: #fff;
 }
 
 .hh-btn--primary:hover {
-  background: var(--hh-orange-dark);
+  background: linear-gradient(135deg, #1d4ed8 0%, #4338ca 100%);
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.34);
   transform: translateY(-1px);
 }
 
@@ -157,36 +161,35 @@
   outline-offset: 3px;
 }
 
-/* ── Visual: photo, orbs, note, career-path card ──────────────────── */
+/* ── Visual: the brain ────────────────────────────────────────────── */
 
+/* Reserves the brain's column. NeuralFlow's shared canvas measures this box
+   to place and size the brain, so it stays a plain, unpadded box. */
 .hh-visual {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(210px, 40%, 250px);
-  align-items: start;
-  min-height: 520px;
+  min-height: clamp(440px, 38vw, 540px);
 }
 
-/* The 3D neural brain (HeroBrain.jsx). The deep-blue core is CSS so the
-   stage reads as finished before three.js arrives, and when WebGL is
-   missing; the particles glow against it and thin out onto the page. */
+/* The pale atmosphere behind the brain: CSS so the column reads as finished
+   before three.js arrives (and without WebGL). The shared canvas draws the
+   same haze in GL and this fades out (neural-flow.css); the still copy draws
+   over it. Localized, so the copy column stays clean white. */
 .hh-orbit {
   position: absolute;
   z-index: 0;
-  inset: -6% -6% -4% -12%;
+  inset: -6%;
   pointer-events: none;
   background: radial-gradient(
-    closest-side circle at 36% 50%,
-    rgba(10, 28, 78, 0.95) 0%,
-    rgba(14, 40, 104, 0.85) 45%,
-    rgba(29, 78, 216, 0.25) 72%,
-    transparent 100%
+    closest-side circle at 50% 50%,
+    rgba(229, 248, 255, 0.9) 0%,
+    rgba(234, 242, 255, 0.7) 40%,
+    rgba(234, 242, 255, 0) 85%
   );
 }
 
 .hh-orbit canvas {
   animation: hh-orbit-in 1.4s ease-out both;
-  /* Stars and motes fade out before the canvas edge instead of being cut. */
+  /* Motes fade out before the canvas edge instead of being cut. */
   mask-image: radial-gradient(closest-side, #000 72%, transparent);
 }
 
@@ -195,100 +198,14 @@
   to { opacity: 1; transform: none; }
 }
 
-/* The card floats at its own depth: HeroBrain writes --hh-p (0–1, hero
-   scroll progress). */
-.hh-path {
-  translate: 0 calc(var(--hh-p, 0) * -56px);
-}
-
-.hh-path {
-  position: relative;
-  z-index: 2;
-  grid-column: 2;
-  grid-row: 1;
-  align-self: center;
-  margin-top: -8%;
-  padding: var(--hh-space-3);
-  border: 1px solid var(--hh-border);
-  border-radius: 18px;
-  background: #fff;
-  box-shadow: 0 18px 44px rgba(16, 42, 92, 0.12);
-}
-
-.hh .hh-path h2 {
-  margin: 0 0 var(--hh-space-2);
-  color: var(--hh-navy);
-  font-family: "Manrope", "Inter", system-ui, sans-serif;
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-}
-
-.hh-path ol {
-  position: relative;
-  display: grid;
-  gap: var(--hh-space-3);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-/* The thin line threading the four step icons. */
-.hh-path ol::before {
-  content: "";
+/* Visually hidden, still read by crawlers and screen readers. */
+.hh-sr {
   position: absolute;
-  left: 17px;
-  top: 18px;
-  bottom: 18px;
-  border-left: 1.5px dashed var(--hh-border);
-}
-
-.hh-path li {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: var(--hh-space-2);
-}
-
-.hh-path__icon {
-  flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  color: #fff;
-  box-shadow: 0 0 0 4px #fff;
-}
-
-.hh-path__icon.is-blue {
-  background: var(--hh-blue);
-}
-
-.hh-path__icon.is-orange {
-  background: var(--hh-orange);
-}
-
-.hh-path__icon.is-green {
-  background: #16a34a;
-}
-
-.hh-path__icon.is-purple {
-  background: #7c3aed;
-}
-
-.hh-path strong {
-  display: block;
-  color: var(--hh-navy);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.hh-path small {
-  display: block;
-  color: var(--hh-body);
-  font-size: 11.5px;
-  line-height: 1.35;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 /* ── Stats panel ──────────────────────────────────────────────────── */
@@ -300,7 +217,11 @@
   padding: var(--hh-space-4) 0;
   border: 1px solid var(--hh-border);
   border-radius: 20px;
-  background: linear-gradient(180deg, #fff, var(--hh-surface));
+  /* Frosted, not opaque: the shared brain stays put while the hero scrolls
+     over it, so the panel passes in front of it as glass. */
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(241, 247, 255, 0.72));
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
   box-shadow: 0 12px 34px rgba(16, 42, 92, 0.06);
   list-style: none;
 }
@@ -362,11 +283,6 @@
     display: none;
   }
 
-  /* The visual is narrow here, so drop the card to the bottom corner. */
-  .hh-path {
-    align-self: end;
-    margin: 0 0 6%;
-  }
 }
 
 @media (max-width: 899px) {
@@ -375,7 +291,7 @@
   }
 
   .hh-visual {
-    min-height: 0;
+    min-height: clamp(320px, 56vw, 460px);
     max-width: 620px;
     width: 100%;
     margin: var(--hh-space-3) auto 0;
@@ -456,61 +372,12 @@
   }
 
   .hh-visual {
-    grid-template-columns: 1fr;
-    row-gap: var(--hh-space-2);
-    margin-top: var(--hh-space-4);
+    min-height: min(82vw, 340px);
+    margin-top: var(--hh-space-3);
   }
 
-  /* The brain takes its own row above the card instead of sitting behind. */
   .hh-orbit {
-    position: relative;
-    inset: auto;
-    height: min(82vw, 340px);
-    background: radial-gradient(
-      closest-side circle at 50% 50%,
-      rgba(10, 28, 78, 0.95) 0%,
-      rgba(14, 40, 104, 0.85) 45%,
-      rgba(29, 78, 216, 0.25) 72%,
-      transparent 100%
-    );
-  }
-
-  .hh-path {
-    translate: none;
-  }
-
-  /* The four steps in one row: icon over title. */
-  .hh-path {
-    grid-column: 1;
-    grid-row: 2;
-    margin-top: 0;
-    padding: var(--hh-space-2) var(--hh-space-2) var(--hh-space-3);
-  }
-
-  .hh .hh-path h2 {
-    margin-bottom: var(--hh-space-2);
-    font-size: 14px;
-  }
-
-  .hh-path ol {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--hh-space-1);
-  }
-
-  .hh-path li {
-    flex-direction: column;
-    gap: 6px;
-    text-align: center;
-  }
-
-  .hh-path strong {
-    font-size: 12px;
-    line-height: 1.2;
-  }
-
-  .hh-path small,
-  .hh-path ol::before {
-    display: none;
+    inset: 0;
   }
 
   /* Stats: icon beside the number, two compact columns. */

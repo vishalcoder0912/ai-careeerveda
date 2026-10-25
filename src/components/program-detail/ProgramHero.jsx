@@ -38,19 +38,13 @@ const MetaIcon = ({name}) => (
   </svg>
 );
 
-const ProgramHero = ({program, applyHref}) => {
-  const category = program.category;
-  const status = program.seats
-    ? "Admissions Open · Limited Seats"
-    : program.nextBatch
-      ? `Next batch · ${program.nextBatch}`
-      : null;
+const heroStatus = (program) => {
+  if (program.seats) return "Admissions Open · Limited Seats";
+  return program.nextBatch ? `Next batch · ${program.nextBatch}` : null;
+};
 
-  // Reference headline is two-tone: the shared prefix stays navy and the
-  // program name carries the brand accent.
-  const {prefix, keyword} = titleParts(program.fullTitle || program.title);
-
-  const meta = [
+const heroMeta = (program) =>
+  [
     program.duration && {label: "Duration", value: program.duration, icon: "calendar"},
     program.mentorship && {
       label: "Mentorship",
@@ -60,6 +54,53 @@ const ProgramHero = ({program, applyHref}) => {
     program.format && {label: "Format", value: program.format, icon: "monitor"},
     program.learners && {label: "Learners", value: program.learners, icon: "users", count: true},
   ].filter(Boolean);
+
+const HeroBadges = ({category, status, badges}) => {
+  if (!category && !status && !(badges?.length > 0)) return null;
+  return (
+    <div className="pd-badges">
+      {category && <span className="pd-badge pd-badge--category">{category}</span>}
+      {status && <span className="pd-badge pd-badge--status">{status}</span>}
+      {badges?.map((badge) => (
+        <span className="pd-badge" key={badge}>{badge}</span>
+      ))}
+    </div>
+  );
+};
+
+const HeroVisual = ({image, category}) =>
+  image ? (
+    <div className="pd-visual-frame">
+      <img
+        src={cdnImage(image, 880)}
+        srcSet={cdnSrcSet(image, 880)}
+        sizes="(max-width: 767px) 92vw, (max-width: 1199px) 60vw, 560px"
+        width={880}
+        height={550}
+        alt=""
+        loading="eager"
+        decoding="async"
+        draggable="false"
+        onError={(event) => {
+          event.currentTarget.closest(".pd-visual-frame")?.remove();
+        }}
+      />
+    </div>
+  ) : (
+    <div className="pd-visual-frame pd-visual-frame--empty" aria-hidden="true">
+      <span>{category || "CareerVeda"}</span>
+    </div>
+  );
+
+const ProgramHero = ({program, applyHref}) => {
+  const category = program.category;
+  const status = heroStatus(program);
+
+  // Reference headline is two-tone: the shared prefix stays navy and the
+  // program name carries the brand accent.
+  const {prefix, keyword} = titleParts(program.fullTitle || program.title);
+
+  const meta = heroMeta(program);
 
   return (
     <section className="pd-hero">
@@ -78,15 +119,7 @@ const ProgramHero = ({program, applyHref}) => {
           <Reveal className="pd-hero__copy">
             <p className="pd-eyebrow">CareerVeda Program Studio</p>
 
-            {(category || status || program.badges?.length > 0) && (
-              <div className="pd-badges">
-                {category && <span className="pd-badge pd-badge--category">{category}</span>}
-                {status && <span className="pd-badge pd-badge--status">{status}</span>}
-                {program.badges?.map((badge) => (
-                  <span className="pd-badge" key={badge}>{badge}</span>
-                ))}
-              </div>
-            )}
+            <HeroBadges category={category} status={status} badges={program.badges} />
 
             <h1>
               {prefix}
@@ -117,28 +150,7 @@ const ProgramHero = ({program, applyHref}) => {
           </Reveal>
 
           <Reveal className="pd-hero__visual" amount={0.1}>
-            {program.image ? (
-              <div className="pd-visual-frame">
-                <img
-                  src={cdnImage(program.image, 880)}
-                  srcSet={cdnSrcSet(program.image, 880)}
-                  sizes="(max-width: 767px) 92vw, (max-width: 1199px) 60vw, 560px"
-                  width={880}
-                  height={550}
-                  alt=""
-                  loading="eager"
-                  decoding="async"
-                  draggable="false"
-                  onError={(event) => {
-                    event.currentTarget.closest(".pd-visual-frame")?.remove();
-                  }}
-                />
-              </div>
-            ) : (
-              <div className="pd-visual-frame pd-visual-frame--empty" aria-hidden="true">
-                <span>{program.category || "CareerVeda"}</span>
-              </div>
-            )}
+            <HeroVisual image={program.image} category={program.category} />
           </Reveal>
         </div>
 

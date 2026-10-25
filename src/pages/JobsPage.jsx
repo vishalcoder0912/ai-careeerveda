@@ -1,9 +1,12 @@
-import {useMemo, useState} from "react";
+import {lazy, Suspense, useMemo, useState} from "react";
 import {ArrowUpRight, Briefcase, Building2, Clock, Info, MapPin, Search, X} from "lucide-react";
 import {jobs as staticJobs} from "../data/jobsData";
 import {useContentList} from "../hooks/useContent";
 import {adaptJob, LINKEDIN_SOURCE} from "../lib/contentAdapters";
 import "../components/jobs-page.css";
+
+// Only needed once someone clicks Apply, so it stays out of the page chunk.
+const JobApplyDialog = lazy(() => import("../components/JobApplyDialog"));
 
 // Categories are matched against the listing title with a pattern rather than a
 // list of exact titles. The list version had to name every title in the
@@ -60,6 +63,7 @@ const JobsPage = () => {
   const [category, setCategory] = useState("All");
   const [workMode, setWorkMode] = useState("All");
   const [jobType, setJobType] = useState("All");
+  const [applying, setApplying] = useState(null);
 
   // How many listings each category matches, shown in the dropdown.
   const categoryCounts = useMemo(() => {
@@ -204,46 +208,60 @@ const JobsPage = () => {
               <article key={job.id} className="job-card">
                 <div className="job-card__header">
                   <h2 className="job-card__title">{job.title}</h2>
-                  {job.featured && <span className="job-card__badge">Featured</span>}
+                  {job.acceptsApplications ? (
+                    <span className="job-card__badge job-card__badge--direct">Hiring via CareerVeda</span>
+                  ) : (
+                    job.featured && <span className="job-card__badge">Featured</span>
+                  )}
                 </div>
 
                 <div className="job-card__company">{job.company}</div>
 
+                {/* Blank details are skipped, not rendered as a bare icon. */}
                 <ul className="job-card__meta">
-                  <li><MapPin size={15} aria-hidden="true" />{job.location}</li>
-                  <li><Building2 size={15} aria-hidden="true" />{job.workMode}</li>
-                  <li><Briefcase size={15} aria-hidden="true" />{job.experience}</li>
-                  <li><Clock size={15} aria-hidden="true" />{job.jobType}</li>
+                  {job.location && <li><MapPin size={15} aria-hidden="true" />{job.location}</li>}
+                  {job.workMode && <li><Building2 size={15} aria-hidden="true" />{job.workMode}</li>}
+                  {job.experience && <li><Briefcase size={15} aria-hidden="true" />{job.experience}</li>}
+                  {job.jobType && <li><Clock size={15} aria-hidden="true" />{job.jobType}</li>}
                 </ul>
 
                 {job.salary && <p className="job-card__salary">{job.salary}</p>}
 
                 <p className="job-card__description">{job.description}</p>
 
-                <div className="job-card__skills">
-                  {job.skills.map((skill) => (
-                    <span key={skill} className="job-card__skill">{skill}</span>
-                  ))}
-                </div>
+                {job.skills.length > 0 && (
+                  <div className="job-card__skills">
+                    {job.skills.map((skill) => (
+                      <span key={skill} className="job-card__skill">{skill}</span>
+                    ))}
+                  </div>
+                )}
 
                 <div className="job-card__footer">
                   <span className="job-card__date">
                     {job.postedDate && `Listed ${formatPosted(job.postedDate)}`}
                   </span>
-                  <a
-                    className="job-card__apply"
-                    href={job.applyUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title={
-                      job.source === LINKEDIN_SOURCE
-                        ? `Newest "${job.title}" posts on LinkedIn (past 3 days)`
-                        : `Apply for ${job.title} at ${job.company}`
-                    }
-                  >
-                    {job.source === LINKEDIN_SOURCE ? "See latest openings" : "Apply Now"}
-                    <ArrowUpRight size={16} aria-hidden="true" />
-                  </a>
+                  {job.acceptsApplications ? (
+                    <button type="button" className="job-card__apply" onClick={() => setApplying(job)}>
+                      Apply on CareerVeda
+                      <ArrowUpRight size={16} aria-hidden="true" />
+                    </button>
+                  ) : (
+                    <a
+                      className="job-card__apply"
+                      href={job.applyUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={
+                        job.source === LINKEDIN_SOURCE
+                          ? `Newest "${job.title}" posts on LinkedIn (past 3 days)`
+                          : `Apply for ${job.title} at ${job.company}`
+                      }
+                    >
+                      {job.source === LINKEDIN_SOURCE ? "See latest openings" : "Apply Now"}
+                      <ArrowUpRight size={16} aria-hidden="true" />
+                    </a>
+                  )}
                 </div>
               </article>
             ))
@@ -265,6 +283,12 @@ const JobsPage = () => {
           <Info size={14} aria-hidden="true" /> Aggregated from third-party job sites &middot; for reference only
         </p>
       </div>
+
+      {applying && (
+        <Suspense fallback={null}>
+          <JobApplyDialog job={applying} onClose={() => setApplying(null)} />
+        </Suspense>
+      )}
     </main>
   );
 };

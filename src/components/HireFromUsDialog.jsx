@@ -2,6 +2,7 @@ import {useEffect, useId, useRef, useState} from "react";
 import {useContentList} from "../hooks/useContent";
 import {adaptProgram} from "../lib/contentAdapters";
 import {submitLead} from "../lib/publicApi";
+import {useTurnstile} from "../lib/useTurnstile";
 import {useLockSmoothScroll} from "../lib/smoothScroll";
 import {HIRE_FROM_US_HREF} from "../config/externalLinks";
 import "./hire-from-us.css";
@@ -81,6 +82,7 @@ const HireFromUsDialog = () => {
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("idle"); // idle | submitting | success | error
   const [message, setMessage] = useState("");
+  const captcha = useTurnstile();
   const [mailLinks, setMailLinks] = useState(null);
 
   const {items: programs} = useContentList("programs", {adapt: adaptProgram});
@@ -138,7 +140,9 @@ const HireFromUsDialog = () => {
         source: "hire-from-us-dialog",
         consent: true,
         sourcePage: window.location.pathname,
+        turnstileToken: captcha.token,
       });
+      captcha.reset(); // tokens are single-use
 
       if (!result.ok) {
         if (result.errors) setErrors(result.errors);
@@ -152,6 +156,7 @@ const HireFromUsDialog = () => {
       setMessage("Thank you! Our placement team will contact you shortly. A copy has been sent to your email.");
       setValues(EMPTY);
     } catch {
+      captcha.reset();
       setStatus("error");
       setMessage("We couldn't reach the server. Please check your connection and try again.");
     }
@@ -292,6 +297,8 @@ const HireFromUsDialog = () => {
               autoComplete="off"
               aria-hidden="true"
             />
+
+            {captcha.widget}
 
             <button type="submit" className="hire-submit" disabled={status === "submitting"}>
               {status === "submitting" ? "Submitting…" : "Submit Enquiry"}

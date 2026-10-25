@@ -1,0 +1,927 @@
+# CareerVeda — full program reference
+
+> CareerVeda is an Indian ed-tech company offering mentor-led postgraduate programs in product management, data analytics, data science with AI, investment banking, cybersecurity and data engineering, with placement assistance and live industry projects.
+
+This is the long form of https://careerveda.in/llms.txt: every program in full. CareerVeda
+(Career Veda, CareerVeda India, careerveda.in) is at https://careerveda.in.
+Contact: Info@careerveda.in, +91 9217801191.
+Fees and batch dates change between batches; each program's page is authoritative.
+
+## PG Program in Gen AI and Agentic AI
+
+URL: https://careerveda.in/programs/gen-ai-agentic-ai
+
+Master Generative AI and agentic systems end to end — LLMs, prompt engineering, RAG, fine-tuning, autonomous agents, MCP tooling and multi-agent orchestration — through live mentor-led classes, hands-on builds and a production-ready portfolio.
+
+- Duration: 6 Months
+- Format: Live Online
+- Eligibility: Freshers, Graduates, Experienced
+- Fee: ₹1,45,000
+- EMI: 3, 6, 9 & 12 months (No Cost EMIs)
+- Next batch: September 19, 2026
+- Projects: 30+
+
+### Skills and tools
+
+Python, LLMs, RAG, Prompt Engineering, Fine-Tuning, Agentic AI, MCP, Multi-Agent
+
+### Curriculum modules
+
+- Engineering Foundations
+- 1. Python for AI
+- 2. Maths & Data Foundations
+- 3. Deep Learning & Transformers
+- 4. LLM Foundations & Prompt Engineering
+- 5. Building with LLM APIs
+- 6. Embeddings, Vector Search & RAG
+- 7. RAG Evaluation & Failure Lab
+- 8. Fine-Tuning & Model Customization
+- 9. Agent Engineering Fundamentals
+- 10. Tool Engineering, Memory & State
+- 11. Multi-Agent Systems & Orchestration
+- 12. MCP, Agent Interoperability & A2A
+- 13. Multimodal & Computer-Use AI
+- 14. LLMOps, Security & Cost Engineering
+- 15. Capstone: Production Gen AI & Agentic Platform
+
+### Outcomes
+
+- A portfolio of Gen AI applications, RAG systems and autonomous agents
+- Readiness for AI Engineer, LLM Developer, Gen AI and Agentic AI roles
+- Production confidence — evaluation, deployment, observability and cost control
+
+### Projects and internship
+
+- Real-World Gen AI & Agentic Projects
+- LLM, RAG and Agent Builds
+- MCP and Multi-Agent Platform Delivery
+- Evaluation, Security & Cost Labs
+- Production Deployment & Monitoring
+- Industry Mentorship by Practising AI Engineers
+
+### Questions about this program
+
+**How long is the PG Program in Gen AI and Agentic AI?**
+The PG Program in Gen AI and Agentic AI runs for 6 Months and is delivered Live Online.
+
+**What is the fee for the PG Program in Gen AI and Agentic AI?**
+The program investment is ₹1,45,000 (Including GST). EMI options: 3, 6, 9 & 12 months (No Cost EMIs).
+
+**Who can join the PG Program in Gen AI and Agentic AI?**
+It is open to: Freshers, Graduates, Experienced.
+
+**When does the next batch of the PG Program in Gen AI and Agentic AI start?**
+The next batch starts on September 19, 2026.
+
+**What skills and tools does the PG Program in Gen AI and Agentic AI cover?**
+Python, LLMs, RAG, Prompt Engineering, Fine-Tuning, Agentic AI, MCP, Multi-Agent.
+
+**How many projects are included?**
+30+ hands-on projects, built on real-world problems.
+
+**What will I be able to do after the PG Program in Gen AI and Agentic AI?**
+A portfolio of Gen AI applications, RAG systems and autonomous agents; Readiness for AI Engineer, LLM Developer, Gen AI and Agentic AI roles; Production confidence — evaluation, deployment, observability and cost control.
+
+## PG Program in AI Systems & Agentic AI Engineering
+
+URL: https://careerveda.in/programs/ai-systems-agentic-ai
+
+A rigorous 24-week engineering program that takes you from Python to production AI systems: LLMs, RAG, agents, memory, multi-agent orchestration, MCP/A2A, GPU labs, evaluation, security and LLMOps, ending in two flagship AI platforms in your portfolio.
+
+- Duration: 6 Months
+- Format: Live Online
+- Eligibility: Freshers, Graduates, Experienced
+- Fee: ₹1,49,000
+- EMI: 3, 6, 9 & 12 months (No Cost EMIs)
+- Next batch: September 19, 2026
+- Projects: 39+
+
+### Skills and tools
+
+Python, LLMs, RAG, Agents, MCP, Multi-Agent, Fine-Tuning, LLMOps
+
+### Curriculum modules
+
+- Engineering Bridge
+- 1. Python for AI Engineering
+- 2. Object-Oriented & Functional Programming
+- 3. DSA & AI Problem-Solving
+- 4. Backend & AI Software Engineering
+- 5. SQL, Data Analytics & Business Intelligence
+- 6. Statistics & Machine Learning Foundations
+- 7. Deep Learning & Transformer Foundations
+- 8. LLM Engineering & Foundation Models
+- 9. Prompt, Context & Structured Generation Engineering
+- 10. Embeddings, Vector Search & RAG Engineering
+- 11. RAG Evaluation & Failure Lab
+- 12. Agent Engineering Fundamentals
+- 13. Tool Engineering & the Agent Runtime
+- 14. Agent Memory & State Engineering
+- 15. Planning, Reasoning & Long-Running Agents
+- 16. Multi-Agent Systems
+- 17. Agent Framework Engineering
+- 18. MCP, Agent Interoperability & A2A
+- 19. Multimodal & Computer-Use AI
+- 20. GPU & AI Infrastructure Engineering
+- 21. LLM Fine-Tuning & Model Customization
+- 22. AI Evaluation Engineering
+- 23. AI Security, Governance & Responsible AI
+- 24. LLMOps, Observability & AI Cost Engineering
+- 25. Production AI Engineering & MLOps
+- 26. Product Engineering & Business Value for AI
+- 27. Hackathon Engineering
+
+### Outcomes
+
+- Two flagship AI systems and 39+ portfolio artifacts across nine domains
+- Readiness for AI Engineer, LLM, RAG and Agentic AI roles with demonstrable builds
+- Production confidence: evaluation, security, observability and cost engineering
+
+### Projects and internship
+
+- Real-World AI Systems Projects
+- Production RAG & Agent Builds
+- GPU & Inference Optimisation
+- Multi-Agent Platform Delivery
+- AI Evaluation & Security Labs
+- Industry Mentorship by AI Engineers
+
+### Questions about this program
+
+**How long is the PG Program in AI Systems & Agentic AI Engineering?**
+The PG Program in AI Systems & Agentic AI Engineering runs for 6 Months and is delivered Live Online.
+
+**What is the fee for the PG Program in AI Systems & Agentic AI Engineering?**
+The program investment is ₹1,49,000 (Including GST). EMI options: 3, 6, 9 & 12 months (No Cost EMIs).
+
+**Who can join the PG Program in AI Systems & Agentic AI Engineering?**
+It is open to: Freshers, Graduates, Experienced.
+
+**When does the next batch of the PG Program in AI Systems & Agentic AI Engineering start?**
+The next batch starts on September 19, 2026.
+
+**What skills and tools does the PG Program in AI Systems & Agentic AI Engineering cover?**
+Python, LLMs, RAG, Agents, MCP, Multi-Agent, Fine-Tuning, LLMOps.
+
+**How many projects are included?**
+39+ hands-on projects, built on real-world problems.
+
+**What will I be able to do after the PG Program in AI Systems & Agentic AI Engineering?**
+Two flagship AI systems and 39+ portfolio artifacts across nine domains; Readiness for AI Engineer, LLM, RAG and Agentic AI roles with demonstrable builds; Production confidence: evaluation, security, observability and cost engineering.
+
+## PG Program in Product Management
+
+URL: https://careerveda.in/programs/product-management
+
+A structured, industry-focused program that prepares you to lead the end-to-end lifecycle of digital and technology-driven products. It blends business strategy, user-centric design, technology fundamentals and data-driven decision-making, so you can bridge engineering, design, marketing and business teams.
+
+- Duration: 6 Months
+- Format: Live Online
+- Eligibility: Freshers, Graduates, Experienced
+- Fee: 1,45,000
+- EMI: 3, 6, 9 & 12 months (No Cost EMIs)· Zero hidden charges
+- Next batch: September 19, 2026
+- Projects: 30+
+
+### Skills and tools
+
+Product Strategy, User Research, Agile, Analytics, Gen AI
+
+### Curriculum modules
+
+- 1. Preparatory Foundation
+- 2. Product Thinking & Customer Obsession
+- 3. Market Research & Competitive Intelligence
+- 4. User Research & Product Discovery
+- 5. Product Strategy & Vision Development
+- 6. Product Requirements & Roadmap Management
+- 7. UX, Wireframing & Product Design
+- 8. Agile Product Development
+- 9. Product Analytics & Decision Science
+- 10. AI for Product Managers
+- 11. Product Growth & Go-to-Market Strategy
+- 12. Product Leadership & Stakeholder Management
+- 13. Capstone Project
+
+### Outcomes
+
+- A portfolio of PRDs, prototypes, analytics dashboards and a GTM plan
+- Readiness for Associate Product Manager, Product Analyst, Product Executive and Junior PM roles
+- PM interview mastery: product cases, metrics, AI product scenarios and mock interview labs
+
+### Projects and internship
+
+- Real-world Product Management Projects
+- Product Roadmap Development
+- User Research & PRD Writing
+- Feature Launch & A/B Testing
+- Product Analytics & Metrics Tracking
+- Industry Mentorship by Senior PMs
+
+### Questions about this program
+
+**How long is the PG Program in Product Management?**
+The PG Program in Product Management runs for 6 Months and is delivered Live Online.
+
+**What is the fee for the PG Program in Product Management?**
+The program investment is ₹1,45,000 (Including GST). EMI options: 3, 6, 9 & 12 months (No Cost EMIs)· Zero hidden charges.
+
+**Who can join the PG Program in Product Management?**
+It is open to: Freshers, Graduates, Experienced.
+
+**When does the next batch of the PG Program in Product Management start?**
+The next batch starts on September 19, 2026.
+
+**What skills and tools does the PG Program in Product Management cover?**
+Product Strategy, User Research, Agile, Analytics, Gen AI.
+
+**How many projects are included?**
+30+ hands-on projects, built on real-world problems.
+
+**What will I be able to do after the PG Program in Product Management?**
+A portfolio of PRDs, prototypes, analytics dashboards and a GTM plan; Readiness for Associate Product Manager, Product Analyst, Product Executive and Junior PM roles; PM interview mastery: product cases, metrics, AI product scenarios and mock interview labs.
+
+## PG Program in Business Analytics with Generative AI
+
+URL: https://careerveda.in/programs/business-analytics
+
+Build a successful career in Business Analytics by mastering in-demand analytical tools, Generative AI, and real-world business problem-solving. Learn through live mentor-led sessions, hands-on projects, industry case studies, and career-focused training designed to make you job-ready.
+
+- Duration: 6 Months
+- Format: Live Online
+- Eligibility: Freshers, Graduates, Experienced
+- Fee: 1,25,000
+- EMI: 3, 6, 9 & 12 months (No Cost EMIs)
+- Next batch: September 19, 2026
+- Projects: 30+
+
+### Skills and tools
+
+Excel, SQL, Python, Power BI, Gen AI
+
+### Curriculum modules
+
+- 1. Introduction to Business Analytics
+- 2. Excel for Business Analysis
+- 3. Advanced Excel & Spreadsheet Modeling
+- 4. Business Statistics Foundations
+- 5. Data Cleaning & Preparation
+- 6. SQL Fundamentals for Analysts
+- 7. Advanced SQL & Query Optimisation
+- 8. Data Modeling for Reporting
+- 9. Power BI Fundamentals
+- 10. Advanced Power BI & DAX
+- 11. Tableau for Visual Analytics
+- 12. Dashboard Design & Data Storytelling
+- 13. Python for Business Analytics
+- 14. Exploratory Data Analysis
+- 15. Business Metrics & KPI Frameworks
+- 16. Marketing & Sales Analytics
+- 17. Finance & Operations Analytics
+- 18. Predictive Analytics for Business
+- 19. Generative AI for Analysts
+- 20. Business Analytics Capstone Project
+- 21. Analytics Career Readiness & Interview Prep
+
+### Outcomes
+
+- Business analyst project portfolio
+- Interview readiness for analytics roles
+- Confidence with business data and dashboards
+
+### Projects and internship
+
+- Real-world Business Analytics Projects
+- Dashboard & Reporting Build-Outs
+- KPI Framework Design for Live Businesses
+- Stakeholder Insight Presentations
+- A/B Test and Experiment Analysis
+- Industry Mentorship by Practising Analysts
+
+### Questions about this program
+
+**How long is the PG Program in Business Analytics with Generative AI?**
+The PG Program in Business Analytics with Generative AI runs for 6 Months and is delivered Live Online.
+
+**What is the fee for the PG Program in Business Analytics with Generative AI?**
+The program investment is ₹1,25,000 (Including GST). EMI options: 3, 6, 9 & 12 months (No Cost EMIs).
+
+**Who can join the PG Program in Business Analytics with Generative AI?**
+It is open to: Freshers, Graduates, Experienced.
+
+**When does the next batch of the PG Program in Business Analytics with Generative AI start?**
+The next batch starts on September 19, 2026.
+
+**What skills and tools does the PG Program in Business Analytics with Generative AI cover?**
+Excel, SQL, Python, Power BI, Gen AI.
+
+**How many projects are included?**
+30+ hands-on projects, built on real-world problems.
+
+**What will I be able to do after the PG Program in Business Analytics with Generative AI?**
+Business analyst project portfolio; Interview readiness for analytics roles; Confidence with business data and dashboards.
+
+## PG Program in Data Analytics with Generative AI
+
+URL: https://careerveda.in/programs/data-analytics
+
+Master the skills to transform raw data into actionable business insights. Learn Excel, SQL, Python, Power BI, Statistics, and Generative AI through live classes, hands-on projects, and real-world case studies to become an industry-ready Data Analyst.
+
+- Duration: 6 Months
+- Format: Live Online
+- Eligibility: Freshers, Graduates, Experienced
+- Fee: ₹1,35,000
+- EMI: 3, 6, 9 & 12 months (No Cost EMIs)
+- Next batch: September 19, 2026
+- Projects: 30+
+
+### Skills and tools
+
+Excel, SQL, Python, Power BI, Tableau
+
+### Curriculum modules
+
+- 1. Introduction to Data Analytics
+- 2. Excel for Data Analysis
+- 3. Advanced Excel & Power Query
+- 4. Statistics for Analysts
+- 5. Data Cleaning & Wrangling
+- 6. SQL Fundamentals
+- 7. Advanced SQL for Analytics
+- 8. Python Foundations for Analysts
+- 9. Data Analysis with pandas
+- 10. Exploratory Data Analysis
+- 11. Data Visualisation Principles
+- 12. Power BI Fundamentals
+- 13. DAX & Advanced Power BI
+- 14. Tableau for Data Analysts
+- 15. Dashboards & Reporting Workflows
+- 16. Data Storytelling & Communication
+- 17. Business Metrics & Domain Context
+- 18. Predictive Analysis Foundations
+- 19. AI-Assisted Analytics Workflows
+- 20. Data Analytics Capstone Project
+- 21. Analyst Career Readiness & Interview Prep
+
+### Outcomes
+
+- Data analyst resume projects
+- Mock interviews and LinkedIn optimization
+- Placement preparation with hiring partner access
+
+### Projects and internship
+
+- Real-world Data Analytics Projects
+- End-to-End Data Cleaning & Analysis
+- Dashboard & Report Development
+- Insight Presentations to Stakeholders
+- Metric Investigation & Root-Cause Analysis
+- Industry Mentorship by Working Data Analysts
+
+### Questions about this program
+
+**How long is the PG Program in Data Analytics with Generative AI?**
+The PG Program in Data Analytics with Generative AI runs for 6 Months and is delivered Live Online.
+
+**What is the fee for the PG Program in Data Analytics with Generative AI?**
+The program investment is ₹1,35,000 (Including GST). EMI options: 3, 6, 9 & 12 months (No Cost EMIs).
+
+**Who can join the PG Program in Data Analytics with Generative AI?**
+It is open to: Freshers, Graduates, Experienced.
+
+**When does the next batch of the PG Program in Data Analytics with Generative AI start?**
+The next batch starts on September 19, 2026.
+
+**What skills and tools does the PG Program in Data Analytics with Generative AI cover?**
+Excel, SQL, Python, Power BI, Tableau.
+
+**How many projects are included?**
+30+ hands-on projects, built on real-world problems.
+
+**What will I be able to do after the PG Program in Data Analytics with Generative AI?**
+Data analyst resume projects; Mock interviews and LinkedIn optimization; Placement preparation with hiring partner access.
+
+## PG Program in Investment Banking
+
+URL: https://careerveda.in/programs/investment-banking
+
+Master the world of Investment Banking with comprehensive training in financial modeling, M&A analysis, equity research, and deal execution. Learn from industry experts and build the skills needed to excel in top investment banks and financial institutions.
+
+- Duration: 6 Months
+- Format: Live Online
+- Eligibility: Freshers, Graduates, Experienced
+- Fee: 1,55,000
+- EMI: 3, 6, 9 & 12 months (No Cost EMIs)
+- Next batch: September 19, 2026
+- Projects: 30+
+
+### Skills and tools
+
+Excel, PowerPoint, Valuation, Pitch Decks
+
+### Curriculum modules
+
+- 1. Introduction to Investment Banking
+- 2. Accounting & Financial Statements
+- 3. Corporate Finance Basics
+- 4. M&A Fundamentals
+- 5. Deal Structuring & Negotiation
+- 6. M&A Modeling Project
+- 7. Equity Research Fundamentals
+- 8. Company Analysis & Forecasting
+- 9. Equity Research Report Writing
+- 10. Advanced Excel for Investment Banking
+- 11. Financial Software & Platforms
+- 12. Leveraged Buyout (LBO) Modeling
+- 13. Special Situations & Restructuring
+- 14. Debt Capital Markets
+- 15. Credit Analysis & Risk Assessment
+- 16. Technology & Healthcare Sectors
+- 17. Financial Services & Consumer Sectors
+- 18. Energy & Industrials Sectors
+- 19. Real Estate & Emerging Sectors
+- 20. Investment Banking Capstone Project
+- 21. IB Career Readiness & Interview Prep
+
+### Outcomes
+
+- Portfolio-ready finance case studies
+- Interview preparation for investment banking roles
+- Career roadmap for analyst and associate positions
+
+### Projects and internship
+
+- Real-world Investment Banking Deals
+- M&A Deal Execution & Analysis
+- Financial Modeling & Valuation Projects
+- Pitchbook Creation & Client Presentations
+- Equity Research Report Writing
+- Industry Mentorship by Investment Bankers
+
+### Questions about this program
+
+**How long is the PG Program in Investment Banking?**
+The PG Program in Investment Banking runs for 6 Months and is delivered Live Online.
+
+**What is the fee for the PG Program in Investment Banking?**
+The program investment is ₹1,55,000 (Including GST). EMI options: 3, 6, 9 & 12 months (No Cost EMIs).
+
+**Who can join the PG Program in Investment Banking?**
+It is open to: Freshers, Graduates, Experienced.
+
+**When does the next batch of the PG Program in Investment Banking start?**
+The next batch starts on September 19, 2026.
+
+**What skills and tools does the PG Program in Investment Banking cover?**
+Excel, PowerPoint, Valuation, Pitch Decks.
+
+**How many projects are included?**
+30+ hands-on projects, built on real-world problems.
+
+**What will I be able to do after the PG Program in Investment Banking?**
+Portfolio-ready finance case studies; Interview preparation for investment banking roles; Career roadmap for analyst and associate positions.
+
+## PG Program in Data Science with Generative AI
+
+URL: https://careerveda.in/programs/data-science-ai
+
+Master Data Science and Generative AI to become a complete AI professional. Learn data analysis, machine learning, deep learning, and cutting-edge generative AI models to solve real-world business problems.
+
+- Duration: 12 Months
+- Format: Live Online
+- Eligibility: Freshers, Graduates, Experienced
+- Fee: ₹1,55,000
+- EMI: 3, 6, 9 & 12 months (No Cost EMIs)
+- Next batch: September 19, 2026
+- Projects: 30+
+
+### Skills and tools
+
+Python, ML, NLP, LLMs, Agentic AI
+
+### Curriculum modules
+
+- 1. Introduction to Data Science & AI
+- 2. Python for Data Science
+- 3. Statistics & Probability
+- 4. Data Wrangling & Feature Engineering
+- 5. Exploratory Data Analysis & Visualisation
+- 6. Supervised Learning: Regression
+- 7. Supervised Learning: Classification
+- 8. Ensemble Methods & Model Tuning
+- 9. Unsupervised Learning
+- 10. Time Series Analysis & Forecasting
+- 11. Deep Learning Foundations
+- 12. Computer Vision
+- 13. Natural Language Processing
+- 14. Large Language Models
+- 15. Generative AI Applications
+- 16. Agentic AI Systems
+- 17. SQL & Big Data for Data Science
+- 18. Model Deployment & MLOps
+- 19. Responsible AI & Model Governance
+- 20. Data Science & AI Capstone Project
+- 21. AI Career Readiness & Interview Prep
+
+### Outcomes
+
+- AI and data science capstone portfolio
+- Role preparation for data scientist and AI engineer tracks
+- Practical confidence with modern AI tools and workflows
+
+### Projects and internship
+
+- Real-world Machine Learning Projects
+- Model Development & Evaluation Cycles
+- LLM and RAG Application Builds
+- Agentic AI Workflow Implementation
+- Model Deployment & Monitoring
+- Industry Mentorship by Practising AI Engineers
+
+### Questions about this program
+
+**How long is the PG Program in Data Science with Generative AI?**
+The PG Program in Data Science with Generative AI runs for 12 Months and is delivered Live Online.
+
+**What is the fee for the PG Program in Data Science with Generative AI?**
+The program investment is ₹1,55,000 (Including GST). EMI options: 3, 6, 9 & 12 months (No Cost EMIs).
+
+**Who can join the PG Program in Data Science with Generative AI?**
+It is open to: Freshers, Graduates, Experienced.
+
+**When does the next batch of the PG Program in Data Science with Generative AI start?**
+The next batch starts on September 19, 2026.
+
+**What skills and tools does the PG Program in Data Science with Generative AI cover?**
+Python, ML, NLP, LLMs, Agentic AI.
+
+**How many projects are included?**
+30+ hands-on projects, built on real-world problems.
+
+**What will I be able to do after the PG Program in Data Science with Generative AI?**
+AI and data science capstone portfolio; Role preparation for data scientist and AI engineer tracks; Practical confidence with modern AI tools and workflows.
+
+## PG Program in GEN AI
+
+URL: https://careerveda.in/programs/gen-ai
+
+Master Generative AI and transform your career with cutting-edge skills. Learn to build intelligent applications using the latest AI models, LLMs, and automation technologies.
+
+- Duration: 6 Months
+- Format: Live Online
+- Eligibility: Freshers, Graduates, Experienced
+- Fee: ₹1,40,000
+- EMI: 3, 6, 9 & 12 months (No Cost EMIs)
+- Next batch: September 19, 2026
+- Projects: 30+
+
+### Skills and tools
+
+Python, LLMs, Prompt Engineering, RAG, Vector Databases, Fine-Tuning, Agentic AI, LLMOps
+
+### Curriculum modules
+
+- 1. Introduction to Generative AI
+- 2. Python Foundations for Gen AI
+- 3. Deep Learning Essentials
+- 4. Natural Language Processing Foundations
+- 5. Transformers & Large Language Models
+- 6. Prompt Engineering
+- 7. Building with LLM APIs
+- 8. Embeddings & Vector Databases
+- 9. Retrieval-Augmented Generation (RAG)
+- 10. Fine-Tuning & Model Customisation
+- 11. Image, Audio & Multimodal Generation
+- 12. Agentic AI & Automation
+- 13. LLMOps, Deployment & Evaluation
+- 14. Responsible & Safe Gen AI
+- 15. End-to-End GenAI Application
+- 16. AI Career Readiness & Interview Prep
+
+### Outcomes
+
+- A portfolio of Gen AI applications, RAG systems and agents
+- Readiness for AI Engineer, LLM Developer and Gen AI Specialist roles
+- Practical confidence with modern Gen AI tools and workflows
+
+### Projects and internship
+
+- Real-world AI Project Implementation
+- LLM Application Development
+- AI Model Optimization
+- AI Research & Development
+- Industry Mentorship Program
+- Production Deployment Experience
+
+### Questions about this program
+
+**How long is the PG Program in GEN AI?**
+The PG Program in GEN AI runs for 6 Months and is delivered Live Online.
+
+**What is the fee for the PG Program in GEN AI?**
+The program investment is ₹1,40,000 (Including GST). EMI options: 3, 6, 9 & 12 months (No Cost EMIs).
+
+**Who can join the PG Program in GEN AI?**
+It is open to: Freshers, Graduates, Experienced.
+
+**When does the next batch of the PG Program in GEN AI start?**
+The next batch starts on September 19, 2026.
+
+**What skills and tools does the PG Program in GEN AI cover?**
+Python, LLMs, Prompt Engineering, RAG, Vector Databases, Fine-Tuning, Agentic AI, LLMOps.
+
+**How many projects are included?**
+30+ hands-on projects, built on real-world problems.
+
+**What will I be able to do after the PG Program in GEN AI?**
+A portfolio of Gen AI applications, RAG systems and agents; Readiness for AI Engineer, LLM Developer and Gen AI Specialist roles; Practical confidence with modern Gen AI tools and workflows.
+
+## PG Program in Data Engineering with Agentic & Gen AI
+
+URL: https://careerveda.in/programs/data-engineering
+
+Learn data pipelines, ETL, warehousing, cloud-ready workflows, and AI-powered automation for modern data teams.
+
+- Duration: 8 Months
+- Format: Live Online
+- Eligibility: Freshers, Graduates, Experienced
+- Fee: ₹1,55,000
+- EMI: 3, 6, 9 & 12 months (No Cost EMIs)
+- Next batch: September 19, 2026
+- Projects: 30+
+
+### Skills and tools
+
+SQL, Python, ETL, Pipelines, Gen AI
+
+### Curriculum modules
+
+- 1. Introduction to Data Engineering
+- 2. SQL for Data Engineering
+- 3. Python for Data Engineering
+- 4. Data Modeling & Warehouse Design
+- 5. ETL & ELT Fundamentals
+- 6. Data Ingestion & Source Systems
+- 7. Data Lakes & Lakehouse Architecture
+- 8. Cloud Data Warehouses
+- 9. Apache Spark & Distributed Processing
+- 10. Workflow Orchestration with Airflow
+- 11. Analytics Engineering with dbt
+- 12. Streaming Data with Kafka
+- 13. Data Quality & Testing
+- 14. Data Governance, Lineage & Security
+- 15. DataOps, CI/CD & Infrastructure
+- 16. Pipeline Monitoring & Reliability
+- 17. Generative AI for Data Engineering
+- 18. Vector Databases & Embedding Pipelines
+- 19. Agentic AI for Data Operations
+- 20. Data Engineering Capstone Project
+- 21. Data Career Readiness & Interview Prep
+
+### Outcomes
+
+- Data engineering project portfolio
+- Role readiness for analytics and data platform teams
+- Practical confidence with AI-assisted data workflows
+
+### Projects and internship
+
+- Real-world Data Pipeline Projects
+- ETL & Warehouse Build-Outs
+- Orchestration & Scheduling Implementation
+- Data Quality & Monitoring Work
+- Gen AI and Agentic Automation for Data Ops
+- Industry Mentorship by Working Data Engineers
+
+### Questions about this program
+
+**How long is the PG Program in Data Engineering with Agentic & Gen AI?**
+The PG Program in Data Engineering with Agentic & Gen AI runs for 8 Months and is delivered Live Online.
+
+**What is the fee for the PG Program in Data Engineering with Agentic & Gen AI?**
+The program investment is ₹1,55,000 (Including GST). EMI options: 3, 6, 9 & 12 months (No Cost EMIs).
+
+**Who can join the PG Program in Data Engineering with Agentic & Gen AI?**
+It is open to: Freshers, Graduates, Experienced.
+
+**When does the next batch of the PG Program in Data Engineering with Agentic & Gen AI start?**
+The next batch starts on September 19, 2026.
+
+**What skills and tools does the PG Program in Data Engineering with Agentic & Gen AI cover?**
+SQL, Python, ETL, Pipelines, Gen AI.
+
+**How many projects are included?**
+30+ hands-on projects, built on real-world problems.
+
+**What will I be able to do after the PG Program in Data Engineering with Agentic & Gen AI?**
+Data engineering project portfolio; Role readiness for analytics and data platform teams; Practical confidence with AI-assisted data workflows.
+
+## PG Program in Backend Development Engineering
+
+URL: https://careerveda.in/programs/backend-engineering
+
+Master server-side development, databases, APIs, authentication, deployment workflows, and scalable backend architecture.
+
+- Duration: 6 Months
+- Format: Live Online
+- Eligibility: Freshers, Graduates, Experienced
+- Fee: 1,70,000
+- EMI: 3, 6, 9 & 12 months (No Cost EMIs)
+- Next batch: September 19, 2026
+- Projects: 30+
+
+### Skills and tools
+
+Node.js, Express, MongoDB, SQL, Auth
+
+### Curriculum modules
+
+- 1. Introduction to Backend Engineering
+- 2. JavaScript & TypeScript Foundations
+- 3. Node.js Fundamentals
+- 4. Building APIs with Express
+- 5. REST API Design
+- 6. SQL Databases
+- 7. NoSQL & MongoDB
+- 8. ORMs & Data Access Layers
+- 9. Authentication & Authorization
+- 10. API Security
+- 11. Testing Backend Systems
+- 12. Caching & Performance
+- 13. Asynchronous Processing & Queues
+- 14. Real-Time Backends
+- 15. Microservices & System Architecture
+- 16. Docker & Containerisation
+- 17. Cloud Deployment & DevOps
+- 18. Observability & Production Operations
+- 19. Scalability & System Design
+- 20. Backend Engineering Capstone Project
+- 21. Engineering Career Readiness & Interview Prep
+
+### Outcomes
+
+- Backend API project portfolio
+- Interview preparation for backend developer roles
+- Confidence with real deployment and database workflows
+
+### Projects and internship
+
+- Real-world Backend Engineering Projects
+- Production-Style API Development
+- Database Design & Optimisation Work
+- Code Review & Pull Request Workflows
+- Deployment & Release Participation
+- Industry Mentorship by Working Backend Engineers
+
+### Questions about this program
+
+**How long is the PG Program in Backend Development Engineering?**
+The PG Program in Backend Development Engineering runs for 6 Months and is delivered Live Online.
+
+**What is the fee for the PG Program in Backend Development Engineering?**
+The program investment is ₹1,70,000 (Including GST). EMI options: 3, 6, 9 & 12 months (No Cost EMIs).
+
+**Who can join the PG Program in Backend Development Engineering?**
+It is open to: Freshers, Graduates, Experienced.
+
+**When does the next batch of the PG Program in Backend Development Engineering start?**
+The next batch starts on September 19, 2026.
+
+**What skills and tools does the PG Program in Backend Development Engineering cover?**
+Node.js, Express, MongoDB, SQL, Auth.
+
+**How many projects are included?**
+30+ hands-on projects, built on real-world problems.
+
+**What will I be able to do after the PG Program in Backend Development Engineering?**
+Backend API project portfolio; Interview preparation for backend developer roles; Confidence with real deployment and database workflows.
+
+## PG Program in CyberSecurity
+
+URL: https://careerveda.in/programs/cybersecurity
+
+Learn practical digital security foundations, network safety, risk awareness, and defensive monitoring workflows.
+
+- Duration: 6 Months
+- Format: Live Online
+- Eligibility: Freshers, Graduates, Experienced
+- Fee: 1,65,000
+- EMI: 3, 6, 9 & 12 months (No Cost EMIs)
+- Next batch: September 19, 2026
+- Projects: 30+
+
+### Skills and tools
+
+Linux, Networking, Web Safety, Monitoring, Reports
+
+### Curriculum modules
+
+- 1. Introduction to CyberSecurity
+- 2. Networking Fundamentals
+- 3. Linux Essentials for Security
+- 4. Windows & Endpoint Security
+- 5. Security Fundamentals & Frameworks
+- 6. Cryptography Basics
+- 7. Identity & Access Management
+- 8. Web Application Security
+- 9. Network Defence & Perimeter Security
+- 10. Vulnerability Management
+- 11. Threat Intelligence & the Attack Lifecycle
+- 12. Logging & Log Analysis
+- 13. SIEM & Security Monitoring
+- 14. Security Operations Centre Workflows
+- 15. Incident Response
+- 16. Digital Forensics Fundamentals
+- 17. Malware & Phishing Defence
+- 18. Cloud Security Fundamentals
+- 19. Governance, Risk & Compliance
+- 20. CyberSecurity Capstone Project
+- 21. Security Career Readiness & Interview Prep
+
+### Outcomes
+
+- Security fundamentals portfolio and report samples
+- Clear roadmap for entry-level defensive security tracks
+- Practical understanding of safe digital risk management
+
+### Projects and internship
+
+- Real-world Defensive Security Projects
+- SOC Monitoring & Alert Triage
+- Vulnerability Assessment & Reporting
+- Incident Response Simulations
+- Security Hardening & Configuration Reviews
+- Industry Mentorship by Practising Security Analysts
+
+### Questions about this program
+
+**How long is the PG Program in CyberSecurity?**
+The PG Program in CyberSecurity runs for 6 Months and is delivered Live Online.
+
+**What is the fee for the PG Program in CyberSecurity?**
+The program investment is ₹1,65,000 (Including GST). EMI options: 3, 6, 9 & 12 months (No Cost EMIs).
+
+**Who can join the PG Program in CyberSecurity?**
+It is open to: Freshers, Graduates, Experienced.
+
+**When does the next batch of the PG Program in CyberSecurity start?**
+The next batch starts on September 19, 2026.
+
+**What skills and tools does the PG Program in CyberSecurity cover?**
+Linux, Networking, Web Safety, Monitoring, Reports.
+
+**How many projects are included?**
+30+ hands-on projects, built on real-world problems.
+
+**What will I be able to do after the PG Program in CyberSecurity?**
+Security fundamentals portfolio and report samples; Clear roadmap for entry-level defensive security tracks; Practical understanding of safe digital risk management.
+
+## General questions
+
+### What programs does CareerVeda offer?
+
+Programs span Investment Banking, Business Analytics, Data Analytics, Data Science with AI/ML and Agentic AI, CyberSecurity, Backend Development Engineering, and Data Engineering with Agentic & Gen AI. Each one is built around the tools and workflows employers are hiring for right now.
+
+### What is the duration of these programs?
+
+Duration varies by program and by the batch you join, since each track is scoped to the depth its role demands. Our admissions team can walk you through the exact schedule for the program you're considering.
+
+### Do I get certifications after completing the program?
+
+Yes. You earn an industry-aligned, globally recognized certification that validates your expertise, adds credibility to your resume, and helps you stand out with employers.
+
+### Is there placement assistance provided?
+
+Yes — placement support runs alongside the course rather than after it: resume support, LinkedIn optimization, mock interviews, soft skills training, referrals, and direct access to our 900+ hiring partners.
+
+### What are the eligibility criteria to enroll?
+
+Criteria depend on the program and on your background — some tracks assume prior experience, others are built for career changers starting fresh. Talk to our admissions team and they'll tell you which programs you're eligible for.
+
+### Is this live online program or recorded lectures?
+
+Classes are live and interactive, taught by expert instructors with time set aside for doubt clearing. Sessions are recorded too, so you can revisit anything you need to review.
+
+### Can I pursue this program while working full time?
+
+Yes — the schedule is designed for working professionals. Choose weekday or weekend batches, catch up through recordings, and continue at a pace that fits around your job.
+
+### Will AI replace humans?
+
+AI automates tasks, not careers — the people getting hired are the ones who know how to direct it. Every CareerVeda program now teaches you to build with and alongside AI and Agentic tools, so you graduate on the right side of that change rather than competing with it.
+
+### What kind of projects will I work on?
+
+You build portfolio-ready projects and work through case studies drawn from real business challenges at leading companies — the kind of problems you'd face in the role, not textbook exercises.
+
+### What is the average salary hike after completing the program?
+
+Learners report an average salary growth of 86%. Your own outcome depends on your experience, target role, and the market you're hiring into, so treat that as a benchmark rather than a promise.
+
+### What support is available during the program?
+
+You're assigned a personal mentor matched to your goals, with weekly guidance sessions, a career roadmap, and progress tracking. Live classes, doubt clearing, and skill workshops run throughout, and career support continues after you graduate.
+
+### Will I get 100% placement through CareerVeda?
+
+No honest program can guarantee an interview outcome — hiring decisions belong to employers. What CareerVeda commits to is the full placement machinery: resume and LinkedIn polish, mock interviews, soft-skill training, referrals, and direct access to our 900+ hiring partners, with career support that continues after you graduate.

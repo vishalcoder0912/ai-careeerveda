@@ -51,7 +51,7 @@ const ProgramRail = ({activeId}) => {
         </ul>
       </nav>
 
-      <nav className="pd-strip" aria-label="All programs">
+      <nav className="pd-strip" aria-label="All programs (compact)">
         <div className="pd-strip__in">
           {items.map(({program, index, isActive, href}) => (
             <Link

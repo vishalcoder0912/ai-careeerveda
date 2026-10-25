@@ -266,7 +266,10 @@ export const adaptJob = (record) => ({
   jobType: record.employmentType || "",
   salary: record.salaryRange || "",
   ...jobApplyLink(record),
-  postedDate: dateOnly(record.postedDate),
+  // Every job posted from the panel opens the "Apply on CareerVeda" popup.
+  acceptsApplications: true,
+  // No posted date set → the day it was published, so a new listing sorts first.
+  postedDate: dateOnly(record.postedDate || record.publishedAt),
 });
 
 export const adaptPolicy = (record) => ({

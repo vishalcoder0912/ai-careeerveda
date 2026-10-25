@@ -13,12 +13,12 @@ import {notFound, ApiError} from "../utils/apiError.js";
 
 // Same reduction api/enroll.js uses: the last ten digits, so formatting cannot
 // be used to slip past the submission cap.
-const lastTenDigits = (mobile) => String(mobile || "").replace(/\D/g, "").slice(-10);
+export const lastTenDigits = (mobile) => String(mobile || "").replace(/\D/g, "").slice(-10);
 
 // Keyed with the refresh secret so the hash cannot be reversed by hashing every
 // IPv4 address — an unsalted SHA of an IP is not anonymisation, the keyspace is
 // only four billion.
-const hashIp = (ip) =>
+export const hashIp = (ip) =>
   ip ? createHmac("sha256", env.JWT_REFRESH_SECRET).update(String(ip)).digest("hex") : "";
 
 // The site and its admissions team are in India. Cloud Run runs in UTC, so a
@@ -46,6 +46,33 @@ const startOfTodayIST = () => {
   // Date.UTC builds midnight UTC for the calendar date seen in Kolkata; IST is
   // UTC+5:30, so midnight IST is five and a half hours earlier.
   return Date.UTC(part("year"), part("month") - 1, part("day")) - 5.5 * 60 * 60 * 1000;
+};
+
+// A repeat on a known phone still answers like a new lead (no enumeration
+// oracle), but it is no longer thrown away: a stranger who submitted a real
+// student's number first used to make that student's own enquiry vanish. The
+// repeat lands as a note on the existing lead and un-archives it, so admissions
+// sees the real person. Status is left alone: a repeat must not be able to undo
+// "spam" or "converted". Capped, so spamming one number cannot grow a record
+// forever.
+const MAX_REPEAT_NOTES = 20;
+
+const recordRepeat = (mobileKey, type, body) => {
+  const summary = [
+    `Repeat ${type} submission`,
+    `Name: ${body.name}`,
+    `Email: ${body.email}`,
+    body.program && `Program: ${body.program}`,
+    body.message && `Message: ${body.message}`,
+  ]
+    .filter(Boolean)
+    .join("\n")
+    .slice(0, 4000);
+
+  return Lead.updateOne(
+    {mobileKey, [`notes.${MAX_REPEAT_NOTES - 1}`]: {$exists: false}},
+    {$push: {notes: {body: summary}}, $set: {archived: false}},
+  );
 };
 
 // ── Public submission ───────────────────────────────────────────────────────
@@ -87,7 +114,10 @@ export const submit = async (request, response, next) => {
     // gets. A distinct 409 told anyone with curl whether a given phone number
     // was in our database — an enumeration oracle over people's contact data.
     const existingByPhone = await Lead.findOne({mobileKey}).select("_id");
-    if (existingByPhone) return created(response, {ok: true});
+    if (existingByPhone) {
+      await recordRepeat(mobileKey, type, body);
+      return created(response, {ok: true});
+    }
 
     // The program must be one that actually exists and is published. Reading
     // from the database rather than a second hard-coded list means a program
@@ -151,6 +181,11 @@ export const submit = async (request, response, next) => {
     // The first won the write; the second gets the same refusal the sequential
     // path gave, not a database error.
     if (error && error.code === 11000 && error.keyPattern && error.keyPattern.mobileKey) {
+      try {
+        await recordRepeat(lastTenDigits(request.body.mobile), request.body.type || "consultation", request.body);
+      } catch {
+        // The original lead was saved; losing this note is not worth a 500.
+      }
       return created(response, {ok: true});
     }
     return next(error);

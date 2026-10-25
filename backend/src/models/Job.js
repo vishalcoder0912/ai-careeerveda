@@ -30,6 +30,9 @@ const jobSchema = new mongoose.Schema(
 
     salaryRange: {type: String, default: "", maxlength: 120},
 
+    // On: the site shows "Apply on CareerVeda" and the listing takes
+    // applications through /public/job-applications (name, mobile, LMS ID).
+    acceptsApplications: {type: Boolean, default: false},
     applicationUrl: {type: String, default: "", maxlength: 1000},
     applicationEmail: {type: String, default: "", maxlength: 254},
     // Named so the card can say where the listing came from — it matters that

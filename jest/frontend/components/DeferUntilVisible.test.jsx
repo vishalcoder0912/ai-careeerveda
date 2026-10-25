@@ -66,7 +66,9 @@ describe("DeferUntilVisible", () => {
   it("reserves the section's height so the layout does not jump on arrival", () => {
     const {container} = render(<DeferUntilVisible minHeight={420} />);
 
-    expect(container.firstChild).toHaveStyle({minHeight: "420px"});
+    // The height lives on the placeholder inside the wrapper: it must disappear
+    // with the placeholder once the real chunk arrives, not stay on the section.
+    expect(container.firstChild.firstChild).toHaveStyle({minHeight: "420px"});
   });
 
   it("leaves no inline min-height when the caller does not supply one", () => {

@@ -337,9 +337,12 @@
   font-size: 10px;
 }
 
-.about-project h3 {
+.about-project h3,
+.about-project-title {
   margin: 6px 0;
   font-size: 19px;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .about-project-status {

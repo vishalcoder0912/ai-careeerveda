@@ -1,32 +1,39 @@
-# CareerVeda Deployment — GCP Compute Engine (pull-based CD)
+# CareerVeda Deployment — GCP Compute Engine, no Docker
 
-One VM, no Terraform, no container registry. The VM tracks `main` directly:
-every push to `main` is live on the site within ~2 minutes, automatically.
+One VM. nginx serves the built site and admin panel; Node runs the API under
+systemd. Production is `main`, and `main` advances only through CI:
 
 ```
-  git push origin main
+  git push origin dev
         │
         ▼
-┌───────────────────────────── GitHub ─────────────────────────────┐
-│  main branch                                                     │
-└──────────────────────────┬───────────────────────────────────────┘
-                           │  pulled by the VM
-                           ▼
+┌──────────────────────────── GitHub Actions ────────────────────────┐
+│  CI/CD: secret scan → audit/lint/unit → e2e → build                │
+│         → publish dev→main (only when every job passed)            │
+└──────────────────────────────┬─────────────────────────────────────┘
+                               │  tested commit reaches main
+                               ▼
 ┌──────────────────────── Compute Engine VM ───────────────────────┐
-│  careerveda-autodeploy.timer   polls origin/main every 2 min     │
-│        └─► deploy/deploy.sh    build + restart (only on change)  │
+│  deploy/deploy.sh  build site + admin → restart API → publish    │
+│  (the CI deploy job triggers it immediately when CD_SSH_HOST is   │
+│   set; otherwise careerveda-autodeploy.timer polls every 2 min)   │
 │                                                                  │
-│  nginx :80      → static frontend (/opt/careerveda/dist)         │
-│                   /api/*, /health → proxy to 127.0.0.1:8080      │
-│  nginx :8081    → admin panel  (/opt/careerveda/admin/dist)      │
-│  node  :8080    → backend API (careerveda-backend.service)       │
+│  nginx :80    /var/www/careerveda/site   (static, prerendered)   │
+│               /api/*, /health  → 127.0.0.1:8080                  │
+│  nginx :8081  /var/www/careerveda/admin  (admin panel)           │
+│  node  :8080  careerveda-backend.service (user: careerveda)      │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-Optional instant deploys: the `CD (Compute Engine)` workflow SSHes into the VM
-right after each push to `main` and runs the same deploy script. It stays skipped
-until you add the repo variable `CD_SSH_HOST` — during testing you can ignore it;
-the timer alone does everything.
+**Do not push directly to `main`.** It is the production branch and a direct
+push bypasses every check above. Work on `dev` (or a feature branch), let CI
+promote the tested commit, and enable GitHub branch protection for `main` with
+the CI/CD checks required so the rule is enforced by GitHub as well.
+
+A deploy never breaks what is live: the site and admin panel are built first,
+the API is restarted and must answer `/health`, and only then are the new files
+copied into `/var/www`. If any step fails, the previous release keeps serving
+and the next poll retries.
 
 ---
 
@@ -35,79 +42,102 @@ the timer alone does everything.
 ### 1. Create the VM and open the firewall
 
 ```bash
-gcloud compute instances create careerveda-test \
-  --zone=asia-south1-a \
-  --machine-type=e2-small \
-  --image-family=ubuntu-2204-lts \
-  --image-project=ubuntu-os-cloud \
-  --tags=careerveda
+gcloud compute instances create careerveda \
+  --zone=asia-south1-a --machine-type=e2-small \
+  --image-family=ubuntu-2204-lts --image-project=ubuntu-os-cloud \
+  --boot-disk-size=30GB --tags=careerveda
 
-gcloud compute firewall-rules create careerveda-allow-http \
-  --allow=tcp:80,tcp:8081 --source-ranges=0.0.0.0/0 --target-tags=careerveda
+gcloud compute firewall-rules create careerveda-allow-web \
+  --allow=tcp:80,tcp:443,tcp:8081 --source-ranges=0.0.0.0/0 --target-tags=careerveda
 ```
 
-e2-small (2 GB) is enough for testing; builds are capped at ~1.5 GB heap.
-
-### 2. Bootstrap the server (run once, ON the VM)
+### 2. Bootstrap (once, on the VM)
 
 ```bash
-gcloud compute ssh careerveda-test --zone=asia-south1-a
-
-sudo REPO_URL=https://github.com/vishalcoder0912/ai-careeerveda.git \
-     MONGODB_URI="mongodb+srv://user:pass@cluster0....mongodb.net/?retryWrites=true&w=majority" \
-     bash <(curl -fsSL https://raw.githubusercontent.com/vishalcoder0912/ai-careeerveda/main/deploy/setup-server.sh)
+gcloud compute ssh careerveda --zone=asia-south1-a
+git clone https://github.com/vishalcoder0912/ai-careeerveda.git /tmp/cv
+sudo MONGODB_URI="mongodb+srv://USER:PASS@cluster0.xxxx.mongodb.net/" \
+     bash /tmp/cv/deploy/setup-server.sh
 ```
 
-Or from a local checkout: copy the repo to the VM (`gcloud compute scp`) and run
-`sudo bash deploy/setup-server.sh`.
+It installs Node 22, nginx, Chromium (for the SEO snapshot) and a 2 GB swap
+file; creates the `careerveda` service user; writes
+`/opt/careerveda/backend/.env` (JWT secrets generated) and
+`/etc/careerveda/build.env`; installs the systemd units and nginx config; and
+runs the first deploy.
 
-The script installs Node 22 + nginx + git, clones the repo to `/opt/careerveda`,
-writes `backend/.env` (JWT secrets are generated for you), enables two systemd
-units, and runs the first deploy. When it prints "Setup complete", open:
+### 3. Create the first admin
 
-- Site: `http://<VM_EXTERNAL_IP>/`
-- Admin panel: `http://<VM_EXTERNAL_IP>:8081/`
-- API health: `http://<VM_EXTERNAL_IP>/health`
+```bash
+cd /opt/careerveda/backend && sudo -u careerveda node scripts/seed-admin.js
+```
 
-### 3. That's it
-
-From now on: **push to `main` → live within ~2 minutes.** No secrets in GitHub,
-no images, no manual steps.
-
-To make deploys instant instead of ≤2 min, add under *Settings → Secrets and
-variables → Actions*:
-
-| Where     | Name          | Value                                              |
-| --------- | ------------- | -------------------------------------------------- |
-| Variable  | `CD_SSH_HOST` | VM external IP                                     |
-| Variable  | `CD_SSH_USER` | SSH user (default `deploy`)                        |
-| Secret    | `CD_SSH_KEY`  | private key matching that user's authorized_keys   |
+The site is now at `http://<VM_IP>/`, the admin panel at `http://<VM_IP>:8081/`.
 
 ---
 
-## Day-to-day operations
+## Configuration — two files, both on the VM, neither in git
 
-All commands run on the VM:
+| File | What | After editing |
+| --- | --- | --- |
+| `/opt/careerveda/backend/.env` | API secrets and runtime settings (Mongo, JWT, cookies, Turnstile secret, SMTP, ImageKit). Template: `backend/.env.example` | `sudo systemctl restart careerveda-backend` |
+| `/etc/careerveda/build.env` | Public build-time values baked into the bundles (API URL, Turnstile site key). Template: `deploy/build.env.example` | `sudo FORCE=1 bash /opt/careerveda/deploy/deploy.sh` |
+
+`TURNSTILE_SECRET_KEY` (backend) and `VITE_TURNSTILE_SITE_KEY` (build) go
+together. A secret without the site key rejects every form submission.
+
+---
+
+## Production cutover (before real traffic)
+
+1. **DNS**: `A` records for `careerveda.in`, `www.careerveda.in` and
+   `admin.careerveda.in` → the VM's static IP
+   (`gcloud compute addresses create careerveda-ip --region=asia-south1`, then
+   attach it to the VM).
+2. **Admin on its own hostname**: in `/etc/nginx/sites-available/careerveda`
+   change the admin server's `listen 8081` lines to `listen 80;` /
+   `listen [::]:80;` and `server_name _;` to `server_name admin.careerveda.in;`.
+   Set the site server's `server_name` to `careerveda.in`.
+3. **www → apex**: install `deploy/nginx-www-redirect.conf` (instructions inside).
+4. **HTTPS**:
+   `sudo apt install -y certbot python3-certbot-nginx && sudo certbot --nginx -d careerveda.in -d www.careerveda.in -d admin.careerveda.in`
+5. **`/etc/careerveda/build.env`**:
+   `VITE_PUBLIC_API_BASE_URL=https://careerveda.in/api/v1`,
+   `VITE_ADMIN_API_BASE_URL=https://careerveda.in/api/v1`,
+   `VITE_PUBLIC_SITE_URL=https://careerveda.in`, and `VITE_TURNSTILE_SITE_KEY`.
+6. **`backend/.env`**: `FRONTEND_URL=https://careerveda.in`,
+   `ADMIN_URL=https://admin.careerveda.in`, `COOKIE_SECURE=true`,
+   `TURNSTILE_SECRET_KEY=…`, `TRUST_PROXY=1` (nginx is the one hop; make it 2 if
+   you put Cloudflare in front). The API refuses to boot on an unsafe
+   combination, so a mistake shows up immediately.
+7. Rebuild and restart: `sudo FORCE=1 bash /opt/careerveda/deploy/deploy.sh`.
+8. Close port 8081: `gcloud compute firewall-rules update careerveda-allow-web --allow=tcp:80,tcp:443`.
+
+---
+
+## Day-to-day
 
 ```bash
-journalctl -u careerveda-backend -f           # API logs (live)
-journalctl -u careerveda-autodeploy -n 50     # what the last deploy did
-systemctl list-timers careerveda-*            # when the next pull happens
-sudo FORCE=1 /opt/careerveda/deploy/deploy.sh # rebuild + restart right now
+journalctl -t careerveda-deploy -n 50            # what the last deploys did
+journalctl -u careerveda-backend -f              # API logs, live
+systemctl list-timers careerveda-*               # next poll
+sudo FORCE=1 bash /opt/careerveda/deploy/deploy.sh   # rebuild + restart now
+cat /var/lib/careerveda/deployed-sha             # commit that is live
 ```
 
-Change a secret or env var: edit `/opt/careerveda/backend/.env`, then
-`sudo systemctl restart careerveda-backend`. The file is not tracked by git, so
-deploys never touch it.
+**Rollback**: `git revert <bad-sha>` on `dev`, then `git push origin dev`. CI
+promotes the revert to `main` and the VM deploys it within 2 minutes (or
+immediately when the CI deploy job is configured). The VM always deploys
+whatever `main` is, so the fix goes through git, never through edits on the
+server.
 
-Rollback: `git -C /opt/careerveda reset --hard <good-sha>` then
-`sudo systemctl restart careerveda-backend && sudo systemctl reload nginx`
-(the next autodeploy poll will re-deploy `main`; revert the commit to stay there).
+**Instant deploys (optional)**: add repository variable `CD_SSH_HOST` (VM IP),
+optional `CD_SSH_USER`, and secret `CD_SSH_KEY`. The CI/CD `deploy` job then
+SSHes in right after `publish`; without them it is skipped and the 2-minute
+timer does the work. The separate `CD (Compute Engine)` workflow is manual-only
+(`workflow_dispatch`) and is for forcing a rebuild of the current `main` after
+changing `/etc/careerveda/build.env`.
 
-## Notes for production cutover
-
-- Put a domain + TLS on the front (certbot `--nginx`) and flip
-  `COOKIE_SECURE=true` / set `COOKIE_DOMAIN` in `backend/.env`.
-- `deploy/nginx-www-redirect.conf` has a ready www→apex block for that day.
-- The admin panel currently rides port 8081; move it behind the same domain with
-  a second `server_name` before exposing it publicly.
+**Backups**: MongoDB Atlas takes continuous backups of the database (check the
+plan's retention). The VM holds no data of its own: everything on it is
+rebuilt from git plus the two config files above, so keep a copy of those two.

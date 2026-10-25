@@ -168,4 +168,26 @@ describe("submitLead", () => {
 
     expect((await submitLead({})).ok).toBe(false);
   });
+
+  it("aborts a stalled submission so the form cannot stay on Sending forever", async () => {
+    vi.useFakeTimers();
+    try {
+      fetch.mockImplementation(
+        (url, options) =>
+          new Promise((resolve, reject) => {
+            options.signal.addEventListener("abort", () => {
+              reject(Object.assign(new Error("Aborted"), {name: "AbortError"}));
+            });
+          }),
+      );
+
+      const pending = submitLead({});
+      const aborted = expect(pending).rejects.toMatchObject({name: "AbortError"});
+      await vi.advanceTimersByTimeAsync(8000);
+
+      await aborted;
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });

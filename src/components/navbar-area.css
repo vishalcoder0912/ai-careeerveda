@@ -803,7 +803,7 @@ body header.site-nav .nav-container .site-nav-brand .brand-name .cv-career {
   }
 }
 
-/* ---------- Header: compact white bar, orange CTA ----------
+/* ---------- Header: compact white bar, brand-blue CTA ----------
    At the top of the page the header is a plain white bar with a hairline and
    the links sit directly on it (no capsule). Scrolled, the desktop rules above
    still take over and float the links as a pill. The extra .site-nav in each
@@ -825,16 +825,33 @@ body header.site-nav.site-nav:not(.is-scrolled):not(.is-compact) .nav-container 
   -webkit-backdrop-filter: none !important;
 }
 
+/* Brand blue, the same gradient as every other primary button on the site
+   (job cards, page CTAs). It was burnt orange here: the only orange element in
+   a blue header, still carrying the blue rules above (white hairline border,
+   blue focus ring, brightness filter), so the button and its states clashed.
+   White text: 5.17:1 on #2563eb, 6.29:1 on #4f46e5. */
 body header.site-nav.site-nav .nav-container a.nav-cta {
   display: inline-flex !important;
   align-items: center;
   gap: 6px;
-  background: #ff5a0a !important;
-  background-image: none !important;
-  box-shadow: 0 8px 20px rgba(255, 90, 10, 0.24) !important;
+  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%) !important;
+  border: 1px solid transparent !important;
+  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.24) !important;
   color: #ffffff !important;
 }
 
-body header.site-nav.site-nav .nav-container a.nav-cta:hover {
-  background: #e84d00 !important;
+body header.site-nav.site-nav .nav-container a.nav-cta:hover,
+body header.site-nav.site-nav .nav-container a.nav-cta:focus-visible {
+  background: linear-gradient(135deg, #1d4ed8 0%, #4338ca 100%) !important;
+  box-shadow: 0 10px 28px rgba(37, 99, 235, 0.32) !important;
+  filter: none !important;
+}
+
+body header.site-nav.site-nav .nav-container a.nav-cta .nav-cta__arrow {
+  color: inherit;
+  transition: transform 180ms ease;
+}
+
+body header.site-nav.site-nav .nav-container a.nav-cta:hover .nav-cta__arrow {
+  transform: translateX(2px);
 }

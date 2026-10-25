@@ -7,11 +7,14 @@ import {absoluteUrl, OG_IMAGE} from "../config/siteMeta";
 import {composeTitle, programMeta} from "../config/pageMeta";
 import {GenerativeAIPage} from "./GenerativeAIPage";
 import {productManagementContent} from "./programs/productManagement";
+import {CATALOG_CINEMATIC} from "./programs/catalogPrograms";
 
 /* Programs that render as a cinematic page instead of the standard program
    template. The slug list lives in lib/routeChunks.js too (CINEMATIC_PROGRAMS),
-   so the right chunk is warmed on hover. */
+   so the right chunk is warmed on hover. Product Management keeps its
+   hand-written page; the rest are built from the catalogue (fromCatalog.js). */
 export const CINEMATIC_CONTENT = {
+  ...CATALOG_CINEMATIC,
   "product-management": productManagementContent,
 };
 

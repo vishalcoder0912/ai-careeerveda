@@ -150,6 +150,30 @@ describe("one submission per phone number", () => {
     expect(await Lead.countDocuments({})).toBe(1);
   });
 
+  it("keeps the repeat as a note, so a squatted number cannot hide the real person", async () => {
+    await publishedProgram();
+    const payload = {type: "enrollment", program: "PG Program in Product Management"};
+
+    await submit(payload);
+    await Lead.updateOne({}, {$set: {archived: true}});
+    await submit({...payload, email: "real.student@example.com"});
+
+    const lead = await Lead.findOne({});
+    expect(lead.archived).toBe(false);
+    expect(lead.notes).toHaveLength(1);
+    expect(lead.notes[0].body).toContain("real.student@example.com");
+  });
+
+  it("caps repeat notes on one number", async () => {
+    await publishedProgram();
+    const payload = {type: "enrollment", program: "PG Program in Product Management"};
+
+    await submit(payload);
+    for (let i = 0; i < 25; i += 1) await submit(payload);
+
+    expect((await Lead.findOne({})).notes).toHaveLength(20);
+  });
+
   it("treats a different mobile with the same email as a different person", async () => {
     await publishedProgram();
     const payload = {type: "enrollment", program: "PG Program in Product Management"};
@@ -325,7 +349,18 @@ describe("admin lead management", () => {
     expect(await AuditLog.countDocuments({action: AUDIT_ACTIONS.LEAD_DELETED})).toBe(1);
   });
 
-  it("refuses a status update from a viewer, who has forms.read only", async () => {
+  it("refuses a viewer any read of lead PII", async () => {
+    await submit();
+    const token = await asAdmin(ROLES.VIEWER, "viewer@careerveda.test");
+
+    const response = await request(app)
+      .get("/api/v1/admin/leads")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(403);
+  });
+
+  it("refuses a status update from a viewer, who has no forms access", async () => {
     await submit();
     const token = await asAdmin(ROLES.VIEWER, "viewer@careerveda.test");
     const lead = await Lead.findOne({});

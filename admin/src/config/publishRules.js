@@ -18,7 +18,8 @@ export const isFilled = (value) => {
 /** The publish-required fields this form has not filled in yet, in form order. */
 export const missingForPublish = (resource, form) =>
   resource.fields
-    .filter((field) => field.publish && !isFilled(readPath(form, field.name)))
+    .filter((field) => field.publish && !(field.publishUnless && readPath(form, field.publishUnless)))
+    .filter((field) => !isFilled(readPath(form, field.name)))
     .map((field) => ({
       name: field.name,
       label: field.label,

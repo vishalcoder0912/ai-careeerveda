@@ -157,7 +157,7 @@ body .legal-callout {
 }
 
 body .legal-stat strong,
-body .legal-article .legal-group h4 {
+body .legal-article .legal-group h3 {
   color: #2563eb;
 }
 
@@ -677,35 +677,79 @@ body .about-btn-primary {
   box-shadow: 0 14px 38px rgba(37, 99, 235, 0.2) !important;
 }
 
-/* ── Footer interactions: theme glow instead of teal/green ──────────────────
-   The legacy slate system paints footer links and the social icon squares flat
-   mint/teal on hover and click (rgba(94,234,212) / rgba(45,212,191)), which
-   reads as green against the navy footer. Re-theme every footer interaction to
-   the site's blue/indigo glow instead — the same #2563eb/#4f46e5 accent used
-   across the light theme — so a hovered, focused or pressed link or icon picks
-   up a soft blue halo rather than a flat green tint. Scoped to body .site-footer
-   with !important to beat slate-color-system.css, which wins via !important. */
-body .site-footer a:hover,
-body .site-footer a:focus-visible,
-body .site-footer a:active {
-  color: #ffffff !important;
-  text-shadow: 0 0 14px rgba(96, 165, 250, 0.75), 0 0 4px rgba(37, 99, 235, 0.55);
+/* ── Footer: light, in the site's own palette ───────────────────────────────
+   The footer was the one dark navy slab left on a light site (slate-color-
+   system's gradient, site-theme's white text), and the lockup's tagline kept
+   its on-white brown (#92400e), which all but vanished on the navy. It now
+   sits on the same pale blue surface as the rest of the page: navy headings,
+   slate body text, brand-blue links and accents.
+
+   `.site-footer.site-footer` repeats the class so these out-rank every older
+   footer rule, including slate-color-system's !important ones and the
+   three-class `.site-footer .social-links a:hover`, without touching them.
+   Contrast on #eef4ff: #102a5c 13.0:1, #46597a 6.6:1, #1d4ed8 6.1:1. */
+body footer.site-footer.site-footer {
+  background: linear-gradient(180deg, #f5f8ff 0%, #eaf1ff 100%) !important;
+  border-top: 1px solid #dbe6f7;
+  color: #46597a !important;
 }
 
-body .site-footer a:focus-visible {
-  outline: none;
+body footer.site-footer.site-footer h3 {
+  color: #102a5c !important;
 }
 
-body .site-footer .social-links a:hover,
-body .site-footer .social-links a:focus-visible,
-body .site-footer .social-links a:active {
+body footer.site-footer.site-footer p,
+body footer.site-footer.site-footer a,
+body footer.site-footer.site-footer small {
+  color: #46597a !important;
+  text-shadow: none;
+}
+
+body footer.site-footer.site-footer a:hover,
+body footer.site-footer.site-footer a:active {
+  color: #1d4ed8 !important;
+}
+
+body footer.site-footer.site-footer a:focus-visible {
+  color: #1d4ed8 !important;
+  outline: 2px solid #2563eb;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* The lockup: "Career" was white for the navy footer; navy now, as on the
+   white header. The tagline takes the brand blue instead of the brown. */
+body footer.site-footer.site-footer .brand,
+body footer.site-footer.site-footer .brand-name .cv-career {
+  color: #102a5c !important;
+}
+
+body footer.site-footer.site-footer .brand-tagline {
+  color: #1d4ed8 !important;
+}
+
+/* Dividers (the phone layout's column rules and the copyright rule) were
+   10% white, invisible once the footer is light. */
+body footer.site-footer.site-footer .footer-col,
+body footer.site-footer.site-footer small {
+  border-color: rgba(16, 42, 92, 0.1) !important;
+}
+
+/* Social icons: white tiles with a blue glyph, filled blue on hover. */
+body footer.site-footer.site-footer .social-links a {
+  border: 1px solid #dbe6f7 !important;
+  background: #ffffff !important;
+  color: #2563eb !important;
+  box-shadow: 0 4px 12px rgba(16, 42, 92, 0.06);
+}
+
+body footer.site-footer.site-footer .social-links a:hover,
+body footer.site-footer.site-footer .social-links a:focus-visible,
+body footer.site-footer.site-footer .social-links a:active {
+  border-color: #2563eb !important;
+  background: linear-gradient(135deg, #2563eb, #4f46e5) !important;
   color: #ffffff !important;
-  border-color: rgba(96, 165, 250, 0.65);
-  background: rgba(37, 99, 235, 0.22);
-  box-shadow:
-    0 0 0 1px rgba(96, 165, 250, 0.4),
-    0 0 26px rgba(37, 99, 235, 0.55),
-    0 0 8px rgba(79, 70, 229, 0.5);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.28);
 }
 /* Faculty mentor directory on phones: slate-color-system repaints every
    .section-block slate/teal below 640px; keep this one on the light canvas. */

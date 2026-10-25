@@ -1521,3 +1521,21 @@
   }
 }
 
+
+/* Narrow phones: the fact labels sit beside a 29px icon in a ~143px tile, which
+   leaves ~76px. "MENTORSHIP" at 0.08em tracking needs ~82px, so it split
+   mid-word ("MENTORSHI / P"). Tighter tracking fits it, and overflow-wrap:normal
+   keeps a word whole instead of breaking it between letters. */
+@media (max-width: 400px) {
+  .program-showcase-section .program-meta-item small {
+    letter-spacing: 0.03em;
+    overflow-wrap: normal;
+  }
+}
+
+@media (max-width: 340px) {
+  .program-showcase-section .program-meta-item small {
+    font-size: 0.6rem;
+    letter-spacing: 0.02em;
+  }
+}

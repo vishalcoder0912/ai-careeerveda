@@ -5,7 +5,8 @@ import * as lead from "../controllers/lead.controller.js";
 import {authenticate} from "../middleware/authenticate.js";
 import {requirePermission} from "../middleware/authorize.js";
 import {validate} from "../middleware/validate.js";
-import {formLimiter, adminLimiter} from "../middleware/rateLimit.js";
+import {verifyTurnstile} from "../middleware/turnstile.js";
+import {formLimiter, formIdentityLimiter, adminLimiter} from "../middleware/rateLimit.js";
 import {PERMISSIONS} from "../config/permissions.js";
 import {
   submitLeadSchema,
@@ -21,7 +22,7 @@ const idParam = z.object({id: z.string().regex(/^[a-f0-9]{24}$/i, "Invalid id")}
 // IP because every accepted request costs a database row.
 export const publicLeadRouter = Router();
 
-publicLeadRouter.post("/", formLimiter, validate({body: submitLeadSchema}), lead.submit);
+publicLeadRouter.post("/", formLimiter, verifyTurnstile, validate({body: submitLeadSchema}), formIdentityLimiter, lead.submit);
 
 // Admin.
 export const adminLeadRouter = Router();

@@ -31,6 +31,15 @@ COPY src ./src
 ARG VITE_PUBLIC_API_BASE_URL="https://backend.careerveda.in/api/v1"
 ENV VITE_PUBLIC_API_BASE_URL=${VITE_PUBLIC_API_BASE_URL}
 
+# Cloudflare Turnstile SITE key (public by design; the secret stays on the
+# backend). Vite bakes it in at build time, so it has to arrive here: without
+# it the forms render no widget and send an empty token, and a backend with
+# TURNSTILE_SECRET_KEY set (env.js refuses to boot in production without one)
+# rejects every lead and job application. Pass it from the deploy:
+#   docker build --build-arg VITE_TURNSTILE_SITE_KEY=0x4AAA... .
+ARG VITE_TURNSTILE_SITE_KEY=""
+ENV VITE_TURNSTILE_SITE_KEY=${VITE_TURNSTILE_SITE_KEY}
+
 RUN npm run build
 
 FROM nginx:1.31-alpine-slim@sha256:45b82ed5f285b90d63df07ba70430fdd8f25624b416617d9e6dc93412b2006dc AS runtime

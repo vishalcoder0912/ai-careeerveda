@@ -65,8 +65,13 @@ const escape = (value) =>
 // appending a second one. Two canonicals or two og:titles is not "the last one
 // wins" — Google treats a page with conflicting canonicals as having none.
 function replaceMeta(html, attr, key, content) {
-  const pattern = new RegExp(`(<meta\\s+[^>]*${attr}=["']${key}["'][^>]*content=["'])[^"']*(["'])`, "i");
-  if (pattern.test(html)) return html.replace(pattern, `$1${escape(content)}$2`);
+  // The value runs to the quote that OPENED it (\2), not to the first quote of
+  // either kind. `[^"']*` stopped at the apostrophe in the template's
+  // og:title ("India's No 1 PG Program | CareerVeda"), so every page shipped
+  // "<its title>'s No 1 PG Program | CareerVeda" as the title shown on every
+  // WhatsApp, LinkedIn and Facebook share.
+  const pattern = new RegExp(`(<meta\\s+[^>]*${attr}=["']${key}["'][^>]*content=)(["'])[\\s\\S]*?\\2`, "i");
+  if (pattern.test(html)) return html.replace(pattern, (_, head, quote) => `${head}${quote}${escape(content)}${quote}`);
 
   // index.html does not carry this tag yet (og:image:width and friends may not
   // survive a template edit), so add it inside <head> rather than dropping it.

@@ -1,5 +1,8 @@
 
-const BASE = import.meta.env.VITE_ADMIN_API_BASE_URL || "http://localhost:8080/api/v1";
+// Production falls back to the same origin (nginx proxies /api on the admin
+// host), never to localhost: a build that forgot the variable must not ship a
+// panel that talks to whatever is listening on the admin's own machine.
+const BASE = import.meta.env.VITE_ADMIN_API_BASE_URL || (import.meta.env.DEV ? "http://localhost:8080/api/v1" : "/api/v1");
 
 let accessToken = null;
 let csrfToken = null;
@@ -256,6 +259,19 @@ export const mediaApi = {
   update: (id, body) => api.patch(`/admin/media/${id}`, body),
   references: (id) => api.get(`/admin/media/${id}/references`),
   remove: (id) => api.delete(`/admin/media/${id}`),
+};
+
+export const applicationsApi = {
+  list: (query) => api.get("/admin/job-applications", query),
+  jobs: () => api.get("/admin/job-applications/jobs"),
+  update: (id, body) => api.patch(`/admin/job-applications/${id}`, body),
+  remove: (id) => api.delete(`/admin/job-applications/${id}`),
+  // A blob for the same reason as the lead export: it needs the Bearer header.
+  exportCsv: async (query) => {
+    const response = await request("/admin/job-applications/export", {query, raw: true});
+    if (!response.ok) throw new ApiError(response.status, "EXPORT_FAILED", "Export failed");
+    return response.blob();
+  },
 };
 
 export const leadsApi = {

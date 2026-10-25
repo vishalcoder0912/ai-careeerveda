@@ -6,6 +6,7 @@ import {publishedMentors, initialsOf} from "../data/mentors";
 import {useContentList} from "../hooks/useContent";
 import {adaptFaculty} from "../lib/contentAdapters";
 import {cdnImage} from "../lib/imageCdn";
+import {facultySchema, useJsonLd} from "../lib/structuredData";
 import "./mentor-grid.css";
 
 // The portrait renders at 132px wide (176px on the widest cards), so w-360 covers
@@ -295,6 +296,9 @@ const MentorGrid = () => {
 
   const openMentor = useCallback((mentor) => setActive(mentor), []);
   const closeMentor = useCallback(() => setActive(null), []);
+
+  // Person markup for exactly the mentors shown (CMS list, or the static fallback).
+  useJsonLd("ld-faculty", facultySchema(mentors));
 
   // The whole section — its heading included — is withheld until there is a real
   // mentor to put in it. An empty grid under "The people who will teach you" is

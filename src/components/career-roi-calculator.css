@@ -4,11 +4,17 @@
 .roi-section {
   width: min(calc(100% - 2 * var(--site-gutter, 24px)), var(--site-measure, 1280px));
   margin: 0 auto;
-  padding: clamp(56px, 8vw, 104px) 0;
+  /* Short bottom: Learner Outcomes follows and brings its own top padding. */
+  padding: clamp(56px, 8vw, 104px) 0 clamp(24px, 3vw, 40px);
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 520px);
   gap: clamp(32px, 6vw, 80px);
   align-items: center;
+}
+
+/* Home page only: the outcomes strip's own top margin doubled the gap here. */
+div:has(> .roi-section) + div > .learner-outcomes {
+  margin-top: 0;
 }
 
 .roi-eyebrow {

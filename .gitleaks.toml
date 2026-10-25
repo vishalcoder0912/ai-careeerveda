@@ -1,0 +1,45 @@
+# Gitleaks configuration for the CI secret scan.
+#
+# `useDefault = true` keeps every built-in credential rule. The allowlist is
+# deliberately narrow: non-shipping directories, env templates whose values are
+# blank/placeholders, lockfile integrity hashes, and the two files whose test
+# fixtures contain obviously fake passwords. A real key anywhere else still
+# fails the job.
+
+title = "CareerVeda secret scan"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Known false positives and non-shipping files"
+paths = [
+  '''(^|/)node_modules/''',
+  '''(^|/)dist/''',
+  '''(^|/)coverage/''',
+  '''(^|/)test-results/''',
+  '''(^|/)playwright-report/''',
+  '''^\.git/''',
+  # Local-only scratch data. None of these paths is tracked; they are listed so
+  # a developer can run the same scan against a working copy. `.env` is NOT
+  # allowlisted: a real environment file must still fail the scan.
+  '''(^|/)\.claude/''',
+  '''(^|/)Live_data/''',
+  '''(^|/)full-stack-careerveda/''',
+  '''^hero_gurl image\.png$''',
+  # Templates: every value is blank or an obvious placeholder.
+  '''(^|/)\.env\.example$''',
+  '''(^|/)build\.env\.example$''',
+  # Lockfiles contain package integrity hashes, not credentials.
+  '''(^|/)package-lock\.json$''',
+  # The embedded base64 font in this static poster occasionally contains the
+  # bytes "AKIA..." by chance; it is not an AWS key.
+  '''^poster/poster\.html$''',
+  # Unit tests use throwaway passwords and signed-token fixtures.
+  '''^admin/src/pages/Profile\.test\.jsx$''',
+  '''^backend/tests/''',
+]
+regexes = [
+  '''not-for-any-real-use''',
+  '''not-used-anywhere-else''',
+]

@@ -5,7 +5,7 @@ import {z} from "zod";
 // refuses the object outright even if a future change lets one through.
 
 const email = z
-  .string({invalid_type_error: "Email must be text"})
+  .string({error: "Email must be text"})
   .trim()
   .toLowerCase()
   .min(3)
@@ -14,7 +14,7 @@ const email = z
 
 // Only bounded here; strength is enforced by validatePasswordStrength, which
 // produces one clear sentence rather than a wall of Zod messages.
-const password = z.string({invalid_type_error: "Password must be text"}).min(1).max(200);
+const password = z.string({error: "Password must be text"}).min(1).max(200);
 
 export const loginSchema = z.object({
   email,

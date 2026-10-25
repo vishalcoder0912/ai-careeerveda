@@ -113,6 +113,51 @@ export const formLimiter = rateLimit({
   handler: handler("Too many submissions from this network. Please try again later."),
 });
 
+// Second form budget, keyed on who the submission claims to be rather than on
+// the IP. The IP limiter alone falls to anyone rotating addresses (or spoofing
+// X-Forwarded-For when the API is reachable without the proxy); this one caps
+// how often one phone/email can be re-submitted, which bounds repeat-note spam
+// and archived-lead resurfacing however many IPs are used. Runs after
+// validate(), so mobile/email are already well-formed.
+const identityKey = (request) => {
+  const mobile = String(request.body?.mobile || "").replace(/\D/g, "").slice(-10);
+  return mobile || String(request.body?.email || "").trim().toLowerCase() || "anonymous";
+};
+
+export const formIdentityLimiter = rateLimit({
+  ...base,
+  windowMs: 24 * 60 * 60 * 1000,
+  limit: 3,
+  store: new SharedStore("form-identity"),
+  keyGenerator: identityKey,
+  handler: handler("Too many submissions for these details. Please try again tomorrow."),
+});
+
+// Job applications keep their own budget instead of spending the lead form's
+// five-an-hour. A candidate applying to several roles in one sitting is normal,
+// and many candidates can sit behind one college/office NAT address. The
+// database already enforces one row per job per phone, and the per-IP cap still
+// bounds the write volume, so a wider budget here does not open a spam lane.
+export const jobApplicationLimiter = rateLimit({
+  ...base,
+  windowMs: 60 * 60 * 1000,
+  limit: 20,
+  store: new SharedStore("job-form"),
+  handler: handler("Too many applications from this network. Please try again later."),
+});
+
+// Separate identity budget for the same reason: a real job hunt can exceed the
+// lead form's three-per-day without being spam. Duplicate applications to the
+// same job still collapse onto one row via the model's unique key.
+export const jobApplicationIdentityLimiter = rateLimit({
+  ...base,
+  windowMs: 24 * 60 * 60 * 1000,
+  limit: 10,
+  store: new SharedStore("job-form-identity"),
+  keyGenerator: identityKey,
+  handler: handler("Too many applications for these details. Please try again tomorrow."),
+});
+
 // Public reads. High enough to be invisible to a real visitor.
 export const publicLimiter = rateLimit({
   ...base,

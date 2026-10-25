@@ -6,7 +6,8 @@ import {publishedMentors} from "../data/mentors";
 import {useContentItem} from "../hooks/useContent";
 import {adaptProgram} from "../lib/contentAdapters";
 import {applySeo} from "../lib/seoTags";
-import {courseSchema, breadcrumbSchema, useJsonLd} from "../lib/structuredData";
+import {courseSchema, breadcrumbSchema, faqSchema, useJsonLd} from "../lib/structuredData";
+import {programFaqList} from "../data/programFaqs";
 import {absoluteUrl, OG_IMAGE} from "../config/siteMeta";
 import {composeTitle, programMeta} from "../config/pageMeta";
 import ProgramHero from "../components/program-detail/ProgramHero";
@@ -169,6 +170,10 @@ const ProgramDetailPage = ({slug: providedSlug}) => {
       : null,
   );
 
+  // FAQPage from the exact list ProgramFaq renders (see data/programFaqs.js).
+  const faqItems = program ? programFaqList(program) : [];
+  useJsonLd("ld-faq", faqItems.length ? faqSchema(faqItems) : null);
+
   useJsonLd(
     "ld-breadcrumb",
     program
@@ -239,7 +244,7 @@ const ProgramDetailPage = ({slug: providedSlug}) => {
           )}
 
           <ProgramFees program={program} applyHref={applyHref} />
-          <ProgramFaq />
+          <ProgramFaq items={faqItems} />
           <ProgramCta program={program} applyHref={applyHref} />
         </div>
       </div>

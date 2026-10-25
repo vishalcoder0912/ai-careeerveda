@@ -1,6 +1,7 @@
 import {describe, expect, it} from "vitest";
 
 import {isFilled, missingForPublish} from "./publishRules";
+import {RESOURCES, initialValues} from "./resources";
 
 describe("isFilled", () => {
   it("treats null and undefined as empty", () => {
@@ -119,5 +120,15 @@ describe("missingForPublish", () => {
     const [entry] = missingForPublish({fields: [{name: "x", label: "X", publish: true}]}, {});
 
     expect(entry.group).toBe("Other");
+  });
+});
+
+describe("job listings that collect applications on CareerVeda", () => {
+  const jobs = RESOURCES.jobs;
+  const names = (form) => missingForPublish(jobs, form).map((entry) => entry.name);
+
+  it("never asks for an Application URL", () => {
+    expect(names(initialValues(jobs))).not.toContain("applicationUrl");
+    expect(jobs.fields.some((field) => field.name === "applicationUrl")).toBe(false);
   });
 });

@@ -12,6 +12,8 @@
 #   printf '%s' 'mongodb+srv://...' | gcloud secrets create careerveda-mongodb-uri --data-file=-
 #   printf '%s' '<48 random bytes>'  | gcloud secrets create careerveda-jwt-access-secret --data-file=-
 #   printf '%s' '<48 random bytes>'  | gcloud secrets create careerveda-jwt-refresh-secret --data-file=-
+#   printf '%s' '<turnstile secret>' | gcloud secrets create careerveda-turnstile-secret --data-file=-
+#   (Cloudflare dash -> Turnstile -> add site for ${_DOMAIN}; the site key goes in _TURNSTILE_SITE_KEY below)
 #   gcloud projects add-iam-policy-binding $PROJECT_ID \
 #     --member=serviceAccount:$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')-compute@developer.gserviceaccount.com \
 #     --role=roles/secretmanager.secretAccessor
@@ -21,6 +23,9 @@ substitutions:
   _AR_REPO: careerveda
   _DOMAIN: careerveda.in
   _TAG: latest
+  # Public Turnstile site key, baked into the frontend build. Required: the
+  # backend refuses public form submissions without a valid token.
+  _TURNSTILE_SITE_KEY: ''
 
 options:
   machineType: E2_HIGHCPU_8
@@ -62,6 +67,8 @@ steps:
       - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/frontend:${_TAG}
       - --build-arg
       - VITE_PUBLIC_API_BASE_URL=https://backend.${_DOMAIN}/api/v1
+      - --build-arg
+      - VITE_TURNSTILE_SITE_KEY=${_TURNSTILE_SITE_KEY}
       - -f
       - Dockerfile
       - .
@@ -133,6 +140,7 @@ steps:
         SECRETS="MONGODB_URI=careerveda-mongodb-uri:latest"
         SECRETS="$$SECRETS,JWT_ACCESS_SECRET=careerveda-jwt-access-secret:latest"
         SECRETS="$$SECRETS,JWT_REFRESH_SECRET=careerveda-jwt-refresh-secret:latest"
+        SECRETS="$$SECRETS,TURNSTILE_SECRET_KEY=careerveda-turnstile-secret:latest"
         gcloud run deploy careerveda-backend \
           --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/backend:${_TAG} \
           --region=${_REGION} \

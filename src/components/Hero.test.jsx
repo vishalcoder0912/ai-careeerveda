@@ -1,4 +1,4 @@
-// The home hero: copy, the neural-brain stage with the career-path card, and the
+// The home hero: copy, the neural-brain stage, and the
 // stats panel — which must show exactly the numbers handed to it.
 
 import {describe, it, expect, afterEach} from "vitest";
@@ -39,20 +39,6 @@ describe("Hero", () => {
     expect(document.querySelector(".hh-orbit")).not.toBeNull();
     expect(screen.queryByRole("img", {name: /student/i})).toBeNull();
     expect(document.querySelector(".hero-visual-shell")).toBeNull();
-  });
-
-  it("lists the four career-path steps in order", () => {
-    renderHero();
-
-    const steps = screen
-      .getByRole("complementary", {name: "Your Career Path"})
-      .querySelectorAll("li strong");
-    expect([...steps].map((step) => step.textContent)).toEqual([
-      "Learn",
-      "Build",
-      "Get Mentored",
-      "Get Placed",
-    ]);
   });
 
   it("renders every stat it is given, unchanged", () => {

@@ -17,6 +17,7 @@ import {adminRouter} from "./routes/admin.routes.js";
 import {publicRouter} from "./routes/public.routes.js";
 import {mediaRouter} from "./routes/media.routes.js";
 import {publicLeadRouter, adminLeadRouter} from "./routes/lead.routes.js";
+import {publicApplicationRouter, adminApplicationRouter} from "./routes/jobApplication.routes.js";
 import {securityRouter} from "./routes/security.routes.js";
 import {forbidden} from "./utils/apiError.js";
 import {globalLimiter} from "./middleware/rateLimit.js";
@@ -148,11 +149,14 @@ export const createApp = ({extraRouters = []} = {}) => {
   // matched as a content resource named "leads".
   app.use("/api/v1/public/leads", formSlowDown);
   app.use("/api/v1/public/leads", publicLeadRouter);
+  app.use("/api/v1/public/job-applications", formSlowDown);
+  app.use("/api/v1/public/job-applications", publicApplicationRouter);
   app.use("/api/v1/public", publicSlowDown);
   app.use("/api/v1/public", publicRouter);
 
   app.use("/api/v1/admin/media", mediaRouter);
   app.use("/api/v1/admin/leads", adminLeadRouter);
+  app.use("/api/v1/admin/job-applications", adminApplicationRouter);
   app.use("/api/v1/admin/security", securityRouter);
   app.use("/api/v1/admin", adminRouter);
 

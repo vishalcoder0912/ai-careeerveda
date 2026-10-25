@@ -73,6 +73,12 @@ const NAV_ICON_PATHS = {
         <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18" />
       </>
     ),
+    applications: (
+      <>
+        <path d="M7 3h7l5 5v13H7z" />
+        <path d="M14 3v5h5M10 13h6M10 17h4" />
+      </>
+    ),
     profile: (
       <>
         <circle cx="12" cy="8" r="4" />
@@ -115,6 +121,7 @@ const Layout = () => {
     if (crumbs[0] === "media") return {title: "Media library", eyebrow: "Operations"};
     if (crumbs[0] === "leads") return {title: "Leads", eyebrow: "Operations"};
     if (crumbs[0] === "hiring") return {title: "Hiring enquiries", eyebrow: "Operations"};
+    if (crumbs[0] === "job-applications") return {title: "Job applications", eyebrow: "Operations"};
     if (crumbs[0] === "profile") return {title: "Profile & security", eyebrow: "Account"};
 
     const resource = RESOURCE_LIST.find((entry) => entry.name === crumbs[0]);
@@ -190,6 +197,11 @@ const Layout = () => {
           {can("forms.read") ? (
             <NavigationItem to="/hiring" icon="hiring" onClick={closeNav}>
               Hiring enquiries
+            </NavigationItem>
+          ) : null}
+          {can("forms.read") ? (
+            <NavigationItem to="/job-applications" icon="applications" onClick={closeNav}>
+              Job applications
             </NavigationItem>
           ) : null}
 

@@ -75,13 +75,19 @@ export const PUBLISH_REQUIREMENTS = {
     {field: "sections", label: "Body sections"},
   ],
 
-  // A listing with no way to apply wastes the reader's click.
+  // A listing with no way to apply wastes the reader's click. A job that takes
+  // applications on CareerVeda already has one, so it needs no external URL.
   Job: [
     {field: "title", label: "Title"},
     {field: "company", label: "Company"},
     {field: "location", label: "Location"},
+    // The card's meta row and skill tags: blank ones left a bare icon and an
+    // empty strip, so a listing must carry them like every other card does.
+    {field: "workMode", label: "Work mode"},
+    {field: "employmentType", label: "Employment type"},
+    {field: "experienceLevel", label: "Experience level"},
+    {field: "skills", label: "Skills"},
     {field: "description", label: "Description"},
-    {field: "applicationUrl", label: "Application URL"},
   ],
 
   // A policy is a document with legal force. Publishing one with no sections
@@ -110,6 +116,7 @@ export const missingForPublish = (document) => {
 
   return Object.fromEntries(
     rules
+      .filter((rule) => !(rule.unless && document.get(rule.unless)))
       .filter((rule) => !isFilled(document.get(rule.field)))
       .map((rule) => [rule.field, `${rule.label} is required before publishing.`]),
   );

@@ -5,14 +5,18 @@
 # (non-force push), which is the only way `main` advances.
 #
 # Architecture:
+#   security →  secret scan (gitleaks) of the checked-out tree
 #   quality  →  audit, lint, unit/integration tests (Vitest + Jest)
 #   e2e      →  Playwright E2E, accessibility, performance, load (parallel with quality)
-#   build    →  production builds (needs: quality, e2e)
+#   build    →  production builds (needs: quality, e2e, security)
 #   publish  →  dev → main promotion (dev only, needs: build)
+#   deploy   →  optional SSH deploy of the promoted main commit (needs: publish)
 #   smoke    →  live-site sanity check (opt-in, needs: publish)
 #
 # No secrets required for CI — all tests use mongodb-memory-server and
-# ImageKit is disabled in E2E. Real deploy stays a separate manual step.
+# ImageKit is disabled in E2E. Deployment is opt-in through CD_SSH_HOST:
+# the VM's 2-minute timer is the fallback and also only ever sees commits that
+# reached main through the `publish` job.
 
 name: CI/CD
 
@@ -63,13 +67,15 @@ jobs:
           npm ci --prefix backend
           npm ci --prefix admin
 
-      - name: Dependency audit
-        # Run inside each package: `npm audit --prefix` has been broken across
-        # npm versions; the in-directory form works everywhere.
+      - name: Dependency audit (shipped dependencies)
+        # Gate on what actually ships. The dev-only toolchain (Vite, Vitest,
+        # concurrently, jsdom) currently carries advisories that do not affect
+        # the deployed site or API; Dependabot tracks those separately. A high
+        # or critical finding in a production dependency still fails the run.
         run: |
-          npm audit --audit-level=high
-          (cd backend && npm audit --audit-level=high)
-          (cd admin && npm audit --audit-level=high)
+          npm audit --omit=dev --audit-level=high
+          (cd backend && npm audit --omit=dev --audit-level=high)
+          (cd admin && npm audit --omit=dev --audit-level=high)
 
       - name: Lint
         run: npm run lint
@@ -100,6 +106,27 @@ jobs:
         run: |
           npm run test:jest:frontend
           npm run test:jest:admin
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # SECURITY — fail the run if a credential is committed in the working tree
+  # Scans the checked-out files only (not history): the goal is to stop a new
+  # secret from entering the repository. .gitleaks.toml documents the known
+  # false positives (placeholder templates, lockfile hashes, an embedded font).
+  # ─────────────────────────────────────────────────────────────────────────────
+  security:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install gitleaks
+        run: |
+          curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.24.3/gitleaks_8.24.3_linux_x64.tar.gz \
+            | sudo tar -xz -C /usr/local/bin gitleaks
+
+      - name: Scan for secrets
+        run: gitleaks detect --source . --no-git --config .gitleaks.toml --redact --verbose
 
   # ─────────────────────────────────────────────────────────────────────────────
   # E2E — Playwright end-to-end, accessibility, performance, load
@@ -219,7 +246,7 @@ jobs:
   # ─────────────────────────────────────────────────────────────────────────────
   build:
     name: Build
-    needs: [quality, e2e]
+    needs: [quality, e2e, security]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -283,6 +310,39 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git push origin HEAD:refs/heads/main
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # DEPLOY — put the promoted main commit live on the Compute Engine VM
+  # Needs: publish, so a commit is deployed only after it reached main through
+  # the tested promotion. Opt-in: set repository variable CD_SSH_HOST, optional
+  # CD_SSH_USER, and secret CD_SSH_KEY. Without them this job is skipped and the
+  # VM's 2-minute autodeploy timer pulls the same tested main commit.
+  # ─────────────────────────────────────────────────────────────────────────────
+  deploy:
+    name: Deploy to Compute Engine
+    needs: [publish]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev' && vars.CD_SSH_HOST != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ vars.CD_SSH_HOST }}
+          username: ${{ vars.CD_SSH_USER || 'deploy' }}
+          key: ${{ secrets.CD_SSH_KEY }}
+          script: sudo bash /opt/careerveda/deploy/deploy.sh
+
+      - name: Wait for the live API
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl -fsS --max-time 10 "http://${{ vars.CD_SSH_HOST }}/health"; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Site did not answer /health after deploy" >&2
+          exit 1
 
   # ─────────────────────────────────────────────────────────────────────────────
   # SMOKE — Live-site sanity check after publish

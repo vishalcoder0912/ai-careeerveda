@@ -89,6 +89,78 @@ body .faq-section.faq-spacing {
   margin-inline: auto;
 }
 
+/* Phones: show the first four questions and keep the rest behind a
+   "See more" toggle so the section does not run for several screens before
+   the footer. The extra rows are always rendered — this is a presentation
+   toggle only — so the desktop list, the React keys and the FAQPage
+   structured data stay exactly as they were. */
+.faq-more-toggle {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .faq-list .faq-item-extra {
+    display: none;
+  }
+
+  .faq-accordion.is-expanded .faq-list .faq-item-extra {
+    display: block;
+  }
+
+  .faq-more-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    width: fit-content;
+    min-height: 44px;
+    margin: 20px auto 0;
+    padding: 11px 24px;
+    border: 1px solid rgba(37, 99, 235, 0.22);
+    border-radius: 999px;
+    background: #ffffff;
+    color: #2563eb;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    box-shadow: 0 10px 26px rgba(30, 64, 175, 0.08);
+    transition:
+      border-color 180ms ease,
+      box-shadow 180ms ease,
+      background 180ms ease;
+  }
+
+  .faq-more-toggle::after {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+    transition: transform 180ms ease;
+  }
+
+  .faq-more-toggle[aria-expanded="true"]::after {
+    transform: translateY(2px) rotate(225deg);
+  }
+
+  .faq-more-toggle:hover {
+    border-color: rgba(37, 99, 235, 0.38);
+    background: #f5f8ff;
+  }
+
+  .faq-more-toggle:active {
+    background: #eef5ff;
+  }
+
+  .faq-more-toggle:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 3px;
+  }
+}
+
 /* Phone compaction: shorter program cards, clamped testimonials and a shorter
    press scroll-lane, so the home page is fewer screens of scrolling. */
 @media (max-width: 680px) {
@@ -100,13 +172,17 @@ body .faq-section.faq-spacing {
     min-height: 260px;
   }
 
+  .spline-page .rc-card--spotlight {
+    min-height: 390px;
+  }
+
   .spline-page .rc-card--hero {
     min-height: 340px;
   }
 
   /* Title + kicker + stats say enough at this size; the full blurb is on the
-     program page. The featured card keeps its two-line description. */
-  .spline-page .rc-card:not(.rc-card--hero) .rc-desc {
+     program page. The two flagship cards keep their clamped description. */
+  .spline-page .rc-card:not(.rc-card--hero):not(.rc-card--spotlight) .rc-desc {
     display: none;
   }
 
@@ -126,19 +202,23 @@ body .faq-section.faq-spacing {
 }
 
 /* Placeholder heights for the two deferred sections, matched to what they
-   render at each breakpoint (measured; each value sits just under the real
-   height, since min-height stays applied after mount and an overshoot would be
-   permanent blank space). A fixed 600/800px stood in for sections that are
-   ~1,730–2,250px (programs) and ~2,700–5,500px (the pinned press lane), so
-   everything below jumped by up to 3,500px when they mounted — a CLS of ~1.0.
-   If either section's layout changes, re-measure these. */
+   render at each breakpoint (measured). They only reserve space before the
+   section mounts; the :has rules below release both once the real section is
+   in the DOM. The desktop/tablet programs layout is still the multi-row bento;
+   the phone layout is a one-card carousel with its own clamp in the 680px
+   query, so it must not inherit the old stacked-bento height. */
 .home-defer-programs {
   min-height: 1820px;
 }
 
+/* The press section is now the ScrollStack (PressSection.jsx), not the old
+   pinned lane, and its height follows the width, not the viewport height.
+   Measured on the production build (2026-10-28): 2,251–2,295px at >=1200px
+   wide, 1,711–1,925px on tablets, 1,763–1,950px on phones. The lane-era
+   calc(430vh + 450px) reserved up to 5,500px, so the page collapsed by
+   ~2,000–3,800px the moment the section loaded. */
 .home-defer-press {
-  /* heading block + the lane's pinned scroll run (press-section.css) */
-  min-height: calc(430vh + 450px);
+  min-height: 2280px;
 }
 
 @media (max-width: 1199.98px) {
@@ -149,21 +229,27 @@ body .faq-section.faq-spacing {
 
 @media (min-width: 768px) and (max-width: 1199.98px) {
   .home-defer-press {
-    min-height: calc(440vh + 330px);
+    min-height: 1820px;
   }
 }
 
 @media (max-width: 767.98px) {
   .home-defer-press {
-    min-height: calc(320vh + 320px);
+    min-height: 1850px;
   }
 }
 
 /* The placeholder height only matters before the section mounts. Once it is
-   in, the section sizes itself — and the lane pulls the next section up into
-   its empty half-stage (press-section.css), which a fixed min-height here
-   would otherwise hold open. */
+   in, the section sizes itself. */
 .home-defer-press:has(> .press-section) {
+  min-height: 0;
+}
+
+/* Same rule for Recommended Programs. Its phone layout is now a single-card
+   carousel (~800px tall), not the old stacked bento that needed 2,180px. Without
+   this the wrapper keeps the old placeholder height after mount and leaves
+   ~1,400px of blank space below the carousel. */
+.home-defer-programs:has(> .recommended-courses-section) {
   min-height: 0;
 }
 
@@ -174,8 +260,11 @@ body .faq-section.faq-spacing {
 }
 
 @media (max-width: 680px) {
+  /* The phone layout is the single-card carousel, ~720–1,200px including the
+     heading and controls. The old 2,180px matched the stacked bento and now
+     only reserves blank space before the section mounts. */
   .home-defer-programs {
-    min-height: 2180px;
+    min-height: clamp(720px, 205vw, 1200px);
   }
 
   .home-defer-form {

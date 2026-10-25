@@ -6,6 +6,9 @@ import AxeBuilder from "@axe-core/playwright";
 
 import {FRONTEND, ADMIN, loginAsAdmin} from "./helpers.js";
 
+// WebKit-only by design; e2e/accessibility.spec.js already covers Chromium.
+test.skip(({browserName}) => browserName !== "webkit", "WebKit-only audit");
+
 const PAGES = [
   ["home", "/"],
   ["programs", "/programs"],
@@ -121,6 +124,9 @@ test.describe("safari audit", () => {
     for (const [, path] of PAGES) {
       await page.goto(`${FRONTEND}${path}`, {waitUntil: "domcontentloaded"});
       await contentReady(page);
+      // Let entrance fades finish: axe blends a half-faded parent's opacity into
+      // the colors and reports contrast that no settled page has.
+      await page.waitForTimeout(1000);
       const {violations: v} = await new AxeBuilder({page}).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
       for (const x of v) violations.push(`${path} ${x.id} (${x.impact}) x${x.nodes.length} — ${x.nodes[0]?.target?.join(" ")}`);
     }

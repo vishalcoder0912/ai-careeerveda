@@ -116,32 +116,48 @@ export const fetchOne = async (resource, slug, {signal} = {}) => {
 // panel's Leads inbox sees every submission instead of only some of them.
 //
 // Returns {ok, errors, message}.
-export const submitLead = async (payload) => {
+export const submitLead = (payload) => postForm("/public/leads", payload);
+
+// The "Apply on CareerVeda" form on /jobs. Same shape and return as submitLead.
+export const submitJobApplication = (payload) => postForm("/public/job-applications", payload);
+
+const postForm = async (path, payload) => {
   if (!isApiConfigured) {
     return {ok: false, message: "Submissions aren't configured yet. Please try again later.", errors: {}};
   }
- 
-  const response = await fetch(`${API_BASE}/public/leads`, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify(payload),
-  });
- 
-  if (response.status === 204) return {ok: true};
- 
-  const body = await response.json().catch(() => null);
- 
-  if (response.ok && body?.success !== false) return {ok: true};
- 
-  const error = body?.error || {};
- 
-  return {
-    ok: false,
-    status: response.status,
-    message:
-      error.message ||
-      (typeof body?.error === "string" ? body.error : "") ||
-      "We couldn't save your details. Please try again.",
-    errors: error.fields || body?.errors || {},
-  };
+
+  // Same cap as the reads. Without it a stalled connection leaves the form on
+  // "Sending…" until the browser gives up minutes later, which looks like a
+  // dead button; the callers turn the abort into their visible network error.
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+  try {
+    const response = await fetch(`${API_BASE}${path}`, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+
+    if (response.status === 204) return {ok: true};
+
+    const body = await response.json().catch(() => null);
+
+    if (response.ok && body?.success !== false) return {ok: true};
+
+    const error = body?.error || {};
+
+    return {
+      ok: false,
+      status: response.status,
+      message:
+        error.message ||
+        (typeof body?.error === "string" ? body.error : "") ||
+        "We couldn't save your details. Please try again.",
+      errors: error.fields || body?.errors || {},
+    };
+  } finally {
+    clearTimeout(timer);
+  }
 };

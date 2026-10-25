@@ -1,0 +1,56 @@
+/* NeuralFlow: the shared stage behind the hero and the scroll story. */
+
+.nf {
+  position: relative;
+  isolation: isolate;
+}
+
+.nf > :not(.nf-backdrop) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Spans the flow minus the story's closing fade, so the stage unsticks as
+   that fade begins and the page shows through it. */
+.nf-backdrop {
+  position: absolute;
+  inset: 0 0 160px; /* .ns-fade height */
+  z-index: 0;
+  pointer-events: none;
+}
+
+.nf-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+
+/* The story's midnight, faded in by FlowStage's timeline. Same gradient the
+   static story stage uses. */
+.nf-night {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background-color: #040a1c;
+  background-image: radial-gradient(ellipse 55% 60% at 50% 50%, #0d2152 0%, rgba(13, 33, 82, 0) 70%);
+}
+
+.nf-stage canvas {
+  animation: nf-in 1.2s ease-out both;
+}
+
+@keyframes nf-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Once the shared canvas is up, the hero's CSS stand-in steps aside. */
+.nf--cinematic .hh-orbit {
+  transition: opacity 1s ease-out;
+}
+
+.nf--ready .hh-orbit {
+  opacity: 0;
+}

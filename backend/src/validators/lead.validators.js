@@ -69,9 +69,7 @@ export const submitLeadSchema = z
     // Required and must be true. A lead is personal data stored to be contacted
     // about; under India's DPDP Act that needs the person's consent, so a
     // submission without it is not stored at all.
-    consent: z.literal(true, {
-      errorMap: () => ({message: "Please agree to be contacted about your enquiry."}),
-    }),
+    consent: z.literal(true, {error: "Please agree to be contacted about your enquiry."}),
 
     // The honeypot. Hidden in the markup, so a person never fills it in and a
     // bot that fills every field does. Kept as `company` — the name the existing

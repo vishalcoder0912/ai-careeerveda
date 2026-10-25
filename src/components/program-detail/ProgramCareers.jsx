@@ -88,12 +88,11 @@ const TestimonialCarousel = ({items}) => {
           >
             ‹
           </button>
-          <span className="pd-proof__dots" role="list">
+          <span className="pd-proof__dots" role="group" aria-label="Choose testimonial">
             {items.map((_, i) => (
               <button
                 type="button"
                 key={i}
-                role="listitem"
                 aria-label={`Go to testimonial ${i + 1}`}
                 className={`pd-dot${i === idx ? " pd-dot--active" : ""}`}
                 onClick={() => {

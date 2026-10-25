@@ -517,7 +517,9 @@ const ResourceEditor = () => {
               </summary>
 
               <div className="editor-section-body">
-                {fields.map((field) => (
+                {/* hiddenWhen: a field that does not apply while another field is
+                    on (a job's Application URL while it collects applications). */}
+                {fields.filter((field) => !(field.hiddenWhen && readPath(form, field.hiddenWhen))).map((field) => (
                   <Field
                     key={field.name}
                     field={field}

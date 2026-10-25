@@ -7,13 +7,13 @@ import {
   Briefcase,
   GraduationCap,
   Handshake,
-  Hammer,
   Target,
   TrendingUp,
   UserCheck,
   Users,
   UsersRound,
 } from "lucide-react";
+import {createLook, hasWebGL, useNeuralFlow, whenLoadedAndIdle} from "./neural/flow";
 import "./home-hero.css";
 
 const FEATURES = [
@@ -21,13 +21,6 @@ const FEATURES = [
   [UsersRound, "Expert Mentorship"],
   [Briefcase, "Placement Support"],
   [BadgeCheck, "Verified Projects"],
-];
-
-const CAREER_PATH = [
-  {icon: GraduationCap, tone: "blue", title: "Learn", body: "Live classes + expert faculty"},
-  {icon: Hammer, tone: "orange", title: "Build", body: "Real-world projects"},
-  {icon: UsersRound, tone: "green", title: "Get Mentored", body: "Industry experts"},
-  {icon: Briefcase, tone: "purple", title: "Get Placed", body: "Top companies"},
 ];
 
 // Keyed by label so the numbers stay whatever siteData.js says; a stat without
@@ -40,39 +33,36 @@ const STAT_ICONS = {
   "Professional Mentors": UserCheck,
 };
 
-// three.js is ~730 KB, so the brain is its own chunk, fetched only after the
-// page has loaded (the headline is the LCP) and paused while the hero is off
-// screen. Without WebGL the CSS halo alone stands in.
-const HeroBrain = lazy(() => import("./HeroBrain"));
+// The brain. On wide screens NeuralFlow's shared stage renders it behind this
+// column (so it can travel into the scroll story); this box only reserves the
+// space and shows the CSS atmosphere until that canvas is up. Elsewhere
+// (phones, reduced motion) the hero renders its own still copy of the same
+// scene.
+//
+// three.js is ~730 KB, so it is its own chunk, fetched only after the page
+// has loaded (the headline is the LCP) and paused while off screen. Without
+// WebGL the CSS atmosphere alone stands in.
+const BrainCanvas = lazy(() => import("./neural/BrainCanvas"));
 
-const hasWebGL = () => {
-  try {
-    return Boolean(document.createElement("canvas").getContext("webgl2"));
-  } catch {
-    return false;
-  }
-};
+// The hero frame of the shared look, framed closer for its smaller canvas.
+const STILL_LOOK = {...createLook(), camZ: 5.2, scale: 1.1};
 
-const HeroBrainLayer = ({hostRef}) => {
+const HeroBrainLayer = () => {
+  const flow = useNeuralFlow();
+  const shared = Boolean(flow?.mode.cinematic);
   const stageRef = useRef(null);
   const [mode, setMode] = useState(null);
   const [onScreen, setOnScreen] = useState(true);
 
   useEffect(() => {
-    if (!hasWebGL()) return undefined;
-    const phone = window.matchMedia("(max-width: 767px)").matches;
-    const weak = (navigator.hardwareConcurrency || 8) <= 4;
+    if (shared || !hasWebGL()) return undefined;
     const next = {
       still: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-      phone,
-      count: phone ? 3800 : weak ? 5500 : 9000,
+      phone: window.matchMedia("(max-width: 767px)").matches,
+      count: flow?.mode.count ?? 4000,
     };
-
-    const start = () => setMode(next);
-    if (document.readyState === "complete") start();
-    else window.addEventListener("load", start, {once: true});
-    return () => window.removeEventListener("load", start);
-  }, []);
+    return whenLoadedAndIdle(() => setMode(next));
+  }, [shared, flow]);
 
   useEffect(() => {
     if (!mode || typeof IntersectionObserver === "undefined") return undefined;
@@ -85,26 +75,15 @@ const HeroBrainLayer = ({hostRef}) => {
     <div className="hh-orbit" ref={stageRef} aria-hidden="true">
       {mode && (
         <Suspense fallback={null}>
-          {/* 0.36: the middle of the visual's open column, past the card on
-              the right. Phones stack the card below, so centre it there. */}
-          <HeroBrain
-            centerX={mode.phone ? 0.5 : 0.36}
-            count={mode.count}
-            still={mode.still}
-            scrollDepth={mode.phone ? 0 : 1}
-            active={onScreen}
-            hostRef={hostRef}
-          />
+          <BrainCanvas look={STILL_LOOK} mode={mode} active={onScreen} />
         </Suspense>
       )}
     </div>
   );
 };
 
-const Hero = ({stats}) => {
-  const sectionRef = useRef(null);
-  return (
-  <section id="top" className="hh" aria-labelledby="hh-title" ref={sectionRef}>
+const Hero = ({stats}) => (
+  <section id="top" className="hh" aria-labelledby="hh-title">
     <div className="hh-inner">
       <div className="hh-copy">
         <p className="hh-eyebrow">
@@ -144,28 +123,14 @@ const Hero = ({stats}) => {
       </div>
 
       <div className="hh-visual">
-        <HeroBrainLayer hostRef={sectionRef} />
-
-        <aside className="hh-path" aria-labelledby="hh-path-title">
-          <h2 id="hh-path-title">Your Career Path</h2>
-          <ol>
-            {CAREER_PATH.map(({icon: Icon, tone, title, body}) => (
-              <li key={title}>
-                <span className={`hh-path__icon is-${tone}`} aria-hidden="true">
-                  <Icon size={17} strokeWidth={2.2} />
-                </span>
-                <span>
-                  <strong>{title}</strong>
-                  <small>{body}</small>
-                </span>
-              </li>
-            ))}
-          </ol>
-        </aside>
+        <HeroBrainLayer />
       </div>
     </div>
 
-    <ul className="hh-stats" aria-label="CareerVeda in numbers">
+    {/* A real heading, visually hidden, so the numbers sit in the page's outline
+        under the h1 instead of being an unlabelled list to a crawler. */}
+    <h2 id="hh-stats-title" className="hh-sr">CareerVeda in numbers</h2>
+    <ul className="hh-stats" aria-labelledby="hh-stats-title">
       {stats.map(([value, label]) => {
         const Icon = STAT_ICONS[label] || GraduationCap;
         return (
@@ -174,7 +139,11 @@ const Hero = ({stats}) => {
               <Icon size={20} strokeWidth={2} />
             </span>
             <span>
-              <strong>{value}</strong>
+              {/* <data> carries the bare number for machines; "13,000+" stays
+                  the text people read. */}
+              <strong>
+                <data value={value.replace(/[^\d.]/g, "")}>{value}</data>
+              </strong>
               <small>{label}</small>
             </span>
           </li>
@@ -182,7 +151,6 @@ const Hero = ({stats}) => {
       })}
     </ul>
   </section>
-  );
-};
+);
 
 export default Hero;

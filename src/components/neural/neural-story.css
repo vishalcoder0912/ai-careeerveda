@@ -8,8 +8,8 @@
   --ns-text: #f5f8ff;
   --ns-muted: #b4c3e2;
   --ns-cyan: #67e8f9;
-  --ns-orange: #ff5a0a;
-  --ns-orange-dark: #e84d00;
+  --ns-orange: #c2410c; /* white text 5.18:1 (WCAG AA) */
+  --ns-orange-dark: #9a3412;
 
   position: relative;
   color: var(--ns-text);
@@ -19,6 +19,11 @@
 .ns-stage {
   position: relative;
   overflow: hidden;
+}
+
+/* Cinematic: the midnight and the brain are NeuralFlow's shared stage behind
+   this one, so here it is only the layer the copy sits on. */
+.ns--static .ns-stage {
   background:
     radial-gradient(ellipse 55% 60% at 50% 50%, #0d2152 0%, rgba(13, 33, 82, 0) 70%),
     var(--ns-night);
@@ -99,14 +104,17 @@
   transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
+/* Brand blue, matching the hero's button above it. A stronger glow than on
+   the white hero, so it still lifts off the midnight backdrop. */
 .ns-btn--primary {
-  background: var(--ns-orange);
+  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
   color: #fff;
-  box-shadow: 0 14px 34px rgba(255, 90, 10, 0.32);
+  box-shadow: 0 14px 34px rgba(37, 99, 235, 0.45);
 }
 
 .ns-btn--primary:hover {
-  background: var(--ns-orange-dark);
+  background: linear-gradient(135deg, #1d4ed8 0%, #4338ca 100%);
+  box-shadow: 0 16px 40px rgba(59, 130, 246, 0.55);
   transform: translateY(-1px);
 }
 
@@ -210,14 +218,14 @@
 .ns--cinematic .ns-beat--final {
   left: max(6vw, calc((100vw - 1280px) / 2));
   top: 50%;
-  width: min(480px, 40vw);
+  width: min(480px, 36vw);
   translate: 0 -50%;
 }
 
 .ns--cinematic .ns-beat--side {
   right: max(6vw, calc((100vw - 1280px) / 2));
   top: 50%;
-  width: min(480px, 40vw);
+  width: min(480px, 36vw);
   translate: 0 -50%;
 }
 
@@ -243,7 +251,49 @@
   opacity: 0;
 }
 
-/* ── Static layout: phones and reduced motion ─────────────────────── */
+/* Narrow screens: no room beside the brain, so every beat sits centred in
+   the lower part of the stage and the timeline lifts the brain above it. */
+@media (max-width: 899px) {
+  .ns--cinematic .ns-track {
+    height: 480vh;
+  }
+
+  .ns--cinematic .ns-beat--open,
+  .ns--cinematic .ns-beat--approach,
+  .ns--cinematic .ns-beat--side,
+  .ns--cinematic .ns-beat--final {
+    left: 50%;
+    right: auto;
+    top: auto;
+    bottom: max(8svh, 40px);
+    width: min(100% - 32px, 560px);
+    text-align: center;
+    translate: -50% 0;
+  }
+
+  .ns--cinematic .ns-actions {
+    justify-content: center;
+  }
+
+  .ns--cinematic h2 {
+    font-size: clamp(26px, 7vw, 40px);
+  }
+
+  .ns--cinematic .ns-copy p:not(.ns-eyebrow) {
+    font-size: 16px;
+  }
+
+  /* Narrower than the copy: the laptop base overhangs its screen by 8%. */
+  .ns--cinematic .ns-beat--device {
+    width: min(100% - 96px, 560px);
+  }
+
+  .ns--cinematic .ns-beat--device h2 {
+    font-size: clamp(24px, 6.4vw, 36px);
+  }
+}
+
+/* ── Static layout: reduced motion and no WebGL ───────────────────── */
 
 .ns--static .ns-stage {
   padding-bottom: 32px;

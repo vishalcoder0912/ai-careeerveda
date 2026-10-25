@@ -115,7 +115,10 @@ const PolicyPage = ({slug: slugProp}) => {
               <div>
                 {policy.sections.map((section) => (
                   <section className="legal-block" id={section.id} key={section.id}>
-                    <h3>{section.heading}</h3>
+                    {/* h2: each clause is a top-level section under the page's h1.
+                        As h3 the outline skipped a level, which search engines and
+                        screen-reader heading navigation both read as a gap. */}
+                    <h2>{section.heading}</h2>
                     {/* A clause that changes what the rest of the section means — the
                         "we are not affiliated with any other provider" disclaimer —
                         rather than one more paragraph in the run of them. */}
@@ -136,7 +139,7 @@ const PolicyPage = ({slug: slugProp}) => {
                         list rather than being flattened into one run of bullets. */}
                     {section.groups?.map((group) => (
                       <div className="legal-group" key={group.title}>
-                        <h4>{group.title}</h4>
+                        <h3>{group.title}</h3>
                         <ul>
                           {group.list.map((item) => (
                             <li key={item}>{item}</li>

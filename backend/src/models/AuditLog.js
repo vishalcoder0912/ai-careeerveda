@@ -38,6 +38,10 @@ export const AUDIT_ACTIONS = Object.freeze({
   LEAD_DELETED: "lead.deleted",
   LEAD_EXPORTED: "lead.exported",
 
+  APPLICATION_UPDATED: "job-application.updated",
+  APPLICATION_DELETED: "job-application.deleted",
+  APPLICATION_EXPORTED: "job-application.exported",
+
   SETTINGS_UPDATED: "settings.updated",
 });
 

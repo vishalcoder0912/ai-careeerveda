@@ -1,8 +1,9 @@
 import {Reveal} from "../motionPrimitives";
-import {faqs} from "../../data/faqs";
 
-const ProgramFaq = () => {
-  if (!faqs.length) return null;
+// `items` is programFaqList(program): the same list the page emits as FAQPage
+// JSON-LD (ProgramDetailPage), so what is marked up is exactly what is shown.
+const ProgramFaq = ({items}) => {
+  if (!items.length) return null;
 
   return (
     <section className="pd-section pd-section--alt" id="pd-faq">
@@ -13,7 +14,7 @@ const ProgramFaq = () => {
         </Reveal>
 
         <div className="pd-faq">
-          {faqs.map(([question, answer], index) => (
+          {items.map(([question, answer], index) => (
             <details className="pd-faq__item" key={question} open={index === 0}>
               <summary>
                 <span>{question}</span>

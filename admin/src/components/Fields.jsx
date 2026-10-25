@@ -563,6 +563,13 @@ export const Field = ({field, value, onChange, disabled, error, needed = false, 
             aria-describedby={describedBy || undefined}
             onChange={(event) => onChange(event.target.value)}
           >
+            {/* A stored value outside the options (an older record, an imported
+                listing) is shown as itself. Without this the browser displays
+                the first option while the form still holds the old value, so
+                what the editor sees is not what gets saved. */}
+            {(field.options || []).some((option) => option.value === (value || "")) ? null : (
+              <option value={value || ""}>{value || "Choose…"}</option>
+            )}
             {(field.options || []).map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}

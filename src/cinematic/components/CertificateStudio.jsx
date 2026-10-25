@@ -27,8 +27,8 @@ const serialFor = (mark, name) => {
   return `CV-${body.slice(0, 4)}-${body.slice(4)}`;
 };
 
-const formatDate = (date) =>
-  new Intl.DateTimeFormat("en-GB", {day: "2-digit", month: "short", year: "numeric"}).format(date);
+const DATE_FORMAT = new Intl.DateTimeFormat("en-GB", {day: "2-digit", month: "short", year: "numeric"});
+const formatDate = (date) => DATE_FORMAT.format(date);
 
 const slugify = (value) =>
   value

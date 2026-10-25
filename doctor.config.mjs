@@ -11,6 +11,10 @@
 // To reconsider any of these, delete the line and run `npx react-doctor@latest`.
 
 export default {
+  // .claude/worktrees/* are full checkouts of OTHER branches (git-ignored).
+  // Scanning them reports every finding twice and flags code that is not this
+  // branch's. This skips those copies only; every rule still runs on the project.
+  ignore: {files: [".claude/**"]},
   rules: {
     // ── Confirmed false positives ────────────────────────────────────────────
     // The effect DOES clean up — via lenis.destroy(), a cleanupFns[] array, or a

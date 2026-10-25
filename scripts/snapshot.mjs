@@ -296,11 +296,19 @@ function inject(html, {body, jsonLd, stylesheets = []}) {
   let out = html.replace(root[0], `<div id="root">${body}</div>`);
   if (jsonLd) out = out.replace("</head>", `    ${jsonLd}\n  </head>`);
 
-  // Only those the template does not already link. Vite's chunk loader checks
-  // for an existing <link> by href, so the app does not fetch these twice.
+  // Only those the template does not already link. They are preloaded, not
+  // plain stylesheets: every one of these sections sits below the fold, and as
+  // rel="stylesheet" they held the first paint of the hero hostage (Lighthouse:
+  // ~570 ms render-blocking on a phone). Preload fetches them just as early, and
+  // each applies the moment it lands, so the layout is still styled long before
+  // anyone scrolls there. Once applied they match Vite's own
+  // link[rel="stylesheet"][href] check, so the chunk loader does not refetch.
   const missingCss = stylesheets.filter((href) => !out.includes(`href="${href}"`));
   if (missingCss.length > 0) {
-    const links = missingCss.map((href) => `<link rel="stylesheet" crossorigin href="${href}">`);
+    const links = missingCss.map(
+      (href) =>
+        `<link rel="preload" as="style" crossorigin href="${href}" onload="this.onload=null;this.rel='stylesheet'">`,
+    );
     out = out.replace("</head>", `    ${links.join("\n    ")}\n  </head>`);
   }
 

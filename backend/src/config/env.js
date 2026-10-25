@@ -72,6 +72,10 @@ const schema = z.object({
   // Where the admissions team is notified of each hiring enquiry.
   LEAD_NOTIFY_EMAIL: z.string().optional(),
 
+  // Cloudflare Turnstile secret for the public forms. Blank skips the check
+  // (dev, tests); an https deploy refuses to boot without it (see below).
+  TURNSTILE_SECRET_KEY: z.string().optional(),
+
   // A hop count ("1", "2") or an Express trust-proxy list ("loopback, 10.0.0.0/8").
   TRUST_PROXY: z.string().default("1"),
 
@@ -98,6 +102,36 @@ const raw = parsed.data;
 const allowedOrigins = Array.from(
   new Set([raw.FRONTEND_URL, raw.ADMIN_URL, ...csv(raw.CORS_ALLOWED_ORIGINS)]),
 );
+
+// Production with non-Secure cookies sends the refresh token over plain http.
+// Warned, not refused: the local stack also runs NODE_ENV=production over http.
+if (raw.NODE_ENV === "production" && !raw.COOKIE_SECURE) {
+  console.warn("WARNING: NODE_ENV=production with COOKIE_SECURE=false - set COOKIE_SECURE=true on any https deploy.");
+}
+
+// Secure cookies mean a real HTTPS deploy, where cookies go out SameSite=None.
+// A localhost or plain-http origin left in the allowlist (the defaults above are
+// localhost) would let any dev server on a visitor's machine call the live API
+// with their session. Refuse to boot instead; the local Docker stack runs with
+// COOKIE_SECURE=false and is unaffected.
+if (raw.COOKIE_SECURE) {
+  const unsafe = allowedOrigins.filter(
+    (origin) => !origin.startsWith("https://") || /^https:\/\/(localhost|127\.|\[::1\])/.test(origin),
+  );
+  if (unsafe.length) {
+    console.error(
+      `Invalid environment configuration:\n  COOKIE_SECURE=true but these allowed origins are not public https: ${unsafe.join(", ")}\n  Set FRONTEND_URL, ADMIN_URL and CORS_ALLOWED_ORIGINS to your https domains.`,
+    );
+    process.exit(1);
+  }
+  // An https deploy with no Turnstile secret would leave the public forms open to bots.
+  if (!raw.TURNSTILE_SECRET_KEY) {
+    console.error(
+      "Invalid environment configuration:\n  COOKIE_SECURE=true but TURNSTILE_SECRET_KEY is not set - the public forms would accept bot submissions.",
+    );
+    process.exit(1);
+  }
+}
 
 export const env = {
   ...raw,

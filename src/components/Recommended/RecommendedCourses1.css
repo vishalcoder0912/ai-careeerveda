@@ -497,6 +497,13 @@
    right of the hero are the same width, so their heights are the only thing
    that can tell them apart, and the hero's height is whatever the pair beside
    it adds up to. Everything else is content-sized from there. */
+/* The two flagship cards share the opening band. They carry the largest type
+   and the tallest artwork, because this is the pair the section is recommending
+   first: Product Management and Gen AI & Agentic AI. */
+.rc-card--spotlight {
+  min-height: 470px;
+}
+
 .rc-card--hero {
   min-height: 480px;
 }
@@ -653,6 +660,12 @@
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 
+  /* The flagship pair stays side by side on tablet, at half width each. */
+  .rc-card--spotlight {
+    grid-column: span 3;
+    min-height: 430px;
+  }
+
   .rc-card--hero {
     grid-column: span 6;
     grid-row: span 2;
@@ -666,14 +679,16 @@
     min-height: 248px;
   }
 
-  .rc-card--compact {
-    grid-column: span 6;
-    min-height: 240px;
+  /* The five supporting programs sit two-up: 4-col + 8-col on desktop become
+     equal halves here, with the final program closing the grid as a strip. */
+  .rc-card--compact,
+  .rc-card--panel {
+    grid-column: span 3;
+    min-height: 260px;
   }
 
-  .rc-card--panel,
   .rc-card--banner {
-    grid-column: span 3;
+    grid-column: span 6;
     min-height: 260px;
   }
 
@@ -704,20 +719,41 @@
     display: none;
   }
 
+  /* A swipe row, not a column. Stacked one per row, nine cards ran ~2,200px of
+     scrolling on a phone for programs the page already lists above. Each card
+     takes 84% of the width so the next one peeks in (the cue that the row
+     scrolls), and snaps into place. DOM order is the running order, so the
+     featured card is still first. */
   .rc-grid {
-    grid-template-columns: 1fr;
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 2px;
+    padding: 4px 2px 14px;
+    scrollbar-width: none;
   }
 
-  /* DOM order is the running order, so the featured card is already first —
-     nothing needs reordering here, only the spans flattening. */
-  .rc-card {
-    grid-column: 1 / -1;
-    grid-row: auto;
-    min-height: 320px;
+  .rc-grid::-webkit-scrollbar {
+    display: none;
   }
 
+  .rc-card,
   .rc-card--hero {
-    min-height: 400px;
+    flex: 0 0 84%;
+    min-height: 360px;
+    scroll-snap-align: start;
+  }
+
+  /* The first two cards are the row's opening pair on every width. On a phone
+     "side by side" becomes a horizontal snap row rather than two 160px columns:
+     each card keeps a readable measure, and the next one peeks in to show the
+     row continues. */
+  .rc-card--spotlight {
+    flex: 0 0 84%;
+    min-height: 390px;
+    scroll-snap-align: start;
   }
 
   .rc-card--xl .rc-title {
@@ -767,4 +803,16 @@
   .rc-card.is-linked:hover .rc-cta svg {
     transform: none;
   }
+}
+/* ── Mobile carousel (React Bits <Carousel />, tier "mobile" only) ──────────
+   The carousel sizes each slide; the bento card just fills it. */
+.rc-carousel .rc-card {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.rc-carousel .carousel-card.is-custom {
+  background: none;
+  box-shadow: none;
 }

@@ -102,6 +102,7 @@ ${programLines.join("\n")}
 - [Blog](${url("/blog")}): career guides, skill roadmaps and industry trends.
 - [About](${url("/about")}): what the organisation is and how it operates.
 - [Contact and admissions](${url("/contact")}): admissions, fees and batch enquiries.
+- [Full program reference](${url("/llms-full.txt")}): every program in full — facts, curriculum, outcomes and Q&A in one file.
 
 ## Frequently asked questions
 
@@ -135,6 +136,69 @@ fs.writeFileSync(target, content, "utf8");
 console.log(
   `llms.txt: ${programCatalog.length} programs, ${faqs.length} FAQs, ${blogLines.length} articles -> ${path.relative(ROOT, target)}`,
 );
+
+// ── llms-full.txt ────────────────────────────────────────────────────────────
+// The llms.txt convention's companion: everything an assistant needs to answer
+// "which CareerVeda program should I take, how long, how much, what will I
+// learn" in ONE fetch, instead of crawling eleven program pages it may not
+// render. Built from the same records the pages render, so it cannot drift.
+// The per-program Q&A is programFaqs() — the exact pairs each program page
+// shows and marks up as FAQPage.
+const {programFaqs} = await load("src/data/programFaqs.js");
+
+const bullets = (items) => (items || []).map((item) => `- ${item}`).join("\n");
+const programSection = (program) => {
+  const href = url(program.landingPath || `/programs/${program.id}`);
+  const facts = [
+    ["Duration", program.duration],
+    ["Format", program.format],
+    ["Eligibility", program.eligibility],
+    ["Fee", program.fee?.amount || program.startingPrice],
+    ["EMI", program.emi],
+    ["Next batch", program.nextBatch],
+    ["Projects", program.projects],
+  ].filter(([, value]) => value);
+  const modules = (program.modules || []).map((module) => `${module.n ? `${module.n}. ` : ""}${module.title}`);
+  return [
+    `## ${program.fullTitle || program.title}`,
+    "",
+    `URL: ${href}`,
+    "",
+    String(program.description || program.lead || "").replace(/\s+/g, " ").trim(),
+    "",
+    facts.map(([label, value]) => `- ${label}: ${value}`).join("\n"),
+    program.skills?.length ? `\n### Skills and tools\n\n${program.skills.join(", ")}` : null,
+    modules.length ? `\n### Curriculum modules\n\n${bullets(modules)}` : null,
+    program.outcomes?.length ? `\n### Outcomes\n\n${bullets(program.outcomes)}` : null,
+    program.internship?.length ? `\n### Projects and internship\n\n${bullets(program.internship)}` : null,
+    "\n### Questions about this program\n",
+    programFaqs(program)
+      .map(([question, answer]) => `**${question}**\n${answer}`)
+      .join("\n\n"),
+    "",
+  ]
+    .filter((part) => part !== null)
+    .join("\n");
+};
+
+const full = `# ${SITE_NAME} — full program reference
+
+> ${ORGANISATION.description}
+
+This is the long form of ${url("/llms.txt")}: every program in full. ${SITE_NAME}
+(${ORGANISATION.alternateNames.join(", ")}) is at ${SITE_URL}.
+Contact: ${ORGANISATION.email}, ${ORGANISATION.telephone}.
+Fees and batch dates change between batches; each program's page is authoritative.
+
+${programCatalog.map(programSection).join("\n")}
+## General questions
+
+${faqLines.join("\n").trim()}
+`;
+
+const fullTarget = path.join(ROOT, "public", "llms-full.txt");
+fs.writeFileSync(fullTarget, full, "utf8");
+console.log(`llms-full.txt: ${programCatalog.length} programs in full -> ${path.relative(ROOT, fullTarget)}`);
 
 if (!SITE_URL || !SITE_URL.startsWith("http")) {
   console.error("  SITE_URL is not set in src/config/siteMeta.js — every link in llms.txt will be wrong.");

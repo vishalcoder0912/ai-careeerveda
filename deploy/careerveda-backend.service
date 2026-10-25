@@ -1,0 +1,35 @@
+[Unit]
+Description=CareerVeda API (Node backend)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+# A dedicated unprivileged user: a compromise of the API is a compromise of
+# this user, not of the server. setup-server.sh creates it.
+User=careerveda
+Group=careerveda
+WorkingDirectory=/opt/careerveda/backend
+# backend/src/config/env.js loads backend/.env via dotenv (override:false), so
+# secrets live in that file (mode 640, root:careerveda), never in this unit.
+Environment=NODE_ENV=production
+Environment=PORT=8080
+ExecStart=/usr/bin/node src/server.js
+Restart=always
+RestartSec=5
+TimeoutStopSec=15
+KillSignal=SIGTERM
+
+# Hardening: the API only needs to read its own code and reach the network.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+
+[Install]
+WantedBy=multi-user.target

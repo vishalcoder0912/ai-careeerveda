@@ -65,11 +65,14 @@ test.describe("resilience", () => {
     await page.goto(`${FRONTEND}/enroll`, {waitUntil: "domcontentloaded"});
     await contentReady(page);
 
-    await page.getByPlaceholder("Your full name").fill("Test User");
-    await page.getByPlaceholder("you@example.com").fill("test@example.com");
-    await page.getByPlaceholder("+91 92178 01191").fill("+91 92178 01191");
-    await page.locator('select[name="program"]').selectOption({index: 1});
-    await page.locator('button[type="submit"]').first().click();
+    // Scoped to the enroll form: the always-mounted Hire From Us dialog has its
+    // own select[name="program"], which trips Playwright strict mode.
+    const form = page.locator("form").filter({has: page.getByPlaceholder("Your full name")});
+    await form.getByPlaceholder("Your full name").fill("Test User");
+    await form.getByPlaceholder("you@example.com").fill("test@example.com");
+    await form.getByPlaceholder("+91 92178 01191").fill("+91 92178 01191");
+    await form.locator('select[name="program"]').selectOption({index: 1});
+    await form.locator('button[type="submit"]').click();
 
     await expect(page.getByText(/couldn't save|try again/i).first()).toBeVisible();
   });

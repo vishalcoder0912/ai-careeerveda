@@ -68,7 +68,9 @@ describe("roleHasPermission", () => {
   it("keeps a viewer read-only", () => {
     expect(roleHasPermission(ROLES.VIEWER, PERMISSIONS.PROGRAMS_READ)).toBe(true);
     expect(roleHasPermission(ROLES.VIEWER, PERMISSIONS.DASHBOARD_READ)).toBe(true);
-    expect(roleHasPermission(ROLES.VIEWER, PERMISSIONS.FORMS_READ)).toBe(true);
+    // Lead PII is not for viewers; editors keep it.
+    expect(roleHasPermission(ROLES.VIEWER, PERMISSIONS.FORMS_READ)).toBe(false);
+    expect(roleHasPermission(ROLES.EDITOR, PERMISSIONS.FORMS_READ)).toBe(true);
 
     expect(roleHasPermission(ROLES.VIEWER, PERMISSIONS.PROGRAMS_CREATE)).toBe(false);
     expect(roleHasPermission(ROLES.VIEWER, PERMISSIONS.PROGRAMS_UPDATE)).toBe(false);

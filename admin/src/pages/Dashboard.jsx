@@ -20,8 +20,9 @@ const relativeTime = (value) => {
   return new Date(value).toISOString().slice(0, 10);
 };
 
-const Dashboard = () => {
-  const {admin, can} = useAuth();
+// Loads the per-resource counts, the latest edits across every resource the
+// admin can read, and the lead stats (when they may see leads).
+const useDashboardData = (can) => {
   const [counts, setCounts] = useState(null);
   const [recent, setRecent] = useState([]);
   const [leadStats, setLeadStats] = useState(null);
@@ -71,6 +72,76 @@ const Dashboard = () => {
       cancelled = true;
     };
   }, [can]);
+
+  return {counts, recent, leadStats, error, loading};
+};
+
+const RecentList = ({recent}) =>
+  recent.length > 0 ? (
+    <ul className="recent-list">
+      {recent.map(({resource, item}) => (
+        <li key={`${resource.name}-${item._id}`} className="recent-item">
+          <span className="recent-item-icon" aria-hidden="true">
+            {resource.singular.slice(0, 1).toUpperCase()}
+          </span>
+          <span className="recent-item-content">
+            <Link className="recent-item-title" to={`/${resource.name}/${item._id}`}>
+              {item[resource.titleField] || "Untitled"}
+            </Link>
+            <span className="recent-item-meta">
+              <span>{resource.singular}</span>
+              <span aria-hidden="true">•</span>
+              <span>{relativeTime(item.updatedAt)}</span>
+            </span>
+          </span>
+          <StatusBadge status={item.status} />
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p className="dashboard-empty">No content has been edited yet.</p>
+  );
+
+const LeadStatsPanel = ({stats}) => (
+  <section className="panel dashboard-leads">
+    <div className="panel-head">
+      <div>
+        <span className="section-kicker">Enquiries</span>
+        <h2>Enrollment inquiries</h2>
+      </div>
+      <Link className="text-link" to="/leads?type=enrollment">View all →</Link>
+    </div>
+
+    <div className="enrollment-stats-grid">
+      <div className="enrollment-stat-card">
+        <strong>{stats.total}</strong>
+        <span>Total Inquiries</span>
+      </div>
+      <div className="enrollment-stat-card">
+        <strong>{stats.todayCount || 0}</strong>
+        <span>Today</span>
+      </div>
+    </div>
+
+    {stats.byUserType ? (
+      <div className="enrollment-user-types">
+        <h3>By user type</h3>
+        <div className="user-type-chips">
+          {Object.entries(stats.byUserType).map(([type, count]) => (
+            <div key={type} className="user-type-chip">
+              <strong>{count}</strong>
+              <span>{type}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    ) : null}
+  </section>
+);
+
+const Dashboard = () => {
+  const {admin, can} = useAuth();
+  const {counts, recent, leadStats, error, loading} = useDashboardData(can);
 
   const firstName = admin?.name ? admin.name.split(" ")[0] : null;
   const createLinks = (counts || [])
@@ -155,30 +226,7 @@ const Dashboard = () => {
                 <span className="panel-caption">Latest 8 updates</span>
               </div>
 
-              {recent.length > 0 ? (
-                <ul className="recent-list">
-                  {recent.map(({resource, item}) => (
-                    <li key={`${resource.name}-${item._id}`} className="recent-item">
-                      <span className="recent-item-icon" aria-hidden="true">
-                        {resource.singular.slice(0, 1).toUpperCase()}
-                      </span>
-                      <span className="recent-item-content">
-                        <Link className="recent-item-title" to={`/${resource.name}/${item._id}`}>
-                          {item[resource.titleField] || "Untitled"}
-                        </Link>
-                        <span className="recent-item-meta">
-                          <span>{resource.singular}</span>
-                          <span aria-hidden="true">•</span>
-                          <span>{relativeTime(item.updatedAt)}</span>
-                        </span>
-                      </span>
-                      <StatusBadge status={item.status} />
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="dashboard-empty">No content has been edited yet.</p>
-              )}
+              <RecentList recent={recent} />
             </section>
 
             <aside className="dashboard-side">
@@ -210,42 +258,7 @@ const Dashboard = () => {
                 </ol>
               </section>
 
-              {leadStats ? (
-                <section className="panel dashboard-leads">
-                  <div className="panel-head">
-                    <div>
-                      <span className="section-kicker">Enquiries</span>
-                      <h2>Enrollment inquiries</h2>
-                    </div>
-                    <Link className="text-link" to="/leads?type=enrollment">View all →</Link>
-                  </div>
-
-                  <div className="enrollment-stats-grid">
-                    <div className="enrollment-stat-card">
-                      <strong>{leadStats.total}</strong>
-                      <span>Total Inquiries</span>
-                    </div>
-                    <div className="enrollment-stat-card">
-                      <strong>{leadStats.todayCount || 0}</strong>
-                      <span>Today</span>
-                    </div>
-                  </div>
-
-                  {leadStats.byUserType ? (
-                    <div className="enrollment-user-types">
-                      <h3>By user type</h3>
-                      <div className="user-type-chips">
-                        {Object.entries(leadStats.byUserType).map(([type, count]) => (
-                          <div key={type} className="user-type-chip">
-                            <strong>{count}</strong>
-                            <span>{type}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ) : null}
-                </section>
-              ) : null}
+              {leadStats ? <LeadStatsPanel stats={leadStats} /> : null}
             </aside>
           </div>
         </>

@@ -74,9 +74,14 @@ const ProgramsPage = () => {
         <DeferUntilVisible minHeight={600}>
           <RecommendedCourses />
         </DeferUntilVisible>
-        <DeferUntilVisible minHeight={520}>
-          <LearnerOutcomes reviews={reviews} stats={stats} />
-        </DeferUntilVisible>
+        {/* Only when there are featured stories: LearnerOutcomes renders nothing
+            without them, and the 520px placeholder then stood as an empty gap
+            above the footer. Below the fold, so arriving late shifts nothing. */}
+        {reviews.length > 0 && (
+          <DeferUntilVisible minHeight={520}>
+            <LearnerOutcomes reviews={reviews} stats={stats} />
+          </DeferUntilVisible>
+        )}
       </section>
     </main>
   );

@@ -60,7 +60,7 @@
   font-family: "Inter", system-ui, sans-serif;
   font-weight: 500;
   font-size: 8px;
-  color: #f6a34b;
+  color: #92400e; /* 7.09:1 on white — #f6a34b was 1.98:1 */
   letter-spacing: 0.22em;
   /* The wordmark's -0.02em tracking pulls its first glyph a hair left of the
      text origin; nudging the tagline by the same amount lines the two left

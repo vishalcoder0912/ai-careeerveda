@@ -218,6 +218,7 @@ export const jobBody = z.object({
   responsibilities: stringArray(50),
   skills: stringArray(40, 120),
   salaryRange: optionalText(120),
+  acceptsApplications: z.boolean().optional().default(false),
   // http(s) or blank: the value lands in an Apply button's href, and a blank
   // one falls back to a LinkedIn search on the site.
   applicationUrl: z
@@ -360,13 +361,27 @@ const dropNulls = (value) =>
 /** A create body, tolerant of the nulls a round-tripped record carries. */
 export const contentBody = (schema) => z.preprocess(dropNulls, schema);
 
-export const updateBody = (schema) =>
+export const updateBody = (schema) => {
   // partial() so a PATCH can send one field. `revision` rides alongside for the
   // optimistic-concurrency check and is stripped before the model sees it.
-  z.preprocess(
+  const inner = schema.partial().extend({revision: z.coerce.number().int().min(1).optional()});
+
+  return z.preprocess(
     dropNulls,
-    schema.partial().extend({revision: z.coerce.number().int().min(1).optional()}),
+    z.unknown().transform((raw, ctx) => {
+      const result = inner.safeParse(raw);
+      if (!result.success) {
+        for (const issue of result.error.issues) ctx.addIssue(issue);
+        return z.NEVER;
+      }
+      // zod 4 applies .default() even inside .partial(), so `{title}` would come
+      // back with every other field reset to "" or [] and the PATCH would wipe
+      // them. Keep only the top-level keys the caller actually sent.
+      const sent = raw && typeof raw === "object" ? raw : {};
+      return Object.fromEntries(Object.entries(result.data).filter(([key]) => key in sent));
+    }),
   );
+};
 
 export const bulkBody = z.object({
   ids: z.array(objectId).min(1).max(100),

@@ -28,6 +28,11 @@ const hiringSummary = (lead) =>
     `Comments: ${lead.message || "—"}`,
   ].join("\n");
 
+// Only the admissions inbox is mailed. There is deliberately no confirmation to
+// lead.email: it is an unverified address typed by an anonymous caller, and
+// auto-replying to it turned the form into a relay that sends CareerVeda mail
+// to anyone. The admissions team replies by hand (replyTo below).
+//
 // Fire-and-forget. The lead is already saved; a mail outage must never turn a
 // stored submission into an error for the person who sent it.
 export const sendHiringEmails = async (lead) => {
@@ -45,17 +50,6 @@ export const sendHiringEmails = async (lead) => {
         subject: `New hiring enquiry — ${lead.organization}`,
         text: `A new "Hire From Us" enquiry was submitted.\n\n${summary}`,
       }),
-    transport.sendMail({
-      from,
-      to: lead.email,
-      subject: "We've received your hiring enquiry — CareerVeda",
-      text:
-        `Hi ${lead.name},\n\n` +
-        "Thank you for your interest in hiring from CareerVeda. Our placement team " +
-        "will get in touch with you shortly.\n\n" +
-        `Here is what you shared with us:\n\n${summary}\n\n` +
-        "Regards,\nTeam CareerVeda\nInfo@careerveda.in · +91 9217801191",
-    }),
   ]);
 
   for (const result of results) {

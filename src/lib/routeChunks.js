@@ -16,7 +16,22 @@ export const loadCinematicProgramPage = () => import("../cinematic/CinematicProg
 
 // Programs rendered through the cinematic template (CinematicProgramPage)
 // rather than the standard program page. App.jsx gives each one its own route.
-export const CINEMATIC_PROGRAMS = ["product-management"];
+// Every catalogue program except gen-ai-agentic-ai, which has its own route
+// (GenerativeAIPage). Plain ids: this module is in the entry chunk and must
+// not import the page content. CinematicProgramPage.test.js checks the two
+// lists agree.
+export const CINEMATIC_PROGRAMS = [
+  "product-management",
+  "ai-systems-agentic-ai",
+  "business-analytics",
+  "data-analytics",
+  "investment-banking",
+  "data-science-ai",
+  "gen-ai",
+  "data-engineering",
+  "backend-engineering",
+  "cybersecurity",
+];
 
 const EXACT_ROUTES = {
   "/programs": loadProgramsPage,

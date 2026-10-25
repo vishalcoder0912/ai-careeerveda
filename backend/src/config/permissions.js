@@ -49,12 +49,9 @@ export const ROLES = Object.freeze({
   VIEWER: "viewer",
 });
 
-// Read-only across the board. A viewer can see the admin panel and nothing else.
-const VIEWER_PERMISSIONS = [
-  PERMISSIONS.DASHBOARD_READ,
-  PERMISSIONS.PROGRAMS_READ,
-  PERMISSIONS.FORMS_READ,
-];
+// Read-only content. No FORMS_READ: leads and applications hold names, emails
+// and phone numbers, and a viewer account is the one handed to contractors.
+const VIEWER_PERMISSIONS = [PERMISSIONS.DASHBOARD_READ, PERMISSIONS.PROGRAMS_READ];
 
 // Content people. They write content and send it for review (an admin
 // publishes it), but cannot touch other
@@ -62,6 +59,7 @@ const VIEWER_PERMISSIONS = [
 // must not be able to escalate or cover their tracks.
 const EDITOR_PERMISSIONS = [
   ...VIEWER_PERMISSIONS,
+  PERMISSIONS.FORMS_READ,
   PERMISSIONS.PROGRAMS_CREATE,
   PERMISSIONS.PROGRAMS_UPDATE,
   PERMISSIONS.FACULTY_MANAGE,

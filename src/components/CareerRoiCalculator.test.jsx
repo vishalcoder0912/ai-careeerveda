@@ -1,7 +1,8 @@
 import {describe, it, expect, afterEach} from "vitest";
 import {render, screen, fireEvent, cleanup} from "@testing-library/react";
 import {MemoryRouter} from "react-router-dom";
-import CareerRoiCalculator, {ROI_TRACKS, projectCtc} from "./CareerRoiCalculator";
+import CareerRoiCalculator from "./CareerRoiCalculator";
+import {ROI_TRACKS, projectCtc} from "../data/careerRoi";
 
 afterEach(cleanup);
 

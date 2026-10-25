@@ -93,13 +93,34 @@ describe("account lockout", () => {
       await login(app, {password: "wrong-password-here-1"});
     }
 
+    // Indistinguishable from a wrong password, so lockout cannot reveal which
+    // emails are real accounts.
     const locked = await login(app);
-    expect(locked.status).toBe(423);
-    expect(locked.response.body.error.code).toBe("ACCOUNT_LOCKED");
+    const unknown = await login(app, {email: "nobody@careerveda.test", password: "wrong-password-here-1"});
+    expect(locked.status).toBe(401);
+    expect(locked.response.body.error).toEqual(unknown.response.body.error);
 
     const admin = await Admin.findOne({email: "super@careerveda.test"});
     expect(admin.failedLoginAttempts).toBeGreaterThanOrEqual(5);
     expect(admin.isLocked()).toBe(true);
+  });
+
+  it("counts wrong current passwords on change-password toward the lockout", async () => {
+    await createAdmin();
+    const {accessToken} = await login(app);
+
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      await request(app)
+        .post("/api/v1/auth/change-password")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({currentPassword: "wrong-password-here-1", newPassword: "A-brand-new-passphrase-42!"});
+    }
+
+    const admin = await Admin.findOne({email: "super@careerveda.test"});
+    expect(admin.isLocked()).toBe(true);
+
+    const after = await request(app).get("/api/v1/auth/me").set("Authorization", `Bearer ${accessToken}`);
+    expect(after.status).toBe(401);
   });
 
   it("clears the failure count on a successful login", async () => {

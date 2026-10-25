@@ -443,10 +443,13 @@
   min-width: 0;
 }
 
+/* break-word, not anywhere: `anywhere` also shrinks the text's min-content
+   width, so on a phone the column squeezed and split "MENTORSHIP" mid-word even
+   with room to spare. break-word only splits a word that truly cannot fit. */
 .program-meta-strip .program-meta-item strong,
 .program-meta-strip .program-meta-item small {
   display: block;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .program-meta-item strong {

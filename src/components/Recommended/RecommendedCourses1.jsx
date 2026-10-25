@@ -7,6 +7,7 @@ import {useViewportTier} from "../../hooks/useViewportTier";
 import {useContentList} from "../../hooks/useContent";
 import {adaptProgram} from "../../lib/contentAdapters";
 import {cdnImage, cdnSrcSet} from "../../lib/imageCdn";
+import Carousel from "../Carousel/Carousel";
 import "./RecommendedCourses1.css";
 
 /* ── What this section no longer runs, and why ───────────────────────────────
@@ -37,11 +38,11 @@ import "./RecommendedCourses1.css";
 
 /* ── The bento ──────────────────────────────────────────────────────────────
  *
- * Six slots on a 12-column grid, and no two of them are the same size. The
- * spans live here rather than in the CSS because they are a property of the
- * running order — slot 0 is the featured program and gets the 2-row block, and
- * the rest are arranged so that each band reads differently from the one above
- * it (7|5, then 4|8, then a single full-width strip).
+ * Seven slots on a 12-column grid. The two flagship programs share the first
+ * band as equal half-width cards — Product Management first, Gen AI & Agentic
+ * AI second — so they are read (and tabbed to) as the pair they are meant to
+ * be. The remaining programs follow in alternating 4|8 bands and a full-width
+ * strip.
  *
  * `cols` and `rows` are grid spans; `size` picks the card's type scale and how
  * hard its description is clamped, because a 12-column strip and a 4-column
@@ -53,31 +54,31 @@ import "./RecommendedCourses1.css";
  * not used; the spans below already pack without a hole.
  */
 const SLOTS = [
-  {name: "hero", cols: 7, rows: 2, size: "xl"},
-  {name: "wide", cols: 5, rows: 1, size: "sm"},
-  {name: "tall", cols: 5, rows: 1, size: "md"},
+  {name: "spotlight", cols: 6, rows: 1, size: "xl"},
+  {name: "spotlight", cols: 6, rows: 1, size: "xl"},
   {name: "compact", cols: 4, rows: 1, size: "sm"},
   {name: "panel", cols: 8, rows: 1, size: "md"},
-  {name: "banner", cols: 12, rows: 1, size: "lg"},
+  {name: "compact", cols: 4, rows: 1, size: "sm"},
+  {name: "panel", cols: 8, rows: 1, size: "md"},
   {name: "banner", cols: 12, rows: 1, size: "lg"},
 ];
 
 // Widest each slot is ever drawn, at the 1180px container. The CDN is asked for
 // that and for a 2x variant via srcset, so a 4-column tile does not download
-// the hero's artwork. See lib/imageCdn.
-const SLOT_IMAGE_WIDTH = {hero: 720, wide: 520, tall: 520, compact: 420, panel: 800, banner: 1180};
+// the spotlight artwork. See lib/imageCdn.
+const SLOT_IMAGE_WIDTH = {spotlight: 720, compact: 420, panel: 800, banner: 1180};
 
 // Each card now reveals on its own scroll trigger rather than the whole grid
-// hanging off one, so `stagger` is no longer a queue for six cards — it is the
-// offset between the two cards that share a band. The bento's spans below pack
-// exactly two cards per row (7|5, 5 beside the hero's second row, 4|8, then the
-// full-width strip), so an even index is always the left-hand card of its band
-// and an odd index the right-hand one. A beat between them reads as the pair
-// arriving rather than snapping in together.
+// hanging off one, so `stagger` is no longer a queue for seven cards — it is
+// the offset between the two cards that share a band. The bento's spans below
+// pack exactly two cards per row (6|6 for the flagship pair, then 4|8 twice,
+// then the full-width strip), so an even index is always the left-hand card of
+// its band and an odd index the right-hand one. A beat between them reads as
+// the pair arriving rather than snapping in together.
 //
-// `duration` still shortens on small screens: on a phone the bento is a single
-// column, so a card is most of the viewport by the time it triggers and a long
-// reveal leaves the reader waiting on it.
+// `duration` still shortens on small screens: on a phone the bento becomes one
+// horizontal snap row, so a card is most of the viewport by the time it triggers
+// and a long reveal leaves the reader waiting on it.
 // Every tier useViewportTier() can return needs an entry: "laptop" (1024–1199)
 // was missing, so the lookup came back undefined and destructuring it crashed
 // the whole home page at laptop widths.
@@ -121,6 +122,19 @@ const recommendedCourses = [
     description:
       "Lead the end-to-end lifecycle of digital products. Learn product strategy, customer discovery, user research, UX, agile delivery, product analytics, AI-powered product management and go-to-market planning through real-world case studies and a capstone project.",
     meta: ["6 Months", "Live Online", "Mentor-Led"],
+  },
+  {
+    id: "gen-ai-agentic-ai",
+    slug: "gen-ai-agentic-ai",
+    // An admin-managed programme now: its route is /programs/gen-ai-agentic-ai
+    // like every other managed course, not the standalone /generative-ai page.
+    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/PG-WITH-GENAI-803ad9e9.webp",
+    label: "New Launch",
+    title: "PG Program in Gen AI and Agentic AI",
+    subtitle: "Become a Gen AI & Agentic AI Engineer",
+    description:
+      "Master Generative AI and agentic systems end to end — LLMs, prompt engineering, RAG, fine-tuning, autonomous agents, MCP tooling and multi-agent orchestration — through live mentor-led classes, hands-on builds and a production-ready portfolio.",
+    meta: ["6 Months", "Live Online", "Agent-First Curriculum"],
   },
   {
     id: "data-analytics",
@@ -177,19 +191,6 @@ const recommendedCourses = [
       "Master Generative AI and transform your career with cutting-edge skills. Learn to build intelligent applications using the latest AI models, LLMs, and automation technologies",
     meta: ["6 Months", "Hands-On Labs", "Certification Prep"],
   },
-  {
-    id: "gen-ai-agentic-ai",
-    slug: "gen-ai-agentic-ai",
-    // An admin-managed programme now: its route is /programs/gen-ai-agentic-ai
-    // like every other managed course, not the standalone /generative-ai page.
-    image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/PG-WITH-GENAI-803ad9e9.webp",
-    label: "New Launch",
-    title: "PG Program in Gen AI and Agentic AI",
-    subtitle: "Become a Gen AI & Agentic AI Engineer",
-    description:
-      "Master Generative AI and agentic systems end to end — LLMs, prompt engineering, RAG, fine-tuning, autonomous agents, MCP tooling and multi-agent orchestration — through live mentor-led classes, hands-on builds and a production-ready portfolio.",
-    meta: ["6 Months", "Live Online", "Agent-First Curriculum"],
-  },
 ];
 
 const STAT_LABELS = ["Duration", "Format", "Highlight"];
@@ -224,7 +225,7 @@ const courseFromProgram = (program) => ({
   meta: [program.duration, program.format, Array.isArray(program.mentorship) ? program.mentorship.join(", ") : program.mentorship].filter(Boolean),
 });
 
-const BentoCard = ({course, slot, variants, lift}) => {
+const BentoCard = ({course, slot, variants, lift, revealAmount}) => {
   const stats = cardStats(course);
 
   return (
@@ -232,7 +233,7 @@ const BentoCard = ({course, slot, variants, lift}) => {
       variants={variants}
       initial="hidden"
       whileInView="visible"
-      viewport={{once: true, amount: 0.2}}
+      viewport={{once: true, amount: revealAmount}}
       className={`rc-card rc-card--${slot.name} rc-card--${slot.size}${
         course.slug ? " is-linked" : ""
       }`}
@@ -362,6 +363,11 @@ const RecommendedCourses1 = () => {
   const reduceMotion = useReducedMotion();
   const tier = useViewportTier();
   const {stagger, duration} = REVEAL_TIERS[tier] ?? REVEAL_TIERS.desktop;
+  // In the phone snap row only ~16% of the next card peeks in. The desktop
+  // reveal threshold of 20% never fires for it, so the card stays invisible and
+  // the row gives no sign that it scrolls. Lower the threshold for that one
+  // layout; every card still has to enter the viewport before it animates.
+  const revealAmount = tier === "mobile" ? 0.08 : 0.2;
   // One variant per bento slot. They differ only in the delay that offsets the
   // right-hand card of each band — see the note on REVEAL_TIERS. Memoised
   // because handing framer a freshly-built variants object on some later render
@@ -409,17 +415,41 @@ const RecommendedCourses1 = () => {
           screens further down, which had finished animating long before anyone
           scrolled to it. Each card owns its trigger now and reveals as the
           reader reaches it. */}
-      <div className="rc-grid">
-        {courses.map((course, index) => (
-          <BentoCard
-            key={course.id}
-            course={course}
-            slot={SLOTS[index % SLOTS.length]}
-            variants={cardVariants[index % SLOTS.length]}
-            lift={cardLift}
-          />
-        ))}
-      </div>
+      {tier === "mobile" ? (
+        /* Phones only: the React Bits tilt carousel instead of the snap row.
+           No reveal variants or hover lift here — a card turned away by the
+           tilt never enters the viewport, so a whileInView reveal would leave
+           it hidden for good. */
+        <Carousel
+          className="rc-carousel"
+          ariaLabel="Recommended programs"
+          items={courses.map((course, index) => (
+            <BentoCard key={course.id} course={course} slot={SLOTS[index % SLOTS.length]} />
+          ))}
+          baseWidth="100%"
+          aspectRatio={0.68}
+          radius={28}
+          effect="tilt"
+          indicator="dots"
+          frame={false}
+          arrows
+          loop
+          theme="light"
+        />
+      ) : (
+        <div className="rc-grid">
+          {courses.map((course, index) => (
+            <BentoCard
+              key={course.id}
+              course={course}
+              slot={SLOTS[index % SLOTS.length]}
+              variants={cardVariants[index % SLOTS.length]}
+              lift={cardLift}
+              revealAmount={revealAmount}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

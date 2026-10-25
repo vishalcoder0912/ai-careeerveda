@@ -1,68 +1,12 @@
 rules_version = '2';
+
+// No browser or mobile client talks to Firestore directly. Every read and write
+// goes through the backend API (MongoDB driver, Firestore Enterprise), which
+// does its own auth, validation and rate limiting, and is not subject to these
+// rules. So clients get nothing: an open rule here would only be a way around
+// the API (e.g. writing leads without the form's rate limit).
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow read/write for authenticated users (admins)
-    // In production, tighten these rules based on your security model
-    
-    // Public read access for published content
-    match /programs/{program} {
-      allow read: if resource.data.published == true;
-      allow write: if request.auth != null && request.auth.token.role == 'admin';
-    }
-    
-    match /jobs/{job} {
-      allow read: if resource.data.published == true;
-      allow write: if request.auth != null && request.auth.token.role == 'admin';
-    }
-    
-    match /blogs/{blog} {
-      allow read: if resource.data.published == true;
-      allow write: if request.auth != null && request.auth.token.role == 'admin';
-    }
-    
-    match /faculty/{faculty} {
-      allow read: if true;
-      allow write: if request.auth != null && request.auth.token.role == 'admin';
-    }
-    
-    match /alumni/{alumni} {
-      allow read: if resource.data.published == true;
-      allow write: if request.auth != null && request.auth.token.role == 'admin';
-    }
-    
-    // Admin-only collections
-    match /admins/{admin} {
-      allow read, write: if request.auth != null && request.auth.token.role == 'admin';
-    }
-    
-    match /leads/{lead} {
-      allow create: if true;  // Public form submissions
-      allow read, update, delete: if request.auth != null && request.auth.token.role == 'admin';
-    }
-    
-    match /media/{media} {
-      allow read: if true;
-      allow write: if request.auth != null && request.auth.token.role == 'admin';
-    }
-    
-    match /policies/{policy} {
-      allow read: if true;
-      allow write: if request.auth != null && request.auth.token.role == 'admin';
-    }
-    
-    match /refreshTokens/{token} {
-      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
-    }
-    
-    match /auditLogs/{log} {
-      allow read, write: if request.auth != null && request.auth.token.role == 'admin';
-    }
-    
-    match /contentRevisions/{revision} {
-      allow read, write: if request.auth != null && request.auth.token.role == 'admin';
-    }
-    
-    // Default deny for any other collections
     match /{document=**} {
       allow read, write: if false;
     }

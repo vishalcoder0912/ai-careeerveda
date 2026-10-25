@@ -241,6 +241,37 @@ function parseRupees(value) {
   return digits || null;
 }
 
+// The mentors MentorGrid renders, as Person entities tied to the organisation.
+// Named practitioners with roles and skills are what lets a search engine or an
+// assistant connect "who teaches this" to CareerVeda (E-E-A-T). Only fields the
+// page already shows; employers are left inside jobTitle as written, not parsed
+// into worksFor guesses.
+export function facultySchema(mentors) {
+  const people = mentors.filter((mentor) => mentor?.name);
+  if (people.length === 0) return null;
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: `${SITE_NAME} faculty and mentors`,
+    itemListElement: people.map((mentor, index) => {
+      const skills = Array.isArray(mentor.expertise) ? mentor.expertise : [];
+      return {
+        "@type": "ListItem",
+        position: index + 1,
+        item: {
+          "@type": "Person",
+          name: mentor.name,
+          ...(mentor.role && {jobTitle: mentor.role}),
+          ...(mentor.photo && {image: mentor.photo}),
+          ...(mentor.bio && {description: String(mentor.bio).replace(/\s+/g, " ").trim()}),
+          ...(skills.length > 0 && {knowsAbout: skills}),
+          affiliation: {"@id": ORG_ID},
+        },
+      };
+    }),
+  };
+}
+
 // Mounts one or more JSON-LD blocks for as long as the component is mounted.
 // `id` namespaces the <script> so a route replacing its own schema updates in
 // place, and unmounting removes it — otherwise navigating away would leave the

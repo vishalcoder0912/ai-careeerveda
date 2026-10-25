@@ -1,5 +1,6 @@
 import { lazy, useEffect, useState } from "react";
 import Hero from "../components/Hero";
+import NeuralFlow from "../components/neural/NeuralFlow";
 import DeferUntilVisible from "../components/DeferUntilVisible";
 import { Reveal, StaggerGroup, StaggerItem } from "../components/motionPrimitives";
 import { useCinematicInteractions } from "../hooks/useCinematicInteractions";
@@ -41,9 +42,13 @@ const AiSkillsCurve = lazy(() => import("../components/AiSkillsCurve"));
 // first commit whenever the (preloaded, see scripts/preload-routes.mjs) chunk
 // has arrived, and waits for it otherwise.
 let LoadedConsultationForm = null;
-const consultationFormReady = import("../components/ConsultationForm").then((module) => {
-  LoadedConsultationForm = module.default;
-});
+// A failed chunk load (offline, or a tab still open across a redeploy) leaves
+// the slot empty instead of an unhandled rejection.
+const consultationFormReady = import("../components/ConsultationForm")
+  .then((module) => {
+    LoadedConsultationForm = module.default;
+  })
+  .catch(() => {});
 
 const ConsultationForm = () => {
   const [Form, setForm] = useState(() => LoadedConsultationForm);
@@ -64,11 +69,20 @@ const ConsultationForm = () => {
 const PressSection = lazy(() => import("../components/PressSection"));
 const NeuralStory = lazy(() => import("../components/neural/NeuralStory"));
 
+// On phones the FAQ section shows this many questions before the rest are
+// tucked behind a "See more" toggle; at every wider breakpoint the CSS leaves
+// the full list out. The hidden rows stay in the DOM (and in the FAQPage
+// JSON-LD), so crawlers and screen readers still get every answer once the
+// visitor expands them.
+const FAQS_VISIBLE_ON_PHONE = 4;
+
 const HomePage = () => {
   const pageRef = useCinematicInteractions();
   // Site-wide FAQs, editable in the admin panel. Program-specific FAQs live on
   // the program record instead and render on its own page.
   const { items: faqs } = useContentList("faqs", { fallback: staticFaqs, adapt: adaptFaq });
+  const [showAllFaqs, setShowAllFaqs] = useState(false);
+  const hasMoreFaqs = faqs.length > FAQS_VISIBLE_ON_PHONE;
 
   // FAQPage JSON-LD over the same list the accordion renders.
   //
@@ -120,13 +134,16 @@ const HomePage = () => {
       <div className="cv-grid-layer" aria-hidden="true" />
 
       <div className="scroll-progress" aria-hidden="true" />
-      <Hero stats={stats} />
-
-      {/* The scroll-driven brain story. three.js and GSAP arrive with it, so
-          it waits until the reader is close. */}
-      <DeferUntilVisible margin="600px">
-        <NeuralStory />
-      </DeferUntilVisible>
+      {/* The hero and the scroll-driven brain story share one brain: on wide
+          screens NeuralFlow holds a single sticky canvas behind both, so the
+          brain travels from the hero into the story without a reset. The
+          story's chunk still waits until the reader is close. */}
+      <NeuralFlow>
+        <Hero stats={stats} />
+        <DeferUntilVisible margin="600px">
+          <NeuralStory />
+        </DeferUntilVisible>
+      </NeuralFlow>
 
       {/* Negative margin. This section sits close enough behind the hero that a
           phone's initial viewport already intersects its placeholder — even at
@@ -152,7 +169,9 @@ const HomePage = () => {
         <CareerRoiCalculator />
       </DeferUntilVisible>
 
-      <DeferUntilVisible minHeight={520}>
+      {/* No featured stories means the section renders nothing, so it reserves
+          nothing — a 520px hold collapsed to 0 under the reader otherwise. */}
+      <DeferUntilVisible minHeight={reviews.length ? 520 : 0}>
         <LearnerOutcomes reviews={reviews} stats={stats} />
       </DeferUntilVisible>
        <DeferUntilVisible minHeight={520}>
@@ -190,15 +209,30 @@ const HomePage = () => {
           <h2>Got questions? We've got answers</h2>
           <p>Find everything you need to know about programs, projects, placement support, and learning experience</p>
         </Reveal>
-        <div className="faq-accordion">
-          <StaggerGroup className="faq-list" stagger={0.06}>
-            {faqs.map(([question, answer]) => (
-              <StaggerItem as="details" key={question}>
+        <div className={`faq-accordion${showAllFaqs ? " is-expanded" : ""}`}>
+          <StaggerGroup id="home-faq-list" className="faq-list" stagger={0.06}>
+            {faqs.map(([question, answer], index) => (
+              <StaggerItem
+                as="details"
+                key={question}
+                className={index >= FAQS_VISIBLE_ON_PHONE ? "faq-item-extra" : undefined}
+              >
                 <summary>{question}</summary>
                 <p>{answer}</p>
               </StaggerItem>
             ))}
           </StaggerGroup>
+          {hasMoreFaqs ? (
+            <button
+              type="button"
+              className="faq-more-toggle"
+              aria-expanded={showAllFaqs}
+              aria-controls="home-faq-list"
+              onClick={() => setShowAllFaqs((expanded) => !expanded)}
+            >
+              {showAllFaqs ? "See less" : "See more"}
+            </button>
+          ) : null}
         </div>
 
       </section>

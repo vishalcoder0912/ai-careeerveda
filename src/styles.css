@@ -242,3 +242,10 @@ a {
   color: #ffffff;
   background: #f97316;
 }
+
+/* Cloudflare Turnstile box on the public forms (src/lib/useTurnstile.jsx).
+   Height reserved so the button below does not jump when it loads. */
+.turnstile-widget {
+  min-height: 65px;
+  margin: 12px 0;
+}

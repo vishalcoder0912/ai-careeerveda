@@ -83,7 +83,16 @@ describe("missingForPublish", () => {
     const missing = missingForPublish(asDocument("Job", {}));
 
     expect(Object.keys(missing).sort()).toEqual(
-      ["applicationUrl", "company", "description", "location", "title"].sort(),
+      [
+        "company",
+        "description",
+        "employmentType",
+        "experienceLevel",
+        "location",
+        "skills",
+        "title",
+        "workMode",
+      ].sort(),
     );
   });
 

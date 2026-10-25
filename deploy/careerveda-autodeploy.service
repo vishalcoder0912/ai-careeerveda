@@ -1,0 +1,14 @@
+[Unit]
+Description=CareerVeda auto-deploy (pull origin/main)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+# Through bash, not the file's exec bit: deploy.sh runs `git reset --hard`,
+# which restores whatever mode git holds, and a script committed from Windows
+# is held as non-executable.
+ExecStart=/bin/bash /opt/careerveda/deploy/deploy.sh
+# A cold build (three npm ci, two Vite bundles, and the headless-Chromium
+# snapshot of every route) can take 10+ minutes on an e2-small.
+TimeoutStartSec=1800

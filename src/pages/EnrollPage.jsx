@@ -6,6 +6,7 @@ import {getProgram, programCatalog} from "../data/programCatalog";
 import {useContentList} from "../hooks/useContent";
 import {adaptProgram} from "../lib/contentAdapters";
 import {submitLead} from "../lib/publicApi";
+import {useTurnstile} from "../lib/useTurnstile";
 import {hasSubmittedPhone, rememberSubmittedPhone} from "../lib/submittedPhones";
 // Carries .consultation-honeypot and .consultation-status. The honeypot import is
 // load-bearing: without it the "company" field is a visible input, not a trap.
@@ -76,6 +77,7 @@ const EnrollPage = () => {
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("idle"); // idle | submitting | success | error
   const [message, setMessage] = useState("");
+  const captcha = useTurnstile();
 
   const update = (event) => {
     const {name, value} = event.target;
@@ -117,7 +119,9 @@ const EnrollPage = () => {
         // Given by pressing submit under the notice below the button.
         consent: true,
         sourcePage: window.location.pathname,
+        turnstileToken: captcha.token,
       });
+      captcha.reset(); // tokens are single-use
 
       if (!result.ok) {
         // Surface the server's own field errors when it sends them.
@@ -140,6 +144,7 @@ const EnrollPage = () => {
         company: "",
       });
     } catch {
+      captcha.reset();
       // Network failure. Deliberately not a success message: an application that
       // silently goes nowhere is worse than a visible error.
       setStatus("error");
@@ -256,6 +261,8 @@ const EnrollPage = () => {
                 autoComplete="off"
                 aria-hidden="true"
               />
+
+              {captcha.widget}
 
               <div className="page-hero__actions">
                 <button type="submit" className="page-btn page-btn--primary" disabled={isSubmitting}>

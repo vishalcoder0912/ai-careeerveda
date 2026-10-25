@@ -1,6 +1,7 @@
 import {describe, it, expect, afterEach} from "vitest";
 import {render, screen, cleanup} from "@testing-library/react";
-import AiSkillsCurve, {skillsCurveData} from "./AiSkillsCurve";
+import AiSkillsCurve from "./AiSkillsCurve";
+import {skillsCurveData} from "../data/skillsCurve";
 
 afterEach(cleanup);
 

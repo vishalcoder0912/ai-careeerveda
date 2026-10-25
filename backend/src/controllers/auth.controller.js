@@ -27,7 +27,7 @@ import {
 import {permissionsForRole} from "../config/permissions.js";
 import {logger} from "../config/logger.js";
 import {ok} from "../utils/respond.js";
-import {badRequest, unauthorized, notFound, ApiError} from "../utils/apiError.js";
+import {badRequest, unauthorized, notFound} from "../utils/apiError.js";
 
 // One message for every login failure, whatever the cause. Distinguishing
 // "no such account" from "wrong password" turns the login form into an account
@@ -89,21 +89,24 @@ export const login = async (request, response, next) => {
     }
 
     if (admin.isLocked()) {
+      // Same work and same answer as a wrong password. A distinct "locked" reply
+      // was an enumeration oracle: unknown emails never lock, so a few bad
+      // guesses per address told an attacker which ones were real admins.
+      await verifyPassword(admin.passwordHash, password);
+
       await recordAudit(request, {
         action: AUDIT_ACTIONS.LOGIN_LOCKED,
         actor: admin,
         outcome: "failure",
       });
 
-      // The lockout IS disclosed, unlike the reasons above. The account already
-      // proved it exists by being locked out, and a user who cannot get in
-      // deserves to know it is temporary rather than assume a broken password.
-      return next(
-        new ApiError(423, "ACCOUNT_LOCKED", "Too many failed attempts. Try again shortly."),
-      );
+      return next(unauthorized(LOGIN_FAILED));
     }
 
     if (admin.status !== "active") {
+      // Hash anyway, so a suspended account answers in the same time as a wrong
+      // password and cannot be told apart by timing.
+      await verifyPassword(admin.passwordHash, password);
       await recordAudit(request, {
         action: AUDIT_ACTIONS.LOGIN_FAILED,
         actor: admin,
@@ -292,6 +295,10 @@ export const changePassword = async (request, response, next) => {
     const admin = await Admin.findById(request.admin._id).select("+passwordHash +passwordHistory");
 
     if (!(await verifyPassword(admin.passwordHash, currentPassword))) {
+      // A stolen access token must not become an unlimited password oracle, so
+      // these guesses count toward the login lockout — and authenticate() stops
+      // honouring the token once the account locks.
+      await admin.registerFailedLogin();
       await recordAudit(request, {
         action: AUDIT_ACTIONS.PASSWORD_CHANGED,
         actor: admin,
