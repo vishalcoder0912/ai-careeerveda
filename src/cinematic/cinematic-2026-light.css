@@ -2271,6 +2271,8 @@ body.ga-gallery-active .ga-burger {
   justify-content: center;
   gap: 0.3rem;
   padding: 0;
+  width: 176px;
+  height: 176px;
 }
 
 .ga-page .ga-agent-center-art {
@@ -2286,22 +2288,44 @@ body.ga-gallery-active .ga-burger {
 }
 
 .ga-page .ga-agent-center-sub {
-  max-width: 72%;
+  max-width: 64%;
   font-size: max(var(--ga-fs-floor, 0px), 0.5rem);
   letter-spacing: 0.12em;
   line-height: 1.5;
   text-wrap: balance;
 }
 
+/* Big enough at every breakpoint that the label keeps clear of the edge. */
+@media (max-width: 900px) {
+  .ga-page .ga-agent-center {
+    width: 156px;
+    height: 156px;
+  }
+}
+
 @media (max-width: 600px) {
   .ga-page .ga-agent-center {
+    width: 136px;
+    height: 136px;
     gap: 0.15rem;
   }
 
+  .ga-page .ga-agent-center-art {
+    width: 28px;
+    height: 28px;
+  }
+
   .ga-page .ga-agent-center-sub {
-    max-width: 84%;
+    max-width: 72%;
     letter-spacing: 0.04em;
     line-height: 1.3;
+  }
+}
+
+@media (max-width: 420px) {
+  .ga-page .ga-agent-center {
+    width: 128px;
+    height: 128px;
   }
 }
 
