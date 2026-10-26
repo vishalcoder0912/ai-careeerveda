@@ -2,6 +2,7 @@ import {useEffect, useRef, useState} from "react";
 import {X} from "lucide-react";
 import {submitJobApplication} from "../lib/publicApi";
 import {useTurnstile} from "../lib/useTurnstile";
+import {useLockSmoothScroll} from "../lib/smoothScroll";
 
 // "Apply on CareerVeda": name, mobile and LMS ID against one admin-posted job.
 // A native <dialog> opened with showModal() gives focus trapping, Escape to
@@ -20,6 +21,9 @@ const JobApplyDialog = ({job, onClose}) => {
   // the second request synchronously; the backend is idempotent as well.
   const inFlight = useRef(false);
   const captcha = useTurnstile();
+  // Mounted only while open. Without this (and data-lenis-prevent below) Lenis
+  // swallows touch scroll, so on a phone the dialog cannot reach its submit.
+  useLockSmoothScroll(true);
 
   useEffect(() => {
     const dialog = ref.current;
@@ -76,7 +80,7 @@ const JobApplyDialog = ({job, onClose}) => {
   );
 
   return (
-    <dialog ref={ref} className="job-apply" aria-labelledby="job-apply-title" onClose={onClose}>
+    <dialog ref={ref} className="job-apply" aria-labelledby="job-apply-title" onClose={onClose} data-lenis-prevent>
       <div className="job-apply__head">
         <div>
           <p className="job-apply__eyebrow">Apply on CareerVeda</p>
@@ -117,9 +121,11 @@ const JobApplyDialog = ({job, onClose}) => {
           {field("lmsId", "LMS ID", {autoComplete: "off", maxLength: 40, spellCheck: false})}
 
           {/* Honeypot: hidden from people and assistive tech, filled by bots. */}
+          {/* Not name="company": mobile autofill fills that from the contact
+              card, and the server then silently drops a real application. */}
           <input
             className="job-apply__trap"
-            name="company"
+            name="cv_hp"
             tabIndex={-1}
             autoComplete="off"
             aria-hidden="true"

@@ -846,8 +846,12 @@ button.job-card__apply:disabled {
      modal <dialog>; without it the dialog pins to the top-left corner. */
   margin: auto;
   width: min(480px, calc(100vw - 32px));
+  /* vh first: older iOS Safari has no dvh, drops the rule and the dialog grows
+     past the screen with nothing to scroll. */
+  max-height: calc(100vh - 32px);
   max-height: calc(100dvh - 32px);
   overflow: auto;
+  overscroll-behavior: contain;
   padding: 24px;
   border: 1px solid var(--jp-border-active);
   border-radius: 18px;

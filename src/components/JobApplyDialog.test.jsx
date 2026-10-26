@@ -85,4 +85,11 @@ describe("JobApplyDialog", () => {
     resolveRequest({ok: true});
     expect(await screen.findByText(/application received/i)).toBeTruthy();
   });
+
+  it("stays usable on phones: scrolls past Lenis and dodges contact autofill", () => {
+    const {container} = render(<JobApplyDialog job={JOB} onClose={() => {}} />);
+    expect(container.querySelector("dialog").hasAttribute("data-lenis-prevent")).toBe(true);
+    // Autofill fills name="company"; the server then drops the application as a bot.
+    expect(container.querySelector('input[name="company"]')).toBeNull();
+  });
 });
