@@ -15,7 +15,7 @@ afterEach(() => {
 
 const run = async (body, siteverify) => {
   env.TURNSTILE_SECRET_KEY = "secret";
-  globalThis.fetch = jest.fn(siteverify || (async () => ({json: async () => ({success: true})})));
+  globalThis.fetch = jest.fn(siteverify || (async () => ({ok: true, json: async () => ({success: true})})));
   const next = jest.fn();
   await verifyTurnstile({body, ip: "203.0.113.9"}, {}, next);
   return next.mock.calls[0][0];
@@ -40,6 +40,7 @@ describe("verifyTurnstile", () => {
 
   it("refuses a token Cloudflare rejects", async () => {
     const error = await run({turnstileToken: "bad"}, async () => ({
+      ok: true,
       json: async () => ({success: false, "error-codes": ["invalid-input-response"]}),
     }));
     expect(error.code).toBe("CAPTCHA_FAILED");
@@ -49,6 +50,15 @@ describe("verifyTurnstile", () => {
     const error = await run({turnstileToken: "ok"}, async () => {
       throw new Error("timeout");
     });
+    expect(error.status).toBe(503);
+  });
+
+  it("reports a Cloudflare 5xx as unavailable, not a failed captcha", async () => {
+    const error = await run({turnstileToken: "ok"}, async () => ({
+      ok: false,
+      status: 502,
+      json: async () => ({success: false}),
+    }));
     expect(error.status).toBe(503);
   });
 

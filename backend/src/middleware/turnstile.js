@@ -30,7 +30,11 @@ export const verifyTurnstile = async (request, response, next) => {
       method: "POST",
       body: new URLSearchParams({secret: env.TURNSTILE_SECRET_KEY, response: token, remoteip: request.ip || ""}),
       signal: AbortSignal.timeout(5000),
-    }).then((reply) => reply.json());
+    }).then((reply) => {
+      // A Cloudflare 5xx is an outage, not a failed captcha: route it to the 503 below.
+      if (!reply.ok) throw new Error(`siteverify HTTP ${reply.status}`);
+      return reply.json();
+    });
 
     if (!result.success) {
       request.log?.warn?.({codes: result["error-codes"]}, "turnstile rejected");
