@@ -302,7 +302,12 @@ jobs:
   # ─────────────────────────────────────────────────────────────────────────────
   # PUBLISH — Promote tested dev commit to main
   # Only runs for push to dev that passed all jobs above.
-  # Non-force push: if main has moved on, the push fails and gets looked at.
+  #
+  # `main` can also advance through a reviewed PR merge (the branch rules and the
+  # PR flow both exist here). In that case the tested dev commit is already an
+  # ancestor of main and there is nothing to push: succeed instead of failing the
+  # run on a non-fast-forward. A genuinely diverged main fails loudly — never
+  # force-push over commits this run did not test.
   # ─────────────────────────────────────────────────────────────────────────────
   publish:
     name: Publish dev → main
@@ -321,6 +326,18 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+
+          if git merge-base --is-ancestor HEAD origin/main; then
+            echo "origin/main already contains $GITHUB_SHA; a PR merged it, so there is nothing to promote."
+            exit 0
+          fi
+
+          if ! git merge-base --is-ancestor origin/main HEAD; then
+            echo "::error::origin/main has commits that are not in $GITHUB_SHA. Merge main into dev and push again; refusing to overwrite untested commits."
+            exit 1
+          fi
+
           git push origin HEAD:refs/heads/main
 
   # ─────────────────────────────────────────────────────────────────────────────
