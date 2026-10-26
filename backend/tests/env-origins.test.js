@@ -49,6 +49,10 @@ describe("allowed origins on a secure-cookie deploy", () => {
     expect(result.stderr).toContain("TURNSTILE_SECRET_KEY");
   });
 
+  it("boots without a Turnstile secret when TURNSTILE_DISABLED=true", () => {
+    expect(boot({TURNSTILE_SECRET_KEY: "", TURNSTILE_DISABLED: "true"}).status).toBe(0);
+  });
+
   it("still allows localhost when cookies are not secure (local Docker)", () => {
     expect(boot({COOKIE_SECURE: "false", FRONTEND_URL: "http://localhost:5173"}).status).toBe(0);
   });

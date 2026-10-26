@@ -75,6 +75,9 @@ const schema = z.object({
   // Cloudflare Turnstile secret for the public forms. Blank skips the check
   // (dev, tests); an https deploy refuses to boot without it (see below).
   TURNSTILE_SECRET_KEY: z.string().optional(),
+  // Deliberate opt-out of the boot check below, for a deploy that runs without
+  // a CAPTCHA. The forms then rely on the API's rate limits alone.
+  TURNSTILE_DISABLED: z.enum(["true", "false"]).default("false"),
 
   // A hop count ("1", "2") or an Express trust-proxy list ("loopback, 10.0.0.0/8").
   TRUST_PROXY: z.string().default("1"),
@@ -130,9 +133,11 @@ if (raw.COOKIE_SECURE) {
     process.exit(1);
   }
   // An https deploy with no Turnstile secret would leave the public forms open to bots.
-  if (!raw.TURNSTILE_SECRET_KEY) {
+  if (!raw.TURNSTILE_SECRET_KEY && raw.TURNSTILE_DISABLED === "true") {
+    console.warn("WARNING: TURNSTILE_DISABLED=true - the public forms have no CAPTCHA, only rate limits.");
+  } else if (!raw.TURNSTILE_SECRET_KEY) {
     console.error(
-      "Invalid environment configuration:\n  COOKIE_SECURE=true but TURNSTILE_SECRET_KEY is not set - the public forms would accept bot submissions.",
+      "Invalid environment configuration:\n  COOKIE_SECURE=true but TURNSTILE_SECRET_KEY is not set - the public forms would accept bot submissions.\n  Set it, or set TURNSTILE_DISABLED=true to run without a CAPTCHA.",
     );
     process.exit(1);
   }
