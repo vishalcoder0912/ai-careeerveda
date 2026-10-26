@@ -292,6 +292,17 @@ describe("rotateRefreshToken", () => {
     );
   });
 
+  it("gives the replacement the family's original expiry, so refreshing never extends a session", async () => {
+    const expiresAt = new Date(Date.now() + 60 * 1000);
+    RefreshToken.findOne.mockResolvedValue(refreshDoc({_id: "token-1", expiresAt}));
+    RefreshToken.findOneAndUpdate.mockResolvedValue(refreshDoc({_id: "token-1"}));
+
+    const result = await rotateRefreshToken("live-token");
+    await result.issue({_id: "64b7f9d2e4b0a1b2c3d4e5f6"});
+
+    expect(RefreshToken.create.mock.calls.at(-1)[0].expiresAt).toBe(expiresAt);
+  });
+
   it("treats the loser of a concurrent rotation as reuse and burns the family", async () => {
     // Both requests read the token unused; the other one claimed it first.
     RefreshToken.findOne.mockResolvedValue(refreshDoc({_id: "token-1"}));

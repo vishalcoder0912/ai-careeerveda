@@ -28,6 +28,22 @@ describe("Login", () => {
     expect(signIn).toHaveBeenCalledWith("admin@careerveda.in", "Str0ng!Passw0rd");
   });
 
+  it("asks for the authenticator code when the server requires it, then sends it", async () => {
+    signIn.mockRejectedValueOnce(Object.assign(new Error("Enter the code"), {code: "MFA_REQUIRED"}));
+
+    const user = userEvent.setup();
+    render(<Login />);
+
+    await user.type(screen.getByLabelText(/email/i), "admin@careerveda.in");
+    await user.type(screen.getByLabelText(/^password$/i), "Str0ng!Passw0rd");
+    await user.click(screen.getByRole("button", {name: /^sign in$/i}));
+
+    await user.type(await screen.findByLabelText(/authentication code/i), "12a3456");
+    await user.click(screen.getByRole("button", {name: /^verify$/i}));
+
+    expect(signIn).toHaveBeenLastCalledWith("admin@careerveda.in", "Str0ng!Passw0rd", "123456");
+  });
+
   it("shows the server's message when sign-in fails", async () => {
     signIn.mockRejectedValue(new Error("Email or password is incorrect."));
 

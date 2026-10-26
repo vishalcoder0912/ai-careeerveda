@@ -1,11 +1,12 @@
 import {useCallback, useEffect, useRef, useState} from "react";
 import {Link, useNavigate, useParams} from "react-router-dom";
 
-import {RESOURCES, STATUS_LABELS, resourcePermission} from "../config/resources";
+import {RESOURCES, STATUS_LABELS, resourceAbilities} from "../config/resources";
 import {contentApi} from "../services/api";
 import {useAuth} from "../context/AuthContext";
 import {useToast} from "../context/ToastContext";
 import {ConfirmDialog} from "../components/ConfirmDialog";
+import {Pagination} from "../components/Pagination";
 import {Skeleton, EmptyState, ErrorState, StatusBadge} from "../components/States";
 
 const PAGE_SIZE = 20;
@@ -130,24 +131,315 @@ const VIEW_KEY = (name) => `cv-admin-view-${name}`;
 // whichever status they had — so it maps to its own query parameter.
 const TRASH = "__trash";
 
-const ResourceList = () => {
+// Cards or table. The choice is remembered per resource — someone who prefers
+// the dense table for Jobs but cards for Programs gets both back on return.
+// Seeded lazily and re-seeded when the route's resource changes, during
+// render, instead of from an effect that would cascade a render.
+const savedViewFor = (name, fallback) => {
+  if (typeof localStorage === "undefined") return fallback || "table";
+  return localStorage.getItem(VIEW_KEY(name)) || fallback || "table";
+};
+
+const useViewPreference = (resourceName, fallback) => {
+  const [view, setView] = useState(() => savedViewFor(resourceName, fallback));
+  const [viewFor, setViewFor] = useState(resourceName);
+  if (viewFor !== resourceName) {
+    setViewFor(resourceName);
+    setView(savedViewFor(resourceName, fallback));
+  }
+
+  const chooseView = (next) => {
+    setView(next);
+    try {
+      localStorage.setItem(VIEW_KEY(resourceName), next);
+    } catch {
+      // Private-mode storage failures are not worth a broken screen over.
+    }
+  };
+
+  return [view, chooseView];
+};
+
+const emptyCopy = (resource, inTrash, filtered) => {
+  if (inTrash) return {title: "The trash is empty", body: "Nothing has been deleted, so there is nothing to restore."};
+  if (filtered) {
+    return {title: "Nothing matches those filters", body: "Try a different search term or clear the status filter."};
+  }
+  return {
+    title: `No ${resource.label.toLowerCase()} yet`,
+    body: `Create the first ${resource.singular.toLowerCase()} to see it here.`,
+  };
+};
+
+// A segmented toggle rather than two loose buttons, so it reads as one control
+// with one active state.
+const ViewToggle = ({view, onChoose}) => (
+  <div className="view-toggle" role="group" aria-label="View">
+    <button
+      type="button"
+      className={`view-toggle-btn${view === "cards" ? " is-active" : ""}`}
+      aria-pressed={view === "cards"}
+      onClick={() => onChoose("cards")}
+    >
+      <span aria-hidden="true">▦</span> Cards
+    </button>
+    <button
+      type="button"
+      className={`view-toggle-btn${view === "table" ? " is-active" : ""}`}
+      aria-pressed={view === "table"}
+      onClick={() => onChoose("table")}
+    >
+      <span aria-hidden="true">☰</span> Table
+    </button>
+  </div>
+);
+
+const BulkBar = ({selected, inTrash, abilities, busy, api, onBulk, onClear}) => {
+  const {canUpdate, canPublish, canDelete} = abilities;
+  const bulkButton = (label, verb, action, danger = false) => (
+    <button
+      type="button"
+      className={danger ? "btn btn--danger" : "btn"}
+      disabled={busy}
+      onClick={() => onBulk(action, label, verb)}
+    >
+      {label}
+    </button>
+  );
+
+  return (
+    <div className="bulk-bar" role="region" aria-label="Bulk actions">
+      <span>{selected.length} selected</span>
+      {/* In the trash the only sensible bulk action is putting things back.
+          Publishing or re-deleting a deleted record is not something the
+          server would accept anyway. */}
+      {inTrash ? (
+        canDelete && bulkButton("Restore", "restore", () => api.bulkRestore(selected))
+      ) : (
+        <>
+          {canPublish && bulkButton("Publish", "publish", () => api.bulkStatus(selected, "published"))}
+          {canUpdate && bulkButton("Unpublish", "unpublish", () => api.bulkStatus(selected, "draft"))}
+          {canDelete && bulkButton("Delete", "delete", () => api.bulkDelete(selected), true)}
+        </>
+      )}
+      <button type="button" className="btn btn--ghost" onClick={onClear}>
+        Clear
+      </button>
+    </div>
+  );
+};
+
+const CardSelect = ({className, title, checked, onChange}) => (
+  <input
+    type="checkbox"
+    className={className}
+    aria-label={`Select ${title}`}
+    checked={checked}
+    onChange={(event) => onChange(event.target.checked)}
+  />
+);
+
+const ContentCard = ({item, resource, title, isSelected, canBulk, metaColumns, positions, onSelect, actions}) => {
+  const image = cardImageUrl(item, resource.imageField);
+  const subtitle = resource.subtitleField ? item[resource.subtitleField] : null;
+  const select = (className) =>
+    canBulk ? <CardSelect className={className} title={title} checked={isSelected} onChange={onSelect} /> : null;
+
+  return (
+    <li
+      className={`content-card${isSelected ? " is-selected" : ""}${resource.imageField ? "" : " content-card--no-media"}`}
+    >
+      {resource.imageField ? (
+        <div className="content-card-media">
+          {/* The letter tile sits underneath as a permanent backdrop, so a
+              missing OR broken image both resolve to it — a 404'd thumbnail
+              hides the <img> and reveals the letter rather than leaving the
+              browser's broken-image glyph. */}
+          <div className="content-card-media--empty" aria-hidden="true">
+            {title.slice(0, 1).toUpperCase()}
+          </div>
+          {image ? (
+            <img
+              src={image}
+              alt=""
+              loading="lazy"
+              onError={(event) => {
+                event.currentTarget.style.display = "none";
+              }}
+            />
+          ) : null}
+          <StatusBadge status={item.status} />
+          {select("content-card-check")}
+        </div>
+      ) : (
+        // Image-less card (Jobs): no thumbnail to hang the status and select
+        // control on, so they get their own slim header row.
+        <div className="content-card-topbar">
+          <StatusBadge status={item.status} />
+          {select("content-card-topbar-check")}
+        </div>
+      )}
+
+      <div className="content-card-body">
+        {/* The whole heading is the link into the editor, so the obvious click
+            (the title) is also the primary action. */}
+        <h2 className="content-card-title">
+          <Link to={`/${resource.name}/${item._id}`}>{title}</Link>
+        </h2>
+        {subtitle ? <p className="content-card-sub">{String(subtitle).slice(0, 90)}</p> : null}
+
+        {metaColumns.length > 0 ? (
+          <dl className="content-card-meta">
+            {metaColumns.map((column) => (
+              <div key={column} className="content-card-meta-item">
+                <dt>{columnLabel(column)}</dt>
+                <dd>{formatCell(item, column, positions)}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : null}
+      </div>
+
+      <div className="content-card-actions">{actions}</div>
+    </li>
+  );
+};
+
+const ContentCards = ({items, resource, selected, canBulk, allSelected, positions, onSelectAll, onSelect, renderActions}) => {
+  // Columns to show as meta on a card: a resource may name its own set
+  // (cardMeta); otherwise it is every column but the title (the heading) and
+  // status (the corner badge).
+  const metaColumns =
+    resource.cardMeta || resource.columns.filter((column) => column !== resource.titleField && column !== "status");
+
+  return (
+    <>
+      {canBulk && items.length > 1 ? (
+        <label className="cards-selectall">
+          <input
+            type="checkbox"
+            aria-label="Select all"
+            checked={allSelected}
+            onChange={(event) => onSelectAll(event.target.checked)}
+          />
+          Select all
+        </label>
+      ) : null}
+
+      <ul className="content-cards">
+        {items.map((item, index) => (
+          <ContentCard
+            key={item._id}
+            item={item}
+            resource={resource}
+            title={item[resource.titleField] || "Untitled"}
+            isSelected={selected.includes(item._id)}
+            canBulk={canBulk}
+            metaColumns={metaColumns}
+            positions={positions}
+            onSelect={(checked) => onSelect(item._id, checked)}
+            actions={renderActions(item, index)}
+          />
+        ))}
+      </ul>
+    </>
+  );
+};
+
+const sortState = (active, order) => {
+  if (!active) return {aria: "none", arrow: "↕"};
+  return order === "asc" ? {aria: "ascending", arrow: "▲"} : {aria: "descending", arrow: "▼"};
+};
+
+const SortHeader = ({column, sort, order, onSort}) => {
+  const {aria, arrow} = sortState(sort === column, order);
+  return (
+    <th scope="col" aria-sort={aria}>
+      {SORTABLE_COLUMNS.has(column) ? (
+        <button type="button" className="col-sort" onClick={() => onSort(column)}>
+          {columnLabel(column)}
+          <span className="col-sort-arrow" aria-hidden="true">
+            {arrow}
+          </span>
+        </button>
+      ) : (
+        columnLabel(column)
+      )}
+    </th>
+  );
+};
+
+const ContentTable = ({items, resource, selected, canBulk, allSelected, positions, sort, order, onSort, onSelectAll, onSelect, renderActions}) => (
+  <div className="table-wrap">
+    <table>
+      <caption className="visually-hidden">{resource.label}</caption>
+      <thead>
+        <tr>
+          {canBulk ? (
+            <th scope="col" className="col-check">
+              <input
+                type="checkbox"
+                aria-label="Select all rows"
+                checked={allSelected}
+                onChange={(event) => onSelectAll(event.target.checked)}
+              />
+            </th>
+          ) : null}
+          {resource.columns.map((column) => (
+            <SortHeader key={column} column={column} sort={sort} order={order} onSort={onSort} />
+          ))}
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {items.map((item, index) => (
+          <tr key={item._id}>
+            {canBulk ? (
+              <td>
+                <input
+                  type="checkbox"
+                  aria-label={`Select ${item[resource.titleField]}`}
+                  checked={selected.includes(item._id)}
+                  onChange={(event) => onSelect(item._id, event.target.checked)}
+                />
+              </td>
+            ) : null}
+            {resource.columns.map((column) => (
+              <td key={column} data-label={columnLabel(column)}>
+                {formatCell(item, column, positions)}
+              </td>
+            ))}
+            <td className="col-actions">{renderActions(item, index)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+);
+
+// Exactly one of: skeleton, error, empty state, or the records (as cards or a
+// table) followed by pagination.
+const ListBody = ({loading, error, onRetry, empty, showCards, page, meta, onPage, ...viewProps}) => {
+  if (loading) return <Skeleton />;
+  if (error) return <ErrorState error={error} onRetry={onRetry} />;
+  if (viewProps.items.length === 0) return empty;
+
+  return (
+    <>
+      {showCards ? <ContentCards {...viewProps} /> : <ContentTable {...viewProps} />}
+      <Pagination page={page} meta={meta} onPage={onPage} />
+    </>
+  );
+};
+
+// Only reached once the resource exists and this account may read it, so
+// everything below can rely on both.
+const ResourceListView = ({resource, abilities, isSuperAdmin}) => {
   const {resource: resourceName} = useParams();
-  const resource = RESOURCES[resourceName];
-  const {can, admin} = useAuth();
+  const {canCreate, canUpdate, canPublish, canDelete} = abilities;
+  const canBulk = canUpdate || canDelete;
   const navigate = useNavigate();
   const toast = useToast();
-
-  // Permanent deletion needs super-admin AND content.purge on the server. Both,
-  // so the button is only offered when both hold.
-  const isSuperAdmin = admin?.role === "super-admin" && can("content.purge");
-
-  const canRead = Boolean(resource && can(resourcePermission(resource, "read")));
-  const canCreate = Boolean(resource && can(resourcePermission(resource, "create")));
-  const canUpdate = Boolean(resource && can(resourcePermission(resource, "update")));
-  // Going live is its own grant: editors send work for review, admins publish.
-  const canPublish = canUpdate && can("content.publish");
-  const canDelete = Boolean(resource && can(resourcePermission(resource, "delete")));
-  const canBulk = canUpdate || canDelete;
 
   const [items, setItems] = useState([]);
   const [meta, setMeta] = useState({page: 1, total: 0, totalPages: 0});
@@ -170,33 +462,9 @@ const ResourceList = () => {
   const [order, setOrder] = useState("desc");
   const searchRef = useRef(null);
 
-  // Cards or table. The choice is remembered per resource — someone who prefers
-  // the dense table for Jobs but cards for Programs gets both back on return.
-  // Seeded lazily and re-seeded when the route's resource changes, during
-  // render, instead of from an effect that would cascade a render.
-  const savedViewFor = (name, fallback) => {
-    if (typeof localStorage === "undefined") return fallback || "table";
-    return localStorage.getItem(VIEW_KEY(name)) || fallback || "table";
-  };
-  const [view, setView] = useState(() => savedViewFor(resourceName, resource?.defaultView));
-  const [viewFor, setViewFor] = useState(resourceName);
-  if (viewFor !== resourceName) {
-    setViewFor(resourceName);
-    setView(savedViewFor(resourceName, resource?.defaultView));
-  }
-
-  const chooseView = (next) => {
-    setView(next);
-    try {
-      localStorage.setItem(VIEW_KEY(resourceName), next);
-    } catch {
-      // Private-mode storage failures are not worth a broken screen over.
-    }
-  };
+  const [view, chooseView] = useViewPreference(resourceName, resource.defaultView);
 
   const load = useCallback(async () => {
-    if (!resource || !canRead) return;
-
     setLoading(true);
     setError(null);
 
@@ -217,7 +485,7 @@ const ResourceList = () => {
     } finally {
       setLoading(false);
     }
-  }, [resource, canRead, page, search, status, sort, order]);
+  }, [resource, page, search, status, sort, order]);
 
   // Debounced so typing in the search box does not fire a request per keystroke.
   useEffect(() => {
@@ -272,7 +540,7 @@ const ResourceList = () => {
       if (event.key === "/") {
         event.preventDefault();
         searchRef.current?.focus();
-      } else if (event.key.toLowerCase() === "n" && canCreate && resource) {
+      } else if (event.key.toLowerCase() === "n" && canCreate) {
         event.preventDefault();
         navigate(`/${resource.name}/new`);
       }
@@ -282,23 +550,18 @@ const ResourceList = () => {
     return () => window.removeEventListener("keydown", onKey);
   }, [canCreate, confirm, navigate, resource]);
 
-  const api = resource ? contentApi(resource.name) : null;
+  const api = contentApi(resource.name);
   const inTrash = status === TRASH;
+  const filtered = Boolean(search || status);
 
   // Hand-ordered resources (anything showing a displayOrder column) get move
   // controls — but only on the plain, unfiltered list. Moving a row "up" inside
   // a search result or a status filter is meaningless: the row above it on
   // screen is not the row above it in the collection, so the write would
   // reorder against a list the editor cannot see.
-  const isOrdered = Boolean(resource?.columns?.includes("displayOrder"));
-  const canReorder = isOrdered && canUpdate && !inTrash && !search && !status && !sort;
+  const isOrdered = resource.columns.includes("displayOrder");
+  const canReorder = isOrdered && canUpdate && !filtered && !sort;
   const positions = sitePositions(items);
-
-  // These returns intentionally live after every hook. The route uses a
-  // dynamic `/:resource` segment, so switching from a valid resource to an
-  // unknown or forbidden one must not change this component's hook count.
-  if (!resource) return <ErrorState error={{message: `Unknown section "${resourceName}"`}} />;
-  if (!canRead) return <Forbidden />;
 
   const run = async (action, successMessage) => {
     setBusy(true);
@@ -415,6 +678,8 @@ const ResourceList = () => {
   const toggleSelect = (id, checked) =>
     setSelected((current) => (checked ? [...current, id] : current.filter((entry) => entry !== id)));
 
+  const selectAll = (checked) => setSelected(checked ? items.map((item) => item._id) : []);
+
   // The row/card actions, shared so table and cards stay in lockstep. The trash
   // gets its own pair: a deleted record cannot be published or edited, and
   // offering buttons the server will refuse is worse than offering none.
@@ -502,19 +767,16 @@ const ResourceList = () => {
       </>
     );
 
-  const allSelected = canBulk && items.length > 0 && selected.length === items.length;
-
   // A resource shows cards if it nominates a thumbnail (imageField) or opts in
   // without one (cards: true, e.g. Jobs, which have no logo). The latter render
   // an image-less card with a compact status header instead of a big tile.
   const supportsCards = Boolean(resource.imageField || resource.cards);
-  const showCards = view === "cards" && supportsCards;
-
-  // Columns to show as meta on a card: a resource may name its own set
-  // (cardMeta); otherwise it is every column but the title (the heading) and
-  // status (the corner badge).
-  const cardMetaColumns =
-    resource.cardMeta || resource.columns.filter((column) => column !== resource.titleField && column !== "status");
+  const {title: emptyTitle, body: emptyBody} = emptyCopy(resource, inTrash, filtered);
+  const newLink = (
+    <Link className="btn btn--primary" to={`/${resource.name}/new`}>
+      New {resource.singular.toLowerCase()}
+    </Link>
+  );
 
   return (
     <div className="page">
@@ -525,11 +787,7 @@ const ResourceList = () => {
             {meta.total} {meta.total === 1 ? "record" : "records"}
           </p>
         </div>
-        {canCreate ? (
-          <Link className="btn btn--primary" to={`/${resource.name}/new`}>
-            New {resource.singular.toLowerCase()}
-          </Link>
-        ) : null}
+        {canCreate ? newLink : null}
       </div>
 
       <div className="toolbar">
@@ -558,293 +816,47 @@ const ResourceList = () => {
           {canDelete ? <option value={TRASH}>Deleted (trash)</option> : null}
         </select>
 
-        {/* A segmented toggle rather than two loose buttons, so it reads as one
-            control with one active state. Shown wherever a card view is
-            available — a resource with a thumbnail, or one that opts in without
-            one (Jobs). */}
-        {supportsCards ? (
-          <div className="view-toggle" role="group" aria-label="View">
-            <button
-              type="button"
-              className={`view-toggle-btn${view === "cards" ? " is-active" : ""}`}
-              aria-pressed={view === "cards"}
-              onClick={() => chooseView("cards")}
-            >
-              <span aria-hidden="true">▦</span> Cards
-            </button>
-            <button
-              type="button"
-              className={`view-toggle-btn${view === "table" ? " is-active" : ""}`}
-              aria-pressed={view === "table"}
-              onClick={() => chooseView("table")}
-            >
-              <span aria-hidden="true">☰</span> Table
-            </button>
-          </div>
-        ) : null}
+        {/* Shown wherever a card view is available — a resource with a
+            thumbnail, or one that opts in without one (Jobs). */}
+        {supportsCards ? <ViewToggle view={view} onChoose={chooseView} /> : null}
       </div>
 
       {canBulk && selected.length > 0 ? (
-        <div className="bulk-bar" role="region" aria-label="Bulk actions">
-          <span>{selected.length} selected</span>
-          {/* In the trash the only sensible bulk action is putting things back.
-              Publishing or re-deleting a deleted record is not something the
-              server would accept anyway. */}
-          {inTrash ? (
-            canDelete ? (
-              <button type="button" className="btn" disabled={busy} onClick={() => askBulk(() => api.bulkRestore(selected), "Restore", "restore")}>
-                Restore
-              </button>
-            ) : null
-          ) : (
-            <>
-              {canUpdate ? (
-                <>
-                  {canPublish ? (
-                    <button type="button" className="btn" disabled={busy} onClick={() => askBulk(() => api.bulkStatus(selected, "published"), "Publish", "publish")}>
-                      Publish
-                    </button>
-                  ) : null}
-                  <button type="button" className="btn" disabled={busy} onClick={() => askBulk(() => api.bulkStatus(selected, "draft"), "Unpublish", "unpublish")}>
-                    Unpublish
-                  </button>
-                </>
-              ) : null}
-              {canDelete ? (
-                <button type="button" className="btn btn--danger" disabled={busy} onClick={() => askBulk(() => api.bulkDelete(selected), "Delete", "delete")}>
-                  Delete
-                </button>
-              ) : null}
-            </>
-          )}
-          <button type="button" className="btn btn--ghost" onClick={() => setSelected([])}>
-            Clear
-          </button>
-        </div>
-      ) : null}
-
-      {loading ? <Skeleton /> : null}
-
-      {!loading && error ? <ErrorState error={error} onRetry={load} /> : null}
-
-      {!loading && !error && items.length === 0 ? (
-        <EmptyState
-          title={
-            inTrash
-              ? "The trash is empty"
-              : search || status
-                ? "Nothing matches those filters"
-                : `No ${resource.label.toLowerCase()} yet`
-          }
-          body={
-            inTrash
-              ? "Nothing has been deleted, so there is nothing to restore."
-              : search || status
-                ? "Try a different search term or clear the status filter."
-                : `Create the first ${resource.singular.toLowerCase()} to see it here.`
-          }
-          action={
-            canCreate && !inTrash ? (
-              <Link className="btn btn--primary" to={`/${resource.name}/new`}>
-                New {resource.singular.toLowerCase()}
-              </Link>
-            ) : null
-          }
+        <BulkBar
+          selected={selected}
+          inTrash={inTrash}
+          abilities={abilities}
+          busy={busy}
+          api={api}
+          onBulk={askBulk}
+          onClear={() => setSelected([])}
         />
       ) : null}
 
-      {/* ── Card view ──────────────────────────────────────────────────────── */}
-      {!loading && !error && items.length > 0 && showCards ? (
-        <>
-          {canBulk && items.length > 1 ? (
-            <label className="cards-selectall">
-              <input
-                type="checkbox"
-                aria-label="Select all"
-                checked={allSelected}
-                onChange={(event) => setSelected(event.target.checked ? items.map((item) => item._id) : [])}
-              />
-              Select all
-            </label>
-          ) : null}
-
-          <ul className="content-cards">
-            {items.map((item, index) => {
-              const image = cardImageUrl(item, resource.imageField);
-              const title = item[resource.titleField] || "Untitled";
-              const subtitle = resource.subtitleField ? item[resource.subtitleField] : null;
-              const isSelected = selected.includes(item._id);
-
-              return (
-                <li
-                  key={item._id}
-                  className={`content-card${isSelected ? " is-selected" : ""}${
-                    resource.imageField ? "" : " content-card--no-media"
-                  }`}
-                >
-                  {resource.imageField ? (
-                    <div className="content-card-media">
-                      {/* The letter tile sits underneath as a permanent backdrop,
-                          so a missing OR broken image both resolve to it — a 404'd
-                          thumbnail hides the <img> and reveals the letter rather
-                          than leaving the browser's broken-image glyph. */}
-                      <div className="content-card-media--empty" aria-hidden="true">
-                        {title.slice(0, 1).toUpperCase()}
-                      </div>
-                      {image ? (
-                        <img
-                          src={image}
-                          alt=""
-                          loading="lazy"
-                          onError={(event) => {
-                            event.currentTarget.style.display = "none";
-                          }}
-                        />
-                      ) : null}
-                      <StatusBadge status={item.status} />
-                      {canBulk ? (
-                        <input
-                          type="checkbox"
-                          className="content-card-check"
-                          aria-label={`Select ${title}`}
-                          checked={isSelected}
-                          onChange={(event) => toggleSelect(item._id, event.target.checked)}
-                        />
-                      ) : null}
-                    </div>
-                  ) : (
-                    // Image-less card (Jobs): no thumbnail to hang the status and
-                    // select control on, so they get their own slim header row.
-                    <div className="content-card-topbar">
-                      <StatusBadge status={item.status} />
-                      {canBulk ? (
-                        <input
-                          type="checkbox"
-                          className="content-card-topbar-check"
-                          aria-label={`Select ${title}`}
-                          checked={isSelected}
-                          onChange={(event) => toggleSelect(item._id, event.target.checked)}
-                        />
-                      ) : null}
-                    </div>
-                  )}
-
-                  <div className="content-card-body">
-                    {/* The whole heading is the link into the editor, so the
-                        obvious click (the title) is also the primary action. */}
-                    <h2 className="content-card-title">
-                      <Link to={`/${resource.name}/${item._id}`}>{title}</Link>
-                    </h2>
-                    {subtitle ? <p className="content-card-sub">{String(subtitle).slice(0, 90)}</p> : null}
-
-                    {cardMetaColumns.length > 0 ? (
-                      <dl className="content-card-meta">
-                        {cardMetaColumns.map((column) => (
-                          <div key={column} className="content-card-meta-item">
-                            <dt>{columnLabel(column)}</dt>
-                            <dd>{formatCell(item, column, positions)}</dd>
-                          </div>
-                        ))}
-                      </dl>
-                    ) : null}
-                  </div>
-
-                  <div className="content-card-actions">{itemActions(item, index)}</div>
-                </li>
-              );
-            })}
-          </ul>
-        </>
-      ) : null}
-
-      {/* ── Table view ─────────────────────────────────────────────────────── */}
-      {!loading && !error && items.length > 0 && !showCards ? (
-        <div className="table-wrap">
-          <table>
-            <caption className="visually-hidden">{resource.label}</caption>
-            <thead>
-              <tr>
-                {canBulk ? (
-                  <th scope="col" className="col-check">
-                    <input
-                      type="checkbox"
-                      aria-label="Select all rows"
-                      checked={allSelected}
-                      onChange={(event) =>
-                        setSelected(event.target.checked ? items.map((item) => item._id) : [])
-                      }
-                    />
-                  </th>
-                ) : null}
-                {resource.columns.map((column) => {
-                  const sortable = SORTABLE_COLUMNS.has(column);
-                  const active = sort === column;
-                  return (
-                    <th
-                      scope="col"
-                      key={column}
-                      aria-sort={active ? (order === "asc" ? "ascending" : "descending") : "none"}
-                    >
-                      {sortable ? (
-                        <button type="button" className="col-sort" onClick={() => toggleSort(column)}>
-                          {columnLabel(column)}
-                          <span className="col-sort-arrow" aria-hidden="true">
-                            {active ? (order === "asc" ? "▲" : "▼") : "↕"}
-                          </span>
-                        </button>
-                      ) : (
-                        columnLabel(column)
-                      )}
-                    </th>
-                  );
-                })}
-                <th scope="col">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((item, index) => (
-                <tr key={item._id}>
-                  {canBulk ? (
-                    <td>
-                      <input
-                        type="checkbox"
-                        aria-label={`Select ${item[resource.titleField]}`}
-                        checked={selected.includes(item._id)}
-                        onChange={(event) => toggleSelect(item._id, event.target.checked)}
-                      />
-                    </td>
-                  ) : null}
-                  {resource.columns.map((column) => (
-                    <td key={column} data-label={columnLabel(column)}>
-                      {formatCell(item, column, positions)}
-                    </td>
-                  ))}
-                  <td className="col-actions">{itemActions(item, index)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : null}
-
-      {!loading && !error && items.length > 0 && meta.totalPages > 1 ? (
-        <nav className="pagination" aria-label="Pagination">
-          <button type="button" className="btn" disabled={page <= 1} onClick={() => setPage((value) => value - 1)}>
-            Previous
-          </button>
-          <span>
-            Page {meta.page} of {meta.totalPages}
-          </span>
-          <button
-            type="button"
-            className="btn"
-            disabled={page >= meta.totalPages}
-            onClick={() => setPage((value) => value + 1)}
-          >
-            Next
-          </button>
-        </nav>
-      ) : null}
+      <ListBody
+        loading={loading}
+        error={error}
+        onRetry={load}
+        empty={
+          <EmptyState title={emptyTitle} body={emptyBody} action={canCreate && !inTrash ? newLink : null} />
+        }
+        showCards={view === "cards" && supportsCards}
+        page={page}
+        meta={meta}
+        onPage={setPage}
+        items={items}
+        resource={resource}
+        selected={selected}
+        canBulk={canBulk}
+        allSelected={canBulk && items.length > 0 && selected.length === items.length}
+        positions={positions}
+        sort={sort}
+        order={order}
+        onSort={toggleSort}
+        onSelectAll={selectAll}
+        onSelect={toggleSelect}
+        renderActions={itemActions}
+      />
 
       <ConfirmDialog
         open={Boolean(confirm)}
@@ -861,6 +873,25 @@ const ResourceList = () => {
       />
     </div>
   );
+};
+
+// These guards live in their own component so the route's dynamic `/:resource`
+// segment can switch between a valid resource and an unknown or forbidden one
+// without ever changing the hook count of the list itself.
+const ResourceList = () => {
+  const {resource: resourceName} = useParams();
+  const resource = RESOURCES[resourceName];
+  const {can, admin} = useAuth();
+  const abilities = resourceAbilities(resource, can);
+
+  if (!resource) return <ErrorState error={{message: `Unknown section "${resourceName}"`}} />;
+  if (!abilities.canRead) return <Forbidden />;
+
+  // Permanent deletion needs super-admin AND content.purge on the server. Both,
+  // so the button is only offered when both hold.
+  const isSuperAdmin = admin?.role === "super-admin" && can("content.purge");
+
+  return <ResourceListView resource={resource} abilities={abilities} isSuperAdmin={isSuperAdmin} />;
 };
 
 export default ResourceList;

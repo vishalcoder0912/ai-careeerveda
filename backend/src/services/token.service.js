@@ -54,7 +54,7 @@ export const ipPrefixOf = (ip) => {
   return `${clean.split(".").slice(0, 2).join(".")}.x.x`;
 };
 
-export const issueRefreshToken = async (admin, {family, userAgent, ip} = {}) => {
+export const issueRefreshToken = async (admin, {family, expiresAt, userAgent, ip} = {}) => {
   const token = randomBytes(REFRESH_BYTES).toString("base64url");
 
   await RefreshToken.create({
@@ -62,7 +62,11 @@ export const issueRefreshToken = async (admin, {family, userAgent, ip} = {}) => 
     tokenHash: hashRefreshToken(token),
     // A new login starts a new family; a rotation continues the caller's.
     family: family || randomUUID(),
-    expiresAt: new Date(Date.now() + env.REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000),
+    // A rotation inherits its family's expiry instead of restarting the clock.
+    // Restarting it meant a session refreshed once a month never ended — a
+    // stolen token kept working indefinitely. Now every session hits a hard
+    // stop REFRESH_TOKEN_TTL_DAYS after the password was last typed.
+    expiresAt: expiresAt || new Date(Date.now() + env.REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000),
     userAgent: String(userAgent || "").slice(0, 400),
     ipPrefix: ipPrefixOf(ip),
   });
@@ -144,6 +148,6 @@ export const rotateRefreshToken = async (presentedToken, {userAgent, ip} = {}) =
     outcome: ROTATION_OUTCOME.OK,
     family: existing.family,
     adminId: existing.admin,
-    issue: (admin) => issueRefreshToken(admin, {family: existing.family, userAgent, ip}),
+    issue: (admin) => issueRefreshToken(admin, {family: existing.family, expiresAt: existing.expiresAt, userAgent, ip}),
   };
 };

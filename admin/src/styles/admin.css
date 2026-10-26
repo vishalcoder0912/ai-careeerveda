@@ -1669,3 +1669,17 @@ tbody tr {
     animation-duration: 0.01ms !important;
   }
 }
+
+/* Two-factor enrolment */
+.auth-card--wide {
+  max-width: 32rem;
+}
+
+.mfa-secret {
+  display: inline-block;
+  padding: 0.5rem 0.75rem;
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  word-break: break-all;
+  user-select: all;
+}

@@ -13,6 +13,9 @@ const Login = () => {
   const {signIn} = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  // Shown only after the server confirms the password and asks for a code.
+  const [needsCode, setNeedsCode] = useState(false);
+  const [code, setCode] = useState("");
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
 
@@ -22,10 +25,16 @@ const Login = () => {
     setError(null);
 
     try {
-      await signIn(email, password);
+      await (needsCode ? signIn(email, password, code) : signIn(email, password));
       // No navigate(): App re-renders to the authenticated tree the moment
       // `admin` is set, and pushing a route as well would race that.
     } catch (failure) {
+      if (failure.code === "MFA_REQUIRED") {
+        setNeedsCode(true);
+        setError(null);
+        return;
+      }
+      if (failure.code === "MFA_INVALID") setCode("");
       // The server's message is already written for a person to read — and the
       // sign-in failure is deliberately vague about which half was wrong.
       // Restating it here would only make it worse.
@@ -74,8 +83,31 @@ const Login = () => {
           disabled={busy}
         />
 
+        {needsCode ? (
+          <>
+            <label htmlFor="totp">Authentication code</label>
+            <input
+              id="totp"
+              name="totp"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              pattern="[0-9]{6}"
+              maxLength={6}
+              required
+              autoFocus
+              value={code}
+              onChange={(event) => setCode(event.target.value.replace(/\D/g, ""))}
+              disabled={busy}
+              aria-describedby="totp-hint"
+            />
+            <p className="field-hint" id="totp-hint">
+              The 6-digit code from your authenticator app.
+            </p>
+          </>
+        ) : null}
+
         <button type="submit" className="btn btn--primary btn--block" disabled={busy}>
-          {busy ? "Signing in…" : "Sign in"}
+          {busy ? "Signing in…" : needsCode ? "Verify" : "Sign in"}
         </button>
       </form>
     </main>

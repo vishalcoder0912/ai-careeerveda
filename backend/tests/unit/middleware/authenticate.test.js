@@ -120,11 +120,11 @@ describe("authenticate", () => {
     expect(unauthorizedError(next).message).toMatch(/Account is not active/);
   });
 
-  it("stops honouring tokens for an account that is locked out", async () => {
+  it("keeps honouring tokens while the account is locked, so a login-form lock cannot sign the admin out", async () => {
     Admin.findById.mockResolvedValue(adminFixture({isLocked: () => true}));
     const {next} = await run(`Bearer ${signAccessToken(adminFixture())}`);
 
-    expect(unauthorizedError(next).message).toMatch(/Account is temporarily locked/);
+    expect(next).toHaveBeenCalledWith();
   });
 
   it("kills a token whose version predates the account's current one", async () => {

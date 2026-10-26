@@ -35,8 +35,8 @@ export const AuthProvider = ({children}) => {
     };
   }, []);
 
-  const signIn = useCallback(async (email, password) => {
-    const account = await apiClient.login(email, password);
+  const signIn = useCallback(async (email, password, totp) => {
+    const account = await (totp ? apiClient.login(email, password, totp) : apiClient.login(email, password));
     setAdmin(account);
     return account;
   }, []);
@@ -54,9 +54,13 @@ export const AuthProvider = ({children}) => {
     [admin],
   );
 
+  // After MFA enable/disable the server returns the updated account with a
+  // brand-new session; this swaps it in without a reload.
+  const replaceSession = useCallback((account) => setAdmin(account), []);
+
   const value = useMemo(
-    () => ({admin, restoring, signIn, signOut, can}),
-    [admin, restoring, signIn, signOut, can],
+    () => ({admin, restoring, signIn, signOut, can, replaceSession}),
+    [admin, restoring, signIn, signOut, can, replaceSession],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

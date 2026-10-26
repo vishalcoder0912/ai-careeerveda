@@ -1,7 +1,8 @@
 import {Admin} from "../models/Admin.js";
 import {verifyAccessToken} from "../services/token.service.js";
 import {permissionsForRole} from "../config/permissions.js";
-import {unauthorized} from "../utils/apiError.js";
+import {env} from "../config/env.js";
+import {ApiError, unauthorized} from "../utils/apiError.js";
 
 // Establishes who the caller is. Authority is decided separately, in authorize().
 //
@@ -43,12 +44,24 @@ export const authenticate = async (request, response, next) => {
 
     if (admin.status !== "active") return next(unauthorized("Account is not active"));
 
-    // Locked out mid-session: stop honouring existing tokens too, otherwise
-    // lockout only protects the login form and not an already-stolen token.
-    if (admin.isLocked()) return next(unauthorized("Account is temporarily locked"));
+    // A lock deliberately does NOT end live sessions. Anyone who knows an
+    // admin's email can trigger a lock from the login form, so honouring it here
+    // let a stranger sign the real admin out at will. Lockout guards password
+    // guessing; the one password check behind a token (change-password) refuses
+    // while locked instead.
 
     if (admin.tokenIsStale(claims.tv)) {
       return next(unauthorized("Session ended. Please sign in again."));
+    }
+
+    // With MFA mandatory, an account that has not enrolled yet may reach only
+    // the /auth routes — enough to enrol, see its sessions and sign out, and
+    // nothing that touches content, leads or settings. A phished password for
+    // an unenrolled account therefore opens no data at all.
+    if (env.requireAdminMfa && !admin.totpEnabled && !request.originalUrl.startsWith("/api/v1/auth/")) {
+      return next(
+        new ApiError(403, "MFA_ENROLLMENT_REQUIRED", "Turn on two-factor sign-in under Profile & security to continue."),
+      );
     }
 
     request.admin = admin;

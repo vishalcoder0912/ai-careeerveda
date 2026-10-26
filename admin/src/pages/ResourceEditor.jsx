@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useMemo, useState} from "react";
 import {useNavigate, useParams, Link} from "react-router-dom";
 
-import {RESOURCES, initialValues, prefilledFields, resourcePermission} from "../config/resources";
+import {RESOURCES, initialValues, prefilledFields, resourceAbilities} from "../config/resources";
 import {contentApi} from "../services/api";
 import {useAuth} from "../context/AuthContext";
 import {useToast} from "../context/ToastContext";
@@ -24,20 +24,241 @@ const Forbidden = () => (
   </div>
 );
 
-const ResourceEditor = () => {
+const fieldsAre = (count) => (count === 1 ? "field is" : "fields are");
+const fillInHint = (count) => `Fill in ${count} more ${count === 1 ? "field" : "fields"} first`;
+
+const publicUrlFor = (resource, record) =>
+  resource.publicPath && record && record.slug
+    ? `${PUBLIC_SITE}${resource.publicPath.replace(":slug", record.slug)}`
+    : null;
+
+const EditorHeader = ({resource, isNew, form, record, dirty, saving, onBack, onHistory}) => {
+  const publicUrl = publicUrlFor(resource, record);
+  return (
+    <div className="page-head">
+      <div>
+        <button type="button" className="btn btn--ghost" onClick={onBack}>
+          ← {resource.label}
+        </button>
+        <h1>
+          {isNew ? `New ${resource.singular.toLowerCase()}` : form[resource.titleField] || resource.singular}
+        </h1>
+        <p className="page-sub">
+          {record ? <StatusBadge status={record.status} /> : <span className="badge badge--draft">unsaved</span>}
+          {record ? <span className="muted"> revision {record.revision}</span> : null}
+          {dirty ? <span className="dirty-flag"> • unsaved changes</span> : null}
+        </p>
+      </div>
+
+      <div className="page-actions">
+        {publicUrl && record.status === "published" ? (
+          <a className="btn" href={publicUrl} target="_blank" rel="noreferrer">
+            View live
+          </a>
+        ) : null}
+        {!isNew ? (
+          <button type="button" className="btn" onClick={onHistory} disabled={saving}>
+            History
+          </button>
+        ) : null}
+        {/* Save and publish live in the sticky bar at the foot of the form,
+            not here. Two sets of the same buttons means two places to check
+            which one is disabled and why. */}
+      </div>
+    </div>
+  );
+};
+
+// The checklist the publish button is judged against, shown before it is
+// pressed. aria-live so the count is announced as fields are filled in, which
+// is the only feedback a screen reader user would otherwise get from typing
+// into the form.
+const ReadinessPanel = ({missing, prefilledCount, singular, onJump}) => {
+  const isReady = missing.length === 0;
+  return (
+    <div className={`readiness readiness--${isReady ? "ready" : "blocked"}`} aria-live="polite">
+      {isReady ? (
+        <p className="readiness-head">
+          <span aria-hidden="true">✓</span> Ready to publish — every field the public page needs is filled in.
+        </p>
+      ) : (
+        <>
+          <p className="readiness-head">
+            <span aria-hidden="true">⚠</span> {missing.length} {fieldsAre(missing.length)} needed before
+            publishing
+          </p>
+          <ul className="readiness-list">
+            {missing.map((entry) => (
+              <li key={entry.name}>
+                <button type="button" className="readiness-jump" onClick={() => onJump(entry)}>
+                  {entry.label}
+                  <span className="muted"> · {entry.group}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+          <p className="readiness-foot muted">You can still save this as a draft — nothing here blocks saving.</p>
+        </>
+      )}
+
+      {/* Only on a create (the count is zero otherwise), and only once: an
+          editor who has been told the form is prefilled does not need
+          reminding on every later visit. Naming the count rather than the
+          fields keeps it to one line — the values are visible in the inputs
+          themselves, which is where they will be checked. */}
+      {prefilledCount > 0 ? (
+        <p className="readiness-foot muted">
+          {prefilledCount} {fieldsAre(prefilledCount)} prefilled with the values every {singular.toLowerCase()}{" "}
+          shares — the format, fee terms and eligibility line. Type over any that differ for this one.
+        </p>
+      ) : null}
+    </div>
+  );
+};
+
+// <details> rather than a div and a state flag: it is collapsible with no
+// JavaScript, the summary is focusable and toggles on Enter for free, and
+// browser find-in-page can still reach the content inside a closed one.
+const EditorSection = ({group, fields, open, outstanding, form, fieldDisabled, fieldErrors, missingByName, prefilled, onToggle, onChange}) => (
+  <details
+    className="editor-section"
+    open={open}
+    // Read synchronously, before the updater. React calls a setState callback
+    // during the *next* render, by which point it has reset currentTarget to
+    // null — reading it in there threw and took the whole editor down with it.
+    onToggle={(event) => onToggle(group, event.currentTarget.open)}
+  >
+    <summary>
+      <span className="editor-section-name">{group}</span>
+      {outstanding > 0 ? (
+        <span className="editor-section-count">{outstanding} needed</span>
+      ) : (
+        <span className="editor-section-count editor-section-count--done">
+          <span aria-hidden="true">✓</span> complete
+        </span>
+      )}
+    </summary>
+
+    <div className="editor-section-body">
+      {/* hiddenWhen: a field that does not apply while another field is on (a
+          job's Application URL while it collects applications). */}
+      {fields
+        .filter((field) => !(field.hiddenWhen && readPath(form, field.hiddenWhen)))
+        .map((field) => (
+          <Field
+            key={field.name}
+            field={field}
+            value={readPath(form, field.name)}
+            disabled={fieldDisabled(field)}
+            error={fieldErrors[field.name]}
+            needed={missingByName.has(field.name)}
+            prefilled={prefilled.has(field.name)}
+            onChange={(value) => onChange(field.name, value)}
+          />
+        ))}
+    </div>
+  </details>
+);
+
+// The publish control for the sticky bar: publish/unpublish for a saved record,
+// save-and-publish for a new one, nothing for an account that cannot do either.
+const PublishButton = ({record, isNew, canUpdate, canPublish, missingCount, saving, onToggle, onSaveAndPublish}) => {
+  const hint = missingCount > 0 ? fillInHint(missingCount) : undefined;
+
+  if (isNew) {
+    return canPublish ? (
+      <button
+        type="button"
+        className="btn btn--primary"
+        onClick={onSaveAndPublish}
+        disabled={saving || missingCount > 0}
+        title={hint}
+      >
+        Save &amp; publish
+      </button>
+    ) : null;
+  }
+
+  if (!record) return null;
+  const published = record.status === "published";
+  if (!(published ? canUpdate : canPublish)) return null;
+
+  return (
+    <button
+      type="button"
+      className="btn btn--primary"
+      onClick={onToggle}
+      disabled={saving || (!published && missingCount > 0)}
+      title={published ? undefined : hint}
+    >
+      {published ? "Unpublish" : "Publish"}
+    </button>
+  );
+};
+
+// The same actions as the header, pinned to the bottom. A thirty-field form
+// scrolls the header buttons away within one screen, and hunting back up to
+// save is the most repeated annoyance in an editor like this.
+const EditorBar = ({dirty, record, canWrite, saving, onSave, children}) => {
+  const savedLabel = record ? `Saved · revision ${record.revision}` : "Not saved yet";
+  return (
+    <div className="editor-bar">
+      <span className="editor-bar-status muted">{dirty ? "Unsaved changes" : savedLabel}</span>
+      <div className="editor-bar-actions">
+        {canWrite ? (
+          <>
+            <button type="button" className="btn" onClick={onSave} disabled={saving} title="Save draft (Ctrl+S)">
+              {saving ? "Saving…" : "Save draft"}
+            </button>
+            {children}
+          </>
+        ) : (
+          <span className="muted">Read-only</span>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const RevisionHistory = ({revisions, canUpdate, saving, onRollback, onClose}) => (
+  <Modal label="Revision history" onClose={onClose}>
+    <div className="dialog-head">
+      <h2>Revision history</h2>
+      <button type="button" className="btn btn--ghost" onClick={onClose} aria-label="Close">
+        ×
+      </button>
+    </div>
+    {revisions.length === 0 ? (
+      <p className="muted">No previous revisions yet.</p>
+    ) : (
+      <ul className="revision-list">
+        {revisions.map((revision) => (
+          <li key={revision.revision}>
+            <span>
+              Revision {revision.revision}
+              <span className="muted"> · {new Date(revision.createdAt).toLocaleString()}</span>
+              {revision.changedBy ? <span className="muted"> · {revision.changedBy.name}</span> : null}
+            </span>
+            {canUpdate ? (
+              <button type="button" className="btn btn--small" disabled={saving} onClick={() => onRollback(revision.revision)}>
+                Restore
+              </button>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+    )}
+  </Modal>
+);
+
+// Only reached once the resource exists and this account may open it, so
+// everything below can rely on both.
+const RecordEditor = ({resource, abilities, canManageMedia}) => {
   const {resource: resourceName, id} = useParams();
-  const resource = RESOURCES[resourceName];
-  const {can} = useAuth();
+  const isNew = id === "new";
+  const {canCreate, canUpdate, canPublish} = abilities;
   const navigate = useNavigate();
   const toast = useToast();
-
-  const isNew = id === "new";
-  const canRead = Boolean(resource && can(resourcePermission(resource, "read")));
-  const canCreate = Boolean(resource && can(resourcePermission(resource, "create")));
-  const canUpdate = Boolean(resource && can(resourcePermission(resource, "update")));
-  // Going live is its own grant: editors send work for review, admins publish.
-  const canPublish = canUpdate && can("content.publish");
-  const canManageMedia = can("media.manage");
   const canWrite = isNew ? canCreate : canUpdate;
 
   const [record, setRecord] = useState(null);
@@ -49,7 +270,7 @@ const ResourceEditor = () => {
   // never briefly blank, and only for a create: load() replaces this wholesale
   // for an existing record, which is what keeps a deliberately blank field on an
   // old program from filling itself in when someone opens it.
-  const [form, setForm] = useState(() => (isNew && resource ? initialValues(resource) : {}));
+  const [form, setForm] = useState(() => (isNew ? initialValues(resource) : {}));
   const [loading, setLoading] = useState(!isNew);
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -57,13 +278,13 @@ const ResourceEditor = () => {
   const [dirty, setDirty] = useState(false);
   const [leaveTo, setLeaveTo] = useState(null);
   const [revisions, setRevisions] = useState(null);
-  
+
   const [openSections, setOpenSections] = useState(null);
 
-  const api = useMemo(() => (resource ? contentApi(resource.name) : null), [resource]);
+  const api = useMemo(() => contentApi(resource.name), [resource]);
 
   const load = useCallback(async () => {
-    if (isNew || !api || !canRead) return;
+    if (isNew) return;
 
     try {
       const response = await api.get(id);
@@ -76,7 +297,7 @@ const ResourceEditor = () => {
     } finally {
       setLoading(false);
     }
-  }, [api, canRead, id, isNew]);
+  }, [api, id, isNew]);
 
   useEffect(() => {
     // load() awaits the API before any setState runs, so nothing here cascades
@@ -93,9 +314,10 @@ const ResourceEditor = () => {
   // opening section layout is settled below — decided during render, once, when
   // the editor is pointed at a record it has not loaded yet — so a new record
   // always arrives behind a skeleton instead of flashed as stale form data.
-  const [loadedKey, setLoadedKey] = useState(() => (!isNew && resource ? `${resourceName}/${id}` : null));
-  if (resource && canRead && !isNew && loadedKey !== `${resourceName}/${id}`) {
-    setLoadedKey(`${resourceName}/${id}`);
+  const recordKey = `${resourceName}/${id}`;
+  const [loadedKey, setLoadedKey] = useState(() => (isNew ? null : recordKey));
+  if (!isNew && loadedKey !== recordKey) {
+    setLoadedKey(recordKey);
     setLoading(true);
     setError(null);
   }
@@ -109,7 +331,7 @@ const ResourceEditor = () => {
   // pattern) rather than in an effect: it can only ever run once, and setState
   // in an effect body would cascade a render for a value decided before commit.
   const [sectionsDecided, setSectionsDecided] = useState(false);
-  if (resource && canRead && !loading && !sectionsDecided) {
+  if (!loading && !sectionsDecided) {
     const names = [...new Set(resource.fields.map((field) => field.group || "Other"))];
     const needy = new Set(missingForPublish(resource, form).map((entry) => entry.group));
     setSectionsDecided(true);
@@ -133,8 +355,6 @@ const ResourceEditor = () => {
     return () => window.removeEventListener("beforeunload", onBeforeUnload);
   }, [dirty]);
 
-  if (!resource) return <ErrorState error={{message: `Unknown section "${resourceName}"`}} />;
-  if (!canRead || (isNew && !canCreate)) return <Forbidden />;
   if (loading) return <Skeleton rows={8} />;
   if (error) return <ErrorState error={error} onRetry={() => { setLoading(true); setError(null); load(); }} />;
 
@@ -336,7 +556,6 @@ const ResourceEditor = () => {
     accumulator[entry.group] = (accumulator[entry.group] || 0) + 1;
     return accumulator;
   }, {});
-  const isReady = missing.length === 0;
 
   // On a create, the fields still holding their shared default say so. A
   // prefilled input is indistinguishable from one the editor typed, and the
@@ -359,6 +578,11 @@ const ResourceEditor = () => {
   // the frame before it lands.
   const groupIsOpen = (group) => openSections?.[group] ?? true;
 
+  const toggleSection = (group, isOpen) => setOpenSections((current) => ({...current, [group]: isOpen}));
+
+  const fieldDisabled = (field) =>
+    saving || !canWrite || ((field.kind === "media" || field.kind === "mediaList") && !canManageMedia);
+
   // Jump from the readiness panel to the field itself. Opening the section first
   // matters: scrolling to an element inside a closed <details> scrolls to
   // nothing, which reads as a dead link.
@@ -377,11 +601,6 @@ const ResourceEditor = () => {
     });
   };
 
-  const publicUrl =
-    resource.publicPath && record && record.slug
-      ? `${PUBLIC_SITE}${resource.publicPath.replace(":slug", record.slug)}`
-      : null;
-
   // Ctrl/Cmd+S saves without leaving the keyboard — the single most repeated
   // action in the editor. Scoped to a keydown on the page (focus is always
   // inside it while editing) rather than a global listener, so it adds no
@@ -395,86 +614,23 @@ const ResourceEditor = () => {
 
   return (
     <div className="page" onKeyDown={onKeyDown}>
-      <div className="page-head">
-        <div>
-          <button type="button" className="btn btn--ghost" onClick={goBack}>
-            ← {resource.label}
-          </button>
-          <h1>
-            {isNew ? `New ${resource.singular.toLowerCase()}` : form[resource.titleField] || resource.singular}
-          </h1>
-          <p className="page-sub">
-            {record ? <StatusBadge status={record.status} /> : <span className="badge badge--draft">unsaved</span>}
-            {record ? <span className="muted"> revision {record.revision}</span> : null}
-            {dirty ? <span className="dirty-flag"> • unsaved changes</span> : null}
-          </p>
-        </div>
+      <EditorHeader
+        resource={resource}
+        isNew={isNew}
+        form={form}
+        record={record}
+        dirty={dirty}
+        saving={saving}
+        onBack={goBack}
+        onHistory={loadRevisions}
+      />
 
-        <div className="page-actions">
-          {publicUrl && record && record.status === "published" ? (
-            <a className="btn" href={publicUrl} target="_blank" rel="noreferrer">
-              View live
-            </a>
-          ) : null}
-          {!isNew ? (
-            <button type="button" className="btn" onClick={loadRevisions} disabled={saving}>
-              History
-            </button>
-          ) : null}
-          {/* Save and publish live in the sticky bar at the foot of the form,
-              not here. Two sets of the same buttons means two places to check
-              which one is disabled and why. */}
-        </div>
-      </div>
-
-      {/* The checklist the publish button is judged against, shown before it is
-          pressed. aria-live so the count is announced as fields are filled in,
-          which is the only feedback a screen reader user would otherwise get
-          from typing into the form. */}
-      <div
-        className={`readiness readiness--${isReady ? "ready" : "blocked"}`}
-        aria-live="polite"
-      >
-        {isReady ? (
-          <p className="readiness-head">
-            <span aria-hidden="true">✓</span> Ready to publish — every field the public page needs is filled in.
-          </p>
-        ) : (
-          <>
-            <p className="readiness-head">
-              <span aria-hidden="true">⚠</span>{" "}
-              {missing.length} {missing.length === 1 ? "field is" : "fields are"} needed before publishing
-            </p>
-            <ul className="readiness-list">
-              {missing.map((entry) => (
-                <li key={entry.name}>
-                  <button type="button" className="readiness-jump" onClick={() => jumpTo(entry)}>
-                    {entry.label}
-                    <span className="muted"> · {entry.group}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-            <p className="readiness-foot muted">
-              You can still save this as a draft — nothing here blocks saving.
-            </p>
-          </>
-        )}
-
-        {/* Only on a create, and only once: an editor who has been told the form
-            is prefilled does not need reminding on every later visit. Naming the
-            count rather than the fields keeps it to one line — the values are
-            visible in the inputs themselves, which is where they will be
-            checked. */}
-        {isNew && untouchedDefaults.size > 0 ? (
-          <p className="readiness-foot muted">
-            {untouchedDefaults.size}{" "}
-            {untouchedDefaults.size === 1 ? "field is" : "fields are"} prefilled with
-            the values every {resource.singular.toLowerCase()} shares — the format,
-            fee terms and eligibility line. Type over any that differ for this one.
-          </p>
-        ) : null}
-      </div>
+      <ReadinessPanel
+        missing={missing}
+        prefilledCount={untouchedDefaults.size}
+        singular={resource.singular}
+        onJump={jumpTo}
+      />
 
       <form
         className="editor"
@@ -483,62 +639,22 @@ const ResourceEditor = () => {
           save();
         }}
       >
-        {Object.entries(groups).map(([group, fields]) => {
-          const open = groupIsOpen(group);
-          const outstanding = missingByGroup[group] || 0;
-
-          return (
-            // <details> rather than a div and a state flag: it is collapsible
-            // with no JavaScript, the summary is focusable and toggles on Enter
-            // for free, and browser find-in-page can still reach the content
-            // inside a closed one.
-            <details
-              key={group}
-              className="editor-section"
-              open={open}
-              // Read synchronously, before the updater. React calls a setState
-              // callback during the *next* render, by which point it has reset
-              // currentTarget to null — reading it in there threw and took the
-              // whole editor down with it.
-              onToggle={(event) => {
-                const isOpen = event.currentTarget.open;
-                setOpenSections((current) => ({...current, [group]: isOpen}));
-              }}
-            >
-              <summary>
-                <span className="editor-section-name">{group}</span>
-                {outstanding > 0 ? (
-                  <span className="editor-section-count">{outstanding} needed</span>
-                ) : (
-                  <span className="editor-section-count editor-section-count--done">
-                    <span aria-hidden="true">✓</span> complete
-                  </span>
-                )}
-              </summary>
-
-              <div className="editor-section-body">
-                {/* hiddenWhen: a field that does not apply while another field is
-                    on (a job's Application URL while it collects applications). */}
-                {fields.filter((field) => !(field.hiddenWhen && readPath(form, field.hiddenWhen))).map((field) => (
-                  <Field
-                    key={field.name}
-                    field={field}
-                    value={readPath(form, field.name)}
-                    disabled={
-                      saving ||
-                      !canWrite ||
-                      ((field.kind === "media" || field.kind === "mediaList") && !canManageMedia)
-                    }
-                    error={fieldErrors[field.name]}
-                    needed={missingByName.has(field.name)}
-                    prefilled={untouchedDefaults.has(field.name)}
-                    onChange={(value) => setValue(field.name, value)}
-                  />
-                ))}
-              </div>
-            </details>
-          );
-        })}
+        {Object.entries(groups).map(([group, fields]) => (
+          <EditorSection
+            key={group}
+            group={group}
+            fields={fields}
+            open={groupIsOpen(group)}
+            outstanding={missingByGroup[group] || 0}
+            form={form}
+            fieldDisabled={fieldDisabled}
+            fieldErrors={fieldErrors}
+            missingByName={missingByName}
+            prefilled={untouchedDefaults}
+            onToggle={toggleSection}
+            onChange={setValue}
+          />
+        ))}
 
         {/* A submit button inside the form so Enter saves, which is what a
             keyboard user expects a form to do. */}
@@ -547,86 +663,27 @@ const ResourceEditor = () => {
         </button>
       </form>
 
-      {/* The same actions as the header, pinned to the bottom. A thirty-field
-          form scrolls the header buttons away within one screen, and hunting
-          back up to save is the most repeated annoyance in an editor like this. */}
-      <div className="editor-bar">
-        <span className="editor-bar-status muted">
-          {dirty ? "Unsaved changes" : record ? `Saved · revision ${record.revision}` : "Not saved yet"}
-        </span>
-        <div className="editor-bar-actions">
-          {canWrite ? (
-            <>
-              <button
-                type="button"
-                className="btn"
-                onClick={() => save()}
-                disabled={saving}
-                title="Save draft (Ctrl+S)"
-              >
-                {saving ? "Saving…" : "Save draft"}
-              </button>
-              {!isNew && record && (record.status === "published" ? canUpdate : canPublish) ? (
-                <button
-                  type="button"
-                  className="btn btn--primary"
-                  onClick={togglePublish}
-                  disabled={saving || (record.status !== "published" && !isReady)}
-                  title={
-                    record.status !== "published" && !isReady
-                      ? `Fill in ${missing.length} more ${missing.length === 1 ? "field" : "fields"} first`
-                      : undefined
-                  }
-                >
-                  {record.status === "published" ? "Unpublish" : "Publish"}
-                </button>
-              ) : isNew && canPublish ? (
-                <button
-                  type="button"
-                  className="btn btn--primary"
-                  onClick={() => save({thenPublish: true})}
-                  disabled={saving || !isReady}
-                  title={!isReady ? `Fill in ${missing.length} more ${missing.length === 1 ? "field" : "fields"} first` : undefined}
-                >
-                  Save &amp; publish
-                </button>
-              ) : null}
-            </>
-          ) : (
-            <span className="muted">Read-only</span>
-          )}
-        </div>
-      </div>
+      <EditorBar dirty={dirty} record={record} canWrite={canWrite} saving={saving} onSave={() => save()}>
+        <PublishButton
+          record={record}
+          isNew={isNew}
+          canUpdate={canUpdate}
+          canPublish={canPublish}
+          missingCount={missing.length}
+          saving={saving}
+          onToggle={togglePublish}
+          onSaveAndPublish={() => save({thenPublish: true})}
+        />
+      </EditorBar>
 
       {revisions ? (
-        <Modal label="Revision history" onClose={() => setRevisions(null)}>
-            <div className="dialog-head">
-              <h2>Revision history</h2>
-              <button type="button" className="btn btn--ghost" onClick={() => setRevisions(null)} aria-label="Close">
-                ×
-              </button>
-            </div>
-            {revisions.length === 0 ? (
-              <p className="muted">No previous revisions yet.</p>
-            ) : (
-              <ul className="revision-list">
-                {revisions.map((revision) => (
-                  <li key={revision.revision}>
-                    <span>
-                      Revision {revision.revision}
-                      <span className="muted"> · {new Date(revision.createdAt).toLocaleString()}</span>
-                      {revision.changedBy ? <span className="muted"> · {revision.changedBy.name}</span> : null}
-                    </span>
-                    {canUpdate ? (
-                      <button type="button" className="btn btn--small" disabled={saving} onClick={() => rollback(revision.revision)}>
-                        Restore
-                      </button>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            )}
-        </Modal>
+        <RevisionHistory
+          revisions={revisions}
+          canUpdate={canUpdate}
+          saving={saving}
+          onRollback={rollback}
+          onClose={() => setRevisions(null)}
+        />
       ) : null}
 
       <ConfirmDialog
@@ -645,6 +702,25 @@ const ResourceEditor = () => {
         onCancel={() => setLeaveTo(null)}
       />
     </div>
+  );
+};
+
+const ResourceEditor = () => {
+  const {resource: resourceName, id} = useParams();
+  const resource = RESOURCES[resourceName];
+  const {can} = useAuth();
+  const abilities = resourceAbilities(resource, can);
+  const isNew = id === "new";
+
+  if (!resource) return <ErrorState error={{message: `Unknown section "${resourceName}"`}} />;
+  if (!abilities.canRead || (isNew && !abilities.canCreate)) return <Forbidden />;
+
+  return (
+    <RecordEditor
+      resource={resource}
+      abilities={abilities}
+      canManageMedia={can("media.manage")}
+    />
   );
 };
 

@@ -9,6 +9,9 @@ import {
   loginSchema,
   changePasswordSchema,
   revokeSessionSchema,
+  mfaSetupSchema,
+  mfaEnableSchema,
+  mfaDisableSchema,
 } from "../validators/auth.validators.js";
 
 export const authRouter = Router();
@@ -47,3 +50,9 @@ authRouter.post(
   validate({body: changePasswordSchema}),
   auth.changePassword,
 );
+
+// Two-factor sign-in. authLimiter, not adminLimiter: each of these checks a
+// password or a code, so they are credential guesses and get the strict budget.
+authRouter.post("/mfa/setup", authLimiter, authenticate, validate({body: mfaSetupSchema}), auth.mfaSetup);
+authRouter.post("/mfa/enable", authLimiter, authenticate, validate({body: mfaEnableSchema}), auth.mfaEnable);
+authRouter.post("/mfa/disable", authLimiter, authenticate, validate({body: mfaDisableSchema}), auth.mfaDisable);

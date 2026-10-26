@@ -188,13 +188,11 @@ describe("authenticate — the account behind the token", () => {
     expect(error.message).toMatch(/not active/i);
   });
 
-  it("refuses an account locked mid-session, so lockout is not only about the login form", async () => {
+  it("keeps a live session when the account is locked, so a stranger cannot sign the admin out", async () => {
     const token = signAccessToken(admin);
     await Admin.updateOne({_id: admin._id}, {$set: {lockedUntil: new Date(Date.now() + 60_000)}});
 
-    const {error} = await bearer(token);
-
-    expect(error.message).toMatch(/locked/i);
+    expect((await bearer(token)).passed).toBe(true);
   });
 
   it("accepts an account whose lock has since expired", async () => {

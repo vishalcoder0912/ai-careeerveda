@@ -110,25 +110,17 @@ describe("anomalyDetector — probe responses", () => {
     expect(res.setHeader).toHaveBeenCalledWith("X-Security-Flag", "url-oversized");
   });
 
-  it("answers 400 for SQL injection markers in the query string", () => {
-    const req = makeRequest({query: {q: "x' OR 1=1 --"}});
-    const res = makeResponse();
-    const next = jest.fn();
+  it("lets ordinary prose through, even when it reads like SQL", () => {
+    for (const message of ["I want to select a program from your list", "Please delete from my records"]) {
+      const req = makeRequest({body: {message}, query: {q: message}});
+      const res = makeResponse();
+      const next = jest.fn();
 
-    anomalyDetector(req, res, next);
+      anomalyDetector(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.setHeader).toHaveBeenCalledWith("X-Security-Flag", "sqli-attempt");
-  });
-
-  it("answers 400 for SQL injection markers in the body", () => {
-    const req = makeRequest({body: {comment: "x; drop table users"}});
-    const res = makeResponse();
-    const next = jest.fn();
-
-    anomalyDetector(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.status).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalled();
+    }
   });
 
   it("answers 405 for TRACE, TRACK and CONNECT", () => {

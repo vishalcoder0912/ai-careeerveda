@@ -16,6 +16,9 @@ export const AUDIT_ACTIONS = Object.freeze({
   TOKEN_REUSE_DETECTED: "auth.token.reuse-detected",
   SESSION_REVOKED: "auth.session.revoked",
   PASSWORD_CHANGED: "auth.password.changed",
+  MFA_ENABLED: "auth.mfa.enabled",
+  MFA_DISABLED: "auth.mfa.disabled",
+  MFA_FAILED: "auth.mfa.failed",
   PERMISSION_DENIED: "auth.permission.denied",
 
   USER_CREATED: "user.created",

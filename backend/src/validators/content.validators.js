@@ -23,10 +23,17 @@ const objectId = z.string().regex(/^[a-f0-9]{24}$/i, "Invalid id");
 // Navigation belongs to a deliberately small URL vocabulary. Relative paths
 // keep a CTA inside the app; only http(s) may leave it. In particular, a blog
 // CTA must never turn into a javascript: URL when an editor pastes a value.
+// "//evil.com" and "/\evil.com" start with "/" but browsers resolve both as
+// a different host, so a "relative" path must not begin with either.
 const navigationUrl = z.string().max(1000).refine(
-  (value) => value === "" || /^https?:\/\//i.test(value) || value.startsWith("/"),
+  (value) => value === "" || /^https?:\/\//i.test(value) || /^\/(?![/\\])/.test(value),
   "URL must be http(s) or a site-relative path",
 );
+
+// Strictly off-site links (social profiles, brochures): http(s) or blank. Every
+// one of these lands in an href or src, where a javascript: value is stored XSS.
+const externalUrl = (max = 1000) =>
+  z.string().max(max).refine((value) => value === "" || /^https?:\/\//i.test(value), "URL must start with http(s)");
 
 const mediaRef = z
   .object({
@@ -35,7 +42,7 @@ const mediaRef = z
     // `javascript:` value in an image src is an XSS vector on some renderers.
     url: navigationUrl.optional().default(""),
     fileId: z.string().max(120).optional().default(""),
-    thumbnailUrl: z.string().max(1000).optional().default(""),
+    thumbnailUrl: externalUrl().optional().default(""),
     alt: optionalText(300),
     caption: optionalText(500),
     width: z.number().int().positive().nullish(),
@@ -49,7 +56,7 @@ const seo = z
     description: optionalText(400),
     keywords: stringArray(30, 80),
     ogImage: z.string().max(1000).optional().default(""),
-    canonicalUrl: z.string().max(1000).optional().default(""),
+    canonicalUrl: navigationUrl.optional().default(""),
     noIndex: z.boolean().optional().default(false),
   })
   .optional();
@@ -123,7 +130,7 @@ export const programBody = z.object({
   gallery: z.array(mediaRef.unwrap()).max(60).optional().default([]),
   mentors: z.array(objectId).max(50).optional(),
   relatedPrograms: z.array(objectId).max(20).optional(),
-  brochureUrl: z.string().max(1000).optional().default(""),
+  brochureUrl: navigationUrl.optional().default(""),
 });
 
 export const facultyBody = z.object({
@@ -145,10 +152,10 @@ export const facultyBody = z.object({
   expertise: stringArray(40, 200),
   socialLinks: z
     .object({
-      linkedin: z.string().max(500).optional().default(""),
-      twitter: z.string().max(500).optional().default(""),
-      github: z.string().max(500).optional().default(""),
-      website: z.string().max(500).optional().default(""),
+      linkedin: externalUrl(500).optional().default(""),
+      twitter: externalUrl(500).optional().default(""),
+      github: externalUrl(500).optional().default(""),
+      website: externalUrl(500).optional().default(""),
     })
     .optional(),
   associatedPrograms: z.array(objectId).max(50).optional(),

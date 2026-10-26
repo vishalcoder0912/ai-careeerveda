@@ -130,10 +130,13 @@ export const createApp = ({extraRouters = []} = {}) => {
 
   // ── DDoS / abuse protection ────────────────────────────────────────────────
   // Order matters: IP blocklist first (cheapest check), then anomaly detection,
-  // then global rate limit. All three run before any route handler.
+  // then global rate limit. All three run before any route handler. Anomaly
+  // detection sits BEFORE the limiter: requests the limiter rejects never reach
+  // later middleware, so behind it the detector's counter capped at the
+  // limiter's 500 and its auto-block (at 1000) could never fire.
   app.use(ipBlockGuard);
-  app.use(globalLimiter);
   app.use(anomalyDetector);
+  app.use(globalLimiter);
 
   // Unversioned and outside /api on purpose — probe URLs should not move when
   // the API version does.

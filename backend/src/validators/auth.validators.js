@@ -16,10 +16,17 @@ const email = z
 // produces one clear sentence rather than a wall of Zod messages.
 const password = z.string({error: "Password must be text"}).min(1).max(200);
 
+const totpCode = z.string().trim().regex(/^\d{6}$/, "Enter the 6-digit code");
+
 export const loginSchema = z.object({
   email,
   password,
+  totp: totpCode.optional(),
 });
+
+export const mfaSetupSchema = z.object({password});
+export const mfaEnableSchema = z.object({code: totpCode});
+export const mfaDisableSchema = z.object({password, code: totpCode});
 
 export const changePasswordSchema = z.object({
   currentPassword: password,

@@ -119,8 +119,31 @@ describe("account lockout", () => {
     const admin = await Admin.findOne({email: "super@careerveda.test"});
     expect(admin.isLocked()).toBe(true);
 
+    // Locked: even the right current password is not checked any more...
+    const blocked = await request(app)
+      .post("/api/v1/auth/change-password")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({currentPassword: TEST_PASSWORD, newPassword: "A-brand-new-passphrase-42!"});
+    expect(blocked.status).toBe(401);
+
+    // ...but the session itself survives, so a lock triggered from the login
+    // form by a stranger cannot sign the real admin out.
     const after = await request(app).get("/api/v1/auth/me").set("Authorization", `Bearer ${accessToken}`);
-    expect(after.status).toBe(401);
+    expect(after.status).toBe(200);
+  });
+
+  it("restarts the ladder once a lock has expired, so one guess per lock cannot keep an admin out", async () => {
+    await createAdmin();
+    await Admin.updateOne(
+      {email: "super@careerveda.test"},
+      {$set: {failedLoginAttempts: 15, lockedUntil: new Date(Date.now() - 1000)}},
+    );
+
+    await login(app, {password: "wrong-password-here-1"});
+
+    const admin = await Admin.findOne({email: "super@careerveda.test"});
+    expect(admin.failedLoginAttempts).toBe(1);
+    expect(admin.isLocked()).toBe(false);
   });
 
   it("clears the failure count on a successful login", async () => {

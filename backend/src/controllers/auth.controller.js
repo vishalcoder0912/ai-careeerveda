@@ -24,10 +24,18 @@ import {
   setAuthCookies,
   clearAuthCookies,
 } from "../middleware/csrf.js";
+import {
+  generateSecret,
+  verifyCode,
+  otpauthUrl,
+  encryptSecret,
+  decryptSecret,
+} from "../services/totp.service.js";
 import {permissionsForRole} from "../config/permissions.js";
+import {env} from "../config/env.js";
 import {logger} from "../config/logger.js";
 import {ok} from "../utils/respond.js";
-import {badRequest, unauthorized, notFound} from "../utils/apiError.js";
+import {ApiError, badRequest, unauthorized, notFound, conflict} from "../utils/apiError.js";
 
 // One message for every login failure, whatever the cause. Distinguishing
 // "no such account" from "wrong password" turns the login form into an account
@@ -42,7 +50,44 @@ const sessionPayload = (admin) => ({
   role: admin.role,
   permissions: permissionsForRole(admin.role),
   lastLoginAt: admin.lastLoginAt,
+  mfaEnabled: Boolean(admin.totpEnabled),
+  mfaRequired: env.requireAdminMfa,
 });
+
+// ── Second factor ───────────────────────────────────────────────────────────
+
+const MFA_REQUIRED = () =>
+  new ApiError(401, "MFA_REQUIRED", "Enter the 6-digit code from your authenticator app.");
+const MFA_INVALID = () =>
+  new ApiError(401, "MFA_INVALID", "That code is not valid. Enter the current code from your app.", {
+    fields: {totp: "Invalid code"},
+  });
+
+// Verifies a code against the stored secret and spends it. The spend is one
+// conditional write, so two requests racing with the same code cannot both
+// succeed — the same shape as refresh-token rotation.
+const consumeCode = async (adminId, code) => {
+  const stored = await Admin.findById(adminId).select("+totpSecret +totpLastStep").lean();
+  const secret = stored && decryptSecret(stored.totpSecret);
+  if (!secret) return false;
+
+  const step = verifyCode(secret, code, {lastUsedStep: stored.totpLastStep || 0});
+  if (step === null) return false;
+
+  const claimed = await Admin.updateOne({_id: adminId, totpLastStep: {$lt: step}}, {$set: {totpLastStep: step}});
+  return claimed.modifiedCount === 1;
+};
+
+// Re-authentication for the endpoints that change how an account signs in.
+// A stolen access token alone must not be enough to enrol the thief's phone or
+// strip the owner's — both need the password, and wrong guesses count toward
+// the same lockout as the login form.
+const confirmPassword = async (admin, password) => {
+  if (admin.isLocked()) return unauthorized("Too many incorrect attempts. Please try again later.");
+  if (await verifyPassword(admin.passwordHash, password)) return null;
+  await admin.registerFailedLogin();
+  return badRequest("Password is incorrect", {password: "Incorrect"});
+};
 
 const startSession = async (request, response, admin, statusFn = ok) => {
   const refreshToken = await issueRefreshToken(admin, {
@@ -127,6 +172,24 @@ export const login = async (request, response, next) => {
       });
 
       return next(unauthorized(LOGIN_FAILED));
+    }
+
+    if (admin.totpEnabled) {
+      // The password was right; only now is the second factor asked for. A
+      // missing code is not a failed attempt — the panel shows the code step.
+      const {totp} = request.body;
+      if (!totp) return next(MFA_REQUIRED());
+
+      if (!(await consumeCode(admin._id, totp))) {
+        await admin.registerFailedLogin();
+        await recordAudit(request, {
+          action: AUDIT_ACTIONS.MFA_FAILED,
+          actor: admin,
+          metadata: {stage: "login"},
+          outcome: "failure",
+        });
+        return next(MFA_INVALID());
+      }
     }
 
     await admin.registerSuccessfulLogin();
@@ -294,6 +357,12 @@ export const changePassword = async (request, response, next) => {
 
     const admin = await Admin.findById(request.admin._id).select("+passwordHash +passwordHistory");
 
+    // A stolen access token must not become an unlimited password oracle: once
+    // wrong guesses here lock the account, no more are checked until it lapses.
+    if (admin.isLocked()) {
+      return next(unauthorized("Too many incorrect attempts. Please try again later."));
+    }
+
     if (!(await verifyPassword(admin.passwordHash, currentPassword))) {
       // A stolen access token must not become an unlimited password oracle, so
       // these guesses count toward the login lockout — and authenticate() stops
@@ -341,3 +410,94 @@ export const changePassword = async (request, response, next) => {
   }
 };
 
+
+// Step 1 of enrolment: mint a secret and hand it to the authenticator app. It
+// is stored but inert until /mfa/enable proves the app produces valid codes, so
+// a half-finished setup can never lock the owner out.
+export const mfaSetup = async (request, response, next) => {
+  try {
+    const admin = await Admin.findById(request.admin._id).select("+passwordHash");
+    if (admin.totpEnabled) return next(conflict("Two-factor sign-in is already on."));
+
+    const refused = await confirmPassword(admin, request.body.password);
+    if (refused) return next(refused);
+
+    const secret = generateSecret();
+    admin.totpSecret = encryptSecret(secret);
+    await admin.save();
+
+    return ok(response, {secret, otpauthUrl: otpauthUrl(secret, admin.email)});
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// Step 2: the first valid code switches MFA on. Every other session ends,
+// because they were all established with the password alone.
+export const mfaEnable = async (request, response, next) => {
+  try {
+    const admin = await Admin.findById(request.admin._id).select("+totpSecret");
+    if (admin.totpEnabled) return next(conflict("Two-factor sign-in is already on."));
+
+    const secret = decryptSecret(admin.totpSecret);
+    if (!secret) return next(badRequest("Start two-factor setup first."));
+
+    const step = verifyCode(secret, request.body.code);
+    if (step === null) {
+      await recordAudit(request, {
+        action: AUDIT_ACTIONS.MFA_FAILED,
+        actor: admin,
+        metadata: {stage: "enable"},
+        outcome: "failure",
+      });
+      return next(badRequest("That code is not valid. Check the time on your phone and try again.", {code: "Invalid code"}));
+    }
+
+    admin.totpEnabled = true;
+    admin.totpLastStep = step;
+    admin.tokenVersion = (admin.tokenVersion || 0) + 1;
+    await admin.save();
+    await revokeAllForAdmin(admin._id, "mfa-enabled");
+
+    await recordAudit(request, {action: AUDIT_ACTIONS.MFA_ENABLED, actor: admin});
+    return startSession(request, response, admin);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// Turning MFA off needs both factors: the password AND a current code. A lost
+// phone is an operator reset (`seed:admin -- --reset`), never a self-service
+// path an attacker holding only the password could use.
+export const mfaDisable = async (request, response, next) => {
+  try {
+    const admin = await Admin.findById(request.admin._id).select("+passwordHash");
+    if (!admin.totpEnabled) return next(badRequest("Two-factor sign-in is not on."));
+
+    const refused = await confirmPassword(admin, request.body.password);
+    if (refused) return next(refused);
+
+    if (!(await consumeCode(admin._id, request.body.code))) {
+      await admin.registerFailedLogin();
+      await recordAudit(request, {
+        action: AUDIT_ACTIONS.MFA_FAILED,
+        actor: admin,
+        metadata: {stage: "disable"},
+        outcome: "failure",
+      });
+      return next(badRequest("That code is not valid.", {code: "Invalid code"}));
+    }
+
+    admin.totpEnabled = false;
+    admin.totpSecret = null;
+    admin.totpLastStep = 0;
+    admin.tokenVersion = (admin.tokenVersion || 0) + 1;
+    await admin.save();
+    await revokeAllForAdmin(admin._id, "mfa-disabled");
+
+    await recordAudit(request, {action: AUDIT_ACTIONS.MFA_DISABLED, actor: admin});
+    return startSession(request, response, admin);
+  } catch (error) {
+    return next(error);
+  }
+};

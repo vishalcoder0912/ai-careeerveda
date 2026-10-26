@@ -52,10 +52,6 @@ const SUSPICIOUS_PATHS = new Set([
   "/server-info",
 ]);
 
-// SQL injection patterns in query strings or body values.
-const SQLI_PATTERN =
-  /(\b(union\s+select|select\s+.*\s+from|insert\s+into|drop\s+table|delete\s+from|or\s+1\s*=\s*1)\b|--\s*$|;\s*(drop|delete|update|insert)\b)/i;
-
 // Path traversal patterns.
 const TRAVERSAL_PATTERN = /(\.\.\/|\.\.\\|%2e%2e%2f|%2e%2e\/|\.%2e\/|%2e\.%2f)/i;
 
@@ -112,21 +108,12 @@ export const anomalyDetector = (req, res, next) => {
     res.setHeader("X-Security-Flag", "no-ua");
   }
 
-  // ── 5. SQL injection patterns in query or body ─────────────────────────────
-  const queryString = JSON.stringify(req.query);
-  const bodyString = req.body ? JSON.stringify(req.body) : "";
-  if (SQLI_PATTERN.test(queryString) || SQLI_PATTERN.test(bodyString)) {
-    logger.error(
-      {ip, path: req.path, method: req.method},
-      "SQL injection pattern detected",
-    );
-    res.setHeader("X-Security-Flag", "sqli-attempt");
-    return res.status(400).json({
-      success: false,
-      error: {code: "INVALID_INPUT", message: "Request contains invalid characters"},
-      meta: {requestId: req.id},
-    });
-  }
+  // ── 5. (removed) SQL keyword matching ─────────────────────────────────────
+  // There is no SQL database behind this API, and the keyword filter rejected
+  // ordinary prose — "select a program from your list" got a 400 on the lead
+  // form and in blog edits. NoSQL operator injection is handled structurally by
+  // sanitizeRequest ($-keys stripped) and zod (typed fields), which is the
+  // defence that actually applies here.
 
   // ── 6. Request frequency tracking ──────────────────────────────────────────
   let counter = counters.get(ip);

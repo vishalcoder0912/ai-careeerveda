@@ -371,6 +371,21 @@ export const RESOURCE_LIST = Object.values(RESOURCES);
 export const resourcePermission = (resource, action = "read") =>
   resource?.permissions?.[action] || resource?.permission;
 
+// Every grant a content screen asks about, in one place so the list and the
+// editor cannot disagree. Going live is its own grant: editors send work for
+// review, admins publish.
+export const resourceAbilities = (resource, can) => {
+  const has = (action) => Boolean(resource && can(resourcePermission(resource, action)));
+  const canUpdate = has("update");
+  return {
+    canRead: has("read"),
+    canCreate: has("create"),
+    canUpdate,
+    canPublish: canUpdate && can("content.publish"),
+    canDelete: has("delete"),
+  };
+};
+
 export const STATUS_LABELS = {
   draft: "Draft",
   "in-review": "In review",

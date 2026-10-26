@@ -79,6 +79,11 @@ const schema = z.object({
   // A hop count ("1", "2") or an Express trust-proxy list ("loopback, 10.0.0.0/8").
   TRUST_PROXY: z.string().default("1"),
 
+  // Every admin must have two-factor sign-in before the panel lets them touch
+  // content, leads or settings. Unset means "on for any https deploy"
+  // (COOKIE_SECURE=true), off for local dev and tests.
+  REQUIRE_ADMIN_MFA: z.enum(["true", "false"]).optional(),
+
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"]).default("info"),
 });
 
@@ -139,6 +144,7 @@ export const env = {
   isProduction: raw.NODE_ENV === "production",
   trustProxy: /^\d+$/.test(raw.TRUST_PROXY.trim()) ? Number(raw.TRUST_PROXY) : raw.TRUST_PROXY,
   isTest: raw.NODE_ENV === "test",
+  requireAdminMfa: raw.REQUIRE_ADMIN_MFA ? raw.REQUIRE_ADMIN_MFA === "true" : raw.COOKIE_SECURE,
   // Firestore detection and config
   isFirestore: raw.MONGODB_URI.includes(".firestore.goog") || raw.MONGODB_URI.startsWith("firestore://"),
   firestoreProjectId: raw.FIRESTORE_PROJECT_ID,

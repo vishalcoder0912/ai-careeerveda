@@ -10,6 +10,7 @@ import MediaLibrary from "./pages/MediaLibrary";
 import Leads from "./pages/Leads";
 import JobApplications from "./pages/JobApplications";
 import Profile from "./pages/Profile";
+import MfaPanel from "./components/MfaPanel";
 
 const NotFound = () => (
   <div className="page state state--empty">
@@ -41,7 +42,7 @@ const Guarded = ({permission, children}) => {
 };
 
 const Shell = () => {
-  const {admin, restoring} = useAuth();
+  const {admin, restoring, signOut} = useAuth();
 
   // Neither signed in nor signed out yet. Rendering the login form here would
   // flash it at someone whose session is about to be restored.
@@ -55,6 +56,22 @@ const Shell = () => {
   }
 
   if (!admin) return <Login />;
+
+  // The API refuses everything outside /auth until an account has two-factor
+  // on (MFA_ENROLLMENT_REQUIRED), so rather than mount screens full of 403s,
+  // enrolment is the only thing shown.
+  if (admin.mfaRequired && !admin.mfaEnabled) {
+    return (
+      <main className="auth-screen">
+        <div className="auth-card auth-card--wide">
+          <MfaPanel />
+          <button type="button" className="btn btn--block" onClick={signOut}>
+            Sign out
+          </button>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <Routes>

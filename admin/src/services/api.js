@@ -164,8 +164,12 @@ export const api = {
 
 // ── Auth ────────────────────────────────────────────────────────────────────
 
-export const login = async (email, password) => {
-  const body = await request("/auth/login", {method: "POST", body: {email, password}, retry: false});
+export const login = async (email, password, totp) => {
+  const body = await request("/auth/login", {
+    method: "POST",
+    body: totp ? {email, password, totp} : {email, password},
+    retry: false,
+  });
   setTokens(body.data);
   return body.data.admin;
 };
@@ -215,6 +219,20 @@ export const changePassword = (currentPassword, newPassword) =>
 // forgotPassword and resetPassword were here. Self-serve reset is gone from the
 // panel and from the API — /auth/forgot-password and /auth/reset-password no
 // longer exist, so these wrappers would 404 even if something called them.
+
+// Two-factor. enable/disable end every other session and hand back a fresh one,
+// so their tokens replace the current ones exactly as a login would.
+export const mfaSetup = (password) => api.post("/auth/mfa/setup", {password});
+export const mfaEnable = async (code) => {
+  const body = await api.post("/auth/mfa/enable", {code});
+  setTokens(body.data);
+  return body.data.admin;
+};
+export const mfaDisable = async (password, code) => {
+  const body = await api.post("/auth/mfa/disable", {password, code});
+  setTokens(body.data);
+  return body.data.admin;
+};
 
 export const listSessions = () => api.get("/auth/sessions");
 export const revokeSession = (id) => api.delete(`/auth/sessions/${id}`);

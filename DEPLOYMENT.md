@@ -107,8 +107,9 @@ together. A secret without the site key rejects every form submission.
    `VITE_PUBLIC_SITE_URL=https://careerveda.in`, and `VITE_TURNSTILE_SITE_KEY`.
 6. **`backend/.env`**: `FRONTEND_URL=https://careerveda.in`,
    `ADMIN_URL=https://admin.careerveda.in`, `COOKIE_SECURE=true`,
-   `TURNSTILE_SECRET_KEY=…`, `TRUST_PROXY=1` (nginx is the one hop; make it 2 if
-   you put Cloudflare in front). The API refuses to boot on an unsafe
+   `TURNSTILE_SECRET_KEY=…`, `TRUST_PROXY=1` (nginx is the one hop, and stays 1 with
+   Cloudflare in front too: the shipped nginx config already unwraps
+   `CF-Connecting-IP` and overwrites `X-Forwarded-For`). The API refuses to boot on an unsafe
    combination, so a mistake shows up immediately.
 7. Rebuild and restart: `sudo FORCE=1 bash /opt/careerveda/deploy/deploy.sh`.
 8. Close port 8081: `gcloud compute firewall-rules update careerveda-allow-web --allow=tcp:80,tcp:443`.

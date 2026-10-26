@@ -511,19 +511,12 @@ Full (strict) validates the Let's Encrypt certificate and works as-is.
 **Restore the real client IP, or the rate limiter breaks.** `app.js` sets
 `trust proxy: 1` — exactly one hop, correct today. Proxied, there are two, so
 `req.ip` becomes a Cloudflare address and `express-rate-limit` treats every
-visitor on earth as one client. The first busy hour, real users start getting
-429s. Fix it in nginx so `trust proxy: 1` stays true — add to the API server
-block, above `location /`:
-
-```nginx
-real_ip_header CF-Connecting-IP;
-set_real_ip_from 173.245.48.0/20;
-set_real_ip_from 103.21.244.0/22;
-set_real_ip_from 104.16.0.0/13;
-set_real_ip_from 172.64.0.0/13;
-set_real_ip_from 131.0.72.0/22;
-# full current list: https://www.cloudflare.com/ips/
-```
+visitor on earth as one client. `deploy/nginx-careerveda.conf` already handles
+this: it trusts `CF-Connecting-IP` only from Cloudflare's ranges and overwrites
+`X-Forwarded-For` with the resolved address, so `TRUST_PROXY=1` stays correct.
+If Cloudflare publishes new ranges (https://www.cloudflare.com/ips/), add them
+to the `set_real_ip_from` list there. Do NOT set `TRUST_PROXY=2` — that would
+let a client who reaches the origin directly forge its IP.
 
 **Renewal gets fragile once proxied** — certbot's HTTP-01 challenge then runs
 through Cloudflare. Either switch certbot to DNS-01 with a Cloudflare API token,

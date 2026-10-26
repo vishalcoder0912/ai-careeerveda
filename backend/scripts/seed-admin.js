@@ -105,6 +105,10 @@ const run = async () => {
     existing.failedLoginAttempts = 0;
     existing.lockedUntil = null;
     existing.status = "active";
+    // Also the lost-phone path: two-factor is cleared and must be re-enrolled
+    // at next sign-in (mandatory on https deploys).
+    existing.totpEnabled = false;
+    existing.totpSecret = null;
     await existing.save();
 
     // Anyone holding a refresh token for this account loses it — the password

@@ -6,6 +6,7 @@ import {useAuth} from "../context/AuthContext";
 import {useToast} from "../context/ToastContext";
 import {ConfirmDialog} from "../components/ConfirmDialog";
 import {Modal} from "../components/Modal";
+import {Pagination} from "../components/Pagination";
 import {Skeleton, EmptyState, ErrorState} from "../components/States";
 
 const STATUSES = ["new", "contacted", "qualified", "converted", "closed", "spam"];
@@ -23,6 +24,205 @@ const formatTime = (value) =>
   new Date(value).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"});
 const formatDateTime = (value) =>
   `${new Date(value).toLocaleDateString()}, ${formatTime(value)}`;
+
+const dash = (value) => value || "—";
+
+const utmLine = (utm) =>
+  utm && (utm.source || utm.campaign) ? `${dash(utm.source)} / ${dash(utm.medium)} / ${dash(utm.campaign)}` : "—";
+
+const StatusOptions = () =>
+  STATUSES.map((entry) => (
+    <option key={entry} value={entry}>
+      {entry}
+    </option>
+  ));
+
+const LeadStats = ({stats, hiring}) => (
+  <section className="panel dashboard-leads" aria-labelledby="lead-stats-title">
+    <div className="panel-head">
+      <div>
+        <span className="section-kicker">Enquiries</span>
+        <h2 id="lead-stats-title">{hiring ? "Organizations hiring from us" : "Enrollment inquiries"}</h2>
+      </div>
+      <span className="panel-caption">{stats.total} total</span>
+    </div>
+
+    {/* One row: the two totals, then whichever user types actually
+        appear in the data — no hard-coded list, so a new option on the
+        form shows up here without a code change. */}
+    <div className="lead-stats-row">
+      <div className="enrollment-stat-card">
+        <strong>{stats.total}</strong>
+        <span>Total inquiries</span>
+      </div>
+      <div className="enrollment-stat-card">
+        <strong>{stats.todayCount || 0}</strong>
+        <span>Today</span>
+      </div>
+      {Object.entries(stats.byUserType || {}).map(([entry, count]) => (
+        <div key={entry} className="enrollment-stat-card enrollment-stat-card--type">
+          <strong>{count}</strong>
+          <span>{entry}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+);
+
+const LeadRow = ({lead, hiring, canUpdate, onStatus, onView, onDelete}) => (
+  <tr>
+    <td data-label="Received">
+      <span className="cell-date">{new Date(lead.createdAt).toLocaleDateString()}</span>
+      <span className="cell-time muted">{formatTime(lead.createdAt)}</span>
+    </td>
+    {hiring ? <td data-label="Organization">{dash(lead.organization)}</td> : null}
+    <td data-label={hiring ? "Contact" : "Name"}>{lead.name}</td>
+    <td data-label="Email">{lead.email}</td>
+    <td data-label={hiring ? "Positions" : "Type"}>{hiring ? dash(lead.positions) : lead.type}</td>
+    <td data-label="Program">{dash(lead.program)}</td>
+    <td data-label="Status">
+      <select
+        value={lead.status}
+        aria-label={`Status for ${lead.name}`}
+        disabled={!canUpdate}
+        onChange={(event) => onStatus(lead, event.target.value)}
+      >
+        <StatusOptions />
+      </select>
+    </td>
+    <td data-label="Actions">
+      <button type="button" className="btn btn--small" onClick={() => onView(lead)}>
+        View
+      </button>
+      {canUpdate ? (
+        <button type="button" className="btn btn--small btn--danger" onClick={() => onDelete(lead)}>
+          Delete
+        </button>
+      ) : null}
+    </td>
+  </tr>
+);
+
+// Exactly one of: skeleton, error, empty state, table.
+const LeadsBody = ({loading, error, items, hiring, onRetry, ...rowProps}) => {
+  if (loading) return <Skeleton />;
+  if (error) return <ErrorState error={error} onRetry={onRetry} />;
+  if (items.length === 0) {
+    return (
+      <EmptyState
+        title={hiring ? "No hiring enquiries yet" : "No leads yet"}
+        body={
+          hiring
+            ? "Submissions from the website's Hire From Us form appear here."
+            : "Submissions from the public forms appear here."
+        }
+      />
+    );
+  }
+  return (
+    <div className="table-wrap">
+      <table className="leads-table">
+        <caption className="visually-hidden">Leads</caption>
+        <thead>
+          <tr>
+            <th scope="col">Received</th>
+            {hiring ? <th scope="col">Organization</th> : null}
+            <th scope="col">{hiring ? "Contact" : "Name"}</th>
+            <th scope="col">Email</th>
+            <th scope="col">{hiring ? "Positions" : "Type"}</th>
+            <th scope="col">Program</th>
+            <th scope="col">Status</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map((lead) => (
+            <LeadRow key={lead._id} lead={lead} hiring={hiring} {...rowProps} />
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+const LeadDetail = ({lead, canUpdate, note, onNote, onAddNote, onClose}) => {
+  const notes = lead.notes || [];
+  return (
+    <Modal className="dialog--wide" label="Lead detail" onClose={onClose}>
+      <div className="dialog-head">
+        <h2>{lead.name}</h2>
+        <button type="button" className="btn btn--ghost" onClick={onClose} aria-label="Close">
+          ×
+        </button>
+      </div>
+
+      <dl className="detail-list">
+        <dt>Received</dt>
+        <dd>{formatDateTime(lead.createdAt)}</dd>
+        <dt>Email</dt>
+        <dd>{lead.email}</dd>
+        <dt>Mobile</dt>
+        <dd>{lead.mobile}</dd>
+        <dt>Type</dt>
+        <dd>{lead.type}</dd>
+        {lead.type === "hiring" ? (
+          <>
+            <dt>Organization</dt>
+            <dd>{dash(lead.organization)}</dd>
+            <dt>Positions</dt>
+            <dd>{dash(lead.positions)}</dd>
+            <dt>Recruitment mode</dt>
+            <dd>{dash(lead.recruitmentMode)}</dd>
+          </>
+        ) : (
+          <>
+            <dt>User type</dt>
+            <dd>{dash(lead.userType)}</dd>
+          </>
+        )}
+        <dt>Program</dt>
+        <dd>{dash(lead.program)}</dd>
+        <dt>Source page</dt>
+        <dd>{dash(lead.sourcePage)}</dd>
+        <dt>UTM</dt>
+        <dd>{utmLine(lead.utm)}</dd>
+        <dt>Message</dt>
+        <dd>{dash(lead.message)}</dd>
+        <dt>Spam score</dt>
+        <dd>{lead.spamScore}</dd>
+      </dl>
+
+      <h3>Notes</h3>
+      {notes.length === 0 ? <p className="muted">No notes yet.</p> : null}
+      <ul className="note-list">
+        {notes.map((entry) => (
+          <li key={entry._id || entry.createdAt}>
+            <p>{entry.body}</p>
+            <span className="muted">{new Date(entry.createdAt).toLocaleString()}</span>
+          </li>
+        ))}
+      </ul>
+
+      {canUpdate ? (
+        <div className="note-compose">
+          <label htmlFor="note" className="visually-hidden">
+            Add a note
+          </label>
+          <textarea
+            id="note"
+            rows={3}
+            placeholder="Add a note…"
+            value={note}
+            onChange={(event) => onNote(event.target.value)}
+          />
+          <button type="button" className="btn btn--primary" onClick={onAddNote} disabled={!note.trim()}>
+            Add note
+          </button>
+        </div>
+      ) : null}
+    </Modal>
+  );
+};
 
 // `hiring` turns this into the "Hire From Us" page: locked to hiring leads,
 // with the organization in place of the type column. The general inbox
@@ -232,6 +432,15 @@ const Leads = ({hiring = false}) => {
     }
   };
 
+  const askDelete = (lead) =>
+    setConfirm({
+      title: "Delete this lead?",
+      body: `"${lead.name}" (${lead.email}) will be permanently removed.`,
+      confirmLabel: "Delete",
+      tone: "danger",
+      onConfirm: () => handleDelete(lead),
+    });
+
   const exportCsv = async () => {
     try {
       const blob = await leadsApi.exportCsv({
@@ -258,6 +467,8 @@ const Leads = ({hiring = false}) => {
     }
   };
 
+  const canUpdate = can("forms.update");
+
   return (
     <div className="page">
       <div className="page-head">
@@ -278,37 +489,7 @@ const Leads = ({hiring = false}) => {
         ) : null}
       </div>
 
-      {stats ? (
-        <section className="panel dashboard-leads" aria-labelledby="lead-stats-title">
-          <div className="panel-head">
-            <div>
-              <span className="section-kicker">Enquiries</span>
-              <h2 id="lead-stats-title">{hiring ? "Organizations hiring from us" : "Enrollment inquiries"}</h2>
-            </div>
-            <span className="panel-caption">{stats.total} total</span>
-          </div>
-
-          {/* One row: the two totals, then whichever user types actually
-              appear in the data — no hard-coded list, so a new option on the
-              form shows up here without a code change. */}
-          <div className="lead-stats-row">
-            <div className="enrollment-stat-card">
-              <strong>{stats.total}</strong>
-              <span>Total inquiries</span>
-            </div>
-            <div className="enrollment-stat-card">
-              <strong>{stats.todayCount || 0}</strong>
-              <span>Today</span>
-            </div>
-            {Object.entries(stats.byUserType || {}).map(([entry, count]) => (
-              <div key={entry} className="enrollment-stat-card enrollment-stat-card--type">
-                <strong>{count}</strong>
-                <span>{entry}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-      ) : null}
+      {stats ? <LeadStats stats={stats} hiring={hiring} /> : null}
 
       <div className="toolbar">
         <input
@@ -320,11 +501,7 @@ const Leads = ({hiring = false}) => {
         />
         <select value={status} onChange={(event) => setStatus(event.target.value)} aria-label="Status">
           <option value="">All statuses</option>
-          {STATUSES.map((entry) => (
-            <option key={entry} value={entry}>
-              {entry}
-            </option>
-          ))}
+          <StatusOptions />
         </select>
         {hiring ? null : (
           <select value={type} onChange={(event) => setType(event.target.value)} aria-label="Type">
@@ -337,182 +514,29 @@ const Leads = ({hiring = false}) => {
         )}
       </div>
 
-      {loading ? <Skeleton /> : null}
-      {!loading && error ? <ErrorState error={error} onRetry={load} /> : null}
-      {!loading && !error && items.length === 0 ? (
-        <EmptyState
-          title={hiring ? "No hiring enquiries yet" : "No leads yet"}
-          body={
-            hiring
-              ? "Submissions from the website's Hire From Us form appear here."
-              : "Submissions from the public forms appear here."
-          }
-        />
-      ) : null}
+      <LeadsBody
+        loading={loading}
+        error={error}
+        items={items}
+        hiring={hiring}
+        canUpdate={canUpdate}
+        onRetry={load}
+        onStatus={updateStatus}
+        onView={setOpen}
+        onDelete={askDelete}
+      />
 
-      {!loading && !error && items.length > 0 ? (
-        <div className="table-wrap">
-          <table className="leads-table">
-            <caption className="visually-hidden">Leads</caption>
-            <thead>
-              <tr>
-                <th scope="col">Received</th>
-                {hiring ? <th scope="col">Organization</th> : null}
-                <th scope="col">{hiring ? "Contact" : "Name"}</th>
-                <th scope="col">Email</th>
-                <th scope="col">{hiring ? "Positions" : "Type"}</th>
-                <th scope="col">Program</th>
-                <th scope="col">Status</th>
-                <th scope="col">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((lead) => (
-                <tr key={lead._id}>
-                  <td data-label="Received">
-                    <span className="cell-date">{new Date(lead.createdAt).toLocaleDateString()}</span>
-                    <span className="cell-time muted">{formatTime(lead.createdAt)}</span>
-                  </td>
-                  {hiring ? <td data-label="Organization">{lead.organization || "—"}</td> : null}
-                  <td data-label={hiring ? "Contact" : "Name"}>{lead.name}</td>
-                  <td data-label="Email">{lead.email}</td>
-                  <td data-label={hiring ? "Positions" : "Type"}>{hiring ? lead.positions || "—" : lead.type}</td>
-                  <td data-label="Program">{lead.program || "—"}</td>
-                  <td data-label="Status">
-                    <select
-                      value={lead.status}
-                      aria-label={`Status for ${lead.name}`}
-                      disabled={!can("forms.update")}
-                      onChange={(event) => updateStatus(lead, event.target.value)}
-                    >
-                      {STATUSES.map((entry) => (
-                        <option key={entry} value={entry}>
-                          {entry}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td data-label="Actions">
-                    <button type="button" className="btn btn--small" onClick={() => setOpen(lead)}>
-                      View
-                    </button>
-                    {can("forms.update") ? (
-                      <button
-                        type="button"
-                        className="btn btn--small btn--danger"
-                        onClick={() =>
-                          setConfirm({
-                            title: "Delete this lead?",
-                            body: `"${lead.name}" (${lead.email}) will be permanently removed.`,
-                            confirmLabel: "Delete",
-                            tone: "danger",
-                            onConfirm: () => handleDelete(lead),
-                          })
-                        }
-                      >
-                        Delete
-                      </button>
-                    ) : null}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : null}
-
-      {meta.totalPages > 1 ? (
-        <nav className="pagination" aria-label="Pagination">
-          <button type="button" className="btn" disabled={page <= 1} onClick={() => setPage((value) => value - 1)}>
-            Previous
-          </button>
-          <span>
-            Page {meta.page} of {meta.totalPages}
-          </span>
-          <button type="button" className="btn" disabled={page >= meta.totalPages} onClick={() => setPage((value) => value + 1)}>
-            Next
-          </button>
-        </nav>
-      ) : null}
+      <Pagination page={page} meta={meta} onPage={setPage} />
 
       {open ? (
-        <Modal className="dialog--wide" label="Lead detail" onClose={() => setOpen(null)}>
-            <div className="dialog-head">
-              <h2>{open.name}</h2>
-              <button type="button" className="btn btn--ghost" onClick={() => setOpen(null)} aria-label="Close">
-                ×
-              </button>
-            </div>
-
-            <dl className="detail-list">
-              <dt>Received</dt>
-              <dd>{formatDateTime(open.createdAt)}</dd>
-              <dt>Email</dt>
-              <dd>{open.email}</dd>
-              <dt>Mobile</dt>
-              <dd>{open.mobile}</dd>
-              <dt>Type</dt>
-              <dd>{open.type}</dd>
-              {open.type === "hiring" ? (
-                <>
-                  <dt>Organization</dt>
-                  <dd>{open.organization || "—"}</dd>
-                  <dt>Positions</dt>
-                  <dd>{open.positions || "—"}</dd>
-                  <dt>Recruitment mode</dt>
-                  <dd>{open.recruitmentMode || "—"}</dd>
-                </>
-              ) : (
-                <>
-                  <dt>User type</dt>
-                  <dd>{open.userType || "—"}</dd>
-                </>
-              )}
-              <dt>Program</dt>
-              <dd>{open.program || "—"}</dd>
-              <dt>Source page</dt>
-              <dd>{open.sourcePage || "—"}</dd>
-              <dt>UTM</dt>
-              <dd>
-                {open.utm && (open.utm.source || open.utm.campaign)
-                  ? `${open.utm.source || "—"} / ${open.utm.medium || "—"} / ${open.utm.campaign || "—"}`
-                  : "—"}
-              </dd>
-              <dt>Message</dt>
-              <dd>{open.message || "—"}</dd>
-              <dt>Spam score</dt>
-              <dd>{open.spamScore}</dd>
-            </dl>
-
-            <h3>Notes</h3>
-            {(open.notes || []).length === 0 ? <p className="muted">No notes yet.</p> : null}
-            <ul className="note-list">
-              {(open.notes || []).map((entry) => (
-                <li key={entry._id || entry.createdAt}>
-                  <p>{entry.body}</p>
-                  <span className="muted">{new Date(entry.createdAt).toLocaleString()}</span>
-                </li>
-              ))}
-            </ul>
-
-            {can("forms.update") ? (
-              <div className="note-compose">
-                <label htmlFor="note" className="visually-hidden">
-                  Add a note
-                </label>
-                <textarea
-                  id="note"
-                  rows={3}
-                  placeholder="Add a note…"
-                  value={note}
-                  onChange={(event) => setNote(event.target.value)}
-                />
-                <button type="button" className="btn btn--primary" onClick={addNote} disabled={!note.trim()}>
-                  Add note
-                </button>
-              </div>
-            ) : null}
-        </Modal>
+        <LeadDetail
+          lead={open}
+          canUpdate={canUpdate}
+          note={note}
+          onNote={setNote}
+          onAddNote={addNote}
+          onClose={() => setOpen(null)}
+        />
       ) : null}
       <ConfirmDialog
         open={Boolean(confirm)}

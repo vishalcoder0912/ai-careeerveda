@@ -60,10 +60,14 @@ const adminSchema = new mongoose.Schema(
 
     lastLoginAt: {type: Date, default: null},
 
-    // Architecture for TOTP is present so enabling it later does not require a
-    // migration. The secret is select:false and encrypted at rest by Atlas.
+    // TOTP second factor. The secret is AES-GCM encrypted by totp.service
+    // before it is stored, and select:false so it never reaches a response.
+    // While totpEnabled is false a stored secret is an enrolment in progress.
     totpSecret: {type: String, default: null, select: false},
     totpEnabled: {type: Boolean, default: false},
+    // The last time step a code was accepted for. Codes at or before it are
+    // refused, so each six-digit code works exactly once.
+    totpLastStep: {type: Number, default: 0, select: false},
 
     createdBy: {type: mongoose.Schema.Types.ObjectId, ref: "Admin", default: null},
   },
@@ -76,6 +80,7 @@ const adminSchema = new mongoose.Schema(
         delete output.passwordHash;
         delete output.passwordHistory;
         delete output.totpSecret;
+        delete output.totpLastStep;
         delete output.__v;
         return output;
       },
@@ -99,6 +104,16 @@ adminSchema.methods.isLocked = function isLocked() {
 // twenty concurrent attempts registered as one, and the lockout never fired.
 adminSchema.methods.registerFailedLogin = async function registerFailedLogin() {
   const Model = this.constructor;
+
+  // A lock that has already run out restarts the ladder. Without this the
+  // count only ever fell on a successful login, so once an account passed 15
+  // failures a single wrong guess every four hours — from anyone who knew the
+  // email — kept the real admin locked out forever.
+  await Model.updateOne(
+    {_id: this._id, lockedUntil: {$ne: null, $lte: new Date()}},
+    {$set: {failedLoginAttempts: 0, lockedUntil: null}},
+  );
+
   const updated = await Model.findOneAndUpdate(
     {_id: this._id},
     {$inc: {failedLoginAttempts: 1}},
