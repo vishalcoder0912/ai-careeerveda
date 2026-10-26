@@ -42,4 +42,10 @@ paths = [
 regexes = [
   '''not-for-any-real-use''',
   '''not-used-anywhere-else''',
+  # backend/CareerVeda.security.postman_collection.json sends deliberately
+  # forged admin JWTs as attack inputs: one with alg=none, one HS256 signed
+  # with the public E2E-only secret. Both carry this fake subject. They are
+  # payloads the API must reject, not credentials; the signature is not a
+  # secret either way.
+  '''eyJzdWIiOiI2NGI3ZjlkMmU0YjBhMWIyYzNkNGU1ZjYi''',
 ]
