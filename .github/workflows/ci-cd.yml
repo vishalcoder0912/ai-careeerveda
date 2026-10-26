@@ -236,6 +236,9 @@ jobs:
       # Upload failure artifacts (screenshots, traces, videos)
       - name: Upload failure artifacts
         if: always()
+        # Diagnostics only. GitHub account storage quota can be exhausted by
+        # older runs; that must not turn a green test job red.
+        continue-on-error: true
         uses: actions/upload-artifact@v6
         with:
           name: test-results
@@ -243,7 +246,7 @@ jobs:
             test-results/
             playwright-report/
           if-no-files-found: ignore
-          retention-days: 7
+          retention-days: 3
 
   # ─────────────────────────────────────────────────────────────────────────────
   # BUILD — Production builds for all three apps
@@ -283,6 +286,10 @@ jobs:
           npm run build:backend  # syntax check only (node --check)
 
       - name: Upload build artifacts
+        # Convenience download only: deploy builds on the VM from git, and the
+        # publish job needs no files from this job. When the account's artifact
+        # storage quota is full, upload fails — do not fail the release for it.
+        continue-on-error: true
         uses: actions/upload-artifact@v6
         with:
           name: dist
@@ -290,7 +297,7 @@ jobs:
             dist/
             admin/dist/
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 3
 
   # ─────────────────────────────────────────────────────────────────────────────
   # PUBLISH — Promote tested dev commit to main
