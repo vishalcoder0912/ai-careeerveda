@@ -13,8 +13,8 @@
 //   • an image is a bare URL string in the static files and a media reference
 //     ({url, alt, width, height}) in the API.
 
-import {initialsOf} from "../data/mentors";
-import {avatarPlaceholder} from "../data/alumniSpotlight";
+import {initialsOf} from "./initials";
+import {avatarPlaceholder} from "./avatarPlaceholder";
 import {programCatalog} from "../data/programCatalog";
 
 // A media reference down to the URL the components expect. Tolerates a plain

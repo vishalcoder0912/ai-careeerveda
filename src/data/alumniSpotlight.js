@@ -1,4 +1,6 @@
-﻿// Add a hosted image URL to a profile's `imageUrl` field below, or drop a
+﻿import {avatarPlaceholder} from "../lib/avatarPlaceholder";
+
+// Add a hosted image URL to a profile's `imageUrl` field below, or drop a
 // portrait into src/assets/alumni. A URL takes priority, then the local file,
 // then the generated initials placeholder.
 const uploadedPhotos = import.meta.glob(
@@ -13,28 +15,8 @@ const photoBySlug = new Map(
   ]),
 );
 
-// Exported because API-sourced alumni need the same placeholder: a profile the
-// admin has not uploaded a portrait for must look identical whether it came
-// from this file or from the database.
-export const avatarPlaceholder = ({ initials, accent, accentEnd }) => {
-  const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 800" role="img" aria-label="${initials}">
-      <defs>
-        <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
-          <stop stop-color="${accent}" />
-          <stop offset="1" stop-color="${accentEnd}" />
-        </linearGradient>
-        <filter id="grain"><feTurbulence baseFrequency=".8" numOctaves="2" stitchTiles="stitch" /></filter>
-      </defs>
-      <rect width="640" height="800" fill="url(#background)" />
-      <rect width="640" height="800" opacity=".09" filter="url(#grain)" />
-      <circle cx="500" cy="138" r="200" fill="#fff" opacity=".12" />
-      <circle cx="120" cy="700" r="240" fill="#071323" opacity=".14" />
-      <text x="320" y="450" text-anchor="middle" fill="#fff" font-family="Inter, Arial, sans-serif" font-size="188" font-weight="800" letter-spacing="-12">${initials}</text>
-    </svg>`;
-
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
-};
+// Re-exported for existing importers; the helper lives in lib/ (see there).
+export {avatarPlaceholder};
 
 const spotlightProfiles = [
   {

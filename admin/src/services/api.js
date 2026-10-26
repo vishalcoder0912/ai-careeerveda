@@ -247,6 +247,14 @@ export const mfaDisable = async (password, code) => {
 export const listSessions = () => api.get("/auth/sessions");
 export const revokeSession = (id) => api.delete(`/auth/sessions/${id}`);
 
+// ── Admin accounts ──────────────────────────────────────────────────────────
+
+export const adminUsersApi = {
+  list: () => api.get("/admin/admins"),
+  resetPassword: (id, newPassword) =>
+    api.post(`/admin/admins/${id}/reset-password`, {newPassword}),
+};
+
 // ── Content ─────────────────────────────────────────────────────────────────
 
 export const contentApi = (resource) => ({

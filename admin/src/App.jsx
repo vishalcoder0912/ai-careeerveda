@@ -9,6 +9,7 @@ import ResourceEditor from "./pages/ResourceEditor";
 import MediaLibrary from "./pages/MediaLibrary";
 import Leads from "./pages/Leads";
 import JobApplications from "./pages/JobApplications";
+import AdminAccounts from "./pages/AdminAccounts";
 import Profile from "./pages/Profile";
 import MfaPanel from "./components/MfaPanel";
 
@@ -77,6 +78,15 @@ const Shell = () => {
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Dashboard />} />
+
+        <Route
+          path="/admins"
+          element={
+            <Guarded permission="users.manage">
+              <AdminAccounts />
+            </Guarded>
+          }
+        />
 
         <Route path="/:resource" element={<ResourceList />} />
         <Route path="/:resource/:id" element={<ResourceEditor />} />

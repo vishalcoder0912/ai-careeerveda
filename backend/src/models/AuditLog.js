@@ -24,6 +24,7 @@ export const AUDIT_ACTIONS = Object.freeze({
   USER_CREATED: "user.created",
   USER_UPDATED: "user.updated",
   USER_ROLE_CHANGED: "user.role-changed",
+  USER_PASSWORD_RESET: "user.password-reset",
   USER_DELETED: "user.deleted",
 
   CONTENT_CREATED: "content.created",

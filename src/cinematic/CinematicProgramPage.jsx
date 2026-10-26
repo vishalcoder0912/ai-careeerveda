@@ -13,7 +13,7 @@ import {CATALOG_CINEMATIC} from "./programs/catalogPrograms";
    template. The slug list lives in lib/routeChunks.js too (CINEMATIC_PROGRAMS),
    so the right chunk is warmed on hover. Product Management keeps its
    hand-written page; the rest are built from the catalogue (fromCatalog.js). */
-export const CINEMATIC_CONTENT = {
+const CINEMATIC_CONTENT = {
   ...CATALOG_CINEMATIC,
   "product-management": productManagementContent,
 };

@@ -18,7 +18,6 @@ const TextType = ({
   cursorBlinkDuration = 0.5,
   textColors = [],
   variableSpeed,
-  onSentenceComplete,
   startOnVisible = false,
   reverseMode = false,
   ...props
@@ -90,10 +89,6 @@ const TextType = ({
             return;
           }
 
-          if (onSentenceComplete) {
-            onSentenceComplete(textArray[currentTextIndex], currentTextIndex);
-          }
-
           setCurrentTextIndex(prev => (prev + 1) % textArray.length);
           setCurrentCharIndex(0);
           timeout = setTimeout(() => {}, pauseDuration);
@@ -141,8 +136,7 @@ const TextType = ({
     initialDelay,
     isVisible,
     reverseMode,
-    variableSpeed,
-    onSentenceComplete
+    variableSpeed
   ]);
 
   const shouldHideCursor =

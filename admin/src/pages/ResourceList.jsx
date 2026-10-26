@@ -422,15 +422,110 @@ const ContentTable = ({items, resource, selected, canBulk, allSelected, position
 const ListBody = ({loading, error, onRetry, empty, showCards, page, meta, onPage, ...viewProps}) => {
   if (loading) return <Skeleton />;
   if (error) return <ErrorState error={error} onRetry={onRetry} />;
-  if (viewProps.items.length === 0) return empty;
+  const {items, selected, canBulk} = viewProps;
+  if (items.length === 0) return empty;
 
+  const allSelected = canBulk && selected.length === items.length;
   return (
     <>
-      {showCards ? <ContentCards {...viewProps} /> : <ContentTable {...viewProps} />}
+      {showCards ? <ContentCards {...viewProps} allSelected={allSelected} /> : <ContentTable {...viewProps} allSelected={allSelected} />}
       <Pagination page={page} meta={meta} onPage={onPage} />
     </>
   );
 };
+
+// The list's query — search, status filter, sort, page — plus the selection
+// made against it, and the rules that keep them consistent with each other.
+const useListQuery = (resourceName) => {
+  const [search, setSearch] = useState("");
+  // "" is every live record; a status value filters to it; TRASH is its own
+  // mode — deleted records only, which is a different query, not a status.
+  const [status, setStatus] = useState("");
+  const [page, setPage] = useState(1);
+  const [selected, setSelected] = useState([]);
+
+  // Empty sort means "let the server use this resource's own default order"
+  // (the hand-tuned displayOrder for programs, most-recent for blogs). A column
+  // click takes over from there.
+  const [sort, setSort] = useState("");
+  const [order, setOrder] = useState("desc");
+
+  // Reset to page 1 whenever a filter changes: staying on page 4 of a result
+  // set that now has one page shows an empty table and looks like a failure.
+  // A filter change is known during render, so the reset happens there rather
+  // than in an effect (which would cascade a render — and fired *after* the
+  // debounced load had already started with the stale page).
+  const [filtersFor, setFiltersFor] = useState("");
+  const filterKey = `${search}\u0000${status}\u0000${sort}\u0000${order}\u0000${resourceName}`;
+  if (filterKey !== filtersFor) {
+    setFiltersFor(filterKey);
+    setPage(1);
+    setSelected([]);
+  }
+
+  // A sort is a choice about one resource's columns; carrying it to another
+  // resource (whose columns differ) would silently apply a stale or invalid
+  // field. Reset to the server default when the section changes.
+  const [sortFor, setSortFor] = useState(resourceName);
+  if (sortFor !== resourceName) {
+    setSortFor(resourceName);
+    setSort("");
+    setOrder("desc");
+  }
+
+  // Click a header: sort by it, or flip direction if it is already the sort.
+  const toggleSort = (column) => {
+    if (sort === column) {
+      setOrder((current) => (current === "asc" ? "desc" : "asc"));
+    } else {
+      setSort(column);
+      setOrder(defaultOrderFor(column));
+    }
+  };
+
+  const filtered = Boolean(search || status);
+
+  return {
+    search, setSearch, status, setStatus, page, setPage, selected, setSelected, sort, order, toggleSort,
+    filtered,
+    // The plain list in the collection's own order: no search, no status
+    // filter (the trash included), no column sort.
+    unfiltered: !filtered && !sort,
+  };
+};
+
+const ListToolbar = ({resource, searchRef, search, onSearch, status, onStatus, canDelete, supportsCards, view, onChooseView}) => (
+  <div className="toolbar">
+    <label className="visually-hidden" htmlFor="search">
+      Search {resource.label}
+    </label>
+    <input
+      id="search"
+      ref={searchRef}
+      type="search"
+      placeholder={`Search ${resource.label.toLowerCase()}…  ( / )`}
+      value={search}
+      onChange={(event) => onSearch(event.target.value)}
+    />
+
+    <label className="visually-hidden" htmlFor="status">
+      Filter by status
+    </label>
+    <select id="status" value={status} onChange={(event) => onStatus(event.target.value)}>
+      <option value="">All statuses</option>
+      {Object.entries(STATUS_LABELS).map(([value, label]) => (
+        <option key={value} value={value}>
+          {label}
+        </option>
+      ))}
+      {canDelete ? <option value={TRASH}>Deleted (trash)</option> : null}
+    </select>
+
+    {/* Shown wherever a card view is available — a resource with a
+        thumbnail, or one that opts in without one (Jobs). */}
+    {supportsCards ? <ViewToggle view={view} onChoose={onChooseView} /> : null}
+  </div>
+);
 
 // Only reached once the resource exists and this account may read it, so
 // everything below can rely on both.
@@ -446,20 +541,10 @@ const ResourceListView = ({resource, abilities, isSuperAdmin}) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [search, setSearch] = useState("");
-  // "" is every live record; a status value filters to it; TRASH is its own
-  // mode — deleted records only, which is a different query, not a status.
-  const [status, setStatus] = useState("");
-  const [page, setPage] = useState(1);
-  const [selected, setSelected] = useState([]);
+  const {search, setSearch, status, setStatus, page, setPage, selected, setSelected, sort, order, toggleSort, filtered, unfiltered} =
+    useListQuery(resourceName);
   const [confirm, setConfirm] = useState(null);
   const [busy, setBusy] = useState(false);
-
-  // Empty sort means "let the server use this resource's own default order"
-  // (the hand-tuned displayOrder for programs, most-recent for blogs). A column
-  // click takes over from there.
-  const [sort, setSort] = useState("");
-  const [order, setOrder] = useState("desc");
   const searchRef = useRef(null);
 
   const [view, chooseView] = useViewPreference(resourceName, resource.defaultView);
@@ -493,39 +578,6 @@ const ResourceListView = ({resource, abilities, isSuperAdmin}) => {
     return () => clearTimeout(timer);
   }, [load, search]);
 
-  // Reset to page 1 whenever a filter changes: staying on page 4 of a result
-  // set that now has one page shows an empty table and looks like a failure.
-  // A filter change is known during render, so the reset happens there rather
-  // than in an effect (which would cascade a render — and fired *after* the
-  // debounced load below had already started with the stale page).
-  const [filtersFor, setFiltersFor] = useState("");
-  const filterKey = `${search}\u0000${status}\u0000${sort}\u0000${order}\u0000${resourceName}`;
-  if (filterKey !== filtersFor) {
-    setFiltersFor(filterKey);
-    setPage(1);
-    setSelected([]);
-  }
-
-  // A sort is a choice about one resource's columns; carrying it to another
-  // resource (whose columns differ) would silently apply a stale or invalid
-  // field. Reset to the server default when the section changes.
-  const [sortFor, setSortFor] = useState(resourceName);
-  if (sortFor !== resourceName) {
-    setSortFor(resourceName);
-    setSort("");
-    setOrder("desc");
-  }
-
-  // Click a header: sort by it, or flip direction if it is already the sort.
-  const toggleSort = (column) => {
-    if (sort === column) {
-      setOrder((current) => (current === "asc" ? "desc" : "asc"));
-    } else {
-      setSort(column);
-      setOrder(defaultOrderFor(column));
-    }
-  };
-
   // Keyboard shortcuts on the list: "/" jumps to search, "n" opens a new
   // record. Both are the fastest way to do the two things this screen exists
   // for. Suppressed while typing in a field or with a dialog open, so they
@@ -552,7 +604,6 @@ const ResourceListView = ({resource, abilities, isSuperAdmin}) => {
 
   const api = contentApi(resource.name);
   const inTrash = status === TRASH;
-  const filtered = Boolean(search || status);
 
   // Hand-ordered resources (anything showing a displayOrder column) get move
   // controls — but only on the plain, unfiltered list. Moving a row "up" inside
@@ -560,7 +611,7 @@ const ResourceListView = ({resource, abilities, isSuperAdmin}) => {
   // screen is not the row above it in the collection, so the write would
   // reorder against a list the editor cannot see.
   const isOrdered = resource.columns.includes("displayOrder");
-  const canReorder = isOrdered && canUpdate && !filtered && !sort;
+  const canReorder = isOrdered && canUpdate && unfiltered;
   const positions = sitePositions(items);
 
   const run = async (action, successMessage) => {
@@ -790,36 +841,18 @@ const ResourceListView = ({resource, abilities, isSuperAdmin}) => {
         {canCreate ? newLink : null}
       </div>
 
-      <div className="toolbar">
-        <label className="visually-hidden" htmlFor="search">
-          Search {resource.label}
-        </label>
-        <input
-          id="search"
-          ref={searchRef}
-          type="search"
-          placeholder={`Search ${resource.label.toLowerCase()}…  ( / )`}
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-        />
-
-        <label className="visually-hidden" htmlFor="status">
-          Filter by status
-        </label>
-        <select id="status" value={status} onChange={(event) => setStatus(event.target.value)}>
-          <option value="">All statuses</option>
-          {Object.entries(STATUS_LABELS).map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-          {canDelete ? <option value={TRASH}>Deleted (trash)</option> : null}
-        </select>
-
-        {/* Shown wherever a card view is available — a resource with a
-            thumbnail, or one that opts in without one (Jobs). */}
-        {supportsCards ? <ViewToggle view={view} onChoose={chooseView} /> : null}
-      </div>
+      <ListToolbar
+        resource={resource}
+        searchRef={searchRef}
+        search={search}
+        onSearch={setSearch}
+        status={status}
+        onStatus={setStatus}
+        canDelete={canDelete}
+        supportsCards={supportsCards}
+        view={view}
+        onChooseView={chooseView}
+      />
 
       {canBulk && selected.length > 0 ? (
         <BulkBar
@@ -848,7 +881,6 @@ const ResourceListView = ({resource, abilities, isSuperAdmin}) => {
         resource={resource}
         selected={selected}
         canBulk={canBulk}
-        allSelected={canBulk && items.length > 0 && selected.length === items.length}
         positions={positions}
         sort={sort}
         order={order}

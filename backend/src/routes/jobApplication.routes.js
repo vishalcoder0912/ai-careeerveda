@@ -14,7 +14,8 @@ import {
   applicationIdParam,
 } from "../validators/jobApplication.validators.js";
 
-// Public: unauthenticated write, so the same per-IP form budget as leads.
+// Public: unauthenticated write, so it gets its own per-IP budget. Wider than
+// the lead form's, because a candidate may apply to several roles in a row.
 export const publicApplicationRouter = Router();
 
 publicApplicationRouter.post("/", jobApplicationLimiter, verifyTurnstile, validate({body: submitApplicationSchema}), jobApplicationIdentityLimiter, applications.submit);

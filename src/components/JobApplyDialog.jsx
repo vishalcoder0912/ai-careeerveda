@@ -76,7 +76,7 @@ const JobApplyDialog = ({job, onClose}) => {
   );
 
   return (
-    <dialog ref={ref} className="job-apply" aria-labelledby="job-apply-title" onClose={onClose}>
+    <dialog ref={ref} className="job-apply" aria-labelledby="job-apply-title" onClose={onClose} data-lenis-prevent>
       <div className="job-apply__head">
         <div>
           <p className="job-apply__eyebrow">Apply on CareerVeda</p>

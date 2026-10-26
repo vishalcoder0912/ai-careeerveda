@@ -102,9 +102,10 @@ export const authLimiter = rateLimit({
   handler: handler("Too many attempts. Please wait a few minutes and try again."),
 });
 
-// Public form submissions. Low, because each one writes a lead row: a person
+// Public lead submissions. Low, because each one writes a lead row: a person
 // fills in a form once or twice, so five an hour per network is generous for
-// people and a hard ceiling for a script.
+// people and a hard ceiling for a script. Job applications have their own,
+// wider budget below.
 export const formLimiter = rateLimit({
   ...base,
   windowMs: 60 * 60 * 1000,

@@ -96,6 +96,11 @@ const run = async () => {
       );
     }
 
+    // The name is part of the same bootstrap instruction, so a reset applies it
+    // too. Without this, renaming an account meant editing the database by hand
+    // after the seed had already accepted the new name and silently dropped it.
+    existing.name = name;
+
     existing.passwordHistory = pushPasswordHistory(existing.passwordHistory, existing.passwordHash);
     existing.passwordHash = await hashPassword(password);
     existing.passwordChangedAt = new Date();

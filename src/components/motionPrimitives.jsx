@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useEffect, useLayoutEffect, useRef, useState} from "react";
+import React, {createContext, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 
 import "./motion-primitives.css";
 
@@ -130,9 +130,10 @@ export const StaggerGroup = ({as = "div", stagger = 0.1, amount = 0.2, className
   // Render-order counter, so the first child gets delay 0, the next stagger,
   // and so on. Lives in a ref because it is a running total, not state.
   const indexRef = useRef(0);
-  // A fresh value each render: StaggerItems read it during their own render,
-  // so the counter must not be shared across remounts of the group.
-  const value = {stagger, inView, next: () => indexRef.current++};
+  // Rebuilt only when what items read changes, so a re-render of the group
+  // alone does not redraw every item. `next` stays valid across renders: the
+  // counter is this group's own ref, and each item calls it once, on mount.
+  const value = useMemo(() => ({stagger, inView, next: () => indexRef.current++}), [stagger, inView]);
 
   const Comp = as;
   return (

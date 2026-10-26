@@ -66,128 +66,8 @@ const ProgramDetailPage = ({slug: providedSlug}) => {
       )
     : [];
 
-  // This route is dynamic, so it is not in pageMeta — RouteMeta leaves the tab as
-  // the brand name and this refines it to the program once loaded. Called before
-  // the unknown-slug guard below to satisfy the rules of hooks; a missing program
-  // simply leaves the title as "CareerVeda" for the instant before the redirect.
-  // Shared with scripts/prerender.mjs so the tags baked into the HTML and the
-  // ones written here are the same sentence — see the note in pageMeta.js.
-  const programDescription = programMeta(program)?.description;
-
-  useDocumentTitle(program && program.title, programDescription);
-
-  // The canonical URL. Every programme lives at /programs/:slug. A programme
-  // that declares a cinematic landing via `landingPath` points cards — and this
-  // canonical — at that landing instead; none do today, so each detail page is
-  // its own canonical.
-  const landingHref =
-    program?.landingPath || getProgram(slug)?.landingPath || `/programs/${program?.id ?? slug}`;
-
-  // Canonical, Open Graph and Twitter tags for this specific program. RouteMeta
-  // deliberately skips this route so these are not written and then immediately
-  // overwritten — without them every program URL shared to LinkedIn or WhatsApp
-  // carried the home page's title and image.
-  useEffect(() => {
-    if (!program) return;
-
-    applySeo({
-      title: composeTitle(program.title),
-      description: programDescription,
-      url: absoluteUrl(landingHref),
-      image: program.image || OG_IMAGE,
-      // Not "website": this is a specific offering, and the type is what makes
-      // a share render as a rich card rather than a bare link.
-      type: "article",
-    });
-  }, [program, programDescription, landingHref]);
-
-  // Pointer effects, one delegated listener (program-effects.css paints them):
-  // - spotlight cards get the cursor position as --mx/--my;
-  // - the hero image tilts towards the cursor via --tx/--ty;
-  // - primary buttons lean a few pixels towards it ("magnetic").
-  // Tilt and magnet are skipped for reduced motion; the glow is static colour.
-  useEffect(() => {
-    const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let tilted = null;
-    let magnet = null;
-
-    const release = () => {
-      if (tilted) {
-        tilted.style.setProperty("--tx", "0");
-        tilted.style.setProperty("--ty", "0");
-        tilted = null;
-      }
-      if (magnet) {
-        magnet.style.translate = "";
-        magnet = null;
-      }
-    };
-
-    const onMove = (event) => {
-      const card = event.target.closest?.(SPOTLIGHT_CARDS);
-      if (card) {
-        const box = card.getBoundingClientRect();
-        card.style.setProperty("--mx", `${event.clientX - box.left}px`);
-        card.style.setProperty("--my", `${event.clientY - box.top}px`);
-      }
-      if (calm) return;
-
-      const frame = event.target.closest?.(".pd-visual-frame");
-      const button = event.target.closest?.(".pd-btn--primary");
-      if (frame !== tilted || button !== magnet) release();
-
-      if (frame) {
-        const box = frame.getBoundingClientRect();
-        // -0.5…0.5 across the image.
-        frame.style.setProperty("--tx", ((event.clientX - box.left) / box.width - 0.5).toFixed(3));
-        frame.style.setProperty("--ty", ((event.clientY - box.top) / box.height - 0.5).toFixed(3));
-        tilted = frame;
-      }
-      if (button) {
-        const box = button.getBoundingClientRect();
-        const dx = (event.clientX - box.left - box.width / 2) * 0.18;
-        const dy = (event.clientY - box.top - box.height / 2) * 0.3;
-        button.style.translate = `${dx.toFixed(1)}px ${dy.toFixed(1)}px`;
-        magnet = button;
-      }
-    };
-
-    document.addEventListener("pointermove", onMove, {passive: true});
-    document.addEventListener("pointerleave", release);
-    return () => {
-      document.removeEventListener("pointermove", onMove);
-      document.removeEventListener("pointerleave", release);
-    };
-  }, []);
-
-  // Course structured data — the schema that can earn a rich result in search
-  // for a program page. Removed on unmount by useJsonLd, so navigating to
-  // another program does not leave the previous one's Course data behind.
-  useJsonLd(
-    "ld-course",
-    program
-      ? courseSchema(program)
-      : null,
-  );
-
-  // FAQPage from the exact list ProgramFaq renders (see data/programFaqs.js).
-  const faqItems = program ? programFaqList(program) : [];
-  useJsonLd("ld-faq", faqItems.length ? faqSchema(faqItems) : null);
-
-  useJsonLd(
-    "ld-breadcrumb",
-    program
-      ? breadcrumbSchema([
-          // `path`, not `url` — breadcrumbSchema reads crumb.path, and the key
-          // it does not find becomes absoluteUrl(undefined), which defaults to
-          // the origin. Every crumb pointed at the home page, so the trail said
-          // careerveda.in › careerveda.in › careerveda.in and earned nothing.
-          {name: "Home", path: "/"},
-          {name: "Programs", path: "/programs"},
-          {name: program.title, path: landingHref},
-        ])
-      : null,
-  );
+  const faqItems = useProgramSeo(program, slug);
+  usePointerEffects();
 
   // A program created in the admin panel has no entry in the static catalogue,
   // so there is nothing to render on the first pass and `program` is null while
@@ -250,6 +130,138 @@ const ProgramDetailPage = ({slug: providedSlug}) => {
       </div>
     </main>
   );
+};
+
+// Tab title, share tags and structured data for one program. Returns the FAQ
+// list, which the page renders as well as describes. Runs while the program is
+// still loading (or missing) so the page's hook order never changes.
+const useProgramSeo = (program, slug) => {
+  // This route is dynamic, so it is not in pageMeta — RouteMeta leaves the tab as
+  // the brand name and this refines it to the program once loaded. Called before
+  // the unknown-slug guard below to satisfy the rules of hooks; a missing program
+  // simply leaves the title as "CareerVeda" for the instant before the redirect.
+  // Shared with scripts/prerender.mjs so the tags baked into the HTML and the
+  // ones written here are the same sentence — see the note in pageMeta.js.
+  const programDescription = programMeta(program)?.description;
+
+  useDocumentTitle(program && program.title, programDescription);
+
+  // The canonical URL. Every programme lives at /programs/:slug. A programme
+  // that declares a cinematic landing via `landingPath` points cards — and this
+  // canonical — at that landing instead; none do today, so each detail page is
+  // its own canonical.
+  const landingHref =
+    program?.landingPath || getProgram(slug)?.landingPath || `/programs/${program?.id ?? slug}`;
+
+  // Canonical, Open Graph and Twitter tags for this specific program. RouteMeta
+  // deliberately skips this route so these are not written and then immediately
+  // overwritten — without them every program URL shared to LinkedIn or WhatsApp
+  // carried the home page's title and image.
+  useEffect(() => {
+    if (!program) return;
+
+    applySeo({
+      title: composeTitle(program.title),
+      description: programDescription,
+      url: absoluteUrl(landingHref),
+      image: program.image || OG_IMAGE,
+      // Not "website": this is a specific offering, and the type is what makes
+      // a share render as a rich card rather than a bare link.
+      type: "article",
+    });
+  }, [program, programDescription, landingHref]);
+
+  // Course structured data — the schema that can earn a rich result in search
+  // for a program page. Removed on unmount by useJsonLd, so navigating to
+  // another program does not leave the previous one's Course data behind.
+  useJsonLd(
+    "ld-course",
+    program
+      ? courseSchema(program)
+      : null,
+  );
+
+  // FAQPage from the exact list ProgramFaq renders (see data/programFaqs.js).
+  const faqItems = program ? programFaqList(program) : [];
+  useJsonLd("ld-faq", faqItems.length ? faqSchema(faqItems) : null);
+
+  useJsonLd(
+    "ld-breadcrumb",
+    program
+      ? breadcrumbSchema([
+          // `path`, not `url` — breadcrumbSchema reads crumb.path, and the key
+          // it does not find becomes absoluteUrl(undefined), which defaults to
+          // the origin. Every crumb pointed at the home page, so the trail said
+          // careerveda.in › careerveda.in › careerveda.in and earned nothing.
+          {name: "Home", path: "/"},
+          {name: "Programs", path: "/programs"},
+          {name: program.title, path: landingHref},
+        ])
+      : null,
+  );
+
+  return faqItems;
+};
+
+const usePointerEffects = () => {
+  // Pointer effects, one delegated listener (program-effects.css paints them):
+  // - spotlight cards get the cursor position as --mx/--my;
+  // - the hero image tilts towards the cursor via --tx/--ty;
+  // - primary buttons lean a few pixels towards it ("magnetic").
+  // Tilt and magnet are skipped for reduced motion; the glow is static colour.
+  useEffect(() => {
+    const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let tilted = null;
+    let magnet = null;
+
+    const release = () => {
+      if (tilted) {
+        tilted.style.setProperty("--tx", "0");
+        tilted.style.setProperty("--ty", "0");
+        tilted = null;
+      }
+      if (magnet) {
+        magnet.style.translate = "";
+        magnet = null;
+      }
+    };
+
+    const onMove = (event) => {
+      const card = event.target.closest?.(SPOTLIGHT_CARDS);
+      if (card) {
+        const box = card.getBoundingClientRect();
+        card.style.setProperty("--mx", `${event.clientX - box.left}px`);
+        card.style.setProperty("--my", `${event.clientY - box.top}px`);
+      }
+      if (calm) return;
+
+      const frame = event.target.closest?.(".pd-visual-frame");
+      const button = event.target.closest?.(".pd-btn--primary");
+      if (frame !== tilted || button !== magnet) release();
+
+      if (frame) {
+        const box = frame.getBoundingClientRect();
+        // -0.5…0.5 across the image.
+        frame.style.setProperty("--tx", ((event.clientX - box.left) / box.width - 0.5).toFixed(3));
+        frame.style.setProperty("--ty", ((event.clientY - box.top) / box.height - 0.5).toFixed(3));
+        tilted = frame;
+      }
+      if (button) {
+        const box = button.getBoundingClientRect();
+        const dx = (event.clientX - box.left - box.width / 2) * 0.18;
+        const dy = (event.clientY - box.top - box.height / 2) * 0.3;
+        button.style.translate = `${dx.toFixed(1)}px ${dy.toFixed(1)}px`;
+        magnet = button;
+      }
+    };
+
+    document.addEventListener("pointermove", onMove, {passive: true});
+    document.addEventListener("pointerleave", release);
+    return () => {
+      document.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerleave", release);
+    };
+  }, []);
 };
 
 export default ProgramDetailPage;

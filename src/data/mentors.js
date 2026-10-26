@@ -233,13 +233,6 @@ export const mentors = [
    it has to be deliberately released. */
 export const publishedMentors = mentors.filter((mentor) => !mentor.draft);
 
-// Initials for the monogram shown when a mentor has no photo yet. Takes the first
-// letter of the first and last word, so "Priya Raghavan" reads PR        the shape a
-// name badge would take.
-export const initialsOf = (name) => {
-  const words = name.trim().split(/\s+/).filter(Boolean);
-  if (words.length === 0) return "?";
-  const first = words[0][0];
-  const last = words.length > 1 ? words[words.length - 1][0] : "";
-  return (first + last).toUpperCase();
-};
+// Lives in lib/initials.js (kept out of the entry chunk); re-exported for
+// the components that already import it from here.
+export {initialsOf} from "../lib/initials";

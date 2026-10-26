@@ -81,9 +81,12 @@ export default defineConfig(({mode}) => {
             if (id.includes("src/data/programCatalog.js")) {
               return "data-programs";
             }
-            if (id.includes("src/data/jobsData.js")) {
-              return "data-jobs";
-            }
+            // No manual chunk for jobsData. Rollup also pulls a manual chunk's
+            // otherwise-unassigned dependencies into it, so "data-jobs" swallowed
+            // the shared contentAdapters, the mentors data and Rollup's own
+            // runtime helpers — and every page, the home page included, then had
+            // to download the jobs listing to get them. Left alone, jobsData
+            // lands only in the routes that import it.
             if (id.includes("src/data/policies.js")) {
               return "data-policies";
             }

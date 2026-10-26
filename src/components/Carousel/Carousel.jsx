@@ -121,6 +121,19 @@ const keyOf = (item, index) => {
 
 const Chevron = ({flip}) => (flip ? <ChevronLeft size={16} strokeWidth={2} /> : <ChevronRight size={16} strokeWidth={2} />);
 
+// A plain item is an image URL or {image, alt, icon, title, description}.
+const cardContent = (item) => {
+  const {image, alt = "", icon, title, description} = typeof item === "string" ? {image: item} : (item ?? {});
+  return {image, alt, mark: icon, title, description, text: Boolean(title || description)};
+};
+
+const CardText = ({title, description, compact}) => (
+  <div className="carousel-text">
+    {title && <div className="carousel-title">{title}</div>}
+    {description && !compact && <p className="carousel-description">{description}</p>}
+  </div>
+);
+
 const Card = ({item, round, compact}) => {
   if (isValidElement(item)) {
     return (
@@ -130,20 +143,220 @@ const Card = ({item, round, compact}) => {
       </div>
     );
   }
-  const {image, alt = "", icon: mark, title, description} = typeof item === "string" ? {image: item} : (item ?? {});
-  const text = Boolean(title || description);
+  const {image, alt, mark, title, description, text} = cardContent(item);
   return (
     <div className={`carousel-card${image ? " has-image" : ""}${round ? " is-round" : ""}`}>
       {image && <img className="carousel-image" src={image} alt={alt} draggable={false} decoding="async" />}
       {image && text && <span className="carousel-scrim" />}
       {mark && <span className="carousel-icon">{mark}</span>}
-      {text && (
-        <div className="carousel-text">
-          {title && <div className="carousel-title">{title}</div>}
-          {description && !compact && <p className="carousel-description">{description}</p>}
-        </div>
-      )}
+      {text && <CardText title={title} description={description} compact={compact} />}
       <span className="carousel-card-rim" />
+    </div>
+  );
+};
+
+// Card geometry for a stage `width` wide. Stacked effects (fade, cube) and a
+// round framed carousel never peek; an unframed one bleeds its edge cards
+// under a soft mask instead of clipping them hard.
+const carouselLayout = ({width, peek, ratio, round, frame, stacked}) => {
+  const side = stacked || (round && frame) ? 0 : clamp(peek, 0, width * 0.2);
+  const slot = Math.max(40, width - side * 2);
+  const diameter = frame ? slot : Math.min(slot, slot / ratio);
+  const cardWidth = round ? diameter : slot;
+  const clipped = !frame && !stacked;
+  const bleed = clipped ? Math.round(Math.min(48, cardWidth * 0.12)) : 0;
+  return {
+    cardWidth,
+    cardHeight: round ? diameter : slot / ratio,
+    clipped,
+    bleed,
+    inset: bleed + (width - cardWidth) / 2,
+  };
+};
+
+// The outer width cap. A round framed carousel shrinks with its aspect ratio,
+// so the circle rather than the frame sets the size.
+const maxWidthFor = (baseWidth, round, frame, ratio) =>
+  typeof baseWidth === "number" && round && frame ? 20 + (baseWidth - 20) * Math.min(1, 1 / ratio) : baseWidth;
+
+// The stage width before the ResizeObserver has measured it.
+const initialWidth = (maxWidth, frame) => (typeof maxWidth === "number" ? maxWidth - (frame ? 20 : 0) : 300);
+
+// What the animation engine reads each frame. Looping, autoplay and dragging
+// all need a second slide to mean anything.
+const engineSettings = ({count, mode, width, layout, gap, loop, autoplay, autoplayDelay, pauseOnHover, draggable, indicator, theme}) => {
+  const several = count > 1;
+  return {
+    count,
+    mode,
+    width,
+    bleed: layout.bleed,
+    inset: layout.inset,
+    cardWidth: layout.cardWidth,
+    span: layout.cardWidth + Math.max(0, gap),
+    loop: loop && several,
+    autoplay: autoplay && several,
+    autoplayDelay: Math.max(600, autoplayDelay),
+    pauseOnHover,
+    draggable: draggable && several,
+    bars: indicator === "bars",
+    shade: theme === "light" ? 0.3 : 0.6,
+  };
+};
+
+const perspectiveFor = (mode, cardWidth) => {
+  if (mode === "cube") return `${Math.round(cardWidth * 2.6)}px`;
+  return mode === "tilt" ? "1000px" : undefined;
+};
+
+const containerClass = ({frame, round, className}) =>
+  `carousel-container${frame ? " has-frame" : ""}${round ? " is-round" : ""}${className ? ` ${className}` : ""}`;
+
+const containerStyle = ({theme, round, radius, cardWidth, maxWidth, style}) => {
+  const fixed = typeof maxWidth === "number";
+  return {
+    ...(THEMES[theme] ?? THEMES.dark),
+    "--carousel-radius": `${round ? 9999 : Math.max(0, radius)}px`,
+    "--carousel-scale": clamp(cardWidth / 300, 0.86, 1),
+    width: fixed ? "100%" : maxWidth,
+    maxWidth: fixed ? maxWidth : undefined,
+    ...style,
+  };
+};
+
+const viewportStyle = ({cardHeight, bleed, clipped, perspective, mask}) => ({
+  height: cardHeight,
+  marginInline: bleed ? -bleed : undefined,
+  perspective,
+  overflowX: clipped ? "clip" : "visible",
+  maskImage: mask,
+  WebkitMaskImage: mask,
+});
+
+const SlideDots = ({count, active, engineRef}) => (
+  <div className="carousel-dots">
+    {Array.from({length: count}, (_, index) => (
+      <button
+        key={index}
+        type="button"
+        className={`carousel-dot${index === active ? " is-active" : ""}`}
+        aria-label={`Go to slide ${index + 1}`}
+        aria-current={index === active ? "true" : undefined}
+        onClick={() => engineRef.current?.goTo(index)}
+      >
+        <span className="carousel-dot-mark" />
+      </button>
+    ))}
+  </div>
+);
+
+const SlideBars = ({count, active, autoplay, engineRef, fillRef}) => (
+  <div className="carousel-bars">
+    {Array.from({length: count}, (_, index) => (
+      <button
+        key={index}
+        type="button"
+        className="carousel-bar"
+        aria-label={`Go to slide ${index + 1}`}
+        aria-current={index === active ? "true" : undefined}
+        onClick={() => engineRef.current?.goTo(index)}
+      >
+        <span className="carousel-bar-track">
+          <span
+            ref={fillRef(index)}
+            className="carousel-bar-fill"
+            style={{
+              transform: `scaleX(${index < active ? 1 : index === active && !autoplay ? 1 : 0})`,
+            }}
+          />
+        </span>
+      </button>
+    ))}
+  </div>
+);
+
+const SlideCounter = ({count, active, counterRef}) => (
+  <div className="carousel-counter">
+    <span ref={counterRef} className="carousel-counter-current">
+      {String(active + 1).padStart(2, "0")}
+    </span>
+    <span>/</span>
+    <span>{String(count).padStart(2, "0")}</span>
+  </div>
+);
+
+// Nothing for a single slide, or when both indicator and arrows are off.
+const CarouselControls = ({width, arrows, indicator, count, active, loop, autoplay, engineRef, fillRef, counterRef}) => {
+  if (count < 2 || (indicator === "none" && !arrows)) return null;
+  const atStart = !loop && active === 0;
+  const atEnd = !loop && active === count - 1;
+  return (
+    <div className="carousel-controls" style={{width}}>
+      {arrows && (
+        <button
+          type="button"
+          className="carousel-arrow"
+          aria-label="Previous slide"
+          disabled={atStart}
+          onClick={() => engineRef.current?.step(-1)}
+        >
+          <Chevron flip />
+        </button>
+      )}
+  
+      {indicator === "dots" && <SlideDots count={count} active={active} engineRef={engineRef} />}
+      {indicator === "bars" && (
+        <SlideBars count={count} active={active} autoplay={autoplay} engineRef={engineRef} fillRef={fillRef} />
+      )}
+      {indicator === "counter" && <SlideCounter count={count} active={active} counterRef={counterRef} />}
+  
+      {arrows && (
+        <button
+          type="button"
+          className="carousel-arrow"
+          aria-label="Next slide"
+          disabled={atEnd}
+          onClick={() => engineRef.current?.step(1)}
+        >
+          <Chevron />
+        </button>
+      )}
+    </div>
+  );
+};
+
+const CarouselSlide = ({item, index, active, count, settings, layout, mode, round, engineRef, slideRef, shadeRef}) => {
+  const initial = pose(index, active, settings);
+  return (
+    <div
+      ref={slideRef}
+      className="carousel-slide"
+      style={{
+        left: layout.inset,
+        width: layout.cardWidth,
+        height: layout.cardHeight,
+        transform: initial.transform,
+        opacity: initial.opacity,
+        visibility: initial.visible ? "visible" : "hidden",
+        zIndex: initial.layer,
+        "--carousel-focus": initial.focus,
+      }}
+      data-current={index === active ? "true" : undefined}
+      role="group"
+      aria-roledescription="slide"
+      aria-label={`${index + 1} of ${count}`}
+      onClick={() => {
+        if (index !== active) engineRef.current?.goTo(index);
+      }}
+    >
+      <Card item={item} round={round} compact={round && layout.cardWidth < 240} />
+      {mode === "cube" && (
+        <span
+          ref={shadeRef}
+          className="carousel-shade"
+          style={{opacity: initial.shade}}
+        />
+      )}
     </div>
   );
 };
@@ -185,38 +398,28 @@ export default function Carousel({
   const engineRef = useRef(null);
   const onChangeRef = useRef(onChange);
   const ratio = clamp(aspectRatio, 0.3, 4);
-  const maxWidth =
-    typeof baseWidth === "number" && round && frame ? 20 + (baseWidth - 20) * Math.min(1, 1 / ratio) : baseWidth;
-  const [width, setWidth] = useState(typeof maxWidth === "number" ? maxWidth - (frame ? 20 : 0) : 300);
+  const maxWidth = maxWidthFor(baseWidth, round, frame, ratio);
+  const [width, setWidth] = useState(() => initialWidth(maxWidth, frame));
   const [active, setActive] = useState(() => clamp(Math.round(initialIndex), 0, Math.max(0, count - 1)));
   const startRef = useRef(active);
-  const reportedRef = useRef(active);
   const previousRef = useRef(active);
 
-  const side = stacked || (round && frame) ? 0 : clamp(peek, 0, width * 0.2);
-  const slot = Math.max(40, width - side * 2);
-  const diameter = frame ? slot : Math.min(slot, slot / ratio);
-  const cardWidth = round ? diameter : slot;
-  const cardHeight = round ? diameter : slot / ratio;
-  const clipped = !frame && !stacked;
-  const bleed = clipped ? Math.round(Math.min(48, cardWidth * 0.12)) : 0;
-  const inset = bleed + (width - cardWidth) / 2;
-  const settings = {
+  const layout = carouselLayout({width, peek, ratio, round, frame, stacked});
+  const {cardWidth, cardHeight, clipped, bleed, inset} = layout;
+  const settings = engineSettings({
     count,
     mode,
     width,
-    bleed,
-    inset,
-    cardWidth,
-    span: cardWidth + Math.max(0, gap),
-    loop: loop && count > 1,
-    autoplay: autoplay && count > 1,
-    autoplayDelay: Math.max(600, autoplayDelay),
+    layout,
+    gap,
+    loop,
+    autoplay,
+    autoplayDelay,
     pauseOnHover,
-    draggable: draggable && count > 1,
-    bars: indicator === "bars",
-    shade: theme === "light" ? 0.3 : 0.6,
-  };
+    draggable,
+    indicator,
+    theme,
+  });
   const settingsRef = useRef(settings);
 
   useEffect(() => {
@@ -276,6 +479,9 @@ export default function Carousel({
       if (index === state.shown) return;
       state.shown = index;
       setActive(index);
+      // Told here, where the slide changes (a drag, key, arrow or autoplay
+      // tick), so the parent's update lands in the same render as ours.
+      onChangeRef.current?.(index);
     };
 
     const paused = (s) =>
@@ -568,12 +774,6 @@ export default function Carousel({
     engineRef.current?.sync();
   });
 
-  useEffect(() => {
-    if (reportedRef.current === active) return;
-    reportedRef.current = active;
-    onChangeRef.current?.(active);
-  }, [active]);
-
   useIsomorphicLayoutEffect(() => {
     const previous = previousRef.current;
     previousRef.current = active;
@@ -590,107 +790,31 @@ export default function Carousel({
     );
   }, [active, count, loop]);
 
-  const controls = count > 1 && (indicator !== "none" || arrows);
-  const atStart = !settings.loop && active === 0;
-  const atEnd = !settings.loop && active === count - 1;
-  const perspective = mode === "cube" ? `${Math.round(cardWidth * 2.6)}px` : mode === "tilt" ? "1000px" : undefined;
   const mask = clipped ? edgeMask(inset) : undefined;
 
-  const controlsNode = controls ? (
-    <div className="carousel-controls" style={{width: cardWidth}}>
-      {arrows && (
-        <button
-          type="button"
-          className="carousel-arrow"
-          aria-label="Previous slide"
-          disabled={atStart}
-          onClick={() => engineRef.current?.step(-1)}
-        >
-          <Chevron flip />
-        </button>
-      )}
-
-      {indicator === "dots" && (
-        <div className="carousel-dots">
-          {items.map((_, index) => (
-            <button
-              key={index}
-              type="button"
-              className={`carousel-dot${index === active ? " is-active" : ""}`}
-              aria-label={`Go to slide ${index + 1}`}
-              aria-current={index === active ? "true" : undefined}
-              onClick={() => engineRef.current?.goTo(index)}
-            >
-              <span className="carousel-dot-mark" />
-            </button>
-          ))}
-        </div>
-      )}
-
-      {indicator === "bars" && (
-        <div className="carousel-bars">
-          {items.map((_, index) => (
-            <button
-              key={index}
-              type="button"
-              className="carousel-bar"
-              aria-label={`Go to slide ${index + 1}`}
-              aria-current={index === active ? "true" : undefined}
-              onClick={() => engineRef.current?.goTo(index)}
-            >
-              <span className="carousel-bar-track">
-                <span
-                  ref={(element) => {
-                    fillRefs.current[index] = element;
-                  }}
-                  className="carousel-bar-fill"
-                  style={{
-                    transform: `scaleX(${index < active ? 1 : index === active && !settings.autoplay ? 1 : 0})`,
-                  }}
-                />
-              </span>
-            </button>
-          ))}
-        </div>
-      )}
-
-      {indicator === "counter" && (
-        <div className="carousel-counter">
-          <span ref={counterRef} className="carousel-counter-current">
-            {String(active + 1).padStart(2, "0")}
-          </span>
-          <span>/</span>
-          <span>{String(count).padStart(2, "0")}</span>
-        </div>
-      )}
-
-      {arrows && (
-        <button
-          type="button"
-          className="carousel-arrow"
-          aria-label="Next slide"
-          disabled={atEnd}
-          onClick={() => engineRef.current?.step(1)}
-        >
-          <Chevron />
-        </button>
-      )}
-    </div>
-  ) : null;
+  const controlsNode = (
+    <CarouselControls
+      width={cardWidth}
+      arrows={arrows}
+      indicator={indicator}
+      count={count}
+      active={active}
+      loop={settings.loop}
+      autoplay={settings.autoplay}
+      engineRef={engineRef}
+      fillRef={(index) => (element) => {
+        fillRefs.current[index] = element;
+      }}
+      counterRef={counterRef}
+    />
+  );
   const inside = frame && !round;
 
   return (
     <div
       ref={rootRef}
-      className={`carousel-container${frame ? " has-frame" : ""}${round ? " is-round" : ""}${className ? ` ${className}` : ""}`}
-      style={{
-        ...(THEMES[theme] ?? THEMES.dark),
-        "--carousel-radius": `${round ? 9999 : Math.max(0, radius)}px`,
-        "--carousel-scale": clamp(cardWidth / 300, 0.86, 1),
-        width: typeof maxWidth === "number" ? "100%" : maxWidth,
-        maxWidth: typeof maxWidth === "number" ? maxWidth : undefined,
-        ...style,
-      }}
+      className={containerClass({frame, round, className})}
+      style={containerStyle({theme, round, radius, cardWidth, maxWidth, style})}
       role="region"
       aria-roledescription="carousel"
       aria-label={ariaLabel}
@@ -702,55 +826,28 @@ export default function Carousel({
           className="carousel-viewport"
           data-draggable={settings.draggable ? "true" : undefined}
           aria-live={settings.autoplay ? "off" : "polite"}
-          style={{
-            height: cardHeight,
-            marginInline: bleed ? -bleed : undefined,
-            perspective,
-            overflowX: clipped ? "clip" : "visible",
-            maskImage: mask,
-            WebkitMaskImage: mask,
-          }}
+          style={viewportStyle({cardHeight, bleed, clipped, perspective: perspectiveFor(mode, cardWidth), mask})}
         >
-          {items.map((item, index) => {
-            const initial = pose(index, active, settings);
-            return (
-              <div
-                key={keyOf(item, index)}
-                ref={(element) => {
-                  slideRefs.current[index] = element;
-                }}
-                className="carousel-slide"
-                style={{
-                  left: inset,
-                  width: cardWidth,
-                  height: cardHeight,
-                  transform: initial.transform,
-                  opacity: initial.opacity,
-                  visibility: initial.visible ? "visible" : "hidden",
-                  zIndex: initial.layer,
-                  "--carousel-focus": initial.focus,
-                }}
-                data-current={index === active ? "true" : undefined}
-                role="group"
-                aria-roledescription="slide"
-                aria-label={`${index + 1} of ${count}`}
-                onClick={() => {
-                  if (index !== active) engineRef.current?.goTo(index);
-                }}
-              >
-                <Card item={item} round={round} compact={round && cardWidth < 240} />
-                {mode === "cube" && (
-                  <span
-                    ref={(element) => {
-                      shadeRefs.current[index] = element;
-                    }}
-                    className="carousel-shade"
-                    style={{opacity: initial.shade}}
-                  />
-                )}
-              </div>
-            );
-          })}
+          {items.map((item, index) => (
+            <CarouselSlide
+              key={keyOf(item, index)}
+              item={item}
+              index={index}
+              active={active}
+              count={count}
+              settings={settings}
+              layout={layout}
+              mode={mode}
+              round={round}
+              engineRef={engineRef}
+              slideRef={(element) => {
+                slideRefs.current[index] = element;
+              }}
+              shadeRef={(element) => {
+                shadeRefs.current[index] = element;
+              }}
+            />
+          ))}
         </div>
 
         {inside && controlsNode}

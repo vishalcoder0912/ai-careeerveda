@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState, useCallback} from "react";
+import {useEffect, useRef, useState} from "react";
 import {gsap} from "gsap";
 import {reducedMotionNow} from "./registry";
 
@@ -75,11 +75,6 @@ export const useCountUp = (target, {duration = 1800, decimals = 0} = {}) => {
   const ref = useRef(null);
   const [value, setValue] = useState(0);
   const [started, setStarted] = useState(false);
-  const rafRef = useRef(null);
-
-  const reset = useCallback(() => {
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
-  }, []);
 
   useEffect(() => {
     const el = ref.current;
@@ -106,17 +101,19 @@ export const useCountUp = (target, {duration = 1800, decimals = 0} = {}) => {
       const id = requestAnimationFrame(() => setValue(target));
       return () => cancelAnimationFrame(id);
     }
+    // One handle, always the latest frame, so unmounting mid-count stops it.
+    let raf = 0;
     const t0 = performance.now();
     const tick = (now) => {
       const t = Math.min(1, (now - t0) / duration);
       const eased = 1 - Math.pow(2, -10 * t); // expo.out
       const current = t >= 1 ? target : target * (t === 0 ? 0 : eased);
       setValue(current);
-      if (t < 1) rafRef.current = requestAnimationFrame(tick);
+      if (t < 1) raf = requestAnimationFrame(tick);
     };
-    rafRef.current = requestAnimationFrame(tick);
-    return reset;
-  }, [started, target, duration, reset]);
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [started, target, duration]);
 
   const formatted = value.toFixed(decimals);
   return [ref, formatted];

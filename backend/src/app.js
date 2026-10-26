@@ -14,6 +14,7 @@ import {errorHandler, notFoundHandler} from "./middleware/errorHandler.js";
 import {healthRouter} from "./routes/health.routes.js";
 import {authRouter} from "./routes/auth.routes.js";
 import {adminRouter} from "./routes/admin.routes.js";
+import {adminUserRouter} from "./routes/adminUser.routes.js";
 import {publicRouter} from "./routes/public.routes.js";
 import {mediaRouter} from "./routes/media.routes.js";
 import {publicLeadRouter, adminLeadRouter} from "./routes/lead.routes.js";
@@ -161,6 +162,9 @@ export const createApp = ({extraRouters = []} = {}) => {
   app.use("/api/v1/admin/leads", adminLeadRouter);
   app.use("/api/v1/admin/job-applications", adminApplicationRouter);
   app.use("/api/v1/admin/security", securityRouter);
+  // Before the generic admin router: /admin/admins is account management, not
+  // a content resource, and must not be captured by /admin/:resource.
+  app.use("/api/v1/admin/admins", adminUserRouter);
   app.use("/api/v1/admin", adminRouter);
 
   for (const {path, router} of extraRouters) app.use(path, router);

@@ -1927,3 +1927,149 @@ tbody tr:hover td {
     max-width: none;
   }
 }
+
+/* ── Admin accounts ───────────────────────────────────────────────────────── */
+
+.accounts-table td:last-child {
+  white-space: nowrap;
+}
+
+.account-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.account-name strong {
+  color: #0f172a;
+  font-weight: 750;
+}
+
+.account-you {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4338ca;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.account-email {
+  color: #475569;
+  overflow-wrap: anywhere;
+}
+
+.account-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.account-badge--active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.account-badge--suspended {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.account-badge--mfa {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.account-badge--muted {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.account-lock {
+  display: block;
+  margin-top: 4px;
+  color: #b91c1c;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.accounts-note {
+  margin-top: 12px;
+}
+
+.account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.account-form > p:first-of-type {
+  margin: 0 0 10px;
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.account-password-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.account-password-tools .btn {
+  margin-top: 0;
+}
+
+.password-readout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.password-readout input {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 13px;
+}
+
+.password-readout .btn {
+  flex: 0 0 auto;
+}
+
+.reset-success p {
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.reset-success .field-hint {
+  margin-top: 8px;
+}
+
+@media (max-width: 720px) {
+  .password-readout {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .password-readout .btn {
+    width: 100%;
+    min-height: 42px;
+  }
+
+  .account-form .dialog-actions .btn {
+    flex: 1;
+    min-height: 42px;
+  }
+}

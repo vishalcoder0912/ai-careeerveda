@@ -621,6 +621,16 @@
   .job-card__apply {
     justify-content: center;
   }
+
+  .job-apply {
+    width: calc(100vw - 12px);
+    max-height: calc(100dvh - 12px);
+    padding: 16px;
+  }
+
+  .job-apply__about p {
+    max-height: 28vh;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -789,6 +799,35 @@ body .jobs-page .job-card__apply:focus-visible {
   body .jobs-page .jobs-filters {
     grid-template-columns: minmax(0, 1fr);
   }
+
+  .job-apply {
+    width: calc(100vw - 16px);
+    max-height: calc(100dvh - 16px);
+    padding: 18px;
+    border-radius: 14px;
+  }
+
+  .job-apply__head {
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .job-apply__head h2 {
+    font-size: 1.125rem;
+  }
+
+  .job-apply__about {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+  }
+
+  .job-apply__about p {
+    max-height: 32vh;
+  }
+
+  .job-apply__form {
+    gap: 12px;
+  }
 }
 
 @media (min-width: 481px) and (max-width: 860px) {
@@ -848,6 +887,9 @@ button.job-card__apply:disabled {
   width: min(480px, calc(100vw - 32px));
   max-height: calc(100dvh - 32px);
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  overscroll-behavior: contain;
   padding: 24px;
   border: 1px solid var(--jp-border-active);
   border-radius: 18px;
@@ -891,8 +933,11 @@ button.job-card__apply:disabled {
 }
 .job-apply__about p {
   margin: 0;
-  max-height: 40vh;
+  max-height: min(40vh, 320px);
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  overscroll-behavior: contain;
   font-size: 14px;
   line-height: 1.6;
   white-space: pre-line;

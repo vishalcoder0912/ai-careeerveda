@@ -86,6 +86,13 @@ const NAV_ICON_PATHS = {
         <path d="M18 4v4M16 6h4" />
       </>
     ),
+    team: (
+      <>
+        <circle cx="9" cy="8" r="3.5" />
+        <path d="M2.5 20a6.5 6.5 0 0 1 13 0" />
+        <path d="M16 5.5a3.5 3.5 0 0 1 0 7M17.5 20a5.5 5.5 0 0 0-2-4.3" />
+      </>
+    ),
 };
 
 const NavIcon = ({name}) => (
@@ -122,6 +129,7 @@ const Layout = () => {
     if (crumbs[0] === "leads") return {title: "Leads", eyebrow: "Operations"};
     if (crumbs[0] === "hiring") return {title: "Hiring enquiries", eyebrow: "Operations"};
     if (crumbs[0] === "job-applications") return {title: "Job applications", eyebrow: "Operations"};
+    if (crumbs[0] === "admins") return {title: "Admin accounts", eyebrow: "Administration"};
     if (crumbs[0] === "profile") return {title: "Profile & security", eyebrow: "Account"};
 
     const resource = RESOURCE_LIST.find((entry) => entry.name === crumbs[0]);
@@ -203,6 +211,15 @@ const Layout = () => {
             <NavigationItem to="/job-applications" icon="applications" onClick={closeNav}>
               Job applications
             </NavigationItem>
+          ) : null}
+
+          {can("users.manage") ? (
+            <>
+              <p className="nav-heading">Administration</p>
+              <NavigationItem to="/admins" icon="team" onClick={closeNav}>
+                Admin accounts
+              </NavigationItem>
+            </>
           ) : null}
 
           <p className="nav-heading">Account</p>
