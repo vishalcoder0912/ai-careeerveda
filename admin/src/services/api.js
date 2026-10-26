@@ -113,6 +113,16 @@ const request = async (path, {method = "GET", body, query, retry = true, raw = f
   const headers = {};
   if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
 
+  // The refresh cookie is scoped to /auth, so it rides along on change-password,
+  // session revoke and the 2FA calls too — and the server's csrfGuard refuses any
+  // write that carries that cookie without the matching header. Sent on every
+  // write; it is harmless where no cookie is involved. Read from storage first,
+  // as doRefresh does, in case another tab rotated the session.
+  if (method !== "GET") {
+    const csrf = storedCsrf() || csrfToken;
+    if (csrf) headers["X-CSRF-Token"] = csrf;
+  }
+
   let payload;
   if (body instanceof FormData) {
     // Do NOT set Content-Type for FormData — the browser has to add the
