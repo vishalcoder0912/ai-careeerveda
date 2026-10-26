@@ -1,0 +1,1592 @@
+{
+  "info": {
+    "name": "CareerVeda API — Security Tests",
+    "description": "Attacker's-eye checks for the CareerVeda API, grouped by OWASP Top 10 (2021).\nEvery request is an attack; every test asserts the defence held. Green = protected.\n\nRUN ONLY AGAINST YOUR OWN DEPLOYMENT. Recommended: a staging copy.\n\nVariables (collection → Variables tab, or an environment):\n  baseUrl        API origin, e.g. https://careerveda.in (no trailing slash)\n  adminEmail     an admin account (super-admin or admin)\n  adminPassword  mark as type \"secret\"\n  totp           6-digit code if this admin has two-factor on; fill just before running\n  isProduction   \"true\" when testing the real https deployment\n  expectCaptcha  \"true\" when TURNSTILE_SECRET_KEY is set on the server\n\nRun the whole collection top to bottom with the Collection Runner (order matters:\n\"0 · Setup\" logs in first, \"A07\" ends by deliberately burning the session).\nThe \"⚠ Rate limits\" folder trips the login limiter for YOUR IP for 15 minutes — run it\nseparately, on staging, when you are not about to need the admin panel.\n\nWrites: none succeed on a protected server. If an XSS test FAILS it has created a\ndraft faculty record — delete it from the admin panel.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "adminEmail",
+      "value": ""
+    },
+    {
+      "key": "adminPassword",
+      "value": "",
+      "type": "secret"
+    },
+    {
+      "key": "totp",
+      "value": ""
+    },
+    {
+      "key": "isProduction",
+      "value": "false"
+    },
+    {
+      "key": "expectCaptcha",
+      "value": "false"
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "csrfToken",
+      "value": ""
+    },
+    {
+      "key": "refreshToken",
+      "value": ""
+    },
+    {
+      "key": "rotatedRefresh",
+      "value": ""
+    },
+    {
+      "key": "unknownLoginError",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "0 · Setup",
+      "description": "Signs in so the authenticated attacks have a real, valid token to tamper with.",
+      "item": [
+        {
+          "name": "Sign in as admin",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const code = pm.collectionVariables.get(\"totp\");",
+                  "pm.variables.set(\"totpField\", code ? `, \"totp\": \"${code}\"` : \"\");"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "if (body.error && body.error.code === \"MFA_REQUIRED\") {",
+                  "  throw new Error(\"This admin has two-factor on: put a fresh code in the 'totp' variable and re-run.\");",
+                  "}",
+                  "pm.test(\"signed in\", () => pm.response.to.have.status(200));",
+                  "pm.collectionVariables.set(\"accessToken\", body.data.accessToken);",
+                  "pm.collectionVariables.set(\"csrfToken\", body.data.csrfToken);",
+                  "const refresh = pm.cookies.get(\"cv_refresh\");",
+                  "if (refresh) pm.collectionVariables.set(\"refreshToken\", refresh);",
+                  "pm.test(\"response carries no password hash or 2FA secret\", () => {",
+                  "  pm.expect(pm.response.text()).to.not.match(/passwordHash|argon2|totpSecret/);",
+                  "});",
+                  "pm.test(\"refresh cookie is HttpOnly and scoped to /api/v1/auth\", () => {",
+                  "  const raw = pm.response.headers.filter((h) => h.key.toLowerCase() === \"set-cookie\").map((h) => h.value).find((v) => v.startsWith(\"cv_refresh=\"));",
+                  "  pm.expect(raw, \"cv_refresh cookie\").to.be.a(\"string\");",
+                  "  pm.expect(raw).to.match(/HttpOnly/i);",
+                  "  pm.expect(raw).to.match(/Path=\\/api\\/v1\\/auth/i);",
+                  "  if (pm.collectionVariables.get(\"baseUrl\").startsWith(\"https://\")) pm.expect(raw).to.match(/;\\s*Secure/i);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\": \"{{adminEmail}}\", \"password\": \"{{adminPassword}}\"{{totpField}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "A01 · Broken access control",
+      "description": "Can I reach admin data without being an admin, or someone else's data with my own token?",
+      "item": [
+        {
+          "name": "No token → admin leads",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"401 without a token\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"no stack trace or internals leak\", () => {",
+                  "  const text = pm.response.text();",
+                  "  pm.expect(text).to.not.match(/\\bat \\w+ \\(|node_modules|MongoServerError|JWT_|\\.js:\\d+/);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/leads",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "leads"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Case-twisted path → admin leads (route bypass)",
+          "description": "Express matches routes case-insensitively; the auth guard must too.",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"still 401 — guard cannot be skipped by casing\", () => pm.expect(pm.response.code).to.be.oneOf([401, 404]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/API/V1/ADMIN/LEADS",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "API",
+                "V1",
+                "ADMIN",
+                "LEADS"
+              ]
+            }
+          }
+        },
+        {
+          "name": "JWT with alg:none",
+          "description": "Classic JWT bypass: unsigned token claiming super-admin.",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"unsigned token refused\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiI2NGI3ZjlkMmU0YjBhMWIyYzNkNGU1ZjYiLCJyb2xlIjoic3VwZXItYWRtaW4iLCJ0diI6MCwiaXNzIjoiY2FyZWVydmVkYS1hcGkiLCJhdWQiOiJjYXJlZXJ2ZWRhLWFkbWluIiwiZXhwIjo0MTAyNDQ0ODAwfQ."
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/leads",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "leads"
+              ]
+            }
+          }
+        },
+        {
+          "name": "JWT signed with a guessed secret",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"forged signature refused\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NGI3ZjlkMmU0YjBhMWIyYzNkNGU1ZjYiLCJyb2xlIjoic3VwZXItYWRtaW4iLCJ0diI6MCwiaXNzIjoiY2FyZWVydmVkYS1hcGkiLCJhdWQiOiJjYXJlZXJ2ZWRhLWFkbWluIiwiZXhwIjo0MTAyNDQ0ODAwfQ.pL-OV17Hn3DH__o-cEL_6J_woVTBDcPNt8hE1U2d_68"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/leads",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "leads"
+              ]
+            }
+          }
+        },
+        {
+          "name": "IDOR — revoke a session that is not mine",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"404, never 200 — sessions are scoped to their owner\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/sessions/64b7f9d2e4b0a1b2c3d4e5f6",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "sessions",
+                "64b7f9d2e4b0a1b2c3d4e5f6"
+              ]
+            }
+          }
+        },
+        {
+          "name": "IDOR — read a lead id that does not exist",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"clean 404 (or 403 if role lacks forms.read), not 500\", () => pm.expect(pm.response.code).to.be.oneOf([403, 404]));",
+                  "pm.test(\"no stack trace or internals leak\", () => {",
+                  "  const text = pm.response.text();",
+                  "  pm.expect(text).to.not.match(/\\bat \\w+ \\(|node_modules|MongoServerError|JWT_|\\.js:\\d+/);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/leads/64b7f9d2e4b0a1b2c3d4e5f6",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "leads",
+                "64b7f9d2e4b0a1b2c3d4e5f6"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Security console without a token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/security/blocklist",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "security",
+                "blocklist"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "A02 · Cryptographic failures / transport",
+      "description": "Are secrets protected in transit? (Most checks only apply over https.)",
+      "item": [
+        {
+          "name": "HSTS and transport headers",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const https = pm.collectionVariables.get(\"baseUrl\").startsWith(\"https://\");",
+                  "pm.test(\"HSTS present on https\", () => {",
+                  "  if (!https) return pm.expect(true, \"skipped: baseUrl is not https\").to.be.true;",
+                  "  pm.expect(pm.response.headers.get(\"Strict-Transport-Security\")).to.match(/max-age=\\d{7,}/);",
+                  "});",
+                  "pm.test(\"production is served over https\", () => {",
+                  "  if (pm.collectionVariables.get(\"isProduction\") !== \"true\") return;",
+                  "  pm.expect(https, \"isProduction=true but baseUrl is http — credentials travel in clear text\").to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "A03 · Injection",
+      "description": "NoSQL operators, prototype pollution, ReDoS, stored XSS through content fields.",
+      "item": [
+        {
+          "name": "NoSQL operator login bypass",
+          "description": "{$ne:null} matches the first admin if it ever reaches the query.",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"refused, no token issued\", () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([400, 401]);",
+                  "  pm.expect(pm.response.text()).to.not.include(\"accessToken\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": {\n    \"$ne\": null\n  },\n  \"password\": {\n    \"$ne\": null\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Prototype pollution in body",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"no session from polluted body\", () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([400, 401]);",
+                  "  pm.expect(pm.response.text()).to.not.include(\"accessToken\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\": \"{{adminEmail}}\", \"password\": \"x\", \"__proto__\": {\"isAdmin\": true}, \"constructor\": {\"prototype\": {\"role\": \"super-admin\"}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Operator smuggled through the query string",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"rejected or ignored — never a 500\", () => pm.expect(pm.response.code).to.be.oneOf([200, 400, 403]));",
+                  "pm.test(\"no stack trace or internals leak\", () => {",
+                  "  const text = pm.response.text();",
+                  "  pm.expect(text).to.not.match(/\\bat \\w+ \\(|node_modules|MongoServerError|JWT_|\\.js:\\d+/);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/leads?status[$ne]=x",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "leads"
+              ],
+              "query": [
+                {
+                  "key": "status[$ne]",
+                  "value": "x"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "ReDoS through search",
+          "description": "Catastrophic-backtracking pattern; safe only if the search is regex-escaped.",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"answers fast (pattern was escaped)\", () => pm.expect(pm.response.responseTime).to.be.below(3000));",
+                  "pm.test(\"not a server error\", () => pm.expect(pm.response.code).to.be.below(500));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/leads?search=(a%2B)%2B%24",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "leads"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "(a%2B)%2B%24"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Stored XSS — javascript: link on a faculty profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"rejected by validation\", () => pm.expect(pm.response.code).to.be.oneOf([400, 403, 404]));",
+                  "pm.test(\"the bad field is the reason\", () => {",
+                  "  if (pm.response.code !== 400) return;",
+                  "  pm.expect(JSON.stringify(pm.response.json().error.fields || {})).to.include(\"linkedin\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Security Test — delete me\",\n  \"socialLinks\": {\n    \"linkedin\": \"javascript:alert(document.cookie)\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/faculty",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "faculty"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Open redirect — protocol-relative CTA",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"rejected\", () => pm.expect(pm.response.code).to.be.oneOf([400, 403, 404]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Security Test — delete me\",\n  \"socialLinks\": {\n    \"website\": \"//evil.example\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/faculty",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "faculty"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Markup in a text field is stripped, not stored",
+          "description": "Uses invalid email/mobile on purpose so nothing is saved.",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"refused (captcha or validation) — nothing saved\", () => pm.expect(pm.response.code).to.be.oneOf([400, 429]));",
+                  "pm.test(\"payload never echoed back\", () => pm.expect(pm.response.text()).to.not.include(\"<script>\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"<script>alert(1)</script>\",\n  \"email\": \"not-an-email\",\n  \"mobile\": \"1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/leads",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "leads"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "A04 · Insecure design",
+      "description": "Can the API be used as an oracle or a free spam cannon?",
+      "item": [
+        {
+          "name": "Login enumeration — unknown email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"401\", () => pm.response.to.have.status(401));",
+                  "pm.collectionVariables.set(\"unknownLoginError\", JSON.stringify(pm.response.json().error));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"no-such-admin-9f3x@example.com\",\n  \"password\": \"wrong-password-here-1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Login enumeration — real email, wrong password",
+          "description": "Counts as one failed login for this admin (reset by the next good login).",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"identical answer to an unknown email\", () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  pm.expect(JSON.stringify(pm.response.json().error)).to.eql(pm.collectionVariables.get(\"unknownLoginError\"));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\": \"{{adminEmail}}\", \"password\": \"wrong-password-here-1\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Public form without a captcha token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"bots without a Turnstile token are refused\", () => {",
+                  "  if (pm.collectionVariables.get(\"expectCaptcha\") !== \"true\") return pm.expect(true, \"skipped: expectCaptcha=false (this may have created a lead)\").to.be.true;",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().error.code).to.eql(\"CAPTCHA_FAILED\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bot\",\n  \"email\": \"bot@example.com\",\n  \"mobile\": \"9000000000\",\n  \"type\": \"consultation\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/leads",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "leads"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "A05 · Security misconfiguration",
+      "description": "Headers, CORS, debug endpoints, error handling, oversized input.",
+      "item": [
+        {
+          "name": "Security headers",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const h = (name) => pm.response.headers.get(name);",
+                  "pm.test(\"no X-Powered-By\", () => pm.expect(h(\"X-Powered-By\")).to.be.undefined);",
+                  "pm.test(\"nosniff\", () => pm.expect(h(\"X-Content-Type-Options\")).to.eql(\"nosniff\"));",
+                  "pm.test(\"CSP locks the API down\", () => pm.expect(h(\"Content-Security-Policy\")).to.include(\"default-src 'none'\"));",
+                  "pm.test(\"no-referrer\", () => pm.expect(h(\"Referrer-Policy\")).to.eql(\"no-referrer\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          }
+        },
+        {
+          "name": "CORS from an attacker origin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"origin not reflected\", () => pm.expect(pm.response.headers.get(\"Access-Control-Allow-Origin\")).to.not.eql(\"https://evil.example\"));",
+                  "pm.test(\"credentials never granted to it\", () => pm.expect(pm.response.code).to.eql(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Origin",
+                "value": "https://evil.example"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Route map hidden in production",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"404 in production\", () => {",
+                  "  if (pm.collectionVariables.get(\"isProduction\") !== \"true\") return pm.expect(true, \"skipped outside production\").to.be.true;",
+                  "  pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/routes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "routes"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Malformed JSON",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"no stack trace or internals leak\", () => {",
+                  "  const text = pm.response.text();",
+                  "  pm.expect(text).to.not.match(/\\bat \\w+ \\(|node_modules|MongoServerError|JWT_|\\.js:\\d+/);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\": \"a@b.co\", \"password\": ",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Oversized body (300 KB)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.variables.set(\"bigPayload\", \"a\".repeat(300 * 1024));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"413 — refused before it costs anything\", () => pm.response.to.have.status(413));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\": \"a@b.co\", \"password\": \"{{bigPayload}}\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "TRACE method",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"not served\", () => pm.expect(pm.response.code).to.be.oneOf([404, 405]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "TRACE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Path traversal probe",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"no file contents\", () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "  pm.expect(pm.response.text()).to.not.match(/JWT_|MONGODB_URI|SECRET/);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/programs/..%2f..%2f.env",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "programs",
+                "..%2f..%2f.env"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "A10 · Server-side request forgery",
+      "description": "Can I make the server fetch an internal URL?",
+      "item": [
+        {
+          "name": "Media from-url → cloud metadata endpoint",
+          "description": "Only ImageKit URLs are accepted, and the server never fetches the URL itself.",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"never fetched\", () => pm.expect(pm.response.code).to.be.oneOf([400, 401, 403, 404]));",
+                  "pm.test(\"no metadata in the response\", () => pm.expect(pm.response.text()).to.not.match(/ami-id|instance-id|iam/));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"http://169.254.169.254/latest/meta-data/\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/media/from-url",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "media",
+                "from-url"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "A07 · Identification & authentication failures",
+      "description": "CSRF on cookie endpoints, step-up auth, refresh-token theft. Ends by burning this session on purpose.",
+      "item": [
+        {
+          "name": "CSRF — refresh with the cookie but no CSRF header",
+          "description": "What a cross-site form post can do: send the cookie, but not read the CSRF token.",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"403 — cookie alone is not enough\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": true
+          },
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "cv_refresh={{refreshToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/refresh",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Change password with a wrong current password",
+          "description": "A stolen access token must not be able to change the password.",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"refused\", () => pm.expect(pm.response.code).to.be.oneOf([400, 401]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"wrong-password-here-1\",\n  \"newPassword\": \"A-brand-new-passphrase-42!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/change-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "change-password"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Enrol 2FA with a wrong password",
+          "description": "A stolen access token must not be able to enrol the attacker's phone.",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"refused (409 if 2FA already on)\", () => pm.expect(pm.response.code).to.be.oneOf([400, 401, 409]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"wrong-password-here-1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/mfa/setup",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "mfa",
+                "setup"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Refresh — legitimate rotation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"rotates\", () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set(\"csrfToken\", body.data.csrfToken);",
+                  "pm.collectionVariables.set(\"rotatedRefresh\", pm.cookies.get(\"cv_refresh\") || \"\");"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": true
+          },
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "cv_refresh={{refreshToken}}; cv_csrf={{csrfToken}}"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/refresh",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Refresh — replay the stolen (old) token",
+          "description": "An attacker replays a token the real user already used.",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"reuse detected\", () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  pm.expect(pm.response.json().error.message).to.match(/security/i);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": true
+          },
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "cv_refresh={{refreshToken}}; cv_csrf={{csrfToken}}"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/refresh",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Refresh — the whole family is now dead",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"even the newest token is revoked\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableCookies": true
+          },
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "cv_refresh={{rotatedRefresh}}; cv_csrf={{csrfToken}}"
+              },
+              {
+                "key": "X-CSRF-Token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/refresh",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "⚠ Rate limits (staging only)",
+      "description": "Locks YOUR IP out of login for 15 minutes. Run on its own.",
+      "item": [
+        {
+          "name": "Login flood — expect 429 within 11 tries",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.variables.set(\"tries\", Number(pm.variables.get(\"tries\") || 0) + 1);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const tries = Number(pm.variables.get(\"tries\"));",
+                  "if (pm.response.code === 429) {",
+                  "  pm.test(`rate limited after ${tries} tries`, () => pm.expect(tries).to.be.at.most(11));",
+                  "} else if (tries < 12) {",
+                  "  pm.execution.setNextRequest(pm.info.requestName);",
+                  "} else {",
+                  "  pm.test(\"rate limited within 11 tries\", () => pm.expect.fail(\"12 logins went through without a 429\"));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"flood-test-9f3x@example.com\",\n  \"password\": \"wrong-password-here-1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
