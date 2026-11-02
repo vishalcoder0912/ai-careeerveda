@@ -24,6 +24,8 @@
     "sync:indexes:dry-run": "node scripts/sync-indexes.js --dry-run",
     "dedupe:job-applications": "node scripts/dedupe-job-applications.js",
     "dedupe:job-applications:apply": "node scripts/dedupe-job-applications.js --apply",
+    "clean:placement-assistance": "node scripts/remove-placement-assistance.js",
+    "clean:placement-assistance:apply": "node scripts/remove-placement-assistance.js --apply",
     "migrate:content": "node scripts/migrate-content.js",
     "migrate:content:dry-run": "node scripts/migrate-content.js --dry-run",
     "backfill:blog-reader": "node scripts/backfill-blog-reader-fields.js",

@@ -86,7 +86,12 @@ const programFacts = (program) => {
       program.duration && {label: "Duration", value: program.duration},
       mentorship && {label: "Mentorship", value: mentorship},
       program.format && {label: "Format", value: program.format},
-      placementBadge && {label: "Placement Support", value: placementBadge},
+      placementBadge && {
+        label: "Placement Support",
+        // The badge already says "Placement Support" on the card, so the row
+        // value carries what it means rather than repeating the label.
+        value: /^placement support$/i.test(placementBadge) ? "Dedicated hiring support" : placementBadge,
+      },
     ].filter(Boolean),
     // A program can declare a cinematic landing of its own via `landingPath`.
     // The explorer's primary CTA follows it there; the fee tab stays on the full

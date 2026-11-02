@@ -104,7 +104,7 @@ export const buildCinematicContent = (programId, copy) => {
         program.format.toUpperCase(),
         ...copy.badges,
         "CAPSTONE PROJECT",
-        "LIFETIME PLACEMENT SUPPORT",
+        "PLACEMENT SUPPORT",
       ],
       stats: [
         [program.duration, "Duration"],
@@ -252,7 +252,7 @@ export const buildCinematicContent = (programId, copy) => {
         {title: "Case Studies & Assignments", note: "Industry case studies in every stage", icon: FileText},
         {title: "Interview Mastery", note: "Mock interviews and hiring-bar preparation", icon: Trophy},
         {title: "Portfolio, Resume & LinkedIn", note: "Dedicated profile building for hiring", icon: FolderKanban},
-        {title: "Lifetime Placement Assistance", note: "Hiring preparation and support that never expires", icon: Briefcase},
+        {title: "Placement Support", note: "Hiring preparation and interview support from the placement team", icon: Briefcase},
       ],
     },
 

@@ -59,7 +59,7 @@ export const programCatalog = [
     skills: ["Python", "LLMs", "RAG", "Prompt Engineering", "Fine-Tuning", "Agentic AI", "MCP", "Multi-Agent"],
 
     fullTitle: "PG Program in Gen AI and Agentic AI",
-    badges: ["Industry-Aligned", "Agent-First Curriculum", "Lifetime Placement Assistance"],
+    badges: ["Industry-Aligned", "Agent-First Curriculum", "Placement Support"],
     lead:
       "Master the two forces reshaping software — Generative AI and agentic AI. From LLM foundations and RAG to autonomous agents, MCP tooling and multi-agent systems, this 24-week, 100% live program turns you into a builder who ships AI systems, not just prompts.",
     learners: "10,000+",
@@ -90,7 +90,7 @@ export const programCatalog = [
       "Daily Live Doubt-Solving Sessions",
       "Dedicated Portfolio, Resume & LinkedIn Building",
       "Mock Interviews & Technical Defense Preparation",
-      "Lifetime Placement Assistance",
+      "Placement Support",
       "Advanced LMS with 2-Year Access to Recordings",
       "Global Alumni Community",
     ],
@@ -359,7 +359,7 @@ export const programCatalog = [
     skills: ["Python", "LLMs", "RAG", "Agents", "MCP", "Multi-Agent", "Fine-Tuning", "LLMOps"],
 
     fullTitle: "PG Program in AI Systems & Agentic AI Engineering",
-    badges: ["Industry-Aligned", "GPU-Enabled", "Lifetime Placement Assistance"],
+    badges: ["Industry-Aligned", "GPU-Enabled", "Placement Support"],
     lead:
       "Build AI. Break AI. Measure AI. Secure AI. Deploy AI. Twenty-four weeks of pure engineering from Python to production agents — the full stack of model, memory, tools, multi-agent orchestration, MCP/A2A, GPU inference, evaluation, security and LLMOps — with a working build at every step and two flagship AI systems at the end.",
     learners: "10,000+",
@@ -391,7 +391,7 @@ export const programCatalog = [
       "Daily Live Doubt-Solving Sessions",
       "Dedicated Portfolio, Resume & LinkedIn Building",
       "Mock Interviews & Technical Defense Preparation",
-      "Lifetime Placement Assistance",
+      "Placement Support",
       "Advanced LMS with 2-Year Access to Recordings",
       "Global Alumni Community",
     ],
@@ -810,7 +810,7 @@ export const programCatalog = [
     skills: ["Product Strategy", "User Research", "Agile", "Analytics", "Gen AI"],
 
     fullTitle: "PG Program in Product Management",
-    badges: ["Industry-Aligned", "AI-Powered PM", "Lifetime Placement Assistance"],
+    badges: ["Industry-Aligned", "AI-Powered PM", "Placement Support"],
     lead:
       "Manage products from ideation to launch and scale. Master product strategy, customer discovery, market research, UX fundamentals, agile methodologies, roadmapping and stakeholder management  and learn to drive decisions with product metrics, pricing strategy and go-to-market planning, through real-world case studies and a capstone project.",
     learners: "10,000+",
@@ -840,7 +840,7 @@ export const programCatalog = [
       "Industry Mentorship by Senior PMs",
     ],
     gainsIntro:
-      "Six months of 100% live, instructor-led learning from expert trainers at top technology companies, with daily doubt-solving, real industry projects and lifetime placement assistance. No coding background needed  product management is taught from the fundamentals.",
+      "Six months of 100% live, instructor-led learning from expert trainers at top technology companies, with daily doubt-solving, real industry projects and dedicated placement support. No coding background needed — product management is taught from the fundamentals.",
     gains: [
       "100% Live Instructor-Led Classes",
       "Expert Trainers from Top Technology Companies",
@@ -849,7 +849,7 @@ export const programCatalog = [
       "25+ Assignments & Industry Case Studies",
       "Three Globally Recognised Certifications",
       "Dedicated Profile Building  Portfolio, Resume & LinkedIn",
-      "Lifetime Placement Assistance",
+      "Placement Support",
       "LMS Access for 2 Years",
       "Full Access to Recordings & Notes",
       "Flexible Weekend Learning",

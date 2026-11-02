@@ -67,7 +67,7 @@ export const productManagementContent = {
     title: ["Product", "Management"],
     ariaLabel: program.title,
     sub: "Discover it. Define it. Build it. Launch it. Grow it — from customer problem to shipped product.",
-    badges: ["6 MONTHS", "13 MODULES", "LIVE ONLINE", "AI-POWERED PM", "CAPSTONE PROJECT", "LIFETIME PLACEMENT SUPPORT"],
+    badges: ["6 MONTHS", "13 MODULES", "LIVE ONLINE", "AI-POWERED PM", "CAPSTONE PROJECT", "PLACEMENT SUPPORT"],
     stats: [
       [program.duration, "Duration"],
       [program.mentorship, "Mentorship"],
@@ -308,7 +308,7 @@ export const productManagementContent = {
       {title: "Tech & Analytics for PM", note: "Dedicated tracks so you speak engineering and data", icon: BarChart3},
       {title: "PM Interview Mastery", note: "Product cases, metrics and mock interview labs", icon: Trophy},
       {title: "Portfolio, Resume & LinkedIn", note: "Dedicated profile building for the hiring bar", icon: FolderKanban},
-      {title: "Lifetime Placement Assistance", note: "Hiring preparation and support that never expires", icon: Briefcase},
+      {title: "Placement Support", note: "Hiring preparation and interview support from the placement team", icon: Briefcase},
     ],
   },
 
