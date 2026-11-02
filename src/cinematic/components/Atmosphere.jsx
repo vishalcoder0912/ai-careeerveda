@@ -159,10 +159,18 @@ export const ParticleField = ({className = ""}) => {
 export const FilmGrain = () => {
   const [grain, setGrain] = useState(false);
   useEffect(() => {
-    const id = requestIdleCallback
-      ? requestAnimationFrame(() => setGrain(true))
-      : setTimeout(() => setGrain(true), 0);
-    return () => (id.cancel ? id.cancel() : clearTimeout(id));
+    const reveal = () => setGrain(true);
+    // Feature-detect through window: Safari — iOS included — has no
+    // requestIdleCallback, and touching the bare identifier throws a
+    // ReferenceError inside the effect. That error unmounts the whole
+    // cinematic tree, which is why the product pages went blank on iPhones
+    // while the rest of the site loaded. Fall back to a timer there.
+    if (typeof window.requestIdleCallback === "function") {
+      const id = window.requestIdleCallback(reveal, {timeout: 800});
+      return () => window.cancelIdleCallback?.(id);
+    }
+    const id = window.setTimeout(reveal, 0);
+    return () => window.clearTimeout(id);
   }, []);
   if (!grain) return null;
   return <div className="ga-grain" aria-hidden="true" />;

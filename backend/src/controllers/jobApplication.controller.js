@@ -52,8 +52,8 @@ export const submit = async (request, response, next) => {
             jobCompany: job.company,
             name: body.name,
             mobile: body.mobile,
+            email: body.email,
             mobileKey,
-            lmsId: body.lmsId,
             consent: true,
             status: "new",
             ipHash: hashIp(request.ip),
@@ -85,7 +85,7 @@ const buildFilter = (query) => {
   const search = typeof query.search === "string" ? query.search.slice(0, 200) : "";
   if (search) {
     const pattern = new RegExp(escapeRegex(search), "i");
-    filter.$or = [{name: pattern}, {mobile: pattern}, {lmsId: pattern}, {jobTitle: pattern}, {jobCompany: pattern}];
+    filter.$or = [{name: pattern}, {mobile: pattern}, {email: pattern}, {jobTitle: pattern}, {jobCompany: pattern}];
   }
   return filter;
 };
@@ -174,7 +174,7 @@ const CSV_COLUMNS = [
   ["Company", (row) => row.jobCompany],
   ["Name", (row) => row.name],
   ["Mobile", (row) => row.mobile],
-  ["LMS ID", (row) => row.lmsId],
+  ["Email", (row) => row.email],
   ["Status", (row) => row.status],
 ];
 

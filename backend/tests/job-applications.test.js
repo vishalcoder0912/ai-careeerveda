@@ -10,7 +10,7 @@ import {createAdmin, login} from "./helpers/auth.js";
 
 const app = createApp();
 
-const VALID = {name: "Asha Menon", mobile: "9217801191", lmsId: "CV-2026-0042", consent: true};
+const VALID = {name: "Asha Menon", mobile: "9217801191", email: "asha@example.com", consent: true};
 
 const openJob = (overrides = {}) =>
   Job.create({
@@ -29,7 +29,7 @@ const apply = (payload = {}) =>
     .send({job: "data-analyst", ...VALID, ...payload});
 
 describe("public job applications", () => {
-  it("stores name, mobile and LMS ID against the job", async () => {
+  it("stores name, mobile and email against the job", async () => {
     const job = await openJob();
     const response = await apply();
 
@@ -39,8 +39,8 @@ describe("public job applications", () => {
     const stored = await JobApplication.findOne({});
     expect(stored.job.equals(job._id)).toBe(true);
     expect(stored.jobTitle).toBe("Data Analyst");
-    expect(stored.lmsId).toBe("CV-2026-0042");
     expect(stored.mobileKey).toBe("9217801191");
+    expect(stored.email).toBe("asha@example.com");
     expect(stored.status).toBe("new");
     expect(stored.createdAt).toBeInstanceOf(Date);
   });
@@ -63,7 +63,7 @@ describe("public job applications", () => {
   it.each([
     ["no consent", {consent: undefined}],
     ["a bad mobile", {mobile: "12345"}],
-    ["an LMS ID with markup", {lmsId: "<script>x</script>"}],
+    ["a bad email", {email: "not-an-email"}],
     ["an empty name", {name: "   "}],
     ["a job that is not a slug", {job: {$ne: null}}],
   ])("rejects %s", async (_, overrides) => {
@@ -163,7 +163,11 @@ describe("admin job applications", () => {
 
     expect(response.status).toBe(200);
     expect(response.body.data).toHaveLength(1);
-    expect(response.body.data[0]).toMatchObject({name: "Asha Menon", lmsId: "CV-2026-0042", jobTitle: "Data Analyst"});
+    expect(response.body.data[0]).toMatchObject({
+      name: "Asha Menon",
+      email: "asha@example.com",
+      jobTitle: "Data Analyst",
+    });
     expect(response.body.data[0].ipHash).toBeUndefined();
   });
 

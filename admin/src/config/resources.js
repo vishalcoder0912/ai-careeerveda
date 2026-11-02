@@ -239,7 +239,7 @@ export const RESOURCES = {
       {name: "company", label: "Company", kind: "text", publish: true, group: "Basics"},
       {name: "location", label: "Location", kind: "text", publish: true, group: "Basics"},
       // Every job posted here takes applications through the site's own popup
-      // (name, mobile, LMS ID); they land under Job applications.
+      // (name, mobile, email); they land under Job applications.
       // Choices, not free text: the /jobs filters match these exact values, so
       // "onsite" or "full time" typed by hand would drop out of every filter.
       {

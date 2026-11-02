@@ -55,8 +55,9 @@ npm run dev                    # all three, concurrently
 ```
 
 This starts the site on :5173, the admin panel on :5174 and the API on :8080.
-The site defaults to `http://localhost:8080/api/v1` in dev, so a locally running
-backend is picked up with no configuration at all.
+The site defaults to the same-origin path `/api/v1` in dev, which the Vite server
+proxies to `http://127.0.0.1:8080`, so a locally running backend is picked up with
+no configuration at all.
 
 Every `.env.example` is heavily commented — read those rather than this section
 for what each variable does. Two things worth repeating here:

@@ -18,7 +18,7 @@ const jobApplicationSchema = new mongoose.Schema(
     mobile: {type: String, required: true, trim: true, maxlength: 30},
     // Last ten digits, so "+91 92178 01191" and "9217801191" are one person.
     mobileKey: {type: String, required: true},
-    lmsId: {type: String, required: true, trim: true, maxlength: 40},
+    email: {type: String, trim: true, lowercase: true, maxlength: 254, default: ""},
 
     consent: {type: Boolean, default: false},
     status: {type: String, enum: APPLICATION_STATUSES, default: "new", index: true},

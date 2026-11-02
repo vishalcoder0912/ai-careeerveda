@@ -129,7 +129,7 @@ const JobApplications = () => {
       <div className="toolbar">
         <input
           type="search"
-          placeholder="Search name, mobile, LMS ID, job…"
+          placeholder="Search name, mobile, email, job…"
           aria-label="Search applications"
           value={search}
           onChange={resetPage(setSearch)}
@@ -172,7 +172,7 @@ const JobApplications = () => {
                 <th scope="col">Job</th>
                 <th scope="col">Name</th>
                 <th scope="col">Mobile</th>
-                <th scope="col">LMS ID</th>
+                <th scope="col">Email</th>
                 <th scope="col">Status</th>
                 <th scope="col">Actions</th>
               </tr>
@@ -189,7 +189,9 @@ const JobApplications = () => {
                   <td data-label="Mobile">
                     <a href={`tel:${row.mobile.replace(/[^\d+]/g, "")}`}>{row.mobile}</a>
                   </td>
-                  <td data-label="LMS ID">{row.lmsId}</td>
+                  <td data-label="Email">
+                    {row.email ? <a href={`mailto:${row.email}`}>{row.email}</a> : <span className="muted">—</span>}
+                  </td>
                   <td data-label="Status">
                     <select
                       value={row.status}

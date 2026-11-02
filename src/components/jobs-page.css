@@ -860,7 +860,7 @@ body .jobs-page .job-card__apply:focus-visible {
   overflow: hidden;
 }
 
-/* ---------- Apply on CareerVeda ---------- */
+/* ---------- Apply with CareerVeda ---------- */
 /* The card's apply control is a <button> for in-house jobs; reset the UA
    button chrome so it matches the link version. */
 button.job-card__apply {

@@ -1,8 +1,22 @@
 
-// Production falls back to the same origin (nginx proxies /api on the admin
-// host), never to localhost: a build that forgot the variable must not ship a
-// panel that talks to whatever is listening on the admin's own machine.
-const BASE = import.meta.env.VITE_ADMIN_API_BASE_URL || (import.meta.env.DEV ? "http://localhost:8080/api/v1" : "/api/v1");
+// Always same-origin by default: in production nginx proxies /api on the admin
+// host, and in dev the Vite server proxies /api to the backend (see
+// vite.config.js). Never fall back to an absolute localhost URL — a build that
+// forgot the variable must not ship a panel that talks to whatever is listening
+// on the admin's own machine, and on a dual-stack dev machine "localhost" can
+// resolve to ::1 where a different app is bound than the backend on 127.0.0.1.
+const BASE = import.meta.env.VITE_ADMIN_API_BASE_URL || "/api/v1";
+
+// Human-readable address for the "unreachable" message. Relative bases are
+// resolved against the page so the reader still sees a full URL to check.
+const baseLabel = () => {
+  if (BASE.startsWith("http")) return BASE;
+  try {
+    return new URL(BASE, window.location.origin).href;
+  } catch {
+    return BASE;
+  }
+};
 
 let accessToken = null;
 let csrfToken = null;
@@ -102,7 +116,11 @@ const refreshSession = async () => {
 };
 
 const request = async (path, {method = "GET", body, query, retry = true, raw = false} = {}) => {
-  const url = new URL(`${BASE}${path}`);
+  // BASE may be relative ("/api/v1"), so resolve it against the page before
+  // URL() — otherwise this throws in tests and in any non-browser context.
+  const origin =
+    typeof window !== "undefined" && window.location ? window.location.origin : "http://localhost";
+  const url = new URL(`${BASE}${path}`, origin);
 
   if (query) {
     for (const [key, value] of Object.entries(query)) {
@@ -141,7 +159,7 @@ const request = async (path, {method = "GET", body, query, retry = true, raw = f
     throw new ApiError(
       0,
       "NETWORK_ERROR",
-      `Could not reach the API at ${BASE}. Check that the backend is running, then try again.`,
+      `Could not reach the API at ${baseLabel()}. Check that the backend is running, then try again.`,
       {cause: failure.message},
     );
   }

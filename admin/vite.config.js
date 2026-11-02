@@ -5,7 +5,22 @@ export default defineConfig({
   plugins: [react()],
   // strictPort: see the note in the root vite.config.js — 5174 is in the
   // backend's CORS allowlist, a drifted port is not.
-  server: {port: 5174, strictPort: true},
+  server: {
+    port: 5174,
+    strictPort: true,
+    // The panel always calls the API same-origin ("/api/v1"); in dev this
+    // proxy puts the backend behind the Vite server. That matches the nginx
+    // arrangement in production, keeps the refresh cookie first-party, and
+    // avoids the "localhost" trap: on a dual-stack machine localhost resolves
+    // to ::1 first, so an absolute http://localhost:8080 URL can land on a
+    // different app bound to IPv6 while the backend listens on IPv4.
+    proxy: {
+      "/api": {
+        target: "http://127.0.0.1:8080",
+        changeOrigin: false,
+      },
+    },
+  },
   build: {
     rollupOptions: {
       output: {

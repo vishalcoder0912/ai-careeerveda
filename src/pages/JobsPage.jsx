@@ -243,7 +243,7 @@ const JobsPage = () => {
                   </span>
                   {job.acceptsApplications ? (
                     <button type="button" className="job-card__apply" onClick={() => setApplying(job)}>
-                      Apply on CareerVeda
+                      Apply with CareerVeda
                       <ArrowUpRight size={16} aria-hidden="true" />
                     </button>
                   ) : (

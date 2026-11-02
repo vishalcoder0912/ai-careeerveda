@@ -9,7 +9,10 @@
 // the one exception is submitLead, which is the API's only unauthenticated
 // write and is rate-limited server-side.
 
-const DEFAULT_BASE = import.meta.env.DEV ? "http://localhost:8080/api/v1" : "";
+// In dev the site calls the Vite server same-origin and Vite proxies /api to the
+// backend (see vite.config.js). Production uses an explicit absolute API URL, or
+// no base at all and runs off the static data files.
+const DEFAULT_BASE = import.meta.env.DEV ? "/api/v1" : "";
 
 // Trailing slashes are stripped so `${BASE}/public/programs` never doubles up.
 export const API_BASE = String(import.meta.env.VITE_PUBLIC_API_BASE_URL || DEFAULT_BASE).replace(
@@ -40,7 +43,11 @@ const UNREACHABLE = {reachable: false, data: null};
 const requestJson = async (path, {params, signal} = {}) => {
   if (!isApiConfigured) return UNREACHABLE;
 
-  const url = new URL(`${API_BASE}${path}`);
+  // API_BASE may be relative ("/api/v1"), so resolve it against the page. An
+  // absolute API_BASE ignores the base argument.
+  const origin =
+    typeof window !== "undefined" && window.location ? window.location.origin : "http://localhost";
+  const url = new URL(`${API_BASE}${path}`, origin);
   for (const [key, value] of Object.entries(params || {})) {
     if (value !== undefined && value !== null && value !== "") url.searchParams.set(key, value);
   }
@@ -118,7 +125,7 @@ export const fetchOne = async (resource, slug, {signal} = {}) => {
 // Returns {ok, errors, message}.
 export const submitLead = (payload) => postForm("/public/leads", payload);
 
-// The "Apply on CareerVeda" form on /jobs. Same shape and return as submitLead.
+// The "Apply with CareerVeda" form on /jobs. Same shape and return as submitLead.
 export const submitJobApplication = (payload) => postForm("/public/job-applications", payload);
 
 const postForm = async (path, payload) => {

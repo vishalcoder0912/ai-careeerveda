@@ -80,7 +80,7 @@ export const AgentWorkflow = () => {
             </div>
 
             <ol className="ga-wf-pipeline" aria-label="Agent loop">
-              {workflow.pipeline.map((stage) => <li key={stage}>{stage}</li>)}
+              {workflow.pipeline.map((stage, i) => <li key={`${stage}-${i}`}>{stage}</li>)}
             </ol>
           </div>
 

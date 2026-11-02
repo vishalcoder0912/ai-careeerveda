@@ -3,11 +3,11 @@ import {X} from "lucide-react";
 import {submitJobApplication} from "../lib/publicApi";
 import {useTurnstile} from "../lib/useTurnstile";
 
-// "Apply on CareerVeda": name, mobile and LMS ID against one admin-posted job.
+// "Apply with CareerVeda": name, mobile and email against one admin-posted job.
 // A native <dialog> opened with showModal() gives focus trapping, Escape to
 // close and an inert page behind it without any library.
 
-const EMPTY = {name: "", mobile: "", lmsId: "", consent: false, company: ""};
+const EMPTY = {name: "", mobile: "", email: "", consent: false, company: ""};
 
 const JobApplyDialog = ({job, onClose}) => {
   const ref = useRef(null);
@@ -79,7 +79,7 @@ const JobApplyDialog = ({job, onClose}) => {
     <dialog ref={ref} className="job-apply" aria-labelledby="job-apply-title" onClose={onClose} data-lenis-prevent>
       <div className="job-apply__head">
         <div>
-          <p className="job-apply__eyebrow">Apply on CareerVeda</p>
+          <p className="job-apply__eyebrow">Apply with CareerVeda</p>
           <h2 id="job-apply-title">{job.title}</h2>
           <p className="job-apply__company">{job.company}</p>
         </div>
@@ -114,7 +114,7 @@ const JobApplyDialog = ({job, onClose}) => {
         <form className="job-apply__form" onSubmit={submit} noValidate>
           {field("name", "Full name", {autoComplete: "name", maxLength: 120})}
           {field("mobile", "Mobile number", {type: "tel", autoComplete: "tel", inputMode: "tel", maxLength: 16})}
-          {field("lmsId", "LMS ID", {autoComplete: "off", maxLength: 40, spellCheck: false})}
+          {field("email", "Email address", {type: "email", autoComplete: "email", inputMode: "email", maxLength: 254})}
 
           {/* Honeypot: hidden from people and assistive tech, filled by bots. */}
           <input

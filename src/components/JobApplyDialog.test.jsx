@@ -1,4 +1,4 @@
-// "Apply on CareerVeda" must send one request per submission. The button is
+// "Apply with CareerVeda" must send one request per submission. The button is
 // disabled while sending, but a rapid second submit can reach the handler
 // before React re-renders; the in-flight ref has to stop it, otherwise one
 // click can create several applications.
@@ -45,7 +45,7 @@ describe("JobApplyDialog", () => {
 
     fill("Full name", "Asha Menon");
     fill("Mobile number", "9217801191");
-    fill("LMS ID", "CV-2026-0042");
+    fill("Email address", "asha@example.com");
     fireEvent.click(screen.getByLabelText(/I agree to share these details/i));
     fireEvent.click(screen.getByRole("button", {name: /submit application/i}));
 
@@ -54,7 +54,7 @@ describe("JobApplyDialog", () => {
       job: "data-analyst",
       name: "Asha Menon",
       mobile: "9217801191",
-      lmsId: "CV-2026-0042",
+      email: "asha@example.com",
       consent: true,
     });
     expect(await screen.findByText(/application received/i)).toBeTruthy();
@@ -72,7 +72,7 @@ describe("JobApplyDialog", () => {
 
     fill("Full name", "Asha Menon");
     fill("Mobile number", "9217801191");
-    fill("LMS ID", "CV-2026-0042");
+    fill("Email address", "asha@example.com");
     fireEvent.click(screen.getByLabelText(/I agree to share these details/i));
 
     const form = document.querySelector("form.job-apply__form");

@@ -30,7 +30,19 @@ export default defineConfig(({mode}) => {
     // collision, and the site then loads on 5175 with every API call refused by
     // the browser — a CORS error that looks like a backend fault. Better to
     // refuse to start and say the port is taken.
-    server: {port: 5173, strictPort: true},
+    server: {
+      port: 5173,
+      strictPort: true,
+      // Same-origin in dev: the browser calls /api/v1 on this server and Vite
+      // forwards it to the backend. This avoids the "localhost" trap — on a
+      // dual-stack machine localhost resolves to ::1 first, so an absolute
+      // http://localhost:8080 URL can land on a different app bound to IPv6
+      // while the backend listens on IPv4 — and keeps the API first-party, the
+      // same arrangement nginx provides in production.
+      proxy: {
+        "/api": {target: "http://127.0.0.1:8080", changeOrigin: false},
+      },
+    },
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),

@@ -5,9 +5,7 @@ import {stripTags, isValidSlug} from "../utils/sanitize.js";
 
 // Same mobile rule as the lead form, so the two forms agree on what is valid.
 const MOBILE_PATTERN = /^(\+?91[-\s]?)?[6-9]\d{9}$/;
-// LMS ids are letters, digits and - _ . / — anything else is refused rather
-// than stored, since the value is shown back to admins and exported to CSV.
-const LMS_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._/-]{2,39}$/;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 const objectId = z.string().regex(/^[a-f0-9]{24}$/i, "Invalid id");
 
@@ -24,7 +22,12 @@ export const submitApplicationSchema = z.object({
     .max(30)
     .trim()
     .refine((value) => MOBILE_PATTERN.test(value.replace(/[-\s]/g, "")), "That mobile number doesn't look right."),
-  lmsId: z.string().trim().refine((value) => LMS_ID_PATTERN.test(value), "Please enter your LMS ID as shown in your LMS."),
+  email: z
+    .string()
+    .max(254)
+    .trim()
+    .toLowerCase()
+    .refine((value) => EMAIL_PATTERN.test(value), "That email doesn't look right."),
   consent: z.literal(true, {error: "Please agree to share these details with the hiring team."}),
   // Honeypot: hidden in the markup, so only bots fill it in.
   company: z.string().max(200).optional(),
