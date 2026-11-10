@@ -54,9 +54,6 @@ const ProgramFees = ({program, applyHref}) => {
             <Link className="pd-btn pd-btn--primary" to={applyHref}>
               Enroll Now →
             </Link>
-            <Link className="pd-btn pd-btn--ghost" to="/#consultation">
-              Download Brochure
-            </Link>
           </div>
 
           {program.emi && (

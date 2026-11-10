@@ -34,3 +34,9 @@ adminUserRouter.post(
   validate({params: adminUserIdParam, body: resetAdminPasswordSchema}),
   adminUsers.resetPassword,
 );
+
+adminUserRouter.post(
+  "/:id/generate-password",
+  validate({params: adminUserIdParam}),
+  adminUsers.generatePassword,
+);

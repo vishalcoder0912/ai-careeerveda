@@ -1,4 +1,4 @@
-import {Link} from "react-router-dom";
+import {downloadBrochure} from "../../lib/brochureDownload";
 import {
   feeText,
   panelHighlights,
@@ -93,14 +93,21 @@ const ProgramInfoPanel = ({program}) => {
         <a className="pd-btn pd-btn--primary pd-btn--block" href="#pd-overview">
           Explore Program <span aria-hidden="true">→</span>
         </a>
-        <Link
+        <button
+          type="button"
           className="pd-btn pd-btn--ghost pd-btn--block"
-          to="/#consultation"
           aria-label="Download the programme syllabus"
+          onClick={() =>
+            downloadBrochure(
+              program.brochure,
+              `${(program.id || program.title || "program").replace(/\s+/g, "-")}-syllabus.pdf`,
+              program
+            )
+          }
         >
           <PanelIcon name="download" />
           Download Syllabus
-        </Link>
+        </button>
       </div>
     </aside>
   );

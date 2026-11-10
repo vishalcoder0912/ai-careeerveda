@@ -271,6 +271,7 @@ export const adminUsersApi = {
   list: () => api.get("/admin/admins"),
   resetPassword: (id, newPassword) =>
     api.post(`/admin/admins/${id}/reset-password`, {newPassword}),
+  generatePassword: (id) => api.post(`/admin/admins/${id}/generate-password`),
 };
 
 // ── Content ─────────────────────────────────────────────────────────────────

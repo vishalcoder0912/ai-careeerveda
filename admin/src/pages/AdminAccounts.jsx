@@ -1,5 +1,4 @@
 import {useCallback, useEffect, useState} from "react";
-
 import {adminUsersApi} from "../services/api";
 import {useToast} from "../context/ToastContext";
 import {Modal} from "../components/Modal";
@@ -20,22 +19,8 @@ const formatDate = (value) =>
       })
     : "Never";
 
-// 20 characters from an alphabet without the glyphs people confuse when reading
-// a password out loud or retyping it (0/O, 1/l/I). The Aa1! prefix guarantees
-// the composition rules even in the improbable case a random draw misses one
-// class; the bulk of the password is still random.
-const PASSWORD_ALPHABET =
-  "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%&*";
-
-const generatePassword = () => {
-  const values = new Uint32Array(16);
-  globalThis.crypto.getRandomValues(values);
-  const random = Array.from(
-    values,
-    (value) => PASSWORD_ALPHABET[value % PASSWORD_ALPHABET.length],
-  ).join("");
-  return `Aa1!${random}`;
-};
+// Passwords are generated server-side (see adminUser.controller.generatePassword)
+// so the character alphabet never ships to the browser.
 
 const AccountBadge = ({toned, children}) => (
   <span className={`account-badge${toned ? ` account-badge--${toned}` : ""}`}>
@@ -106,12 +91,24 @@ const ResetPasswordDialog = ({account, onClose, onReset}) => {
     onClose();
   };
 
-  const generate = () => {
-    const password = generatePassword();
-    setNewPassword(password);
-    setConfirmPassword(password);
-    setShowPassword(true);
+  const generate = async () => {
+    setBusy(true);
     setFieldError(null);
+    try {
+      const response = await adminUsersApi.generatePassword(account.id);
+      const password = response.data.password;
+      setNewPassword(password);
+      setConfirmPassword(password);
+      setShowPassword(true);
+    } catch (failure) {
+      setFieldError(
+        (failure.fields && failure.fields.newPassword) ||
+          failure.message ||
+          "Could not generate a password.",
+      );
+    } finally {
+      setBusy(false);
+    }
   };
 
   const submit = async (event) => {
@@ -290,24 +287,9 @@ const AdminAccounts = () => {
   }, []);
 
   useEffect(() => {
-    let cancelled = false;
-
-    (async () => {
-      try {
-        const response = await adminUsersApi.list();
-        if (cancelled) return;
-        setError(null);
-        setAccounts(response.data);
-      } catch (failure) {
-        if (cancelled) return;
-        setError(failure);
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    load();
+  }, [load]);
 
   return (
     <div className="page">
@@ -369,6 +351,7 @@ const AdminAccounts = () => {
 
       {target ? (
         <ResetPasswordDialog
+          key={target.id}
           account={target}
           onClose={() => setTarget(null)}
           onReset={load}

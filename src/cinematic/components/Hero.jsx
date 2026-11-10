@@ -34,7 +34,6 @@ export const HeroSection = () => {
   const extraRight = useRef(null);
   const statsRef = useRef(null);
   const magneticA = useMagneticHover(0.35);
-  const magneticB = useMagneticHover(0.35);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -139,13 +138,6 @@ export const HeroSection = () => {
             <span>Explore Program</span>
             <ArrowDownRight size={17} aria-hidden="true" />
           </button>
-          <a href="#ga-cta" className="ga-btn ga-btn-outline" data-cursor="cta" ref={magneticB} onClick={(e) => {
-            e.preventDefault();
-            const el = document.getElementById("ga-cta");
-            if (el) el.scrollIntoView({behavior: "smooth"});
-          }}>
-            Download Brochure
-          </a>
         </div>
       </div>
 

@@ -5,6 +5,7 @@ import {programCatalog} from "../data/programCatalog";
 import {faqs} from "../data/faqs";
 import {useContentList} from "../hooks/useContent";
 import {adaptProgram} from "../lib/contentAdapters";
+import {downloadBrochure} from "../lib/brochureDownload";
 import {cdnImage} from "../lib/imageCdn";
 import {titleParts} from "./program-detail/programAssist";
 import {matchJobs} from "./program-detail/jobTracks";
@@ -315,7 +316,19 @@ const ProgramHighlights = ({program, facts}) => (
       <Link to={facts.explorePath} className="cta-primary">
         Explore Program &rarr;
       </Link>
-      <Link to="/#consultation" className="cta-secondary">Download Syllabus</Link>
+      <button
+        type="button"
+        className="cta-secondary"
+        onClick={() =>
+          downloadBrochure(
+            program.brochure,
+            `${(program.id || program.title || "program").replace(/\s+/g, "-")}-syllabus.pdf`,
+            program
+          )
+        }
+      >
+        Download Syllabus
+      </button>
     </div>
   </aside>
 );

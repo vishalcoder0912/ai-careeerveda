@@ -10,6 +10,22 @@ import {
 import {revokeAllForAdmin} from "../services/token.service.js";
 import {ok} from "../utils/respond.js";
 import {badRequest, notFound} from "../utils/apiError.js";
+import {randomBytes} from "crypto";
+
+// Characters avoided because they are easily confused when read aloud or retyped
+// (0/O, 1/l/I). The Aa1! prefix guarantees composition rules even if a random
+// draw misses a class; the bulk of the password is still random.
+const PASSWORD_ALPHABET =
+  "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%&*";
+
+const generateRandomPassword = () => {
+  const bytes = randomBytes(16);
+  let password = "Aa1!";
+  for (let i = 0; i < 16; i++) {
+    password += PASSWORD_ALPHABET[bytes[i] % PASSWORD_ALPHABET.length];
+  }
+  return password;
+};
 
 // What the account-management screen is allowed to know. passwordHash,
 // passwordHistory and the TOTP secret are deliberately absent: the screen is
@@ -119,6 +135,65 @@ export const resetPassword = async (request, response, next) => {
       id: target._id,
       name: target.name,
       email: target.email,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const generatePassword = async (request, response, next) => {
+  try {
+    const target = await Admin.findById(request.params.id).select(
+      "+passwordHash +passwordHistory",
+    );
+
+    if (!target) return next(notFound("Admin account not found"));
+
+    if (String(target._id) === String(request.admin._id)) {
+      return next(
+        badRequest("Use Profile & security to change your own password."),
+      );
+    }
+
+    const plainPassword = generateRandomPassword();
+
+    const weakness = validatePasswordStrength(plainPassword, {
+      email: target.email,
+    });
+    if (weakness) return next(badRequest(weakness, {newPassword: weakness}));
+
+    if (await isPasswordReused(plainPassword, target.passwordHistory)) {
+      const message = "Generated password was reused; try again.";
+      return next(badRequest(message, {newPassword: message}));
+    }
+
+    target.passwordHistory = pushPasswordHistory(
+      target.passwordHistory,
+      target.passwordHash,
+    );
+    target.passwordHash = await hashPassword(plainPassword);
+    target.passwordChangedAt = new Date();
+    target.tokenVersion = (target.tokenVersion || 0) + 1;
+    target.failedLoginAttempts = 0;
+    target.lockedUntil = null;
+    await target.save();
+
+    await revokeAllForAdmin(target._id, "password-reset");
+
+    await recordAudit(request, {
+      action: AUDIT_ACTIONS.USER_PASSWORD_RESET,
+      actor: request.admin,
+      targetType: "Admin",
+      targetId: target._id,
+      metadata: {email: target.email},
+    });
+
+    return ok(response, {
+      reset: true,
+      id: target._id,
+      name: target.name,
+      email: target.email,
+      password: plainPassword,
     });
   } catch (error) {
     return next(error);

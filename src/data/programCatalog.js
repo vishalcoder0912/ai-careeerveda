@@ -817,6 +817,10 @@ export const programCatalog = [
     projects: "30+",
     eligibility: "Freshers, Graduates, Experienced",
     startingPrice: "1,45,000",
+    // Brochure / syllabus PDF delivered from ImageKit. Upload the actual file to
+    // ImageKit (folder /careerveda/brochures) and replace this placeholder URL
+    // with the file's delivery URL so "Download Syllabus" saves a real file.
+    brochure:"https://ik.imagekit.io/q7ucn1rfni/careerveda/Brochures/PG-PRODUCT-MANAGEMENT.pdf?updatedAt=1794291349059",
     // The price card. Without these the detail page renders no fee, no batch date
     // and no "Reserve your seat" panel at all  the sections are optional and were
     // simply being skipped. Figures taken from the live careerveda.in page.
@@ -1070,6 +1074,11 @@ export const programCatalog = [
     format: "Live Online",
     startingPrice: "₹1,25,000",
     image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/Business_analytics_images-141e26d2.png",
+    // Brochure / syllabus PDF delivered from ImageKit. Upload the actual file to
+    // ImageKit (folder /careerveda/brochures) and replace this placeholder URL
+    // with the file's delivery URL so "Download Syllabus" saves a real file.
+    brochure:
+      "https://ik.imagekit.io/q7ucn1rfni/careerveda/Brochures/PG-BUSINESS-ANALYTICS_compressed.pdf?updatedAt=1794291423934",
     overview: [
       "Excel, SQL, Python, Power BI and Generative AI workflows",
       "25+ business analytics projects and case studies",
@@ -1429,6 +1438,11 @@ export const programCatalog = [
     format: "Live Online",
     startingPrice: "₹1,35,000",
     image: "https://ik.imagekit.io/q7ucn1rfni/careerveda/Data_analytics-19c78fb9.png",
+    // Brochure / syllabus PDF delivered from ImageKit. Upload the actual file to
+    // ImageKit (folder /careerveda/brochures) and replace this placeholder URL
+    // with the file's delivery URL so "Download Syllabus" saves a real file.
+    brochure:
+      "https://ik.imagekit.io/q7ucn1rfni/careerveda/Brochures/PG-DATA-ANALYTICS.pdf?updatedAt=1794291345623",
     overview: [
       "Excel, SQL, Python, Power BI and dashboard reporting",
       "Data cleaning, visualization and business decision support",

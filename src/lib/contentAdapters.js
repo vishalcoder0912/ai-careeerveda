@@ -148,18 +148,20 @@ const moduleMedia = (slug, modules) => {
   });
 };
 
-export const adaptProgram = (record) => ({
-  ...record,
-  id: record.slug,
-  image: mediaUrl(record.image),
-  fee: programFee(record),
-  modules: moduleMedia(record.slug, record.modules),
-  // A cinematic landing is a front-end concern the admin panel does not model,
-  // so the API answer never carries it. Restore it from the catalogue whenever
-  // a programme declares one; none do today, so live records fall back to
-  // /programs/:slug — gen-ai-agentic-ai included.
-  landingPath: programCatalog.find((program) => program.id === record.slug)?.landingPath,
-});
+export const adaptProgram = (record) => {
+  const staticRecord = programCatalog.find((program) => program.id === record.slug);
+  return {
+    ...record,
+    id: record.slug,
+    image: mediaUrl(record.image),
+    // The API record may not carry brochure yet (older MongoDB documents).
+    // Fall back to the static catalogue so the download button always has a URL.
+    brochure: record.brochure || staticRecord?.brochure || "",
+    fee: programFee(record),
+    modules: moduleMedia(record.slug, record.modules),
+    landingPath: staticRecord?.landingPath,
+  };
+};
 
 export const adaptFaculty = (record) => ({
   ...record,

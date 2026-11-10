@@ -1,4 +1,4 @@
-# CareerVeda — Full Repository Audit
+ in # CareerVeda — Full Repository Audit
 
 **Scope:** read-only audit of the entire repo (`Scene_one_career_veda/`).
 **Date:** 2026-07-23. **Mode:** no files modified except this report.

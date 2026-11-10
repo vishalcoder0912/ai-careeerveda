@@ -8,7 +8,6 @@ export const FinalCTA = () => {
   const {cta} = useCinematic();
   const streakRef = useRef(null);
   const magA = useMagneticHover(0.32);
-  const magB = useMagneticHover(0.32);
 
   useEffect(() => {
     const streak = streakRef.current;
@@ -48,9 +47,7 @@ export const FinalCTA = () => {
           <a href="#ga-contact" className="ga-btn ga-btn-solid ga-btn-lg" data-cursor="cta" ref={magA}>
             Apply for the Program
           </a>
-          <a href="#ga-contact" className="ga-btn ga-btn-outline" data-cursor="cta" ref={magB}>
-            Download Brochure
-          </a>
+
         </div>
         <span className="ga-cta-meta">
           {cta.meta.map((m, i) => (

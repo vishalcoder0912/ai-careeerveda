@@ -20,6 +20,7 @@ import ProgramMentors from "../components/program-detail/ProgramMentors";
 import ProgramFees from "../components/program-detail/ProgramFees";
 import ProgramFaq from "../components/program-detail/ProgramFaq";
 import ProgramCta from "../components/program-detail/ProgramCta";
+import BackToTop from "../components/BackToTop";
 import MarqueeStrip from "../components/MarqueeStrip";
 
 import {matchJobs} from "../components/program-detail/jobTracks";
@@ -126,6 +127,7 @@ const ProgramDetailPage = ({slug: providedSlug}) => {
           <ProgramFees program={program} applyHref={applyHref} />
           <ProgramFaq items={faqItems} />
           <ProgramCta program={program} applyHref={applyHref} />
+          <BackToTop />
         </div>
       </div>
     </main>
