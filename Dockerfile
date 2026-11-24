@@ -40,6 +40,14 @@ ENV VITE_PUBLIC_API_BASE_URL=${VITE_PUBLIC_API_BASE_URL}
 ARG VITE_TURNSTILE_SITE_KEY=""
 ENV VITE_TURNSTILE_SITE_KEY=${VITE_TURNSTILE_SITE_KEY}
 
+# AdSense. Both are public values baked into the browser bundle at build time;
+# the client ID is also read by scripts/generate-ads-txt.mjs to write dist/ads.txt.
+# Leave both blank to ship the site with no ad code at all.
+ARG VITE_ADSENSE_CLIENT_ID=""
+ENV VITE_ADSENSE_CLIENT_ID=${VITE_ADSENSE_CLIENT_ID}
+ARG VITE_ADSENSE_AD_SLOT=""
+ENV VITE_ADSENSE_AD_SLOT=${VITE_ADSENSE_AD_SLOT}
+
 RUN npm run build
 
 FROM nginx:1.31-alpine-slim@sha256:45b82ed5f285b90d63df07ba70430fdd8f25624b416617d9e6dc93412b2006dc AS runtime

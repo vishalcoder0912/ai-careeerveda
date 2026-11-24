@@ -1,4 +1,5 @@
 import { createRoot } from "react-dom/client";
+import {initAdsense} from "./lib/adsense";
 import App from "./App.jsx";
 import "./styles.css";
 import "./components/mobile-navbar-premium.css";
@@ -58,6 +59,11 @@ const restoreAnchor = (candidates) => {
 
 const mount = () => {
   const anchor = captureAnchor();
+
+  // Loaded once for the whole SPA, so ad eligibility and page-level reporting
+  // follow every route — including pages created after this build. The loader
+  // is inert unless both the publisher ID and ad consent are present.
+  initAdsense();
 
   if (anchor) {
     const watcher = new MutationObserver(() => {
