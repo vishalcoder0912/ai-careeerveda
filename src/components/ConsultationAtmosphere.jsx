@@ -37,10 +37,9 @@ const ConsultationAtmosphere = ({eventSource}) => {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          setInView(true);
-          observer.disconnect();
-        }
+        // Keep observing: the simulation is expensive, so it must be torn down
+        // again once the section is well outside the viewport.
+        setInView(entry.isIntersecting);
       },
       {threshold: 0.05, rootMargin: "250px 0px"},
     );

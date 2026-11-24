@@ -5,7 +5,7 @@
 
 import {describe, it, expect, vi, afterEach} from "vitest";
 
-import {api, ApiError} from "./api";
+import {api, applicationsApi, ApiError} from "./api";
 
 describe("api transport", () => {
   afterEach(() => {
@@ -64,5 +64,30 @@ describe("api transport", () => {
     expect(fetchMock.mock.calls[0][1].headers["X-CSRF-Token"]).toBe("csrf-123");
     expect(fetchMock.mock.calls[1][1].headers["X-CSRF-Token"]).toBeUndefined();
     localStorage.removeItem("cv_csrf_fallback");
+  });
+
+  // Opening a resume used to let fetch() follow a cross-origin 302 to ImageKit,
+  // where CORS killed it and the error wrongly blamed the local API. The fix
+  // asks for JSON so the hop is a plain navigation in the panel instead.
+  it("loads a resume URL as same-origin JSON, not a followed redirect", async () => {
+    const resumeUrl = "https://ik.imagekit.io/careerveda/resumes/file.pdf";
+    const fetchMock = vi.fn(() =>
+      Promise.resolve(
+        new Response(
+          JSON.stringify({success: true, data: {url: resumeUrl}}),
+          {status: 200, headers: {"Content-Type": "application/json"}},
+        ),
+      ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await applicationsApi.openResume("507f1f77bcf86cd799439011");
+
+    expect(result).toEqual({url: resumeUrl});
+    const requested = new URL(fetchMock.mock.calls[0][0]);
+    expect(requested.pathname).toBe("/api/v1/admin/job-applications/507f1f77bcf86cd799439011/resume");
+    expect(requested.searchParams.get("format")).toBe("json");
+    // No cross-origin file fetch happens here; the panel opens the URL itself.
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });

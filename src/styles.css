@@ -30,8 +30,14 @@
    replaced — nothing had rendered .partner-band or .partner-trail for a while, so
    all 10.8 KiB of it was render-blocking CSS for markup that no longer existed.
    Deleted along with PartnerTrail and the LogoLoop/ImageTrail it pulled in. */
-/* Very last: mobile-responsiveness.css touches only max-width media queries. */
-@import "./components/mobile-responsiveness.css";
+/* Very last: mobile-responsiveness.css touches only max-width media queries.
+   These responsive overrides are intentionally disabled. */
+/* @import "./components/mobile-responsiveness.css"; */
+/* Comprehensive responsive design system — every device tier from 320px to
+   4K+, fluid typography, overflow guards, media queries, tables/dashboards,
+   modals, cards, grids, and floating elements. Loaded after mobile-specific
+   overrides so its wider breakpoints and fluid rules can layer correctly. */
+/* @import "./components/responsive-comprehensive.css"; */
 /* And after even that: navbar-hero-merge.css coordinates the navbar's height
    (declared in slate-color-system.css and mobile-responsiveness.css) with the
    hero's padding (final-alignment-polish.css, slate-color-system.css), pulling
@@ -48,6 +54,10 @@
    page-shell/jobs-page tokens (winning those files by cascade order) and beats
    slate-color-system.css's dark !important rules by specificity. */
 @import "./components/careerveda-light-theme.css";
+
+/* Dedicated phone device range (320-480px + short landscape). Loaded last so
+   its wrapping and gutter fixes win over the generic phone rules above. */
+@import "./components/phone-device-range.css";
 
 /* ONE FONT, every route: Manrope. The section sheets each set their own family
    (Inter, Poppins, Georgia, Cormorant, monospace — many with !important), so
@@ -84,12 +94,6 @@ body header.site-nav > .nav-container {
   --font-sans: "Inter", system-ui, sans-serif;
   --font-heading: "Manrope", "Inter", system-ui, sans-serif;
 }
-
-/* ── Shared design tokens ───────────────────────────────────────────────────
-   The page drifted to 13 font sizes, 15 text colours and 8 corner radii
-   because values were hard-coded per component instead of read from one
-   source. These tokens are that one source. Prefer them over raw px/hex in
-   new UI; the token is the system, the value is just its current reading. */
 :root {
   /* Type scale — small labels compose up to display headings. */
   --t-xs: 12px;   /* flags, stats, badges */

@@ -575,6 +575,27 @@ label {
   color: #b91c1c;
 }
 
+/* Page-copy JSON is code, not prose: a monospaced face makes unbalanced braces
+   and stray quotes visible before the validator has to point them out. */
+.json-field textarea {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+}
+
+.json-field-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.json-field-actions .field-hint,
+.json-field .field-error {
+  margin: 0;
+  font-size: 11.5px;
+}
+
 .form-error {
   border-color: #fecaca;
   background: #fef2f2;
@@ -1400,6 +1421,178 @@ tbody tr:hover td {
 
 .pagination .btn {
   min-width: 96px;
+}
+
+/* Job application overview
+   Clickable KPI tiles double as status filters, so the numbers and the table
+   below never disagree — selecting a tile sets the same `status` the filter
+   select uses. Each stage gets its own accent and a share bar, so the relative
+   size of each bucket is visible without reading the numbers first. */
+
+.kpi-tone--total { --kpi-tone: #4f46e5; --kpi-soft: #eef2ff; }
+.kpi-tone--new { --kpi-tone: #4f46e5; --kpi-soft: #eef2ff; }
+.kpi-tone--under_review { --kpi-tone: #0284c7; --kpi-soft: #e0f2fe; }
+.kpi-tone--shortlisted { --kpi-tone: #d97706; --kpi-soft: #fef3c7; }
+.kpi-tone--interview_scheduled { --kpi-tone: #7c3aed; --kpi-soft: #ede9fe; }
+.kpi-tone--selected { --kpi-tone: #059669; --kpi-soft: #d1fae5; }
+.kpi-tone--rejected { --kpi-tone: #e11d48; --kpi-soft: #ffe4e6; }
+
+.app-kpis {
+  margin-bottom: 16px;
+}
+
+.app-kpis__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.app-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 14px 14px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--speed) ease, transform var(--speed) ease, box-shadow var(--speed) ease;
+}
+
+.app-kpi:hover {
+  border-color: var(--kpi-tone);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.1);
+}
+
+.app-kpi:focus-visible {
+  outline: none;
+  border-color: var(--kpi-tone);
+  box-shadow: var(--ring);
+}
+
+.app-kpi.is-active {
+  border-color: var(--kpi-tone);
+  box-shadow: inset 0 0 0 1px var(--kpi-tone), var(--shadow);
+}
+
+.app-kpi__top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-kpi__icon-wrap {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  background: var(--kpi-soft);
+  color: var(--kpi-tone);
+}
+
+.app-kpi__icon {
+  width: 16px;
+  height: 16px;
+}
+
+.app-kpi__label {
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.app-kpi__value {
+  font-size: 26px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.app-kpi__foot {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.app-kpi__bar {
+  height: 4px;
+  border-radius: 99px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.app-kpi__bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--kpi-tone);
+  transition: width 0.35s ease;
+}
+
+/* The headline tile is the only one on a dark ground, so its secondary text
+   and bar have to be lightened rather than inheriting the muted grey. */
+.app-kpi.kpi-tone--total {
+  border-color: transparent;
+  background: linear-gradient(135deg, #3730a3, #6366f1);
+  color: #ffffff;
+}
+
+.app-kpi.kpi-tone--total:hover,
+.app-kpi.kpi-tone--total:focus-visible,
+.app-kpi.kpi-tone--total.is-active {
+  border-color: #312e81;
+}
+
+.app-kpi.kpi-tone--total .app-kpi__label,
+.app-kpi.kpi-tone--total .app-kpi__foot {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.app-kpi.kpi-tone--total .app-kpi__icon-wrap {
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+}
+
+.app-kpi.kpi-tone--total .app-kpi__bar {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.app-kpi.kpi-tone--total .app-kpi__bar > span {
+  background: #ffffff;
+}
+
+@media (max-width: 720px) {
+  .app-kpis__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app-kpi {
+    padding: 12px;
+  }
+
+  .app-kpi__value {
+    font-size: 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-kpi,
+  .app-kpi__bar > span {
+    transition: none;
+  }
 }
 
 /* Responsive */

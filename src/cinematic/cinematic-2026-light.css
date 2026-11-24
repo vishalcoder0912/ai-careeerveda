@@ -1,22 +1,4 @@
-/* ============================================================================
-   cinematic-2026-light.css — CareerVeda 2026 light theme for the cinematic
-   GenerativeAI program page.
 
-   Loaded AFTER cinematic.css and cinematic-site-theme.css inside
-   GenerativeAIPage.jsx. Re-composes the page into the site's "2026 light"
-   identity: white atmosphere, navy ink (#102a5c), blue (#2563eb) + indigo
-   (#4f46e5) + violet (#7c3aed) accents, with dark navy bands reserved for the
-   quote, CTA, footer and the immersive Projects gallery room.
-
-   Color zones
-   -----------
-   · Light surfaces  → white/near-white with blue + violet radials
-   · Accents         → blue gradient (135deg) on buttons/on-states, blue links
-   · Dark navy bands → #102a5c → #172e64 only on Quote / CTA / Footer / Gallery
-   · Editorial lines → rgba(37,99,235,.16) on light, rgba(151,182,255,.12) on navy
-   ========================================================================== */
-
-/* ── Tokens ──────────────────────────────────────────────────────────────── */
 .ga-page {
   --ga-bg: #fafcff;
   --ga-panel: #ffffff;
@@ -222,7 +204,6 @@
   box-shadow: 0 24px 60px -24px rgba(16, 42, 92, 0.26);
 }
 
-/* ── Stats ───────────────────────────────────────────────────────────────── */
 .ga-page .ga-stat {
   border-color: var(--ga-line);
   background: #ffffff;
@@ -254,7 +235,6 @@
   color: #7c3aed;
 }
 
-/* ── Timeline ────────────────────────────────────────────────────────────── */
 .ga-page .ga-tl-card {
   border-color: var(--ga-line);
   background: rgba(255, 255, 255, 0.05);
@@ -281,13 +261,6 @@
   color: #2563eb;
 }
 
-/* ── Timeline caption — stop "WEEKS 21–24 · PRODUCTION AI" colliding with the
-   "scroll to advance the timeline" hint ─────────────────────────────────────
-   The base packs the absolutely-stacked caption frames into a 1.4rem-tall,
-   12rem-wide box with white-space: nowrap, so a long stage name overflows the
-   box and the stacked frames smother the inline hint. Give the caption room to
-   breathe: a taller self-sizing active box, year above title (column stack),
-   and the hint moved to its own reserved track so nothing can overlap.        */
 .ga-page .ga-tl-caption {
   flex-wrap: nowrap;
   align-items: center;
@@ -334,25 +307,7 @@
   color: #33486b;
 }
 
-.ga-page .ga-tl-caption-hint {
-  position: relative;
-  flex-shrink: 0;
-  margin-left: auto;
-  padding-left: 1.4rem;
-  border-left: 1px solid rgba(37, 99, 235, 0.22);
-  font-family: var(--ga-mono);
-  font-size: max(var(--ga-fs-floor, 0px), 0.54rem);
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: #64748b;
-  white-space: nowrap;
-}
 
-/* Timeline caption — stop the "Weeks 21–24 · PRODUCTION AI" frame crowding
-   the "scroll to advance the timeline" hint. The base packs both into one
-   baseline flex row inside a 1.4rem-tall absolute box, so a long stage like
-   "PRODUCTION AI / Weeks 21-24" overflows and overlaps the hint. Reserve a
-   taller stack instead: year above title, frame sized to its own content. */
 .ga-page .ga-tl-caption {
   align-items: center;
   gap: 1.6rem;
@@ -390,66 +345,89 @@
   color: #102a5c;
 }
 
-.ga-page .ga-tl-caption-hint {
-  position: relative;
-  white-space: nowrap;
-  color: #33486b;
-}
-
-/* Timeline caption row — year + title must never collide with the hint.
-   The base theme lays out several absolute `.ga-tl-caption-frame`s on one
-   baseline inside a tiny 1.4rem box, so the long "Weeks 21-24 â€¢ PRODUCTION
-   AI" label spills over the "scroll to advance" hint. Stack year over title
-   and reserve a dedicated line for the hint instead. */
+/* The caption frames are absolutely stacked on top of one another; only the
+   active one is visible. Give their container a real width and height, or the
+   absolutely-positioned children contribute no intrinsic size: the label then
+   collapses to 0px, every word wraps into its own line, and the stacked text
+   collides with the active card's tags on 16:9 laptop viewports. */
 .ga-page .ga-tl-caption {
-  gap: 2.2rem;
+  gap: 0;
 }
 
 .ga-page .ga-tl-caption-active {
-  height: auto;
-  min-height: 1.2rem;
-  min-width: auto;
-  max-width: min(86vw, 40rem);
-  display: grid;
-  place-items: center;
+  display: block;
+  width: min(72vw, 28rem);
+  height: 2.6rem;
+  min-height: 0;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .ga-page .ga-tl-caption-frame {
   position: absolute;
-  grid-row: 1;
-  grid-column: 1;
-  left: 0;
-  right: 0;
-  top: 0;
+  grid-row: auto;
+  grid-column: auto;
+  inset: 0;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: baseline;
   justify-content: center;
-  gap: 0.2rem;
-  white-space: normal;
+  gap: 0.7rem;
+  white-space: nowrap;
   width: 100%;
+  transform: none !important;
 }
 
 .ga-page .ga-tl-caption-year {
+  flex: none;
   font-size: 1rem;
   line-height: 1.2;
 }
 
 .ga-page .ga-tl-caption-title {
+  min-width: 0;
   font-size: 0.8rem;
   letter-spacing: 0.18em;
   color: #102a5c;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.ga-page .ga-tl-caption-hint {
-  flex-shrink: 0;
-  margin-left: auto;
-  padding-left: 1.8rem;
-  border-left: 1px solid rgba(37, 99, 235, 0.24);
-  color: #64748b;
+/* Short desktop screens (the common 1280×720 / 1366×768 laptop canvas) cannot
+   fit a full-height card AND the caption in a 100svh pinned stage. Compact the
+   card instead of letting its meta/tags run into the caption below it. */
+@media (min-width: 900px) and (max-height: 820px) {
+  .ga-page .ga-tl-pin {
+    padding-top: 5rem;
+    padding-bottom: 2.2rem;
+  }
+
+  .ga-page .ga-tl-card {
+    min-height: 270px;
+    padding: 1.1rem 1.2rem 1.2rem;
+  }
+
+  .ga-page .ga-tl-card-visual {
+    min-height: 64px;
+  }
+
+  .ga-page .ga-tl-card h3 {
+    font-size: 1.25rem;
+    margin-top: 0.4rem;
+  }
+
+  .ga-page .ga-tl-card-reveal p {
+    margin-top: 0.4rem;
+    font-size: 0.78rem;
+    line-height: 1.4;
+  }
+
+  .ga-page .ga-tl-tags {
+    margin-top: 0.5rem;
+  }
 }
 
-/* ── Modules / Journey ───────────────────────────────────────────────────── */
 .ga-page .ga-journey-week-btn {
   background: #ffffff;
 }
@@ -582,7 +560,6 @@
   color: #64748b;
 }
 
-/* ── Quote band — navy ───────────────────────────────────────────────────── */
 .ga-page .ga-quote {
   background:
     radial-gradient(circle at 12% 12%, rgba(37, 99, 235, 0.3), transparent 28%),
@@ -610,7 +587,6 @@
   color: rgba(255, 255, 255, 0.55);
 }
 
-/* ── Architecture ────────────────────────────────────────────────────────── */
 .ga-page .ga-arch .ga-section-label::before {
   background: linear-gradient(90deg, #2563eb, #7c3aed);
 }
@@ -659,14 +635,10 @@
   color: #4f46e5;
 }
 
-/* ── Agent system — light panel, blue wiring ─────────────────────────────── */
 .ga-page .ga-agent-section {
   background: #ffffff;
 }
 
-/* Agent architecture — a TRUE 1:1 square canvas. The base used 16/9, which
-   squeezed the radial composition wide. Keep the square and let the network
-   scale as one proportional block. */
 .ga-page .ga-agent-system {
   width: min(82vw, 820px);
   max-width: 100%;
@@ -791,7 +763,6 @@
   border-color: rgba(37, 99, 235, 0.4);
 }
 
-/* ── Workflow steps ──────────────────────────────────────────────────────── */
 .ga-page .ga-flow-line {
   background: rgba(37, 99, 235, 0.15);
 }
@@ -826,9 +797,6 @@
   overflow-wrap: break-word;
 }
 
-/* ── Site navbar on this page ───────────────────────────────────────────────
-   The home navbar's shell reserves --navbar-height above the hero, so the hero
-   is sized against the space that is actually left in the first viewport. */
 .ga-page .navbar-shell {
   position: relative;
   z-index: 1000;
@@ -839,12 +807,7 @@
   padding-top: 4.5rem;
 }
 
-/* ── Workflow layout: stop the 10 steps from overlapping ────────────────────
-   The pinned stage is 100svh with `overflow: hidden`, but ten steps of 1.35rem
-   serif plus notes cannot fit next to a 4.9rem heading — the track overflowed
-   and the rows piled into the caption rail. Distribute the steps evenly across
-   the height the pin actually has, scale type with viewport height, and give
-   the caption its own non-collapsing line. */
+
 @media (min-width: 900px) {
   .ga-page .ga-flow-pin {
     gap: 1.1rem;
@@ -914,7 +877,6 @@
 }
 
 
-/* ── Projects gallery room — navy band ───────────────────────────────────── */
 .ga-page .ga-gallery-halo {
   background: radial-gradient(circle, rgba(96, 165, 250, 0.2), rgba(59, 130, 246, 0.06) 42%, transparent 70%);
 }
@@ -1001,199 +963,344 @@
     inset 0 1px 0 rgba(147, 197, 253, 0.14);
 }
 
-.ga-page .ga-gallery-screen {
-  border-color: rgba(151, 182, 255, 0.14);
-  background: rgba(8, 14, 34, 0.72);
-}
-
-.ga-page .ga-gallery-screen-bar {
-  border-bottom-color: rgba(151, 182, 255, 0.1);
-  background: linear-gradient(180deg, rgba(151, 182, 255, 0.07), rgba(8, 14, 34, 0));
-}
-
-.ga-page .ga-gallery-screen-dots i {
-  background: rgba(147, 197, 253, 0.55);
-}
-
-.ga-page .ga-gallery-screen-dots i:nth-child(2) {
-  background: rgba(147, 197, 253, 0.26);
-}
-
-.ga-page .ga-gallery-screen-dots i:nth-child(3) {
-  background: rgba(147, 197, 253, 0.4);
-}
-
-.ga-page .ga-gallery-screen-chips em {
-  border-color: rgba(147, 197, 253, 0.28);
-  background: rgba(147, 197, 253, 0.08);
-  color: #c9dbff;
-}
-
 .ga-page .ga-gallery-frame {
   border-color: rgba(151, 182, 255, 0.1);
 }
 
-/* ── MacBook terminal cards ──────────────────────────────────────────────────
-   Anatomy, front-on, matching a 14" MacBook Pro: Space-grey aluminium lid, a
-   black bezel around the panel, the display notch cut into the top of the menu
-   bar, a glass sheen over the panel, and the aluminium deck below. */
-.ga-page .ga-gallery-lid {
-  padding: 0.5rem 0.5rem 0.55rem;
-  border-radius: 12px 12px 2px 2px;
-  background: linear-gradient(180deg, #eef2f7 0%, #d3dbe6 38%, #9aa8ba 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    inset 0 -1px 0 rgba(15, 23, 42, 0.22),
-    inset 1px 0 0 rgba(255, 255, 255, 0.35),
-    inset -1px 0 0 rgba(15, 23, 42, 0.1);
+
+.ga-page .ga-gallery-card-inner {
+  container-type: inline-size;
 }
 
-.ga-page .ga-gallery-laptop {
+.ga-page .ga-term {
+  --term-fs: max(var(--ga-fs-floor, 0px), clamp(0.52rem, 3.1cqi, 0.78rem));
   display: flex;
   flex-direction: column;
-}
-
-/* The screen element IS the panel: its padding is the black bezel, so the
-   notch and the glass sheen can be positioned against the display edges. */
-.ga-page .ga-gallery-lid .ga-gallery-screen {
-  position: relative;
-  border-radius: 5px;
-  border: 1px solid rgba(15, 23, 42, 0.7);
-  background: #000;
-  padding: 0.5rem 0.45rem 0.6rem;
-  aspect-ratio: 16 / 10;
-  box-shadow: inset 0 0 18px rgba(2, 6, 23, 0.95);
-}
-
-/* Display notch, hanging from the top edge into the menu bar. */
-.ga-page .ga-gallery-lid .ga-gallery-screen::before {
-  content: "";
-  position: absolute;
-  top: 0.5rem;
-  left: 50%;
-  width: 15%;
-  height: 0.34rem;
-  transform: translateX(-50%);
-  border-radius: 0 0 4px 4px;
-  background: #000;
-  box-shadow: 0 1px 0 rgba(148, 163, 184, 0.12);
-  z-index: 6;
-}
-
-/* Anti-reflective glass sheen. */
-.ga-page .ga-gallery-lid .ga-gallery-screen::after {
-  content: "";
-  position: absolute;
-  inset: 0.5rem 0.45rem 0.6rem;
-  background: linear-gradient(122deg, rgba(255, 255, 255, 0.11) 0%, rgba(255, 255, 255, 0.035) 20%, transparent 40%);
-  pointer-events: none;
-  z-index: 3;
-}
-
-.ga-page .ga-gallery-lid .ga-gallery-screen-bar {
-  position: relative;
-  z-index: 5;
-  padding: 0.28rem 0.45rem;
-  background: linear-gradient(180deg, #1e2743 0%, #151d33 100%);
-  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 3px 3px 0 0;
-}
-
-/* Traffic lights, in macOS order, with the usual top gloss. */
-.ga-page .ga-gallery-lid .ga-gallery-screen-dots i {
-  width: 7px;
-  height: 7px;
-  background: radial-gradient(circle at 50% 25%, #ff8a85, #ff5f57 70%);
-  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.3);
-}
-
-.ga-page .ga-gallery-lid .ga-gallery-screen-dots i:nth-child(2) {
-  background: radial-gradient(circle at 50% 25%, #ffd77a, #febc2e 70%);
-}
-
-.ga-page .ga-gallery-lid .ga-gallery-screen-dots i:nth-child(3) {
-  background: radial-gradient(circle at 50% 25%, #6ee98a, #28c840 70%);
-}
-
-.ga-page .ga-gallery-lid .ga-gallery-screen-route {
-  color: #8296bb;
-  font-size: max(var(--ga-fs-floor, 0px), clamp(0.44rem, 0.48vw, 0.54rem));
-  letter-spacing: 0.12em;
-}
-
-.ga-page .ga-gallery-lid .ga-gallery-screen-body {
-  position: relative;
-  z-index: 2;
-  background: linear-gradient(180deg, #0a0f1f 0%, #050914 100%);
-  border-radius: 0 0 3px 3px;
-  gap: 0.34rem;
-  padding: 0.5rem 0.6rem 0.55rem;
-}
-
-.ga-page .ga-gallery-screen-prompt {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.28rem;
+  min-height: clamp(7rem, 62cqi, 12rem);
+  overflow: hidden;
+  border: 1px solid rgba(151, 182, 255, 0.16);
+  border-radius: 8px;
+  background: #070c1b;
+  box-shadow: inset 0 1px 0 rgba(151, 182, 255, 0.06);
   font-family: var(--ga-mono);
-  font-size: max(var(--ga-fs-floor, 0px), clamp(0.42rem, 0.46vw, 0.52rem));
-  line-height: 1.5;
+  transition: border-color 0.4s var(--ga-ease);
 }
 
-.ga-page .ga-gallery-screen-prompt i {
-  font-style: normal;
-  color: #5eead4;
+.ga-page .ga-gallery-card:hover .ga-term {
+  border-color: rgba(147, 197, 253, 0.34);
 }
 
-.ga-page .ga-gallery-screen-prompt i:first-child {
+.ga-page .ga-term-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+  padding: 0.38rem 0.6rem;
+  border-bottom: 1px solid rgba(151, 182, 255, 0.12);
+  background: linear-gradient(180deg, rgba(151, 182, 255, 0.07), rgba(7, 12, 27, 0));
+  font-size: max(var(--ga-fs-floor, 0px), calc(var(--term-fs) * 0.82));
+  letter-spacing: 0.08em;
+  color: #7f90ba;
+}
+
+.ga-page .ga-term-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.24rem;
+  flex-shrink: 0;
+}
+
+.ga-page .ga-term-dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(147, 197, 253, 0.34);
+}
+
+.ga-page .ga-term-dots i:nth-child(2) {
+  background: rgba(147, 197, 253, 0.18);
+}
+
+.ga-page .ga-term-dots i:nth-child(3) {
+  background: rgba(147, 197, 253, 0.26);
+}
+
+.ga-page .ga-term-id {
+  flex-shrink: 0;
+  color: var(--ga-acc, #93c5fd);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.ga-page .ga-term-divider {
+  flex-shrink: 0;
+  opacity: 0.4;
+}
+
+.ga-page .ga-term-category {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.ga-page .ga-term-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  flex-shrink: 0;
   color: #34d399;
+  font-size: 0.85em;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
-.ga-page .ga-gallery-screen-prompt i:nth-child(2) {
+.ga-page .ga-term-live i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 6px rgba(52, 211, 153, 0.7);
+}
+
+/* Command + execution log. */
+.ga-page .ga-term-body {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.35rem, 1.1cqi, 0.7rem);
+  flex: 1;
+  min-height: 0;
+  padding: clamp(0.5rem, 1.5cqi, 0.9rem) clamp(0.55rem, 1.8cqi, 1rem);
+}
+
+.ga-page .ga-term-command {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: var(--term-fs);
+  line-height: 1.4;
   color: #e2e8f0;
 }
 
-.ga-page .ga-gallery-screen-prompt i:nth-child(3),
-.ga-page .ga-gallery-screen-prompt i:nth-child(4) {
+.ga-page .ga-term-sigil {
+  color: #34d399;
+  font-weight: 700;
+}
+
+.ga-page .ga-term-verb {
+  color: #e2e8f0;
+  font-weight: 700;
+}
+
+.ga-page .ga-term-flag {
   color: #7dd3fc;
 }
 
-.ga-page .ga-gallery-screen-caret {
-  display: inline-block;
-  width: 0.4rem;
-  height: 0.78rem;
-  background: var(--ga-acc, #60a5fa);
-  box-shadow: 0 0 8px var(--ga-acc-soft, rgba(96, 165, 250, 0.55));
-  animation: ga-caret-blink 1.15s steps(2, start) infinite;
+.ga-page .ga-term-arg {
+  color: var(--ga-acc, #93c5fd);
+  font-weight: 700;
 }
 
-@keyframes ga-caret-blink {
+.ga-page .ga-term-caret {
+  width: 0.42em;
+  height: 1.05em;
+  flex-shrink: 0;
+  background: var(--ga-acc, #93c5fd);
+  box-shadow: 0 0 8px var(--ga-acc-soft, rgba(96, 165, 250, 0.55));
+  animation: ga-term-blink 1.1s steps(2, start) infinite;
+}
+
+@keyframes ga-term-blink {
   50% {
     opacity: 0;
   }
 }
 
-/* Aluminium deck, a touch wider than the lid, with the front-edge notch. */
-.ga-page .ga-gallery-laptop-base {
-  position: relative;
-  display: block;
-  height: clamp(0.3rem, 0.42vw, 0.42rem);
-  margin: 0 -2.2% -0.3rem;
-  border-radius: 0 0 5px 5px;
-  background: linear-gradient(180deg, #e2e8f0 0%, #b6c1d0 45%, #7f8da1 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    0 8px 16px -8px rgba(2, 6, 23, 0.6);
+.ga-page .ga-term-logs {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.18rem, 0.6cqi, 0.38rem);
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
-.ga-page .ga-gallery-laptop-base i {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 14%;
-  height: 2px;
-  transform: translateX(-50%);
-  border-radius: 0 0 3px 3px;
-  background: rgba(51, 65, 85, 0.7);
+.ga-page .ga-term-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem;
+  margin: 0;
+  font-size: max(var(--ga-fs-floor, 0px), calc(var(--term-fs) * 0.9));
+  line-height: 1.4;
+  color: #94a3b8;
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+.ga-page .ga-term-line--lead {
+  color: #f1f5f9;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.ga-page .ga-term-line--note {
+  color: #b7c6e6;
+  overflow-wrap: anywhere;
+}
+
+.ga-page .ga-term-line b {
+  color: var(--ga-acc, #93c5fd);
+  font-weight: 700;
+}
+
+.ga-page .ga-term-time {
+  flex-shrink: 0;
+  color: #4b6191;
+}
+
+.ga-page .ga-term-tag {
+  flex-shrink: 0;
+  color: #7dd3fc;
+}
+
+.ga-page .ga-term-tag--ok {
+  color: #34d399;
+}
+
+.ga-page .ga-term-ok {
+  color: #34d399;
+  font-weight: 700;
+}
+
+.ga-page .ga-term-value {
+  color: #c9dbff;
+  overflow-wrap: anywhere;
+}
+
+/* Status pills sit at the foot of the terminal, like a build summary. */
+.ga-page .ga-term-statuses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding-top: 0.1rem;
+}
+
+.ga-page .ga-term-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.16rem 0.4rem;
+  border: 1px solid rgba(151, 182, 255, 0.18);
+  border-radius: 999px;
+  font-size: max(var(--ga-fs-floor, 0px), calc(var(--term-fs) * 0.72));
+  letter-spacing: 0.1em;
+  color: #7f90ba;
+  opacity: 0;
+  transform: translateY(3px);
+}
+
+.ga-page .ga-term-status i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.ga-page .ga-term-status--running {
+  color: #7dd3fc;
+}
+
+.ga-page .ga-term-status--verified {
+  color: #a78bfa;
+}
+
+.ga-page .ga-term-status--complete {
+  color: #34d399;
+}
+
+/* The gallery writes data-state onto the card as it scrolls. When a project
+   takes the stage, type its command, print the logs, then raise the statuses.
+   Leaving the state removes the animation, so the next pass replays it. */
+.ga-page [data-state="active"] .ga-term-command {
+  animation: ga-term-type 0.7s steps(26, end) 0.08s both;
+}
+
+@keyframes ga-term-type {
+  from { max-width: 0; }
+  to { max-width: 100%; }
+}
+
+.ga-page [data-state="active"] .ga-term-line {
+  animation: ga-term-print 0.32s ease-out both;
+}
+
+.ga-page [data-state="active"] .ga-term-line:nth-child(1) { animation-delay: 0.62s; }
+.ga-page [data-state="active"] .ga-term-line:nth-child(2) { animation-delay: 0.82s; }
+.ga-page [data-state="active"] .ga-term-line:nth-child(3) { animation-delay: 1.02s; }
+.ga-page [data-state="active"] .ga-term-line:nth-child(4) { animation-delay: 1.22s; }
+.ga-page [data-state="active"] .ga-term-line:nth-child(5) { animation-delay: 1.42s; }
+
+@keyframes ga-term-print {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+.ga-page [data-state="active"] .ga-term-status {
+  animation: ga-term-print 0.3s ease-out both;
+}
+
+.ga-page [data-state="active"] .ga-term-status--running { animation-delay: 1.6s; }
+.ga-page [data-state="active"] .ga-term-status--verified { animation-delay: 1.75s; }
+.ga-page [data-state="active"] .ga-term-status--complete { animation-delay: 1.9s; }
+
+/* Phone carousel: every card shares one vertical trigger, so keep the logs
+   static — the terminal is readable without waiting for a scroll cue. */
+@media (max-width: 560px) {
+  .ga-page .ga-term-command {
+    max-width: none;
+    animation: none !important;
+  }
+
+  .ga-page .ga-term-line,
+  .ga-page .ga-term-status {
+    opacity: 1;
+    transform: none;
+    animation: none !important;
+  }
+
+  .ga-page .ga-term-caret {
+    animation: none;
+  }
+}
+
+/* Reduced motion: show the finished terminal immediately, never animate it. */
+@media (prefers-reduced-motion: reduce) {
+  .ga-page .ga-term-command {
+    max-width: none;
+  }
+
+  .ga-page .ga-term-command,
+  .ga-page .ga-term-line,
+  .ga-page .ga-term-status {
+    animation: none !important;
+  }
+
+  .ga-page .ga-term-line,
+  .ga-page .ga-term-status {
+    opacity: 1;
+    transform: none;
+  }
+
+  .ga-page .ga-term-caret,
+  .ga-page .ga-term-live i {
+    animation: none;
+  }
 }
 
 .ga-page .ga-gallery-edge {
@@ -2065,8 +2172,10 @@ body.ga-gallery-active .ga-burger {
     top: 40px;
   }
 
+  /* The navbar is fixed and transparent, so a section scrolled to its top
+     would sit underneath the links/CTA. Keep the heading below the bar. */
   .ga-page .ga-tl-pin {
-    padding-top: clamp(48px, 12vw, 72px);
+    padding-top: max(clamp(48px, 12vw, 72px), calc(var(--navbar-height-scrolled, 70px) + 10px));
   }
 
   .ga-page .ga-skills-pin,
@@ -2198,24 +2307,25 @@ body.ga-gallery-active .ga-burger {
   }
 }
 
-/* Closed stage cards were stretched to the open card's height, leaving two
-   large empty boxes beside it. */
+/* Every stage card opens a dialog now instead of expanding in place, so all
+   six cards can keep one equal height per row — no empty boxes beside an open
+   card, and no short cards next to a long one. */
 .ga-page .ga-journey-grid {
-  align-items: start;
+  align-items: stretch;
 }
 
-/* ── Agentic System: 3D node art (Fluent Emoji PNGs) ─────────────────── */
+/* ── Agentic System: icon + label pills (the hub stays text-only) ─────── */
 .ga-page .ga-agent-node {
-  gap: 10px;
-  padding: 6px 18px 6px 6px;
+  gap: 7px;
+  padding: 6px 14px 6px 6px;
   font-size: 12px;
   letter-spacing: 0.06em;
 }
 
 .ga-page .ga-agent-node-art {
   flex-shrink: 0;
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   padding: 4px;
   border-radius: 50%;
   background: #f1f7ff;
@@ -2227,32 +2337,17 @@ body.ga-gallery-active .ga-burger {
   transform: scale(1.18) rotate(-6deg);
 }
 
-.ga-page .ga-agent-center-art {
-  width: 48px;
-  height: 48px;
-  margin-top: 0.3rem;
-  margin-bottom: 0.5rem;
-  object-fit: contain;
-  filter: drop-shadow(0 8px 14px rgba(37, 99, 235, 0.25));
-}
-
 @media (max-width: 560px) {
   .ga-page .ga-agent-node {
-    gap: 5px;
-    padding: 3px 9px 3px 4px;
+    gap: 4px;
+    padding: 3px 7px 3px 3px;
     font-size: 10px;
   }
 
   .ga-page .ga-agent-node-art {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     padding: 2px;
-  }
-
-  .ga-page .ga-agent-center-art {
-    width: 32px;
-    height: 32px;
-    margin-bottom: 0.2rem;
   }
 }
 
@@ -2317,5 +2412,150 @@ body.ga-gallery-active .ga-burger {
     flex-wrap: nowrap;
     font-size: 0.72rem;
     letter-spacing: 0.14em;
+  }
+}
+
+/* Loaded after cinematic.css, so this wins on specificity and order. Reduced
+   motion keeps the hover colour/shadow feedback but drops the instant card and
+   arrow jumps that remained after the main reduced-motion block. */
+@media (prefers-reduced-motion: reduce) {
+  .ga-page .ga-gallery-card:hover .ga-gallery-card-inner,
+  .ga-page .ga-gallery-card:hover .ga-gallery-cta em {
+    transform: none;
+  }
+}
+
+/* ── Product System collage: a real circle at every screen size ──────────────
+   The canvas is a square, the hub is a fixed share of it, and both the desktop
+   ring and the compact phone ring are expressed as percentages of that square.
+   The hub copy is wrapped INSIDE the circle so it can never cross the rim.
+   On phones the ten pills move to an evenly spaced 38% ring (with their own
+   connector paths) and shrink to text-only chips — the wheel is kept, not
+   replaced with a grid. */
+.ga-page .ga-agent-system {
+  container-type: inline-size;
+}
+
+/* One connector set at a time: the compact phone ring has its own endpoints. */
+.ga-page .ga-agent-line-flow--mobile,
+.ga-page .ga-agent-ends--mobile {
+  display: none;
+}
+
+.ga-page .ga-agent-nodes {
+  display: contents;
+}
+
+.ga-page .ga-agent-center {
+  width: 19cqw;
+  height: auto;
+  aspect-ratio: 1;
+  box-sizing: border-box;
+  padding: 10px;
+  gap: 2px;
+  /* Without this, grid stretches its two auto rows across the full circle and
+     the title/caption drift far apart instead of sitting as one centred group. */
+  align-content: center;
+}
+
+.ga-page .ga-agent-center-title {
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  line-height: 1.05;
+  margin: 0;
+}
+
+.ga-page .ga-agent-center-sub {
+  width: 86%;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  line-height: 1.25;
+  text-wrap: balance;
+  white-space: normal;
+}
+
+.ga-page .ga-agent-node {
+  left: var(--nx);
+  top: var(--ny);
+  transform: translate(-50%, -50%);
+}
+
+@media (max-width: 899px) {
+  .ga-page .ga-agent-system {
+    width: min(94vw, 420px);
+    /* A square canvas is what keeps the ring a circle, not an ellipse. */
+    aspect-ratio: 1;
+    margin-inline: auto;
+  }
+
+  .ga-page .ga-agent-line-flow--desktop,
+  .ga-page .ga-agent-ends--desktop {
+    display: none;
+  }
+
+  .ga-page .ga-agent-line-flow--mobile,
+  .ga-page .ga-agent-ends--mobile {
+    display: inline;
+  }
+
+  .ga-page .ga-agent-packets {
+    display: none;
+  }
+
+  .ga-page .ga-agent-center {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: clamp(72px, 22cqw, 88px);
+    height: auto;
+    aspect-ratio: 1;
+    padding: 4px;
+    gap: 1px;
+  }
+
+  .ga-page .ga-agent-center-title {
+    font-size: 9px;
+    letter-spacing: 0.02em;
+  }
+
+  .ga-page .ga-agent-center-sub {
+    width: 94%;
+    font-size: 8px;
+    letter-spacing: 0.02em;
+    line-height: 1.15;
+  }
+
+  .ga-page .ga-agent-nodes {
+    display: contents;
+  }
+
+  .ga-page .ga-agent-node {
+    left: var(--nxm);
+    top: var(--nym);
+    transform: translate(-50%, -50%);
+    gap: 3px;
+    padding: 3px 5px 3px 3px;
+    font-size: max(8px, 2.3cqw);
+    letter-spacing: 0.01em;
+    line-height: 1.1;
+    border-width: 1px;
+  }
+
+  .ga-page .ga-agent-node-art {
+    width: 14px;
+    height: 14px;
+    padding: 1px;
+  }
+}
+
+/* On the narrowest phones the ten horizontal pills are wider than the gap
+   between neighbours. Stack each icon above its label so the full circle
+   still fits without overlaps. */
+@media (max-width: 380px) {
+  .ga-page .ga-agent-node {
+    flex-direction: column;
+    gap: 1px;
+    padding: 4px 5px;
+    text-align: center;
   }
 }

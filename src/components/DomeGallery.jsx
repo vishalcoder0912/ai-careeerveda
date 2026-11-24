@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useCallback, useState } from 'react';
 import { useGesture } from '@use-gesture/react';
+import { useLockSmoothScroll } from '../lib/smoothScroll';
 import './DomeGallery.css';
 
 const DEFAULTS = {
@@ -10,6 +11,9 @@ const DEFAULTS = {
 };
 
 const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
+const prefersReducedMotion = () =>
+  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const motionDuration = transitionMs => (prefersReducedMotion() ? 0 : transitionMs);
 const normalizeAngle = d => ((d % 360) + 360) % 360;
 const wrapAngleSigned = deg => {
   const a = (((deg + 180) % 360) + 360) % 360;
@@ -116,6 +120,10 @@ export default function DomeGallery({
   const closeOverlayRef = useRef(() => {});
   const closeButtonRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
+
+  // The overlay's body class only locks native scrolling; Lenis needs to be
+  // paused explicitly while the enlarged view owns the wheel.
+  useLockSmoothScroll(isOpen);
 
   const scrollLockedRef = useRef(false);
   const lockScroll = useCallback(() => {
@@ -253,6 +261,7 @@ export default function DomeGallery({
 
   const startInertia = useCallback(
     (vx, vy) => {
+      if (prefersReducedMotion()) return;
       const MAX_V = 1.4;
       let vX = clamp(vx, -MAX_V, MAX_V) * 80;
       let vY = clamp(vy, -MAX_V, MAX_V) * 80;
@@ -378,7 +387,7 @@ export default function DomeGallery({
       };
       const animatingOverlay = document.createElement('div');
       animatingOverlay.className = 'enlarge-closing';
-      animatingOverlay.style.cssText = `position:absolute;left:${overlayRelativeToRoot.left}px;top:${overlayRelativeToRoot.top}px;width:${overlayRelativeToRoot.width}px;height:${overlayRelativeToRoot.height}px;z-index:9999;border-radius: var(--enlarge-radius, 32px);overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.35);transition:all ${enlargeTransitionMs}ms ease-out;pointer-events:none;margin:0;transform:none;`;
+      animatingOverlay.style.cssText = `position:absolute;left:${overlayRelativeToRoot.left}px;top:${overlayRelativeToRoot.top}px;width:${overlayRelativeToRoot.width}px;height:${overlayRelativeToRoot.height}px;z-index:9999;border-radius: var(--enlarge-radius, 32px);overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.35);transition:all ${motionDuration(enlargeTransitionMs)}ms ease-out;pointer-events:none;margin:0;transform:none;`;
       const originalImg = overlay.querySelector('img');
       if (originalImg) {
         const img = originalImg.cloneNode();
@@ -417,7 +426,7 @@ export default function DomeGallery({
           setIsOpen(false);
           requestAnimationFrame(() => {
             parent.style.transition = '';
-            el.style.transition = 'opacity 300ms ease-out';
+            el.style.transition = `opacity ${motionDuration(enlargeTransitionMs)}ms ease-out`;
             requestAnimationFrame(() => {
               el.style.opacity = '1';
               setTimeout(() => {
@@ -426,13 +435,13 @@ export default function DomeGallery({
                 openingRef.current = false;
                 if (!draggingRef.current) unlockScroll();
                 el.focus({ preventScroll: true });
-              }, 300);
+              }, motionDuration(enlargeTransitionMs));
             });
           });
         });
       };
       animatingOverlay.addEventListener('transitionend', cleanup, { once: true });
-      const closeFallback = window.setTimeout(cleanup, Math.max(50, enlargeTransitionMs + 80));
+      const closeFallback = window.setTimeout(cleanup, Math.max(50, motionDuration(enlargeTransitionMs) + 80));
     };
     closeOverlayRef.current = close;
     scrim.addEventListener('click', close);
@@ -495,8 +504,6 @@ export default function DomeGallery({
       }
 
       originalTilePositionRef.current = { left: tileR.left, top: tileR.top, width: tileR.width, height: tileR.height };
-      el.style.visibility = 'hidden';
-      el.style.zIndex = 0;
       const overlay = document.createElement('div');
       overlay.className = 'enlarge';
       overlay.style.position = 'absolute';
@@ -508,7 +515,7 @@ export default function DomeGallery({
       overlay.style.zIndex = '30';
       overlay.style.willChange = 'transform, opacity';
       overlay.style.transformOrigin = 'top left';
-      overlay.style.transition = `transform ${enlargeTransitionMs}ms ease, opacity ${enlargeTransitionMs}ms ease`;
+      overlay.style.transition = `transform ${motionDuration(enlargeTransitionMs)}ms ease, opacity ${motionDuration(enlargeTransitionMs)}ms ease`;
       const rawSrc = parent.dataset.src || el.querySelector('img')?.src || '';
       const alt = el.querySelector('img')?.alt || '';
       if (!rawSrc) {
@@ -519,6 +526,9 @@ export default function DomeGallery({
         unlockScroll();
         return;
       }
+      // Hide the source tile only once we know the overlay can be painted.
+      el.style.visibility = 'hidden';
+      el.style.zIndex = 0;
       onImageOpen?.({ id: parent.dataset.id || rawSrc, src: rawSrc, alt });
       const img = document.createElement('img');
       img.src = rawSrc;
@@ -559,7 +569,7 @@ export default function DomeGallery({
           overlay.style.width = frameR.width + 'px';
           overlay.style.height = frameR.height + 'px';
           void overlay.offsetWidth;
-          overlay.style.transition = `left ${enlargeTransitionMs}ms ease, top ${enlargeTransitionMs}ms ease, width ${enlargeTransitionMs}ms ease, height ${enlargeTransitionMs}ms ease`;
+          overlay.style.transition = `left ${motionDuration(enlargeTransitionMs)}ms ease, top ${motionDuration(enlargeTransitionMs)}ms ease, width ${motionDuration(enlargeTransitionMs)}ms ease, height ${motionDuration(enlargeTransitionMs)}ms ease`;
           const centeredLeft = frameR.left - mainR.left + (frameR.width - newRect.width) / 2;
           const centeredTop = frameR.top - mainR.top + (frameR.height - newRect.height) / 2;
           requestAnimationFrame(() => {

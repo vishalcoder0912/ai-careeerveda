@@ -9,7 +9,7 @@
 // nothing rendered the component. This does.
 
 import {describe, it, expect, vi, beforeEach, afterEach} from "vitest";
-import {render, screen, cleanup} from "@testing-library/react";
+import {render, screen, cleanup, fireEvent} from "@testing-library/react";
 import {MemoryRouter, Routes, Route} from "react-router-dom";
 
 import {RESOURCES} from "../config/resources";
@@ -74,5 +74,21 @@ describe("ResourceEditor", () => {
     // guard has to be a count, not a truthy object that is always present.
     await renderEditor("/faculty/new");
     expect(screen.queryByText(/prefilled with the values every/i)).not.toBeInTheDocument();
+  });
+
+  it("keeps a typed batch date by switching the mode to Custom", async () => {
+    // The backend replaces an auto-mode date with the next Saturday. Typing a
+    // date must therefore flip the mode here, or the editor's own change would
+    // be discarded the moment they pressed Save.
+    await renderEditor("/programs/new");
+    const dateInput = await screen.findByLabelText("Next batch", {exact: true});
+    // Pricing opens or folds with the other sections; query it even when the
+    // details panel is closed so the test does not depend on layout defaults.
+    const modeSelect = screen.getByLabelText(/Next batch mode/, {hidden: true});
+
+    expect(modeSelect.value).toBe("auto");
+    fireEvent.change(dateInput, {target: {value: "September 19, 2026"}});
+    expect(dateInput.value).toBe("September 19, 2026");
+    expect(modeSelect.value).toBe("custom");
   });
 });

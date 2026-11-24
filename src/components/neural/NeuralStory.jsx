@@ -19,6 +19,8 @@ import "./neural-story.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const MQ_MOTION = "(prefers-reduced-motion: no-preference)";
+
 // One scrubbed timeline, 11.2 units long, mapped onto the whole track.
 // look: the flow's story object, which starts at HANDOFF. onUpdate tells the
 // flow when the story owns the camera.
@@ -40,7 +42,9 @@ const buildTimeline = (track, look, flowState) => {
   // neural-story.css), and skip the blur: a filter repainted every scroll
   // frame is what stutters on phone GPUs.
   const narrow = () => window.matchMedia("(max-width: 899px)").matches;
-  const blur = narrow() ? () => ({}) : (px) => ({filter: `blur(${px}px)`});
+  // Function-based so invalidateOnRefresh re-reads the breakpoint: a resize or
+  // rotation across 900px drops the blur instead of keeping the mount-time one.
+  const blur = (px) => ({filter: () => (narrow() ? "none" : `blur(${px}px)`)});
   // Function values, re-read on refresh (invalidateOnRefresh), so a rotated
   // phone re-frames. Narrow: centred, in the band between the header and the
   // copy, and never wider than ~90% of the screen.
@@ -107,12 +111,52 @@ const NeuralStory = () => {
     return () => observer.disconnect();
   }, [mode]);
 
+  // The static layout (phones without WebGL, reduced motion) has no scrubbed
+  // timeline, so its beats would otherwise just sit there fully formed. Give
+  // them the same on-entry reveal the rest of the site uses: one attribute per
+  // beat as it scrolls in, and CSS does the fade and rise. No WebGL required.
+  useEffect(() => {
+    if (mode.cinematic || !sectionRef.current) return undefined;
+    const beats = Array.from(sectionRef.current.querySelectorAll(".ns-beat"));
+    if (typeof IntersectionObserver === "undefined") {
+      beats.forEach((el) => {
+        el.dataset.inView = "true";
+      });
+      return undefined;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.dataset.inView = "true";
+          observer.unobserve(entry.target);
+        });
+      },
+      {threshold: 0.15},
+    );
+    beats.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [mode]);
+
   useEffect(() => {
     if (!mode.cinematic) return undefined;
-    const ctx = gsap.context(() => buildTimeline(trackRef.current, look, flow.state), sectionRef);
+    const mm = gsap.matchMedia();
+    mm.add(MQ_MOTION, () => {
+      buildTimeline(trackRef.current, look, flow.state);
+      return () => {
+        // Defensive clear on top of mm.revert(): switching to reduced motion
+        // must never leave a beat hidden at opacity 0.
+        trackRef.current?.querySelectorAll(".ns-beat, .ns-laptop").forEach((el) => {
+          el.style.removeProperty("opacity");
+          el.style.removeProperty("visibility");
+          el.style.removeProperty("transform");
+          el.style.removeProperty("filter");
+        });
+      };
+    });
     // The page grew when this chunk arrived; re-measure every trigger.
     ScrollTrigger.refresh();
-    return () => ctx.revert();
+    return () => mm.revert();
   }, [mode, look, flow]);
 
   return (

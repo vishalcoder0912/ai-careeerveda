@@ -161,20 +161,22 @@ const HomePage = () => {
         <RecommendedCourses />
       </DeferUntilVisible>
 
-      <DeferUntilVisible minHeight={640}>
+      <DeferUntilVisible className="home-defer-skills">
         <AiSkillsCurve />
       </DeferUntilVisible>
 
-      <DeferUntilVisible minHeight={640}>
+      <DeferUntilVisible className="home-defer-roi">
         <CareerRoiCalculator />
       </DeferUntilVisible>
 
       {/* No featured stories means the section renders nothing, so it reserves
-          nothing — a 520px hold collapsed to 0 under the reader otherwise. */}
-      <DeferUntilVisible minHeight={reviews.length ? 520 : 0}>
+          nothing — a fixed hold collapsed to 0 under the reader otherwise. */}
+      <DeferUntilVisible
+        className={reviews.length ? "home-defer-outcomes" : undefined}
+      >
         <LearnerOutcomes reviews={reviews} stats={stats} />
       </DeferUntilVisible>
-       <DeferUntilVisible minHeight={520}>
+      <DeferUntilVisible className="home-defer-trusted">
         <TrustedCompanies />
       </DeferUntilVisible>
 

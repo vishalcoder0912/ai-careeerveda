@@ -1,8 +1,3 @@
-// Environment schema. The server refuses to boot on an invalid config rather
-// than failing later on the first request that happens to need the missing
-// value — a backend that starts without JWT secrets is a backend that will
-// happily issue unverifiable tokens.
-
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 
@@ -72,6 +67,13 @@ const schema = z.object({
   // Where the admissions team is notified of each hiring enquiry.
   LEAD_NOTIFY_EMAIL: z.string().optional(),
 
+  // Server-side GA4 lead events. Both must be set; blank disables reporting
+  // rather than failing a deploy. The API secret is created in GA4 Admin →
+  // Data streams → Measurement Protocol API secrets and is never sent to a
+  // browser. The measurement ID is the public G-… value already in index.html.
+  GA4_MEASUREMENT_ID: z.string().optional(),
+  GA4_API_SECRET: z.string().optional(),
+
   // Cloudflare Turnstile secret for the public forms. Blank skips the check
   // (dev, tests); an https deploy refuses to boot without it (see below).
   TURNSTILE_SECRET_KEY: z.string().optional(),
@@ -80,7 +82,22 @@ const schema = z.object({
   TURNSTILE_DISABLED: z.enum(["true", "false"]).default("false"),
 
   // A hop count ("1", "2") or an Express trust-proxy list ("loopback, 10.0.0.0/8").
-  TRUST_PROXY: z.string().default("1"),
+  // It must equal the real number of proxies in front of this process: one too
+  // few and every visitor shares one rate-limit bucket, one too many and a
+  // client can spoof X-Forwarded-For. Cloud Run alone is 1; Cloudflare in front
+  // of Cloud Run is 2; the nginx VM deploy overwrites X-Forwarded-For itself and
+  // therefore stays 1 even behind Cloudflare (see deploy/nginx-careerveda.conf).
+  TRUST_PROXY: z
+    .string()
+    .default("1")
+    .refine(
+      (value) =>
+        /^\d+$/.test(value.trim()) ||
+        value
+          .split(",")
+          .every((entry) => /^(loopback|linklocal|uniquelocal|[\da-fA-F:.]+(?:\/\d{1,3})?)$/i.test(entry.trim())),
+      "TRUST_PROXY must be a hop count (for example 1) or a comma-separated list of proxy addresses/ranges.",
+    ),
 
   // Every admin must have two-factor sign-in before the panel lets them touch
   // content, leads or settings. Unset means "on for any https deploy"

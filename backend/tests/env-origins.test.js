@@ -56,4 +56,17 @@ describe("allowed origins on a secure-cookie deploy", () => {
   it("still allows localhost when cookies are not secure (local Docker)", () => {
     expect(boot({COOKIE_SECURE: "false", FRONTEND_URL: "http://localhost:5173"}).status).toBe(0);
   });
+
+  // Finding 5: a wrong hop count silently breaks every per-IP control, so a
+  // typo must fail at boot instead of being handed to Express as a trust list.
+  it("accepts a hop count and an explicit proxy list", () => {
+    expect(boot({TRUST_PROXY: "2"}).status).toBe(0);
+    expect(boot({TRUST_PROXY: "loopback, 10.0.0.0/8"}).status).toBe(0);
+  });
+
+  it("refuses an unrecognised TRUST_PROXY value", () => {
+    const result = boot({TRUST_PROXY: "yes"});
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain("TRUST_PROXY");
+  });
 });

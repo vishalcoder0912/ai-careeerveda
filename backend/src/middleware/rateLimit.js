@@ -14,7 +14,7 @@ import {tooManyRequests} from "../utils/apiError.js";
 // While the database is not connected (boot, an outage, unit tests) the store
 // counts in memory instead of failing the request — a degraded limit beats
 // refusing every login because the counter is unreachable.
-class SharedStore {
+export class SharedStore {
   constructor(prefix) {
     this.prefix = prefix;
     this.fallback = new MemoryStore();
@@ -88,6 +88,7 @@ export const globalLimiter = rateLimit({
   ...base,
   windowMs: 60 * 1000,
   limit: 500,
+  store: new SharedStore("global"),
   handler: handler("Too many requests from this network. Please try again later."),
   keyGenerator: (req) => req.ip,
 });
@@ -182,5 +183,8 @@ export const uploadLimiter = rateLimit({
   ...base,
   windowMs: 60 * 1000,
   limit: 30,
+  // Uploads are the expensive path, so their budget must survive a request
+  // landing on a different Cloud Run instance.
+  store: new SharedStore("upload"),
   handler: handler("Too many uploads. Please wait a moment."),
 });

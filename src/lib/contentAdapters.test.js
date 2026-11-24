@@ -96,6 +96,15 @@ describe("adaptJob", () => {
     });
   });
 
+  it("keeps the admin's applications toggle instead of forcing it on", () => {
+    expect(adaptJob({...record, acceptsApplications: true}).acceptsApplications).toBe(true);
+    expect(adaptJob({...record, acceptsApplications: false}).acceptsApplications).toBe(false);
+  });
+
+  it("does not offer CareerVeda applications on listings with no toggle set", () => {
+    expect(adaptJob(record).acceptsApplications).toBe(false);
+  });
+
   it("falls back to an email, then a LinkedIn search, when there is no application URL", () => {
     expect(adaptJob({...record, applicationUrl: "", applicationEmail: "hr@example.com"}).applyUrl)
       .toBe("mailto:hr@example.com");

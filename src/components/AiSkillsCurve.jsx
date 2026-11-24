@@ -74,26 +74,32 @@ const AiSkillsCurve = () => {
           })}
         </div>
 
-        {/* The same numbers for screen readers — the bars above are hidden from them. */}
-        <table className="visually-hidden">
-          <caption>Mid-level annual pay in India by role, in lakhs per annum</caption>
-          <thead>
-            <tr>
-              <th scope="col">Role</th>
-              <th scope="col">Average</th>
-              <th scope="col">AI-upskilled</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr key={row.id}>
-                <th scope="row">{row.label}</th>
-                <td>{lpa(row.average)}</td>
-                <td>{lpa(row.upskilled)}</td>
+        {/* The same numbers for screen readers — the bars above are hidden from them.
+            The wrapper is doing real work: a <table> has an intrinsic min-content
+            width that ignores `width: 1px`, so hiding the table itself left it
+            ~400px wide and pushed `scrollWidth` past the viewport on phones. A
+            block wrapper honours the 1px box and clips the table inside it. */}
+        <div className="visually-hidden">
+          <table>
+            <caption>Mid-level annual pay in India by role, in lakhs per annum</caption>
+            <thead>
+              <tr>
+                <th scope="col">Role</th>
+                <th scope="col">Average</th>
+                <th scope="col">AI-upskilled</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr key={row.id}>
+                  <th scope="row">{row.label}</th>
+                  <td>{lpa(row.average)}</td>
+                  <td>{lpa(row.upskilled)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         <p className="skills-curve__note">
           Indicative benchmarks compiled from Glassdoor, AmbitionBox, Naukri and published

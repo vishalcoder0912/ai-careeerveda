@@ -23,6 +23,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 
 import {collectRoutes, monthYearToLastmod} from "./routes.mjs";
+import {loadLivePrograms} from "./live-programs.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const {SITE_URL} = await import(
@@ -37,7 +38,7 @@ assert.equal(monthYearToLastmod("December 2025"), "2025-12");
 assert.equal(monthYearToLastmod("Coming soon"), undefined);
 assert.equal(monthYearToLastmod(undefined), undefined);
 
-const routes = collectRoutes();
+const routes = collectRoutes(await loadLivePrograms());
 
 const escape = (value) =>
   String(value)

@@ -72,11 +72,22 @@ function reportPageView(title) {
   if (path === lastReportedPath) return;
   lastReportedPath = path;
 
-  window.gtag("event", "page_view", {
+  const details = {
     page_path: path,
     page_title: title || document.title,
     page_location: window.location.href,
-  });
+  };
+
+  window.gtag("event", "page_view", details);
+
+  // gtag() pushes its `arguments` object into dataLayer, which GTM triggers
+  // cannot match. This object is what a GTM "Custom Event" trigger on
+  // `cv_page_view` listens for, so tags published later can follow SPA routes.
+  // Do NOT attach a GA4 tag to it while index.html loads GA4 directly — that
+  // would send the same page view twice.
+  if (Array.isArray(window.dataLayer)) {
+    window.dataLayer.push({event: "cv_page_view", ...details});
+  }
 }
 
 // Applies one route's full SEO surface. `url` must already be absolute — every

@@ -117,15 +117,15 @@ export function GenerativeAIPage({content = genAiContent}) {
        would re-run it, and its cleanup calls killFX() — tearing down every
        pinned trigger the sections just created. Runs once; the [lenis] effect
        below re-attaches the scroll hook when the instance appears. */
-    const unsync = syncLenisToScrollTrigger(lenis);
-
+    // Lenis is published asynchronously. The [lenis] effect below is the sole
+    // owner of the ScrollTrigger sync subscription; subscribing here too made
+    // route navigation into this page register the same update twice.
     const refresh = () => ScrollTrigger.refresh();
     const t1 = setTimeout(refresh, 120);
     const t2 = setTimeout(refresh, 1200);
     window.addEventListener("load", refresh, {once: true});
 
     return () => {
-      unsync();
       clearTimeout(t1);
       clearTimeout(t2);
       window.removeEventListener("load", refresh);
@@ -134,8 +134,16 @@ export function GenerativeAIPage({content = genAiContent}) {
     /* Runs exactly once on purpose: re-keying on [lenis] would re-run this and
        kill every registered trigger the moment Lenis appears. The subscription
        is re-attached by the effect directly below. */
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  /* Admin copy can land after the timed refreshes above on a slow network.
+     When it does, the timeline pins are rebuilt with a new spacer, so every
+     trigger below them must measure again — otherwise the toolkit cards (and
+     every later section) animate thousands of pixels too early. */
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => ScrollTrigger.refresh());
+    return () => window.cancelAnimationFrame(frame);
+  }, [content]);
 
   /* Re-attach the module-level scroll hook if Lenis appears after the effect
      above (there is nothing to kill while scrolling — re-subscribing is safe). */

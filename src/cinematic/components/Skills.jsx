@@ -1,8 +1,10 @@
 import {useEffect, useRef} from "react";
 import {gsap} from "gsap";
-import {reducedMotionNow} from "../fx/registry";
 import {Lines, useCinematic} from "../content";
 import {SectionLabel} from "./Atmosphere";
+
+const MQ_MOBILE = "(max-width: 899px) and (prefers-reduced-motion: no-preference)";
+const MQ_DESKTOP = "(min-width: 900px) and (prefers-reduced-motion: no-preference)";
 
 export const SkillsSection = () => {
   const {skills} = useCinematic();
@@ -14,65 +16,84 @@ export const SkillsSection = () => {
     const section = sectionRef.current;
     const pin = pinRef.current;
     if (!section || !pin) return undefined;
-    if (reducedMotionNow()) return undefined;
 
     const cards = cardsRef.current.filter(Boolean);
+    const mm = gsap.matchMedia();
+
+    /* Defensive clear of the rendered props: no card should stay dimmed or
+       shifted if an entrance is interrupted by a media-query change. */
+    const clearCards = () => {
+      cards.forEach((el) => {
+        el.style.removeProperty("opacity");
+        el.style.removeProperty("transform");
+      });
+    };
 
     /* Mobile: no pin — each card rises in as it scrolls into view. */
-    if (!window.matchMedia("(min-width: 900px)").matches) {
+    mm.add(MQ_MOBILE, () => {
       const tweens = cards.map((el, i) =>
         gsap.fromTo(el, {opacity: 0, y: 48, x: i % 2 ? 24 : -24}, {
           opacity: 1, y: 0, x: 0, duration: 0.9, ease: "expo.out",
           scrollTrigger: {trigger: el, start: "top 88%", once: true},
         }),
       );
-      return () => tweens.forEach((t) => {
-        t.scrollTrigger?.kill();
-        t.kill();
+      return () => {
+        tweens.forEach((t) => {
+          t.scrollTrigger?.kill();
+          t.kill();
+        });
+        clearCards();
+      };
+    });
+
+    mm.add(MQ_DESKTOP, () => {
+      const entrance = cards.map((el, i) => {
+        const base = {opacity: 0, ease: "power2.out"};
+        const from =
+          i === 0 ? {x: -140, y: 0, scale: 1, opacity: 0}
+            : i === 1 ? {x: 0, y: -110, scale: 1, opacity: 0}
+            : i === 2 ? {x: 0, y: 0, scale: 0.55, opacity: 0}
+            : i === 3 ? {x: 150, y: 0, rotationY: 42, opacity: 0}
+            : {x: 0, y: 170, scale: 1, opacity: 0};
+        return gsap.fromTo(el, from, {
+          ...base,
+          x: 0,
+          y: 0,
+          scale: 1,
+          rotationY: 0,
+          opacity: 1,
+        });
       });
-    }
 
-    const entrance = cards.map((el, i) => {
-      const base = {opacity: 0, ease: "power2.out"};
-      const from =
-        i === 0 ? {x: -140, y: 0, scale: 1, opacity: 0}
-          : i === 1 ? {x: 0, y: -110, scale: 1, opacity: 0}
-          : i === 2 ? {x: 0, y: 0, scale: 0.55, opacity: 0}
-          : i === 3 ? {x: 150, y: 0, rotationY: 42, opacity: 0}
-          : {x: 0, y: 170, scale: 1, opacity: 0};
-      return gsap.fromTo(el, from, {
-        ...base,
-        x: 0,
-        y: 0,
-        scale: 1,
-        rotationY: 0,
-        opacity: 1,
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: "+=260%",
+          pin: pin,
+          scrub: 1,
+          anticipatePin: 1,
+          // Pinned sections measure first (see fx/pinned.js); this pin must
+          // do the same so the sections below measure against its spacer.
+          refreshPriority: 1,
+          onRefresh: (self) => self.scroll(),
+        },
       });
+
+      entrance.forEach((tw, i) => {
+        tl.add(tw, i === 0 ? 0 : `+=0.08`);
+      });
+      /* Let the grid breathe for the remaining scroll distance. */
+      tl.to({}, {duration: 0.5});
+
+      return () => {
+        tl.scrollTrigger?.kill();
+        tl.kill();
+        clearCards();
+      };
     });
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        start: "top top",
-        end: "+=260%",
-        pin: pin,
-        scrub: 1,
-        anticipatePin: 1,
-        onRefresh: (self) => self.scroll(),
-      },
-    });
-
-    entrance.forEach((tw, i) => {
-      tl.add(tw, i === 0 ? 0 : `+=0.08`);
-    });
-    /* Let the grid breathe for the remaining scroll distance. */
-    tl.to({}, {duration: 0.5});
-
-    const cleanup = () => {
-      tl.scrollTrigger?.kill();
-      tl.kill();
-    };
-    return cleanup;
+    return () => mm.revert();
   }, []);
 
   return (

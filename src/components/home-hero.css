@@ -442,8 +442,42 @@
   }
 }
 
+/* Phones with no WebGL (or before the three.js chunk arrives) otherwise see a
+   completely still gradient where the brain should be. Give the stand-in its
+   own slow motion; it is removed as soon as the real canvas mounts. */
+@media (max-width: 899px) and (prefers-reduced-motion: no-preference) {
+  .hh-orbit:not(:has(canvas))::after {
+    content: "";
+    position: absolute;
+    inset: 16%;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 50% 45%,
+      rgba(37, 99, 235, 0.22) 0%,
+      rgba(103, 232, 249, 0.12) 42%,
+      rgba(103, 232, 249, 0) 72%
+    );
+    animation: hh-orbit-breathe 3s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes hh-orbit-breathe {
+  from {
+    opacity: 0.35;
+    transform: scale(0.78) rotate(-14deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.14) rotate(14deg);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hh-btn {
     transition: none;
+  }
+
+  .hh-orbit::after {
+    animation: none;
   }
 }

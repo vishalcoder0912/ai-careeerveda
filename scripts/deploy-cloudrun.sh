@@ -38,6 +38,10 @@ JWT_REFRESH_SECRET="${JWT_REFRESH_SECRET:?set JWT_REFRESH_SECRET (>=32 chars)}"
 
 FRONTEND_URL="https://${DOMAIN}"
 ADMIN_URL="https://admin.${DOMAIN}"
+# Proxy hops in front of the API. Cloud Run on its own is 1; if Cloudflare
+# proxies these domains, deploy with TRUST_PROXY=2 so req.ip is the visitor and
+# per-IP rate limits still work.
+TRUST_PROXY="${TRUST_PROXY:-1}"
 API_BASE="https://api.${DOMAIN}/api/v1"
 
 REGISTRY="${REGION}-docker.pkg.dev/${PROJECT_ID}/${AR_REPO}"
@@ -117,7 +121,7 @@ gcloud run deploy careerveda-backend \
   --set-env-vars="^@^NODE_ENV=production@MONGODB_DB_NAME=careerveda\
 @FRONTEND_URL=${FRONTEND_URL}@ADMIN_URL=${ADMIN_URL}\
 @CORS_ALLOWED_ORIGINS=${FRONTEND_URL},${ADMIN_URL}\
-@COOKIE_SECURE=true@COOKIE_DOMAIN=.${DOMAIN}" \
+@COOKIE_SECURE=true@COOKIE_DOMAIN=.${DOMAIN}@TRUST_PROXY=${TRUST_PROXY}" \
   --set-secrets="MONGODB_URI=careerveda-mongodb-uri:latest,\
 JWT_ACCESS_SECRET=careerveda-jwt-access-secret:latest,\
 JWT_REFRESH_SECRET=careerveda-jwt-refresh-secret:latest"

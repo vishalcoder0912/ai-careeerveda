@@ -1,6 +1,6 @@
-import {useEffect, useRef} from "react";
+import {useEffect, useRef, useState} from "react";
 import {gsap} from "gsap";
-import {addTween, reducedMotionNow} from "../fx/registry";
+import {reducedMotionNow} from "../fx/registry";
 
 /* Catmull-Rom → cubic bezier, so the waypoints become a single silky curve. */
 const buildSmoothPath = (points) => {
@@ -28,6 +28,14 @@ export const GlowTrail = () => {
   const coreRef = useRef(null);
   const dotRef = useRef(null);
   const haloRef = useRef(null);
+  const [reduced, setReduced] = useState(reducedMotionNow);
+
+  useEffect(() => {
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const onChange = (event) => setReduced(event.matches);
+    query.addEventListener?.("change", onChange);
+    return () => query.removeEventListener?.("change", onChange);
+  }, []);
 
   useEffect(() => {
     const svg = svgRef.current;
@@ -36,14 +44,22 @@ export const GlowTrail = () => {
     const dot = dotRef.current;
     const halo = haloRef.current;
     if (!svg || !pathEl || !dot || !halo) return undefined;
-    if (reducedMotionNow()) {
-      svg.remove();
+    if (reduced) {
+      // React still owns this node; hide it instead of removing it underneath
+      // React's reconciliation.
+      svg.style.display = "none";
       return undefined;
     }
+    svg.style.display = "";
 
     let tween = null;
 
     const build = () => {
+      if (tween) {
+        tween.scrollTrigger?.kill();
+        tween.kill();
+        tween = null;
+      }
       if (typeof pathEl.getTotalLength !== "function") return;
       const H = Math.max(1, document.documentElement.scrollHeight);
       svg.setAttribute("viewBox", `0 0 ${VIEW_W} ${H}`);
@@ -73,12 +89,6 @@ export const GlowTrail = () => {
       coreEl.style.strokeDashoffset = `${len}`;
 
       const proxy = {p: 0};
-
-      const clear = tween;
-      if (clear) {
-        clear.scrollTrigger?.kill();
-        clear.kill();
-      }
 
       const apply = () => {
         const p = proxy.p;
@@ -111,7 +121,8 @@ export const GlowTrail = () => {
         },
         onUpdate: apply,
       });
-      addTween(tween);
+      // This tween is rebuilt on resize and already has local teardown; adding
+      // it to the global FX registry left dead handles behind on every rebuild.
     };
 
     build();
@@ -128,7 +139,7 @@ export const GlowTrail = () => {
         tween.kill();
       }
     };
-  }, []);
+  }, [reduced]);
 
   return (
     <div className="ga-trail" aria-hidden="true">

@@ -144,18 +144,34 @@ const EditorSection = ({group, fields, open, outstanding, form, fieldDisabled, f
           job's Application URL while it collects applications). */}
       {fields
         .filter((field) => !(field.hiddenWhen && readPath(form, field.hiddenWhen)))
-        .map((field) => (
-          <Field
-            key={field.name}
-            field={field}
-            value={readPath(form, field.name)}
-            disabled={fieldDisabled(field)}
-            error={fieldErrors[field.name]}
-            needed={missingByName.has(field.name)}
-            prefilled={prefilled.has(field.name)}
-            onChange={(value) => onChange(field.name, value)}
-          />
-        ))}
+        .map((config) => {
+          // A page-specific template (the cinematic JSON field) is a function of
+          // the record being edited. Resolve it before rendering so "Load
+          // current page copy" loads this programme's words, not a template
+          // belonging to whichever resource happens to be first in the config.
+          const field =
+            typeof config.template === "function"
+              ? {...config, template: config.template(form)}
+              : config;
+          // Zod reports nested paths such as `cinematic.timeline.items.0.from`.
+          // Show that message on the field that owns the path, otherwise the
+          // save fails with a toast about a key the editor cannot see.
+          const nestedError = Object.entries(fieldErrors).find(
+            ([name]) => name.startsWith(`${field.name}.`),
+          );
+          return (
+            <Field
+              key={field.name}
+              field={field}
+              value={readPath(form, field.name)}
+              disabled={fieldDisabled(field)}
+              error={fieldErrors[field.name] || nestedError?.[1]}
+              needed={missingByName.has(field.name)}
+              prefilled={prefilled.has(field.name)}
+              onChange={(value) => onChange(field.name, value)}
+            />
+          );
+        })}
     </div>
   </details>
 );
@@ -359,7 +375,16 @@ const RecordEditor = ({resource, abilities, canManageMedia}) => {
   if (error) return <ErrorState error={error} onRetry={() => { setLoading(true); setError(null); load(); }} />;
 
   const setValue = (path, value) => {
-    setForm((current) => writePath(current, path, value));
+    setForm((current) => {
+      const next = writePath(current, path, value);
+      // Typing a batch date is an explicit editorial choice. The backend's
+      // "auto" mode replaces whatever was typed with the next Saturday, so
+      // switch to Custom here — the date the editor just typed is the one they
+      // expect to see, both here and on the site. Selecting Auto in the mode
+      // dropdown still rolls every program forward to the next Saturday.
+      if (path === "nextBatch") return writePath(next, "nextBatchMode", "custom");
+      return next;
+    });
     setDirty(true);
     setFieldErrors((current) => {
       if (!current[path]) return current;
@@ -419,9 +444,10 @@ const RecordEditor = ({resource, abilities, canManageMedia}) => {
     // A refused save names fields. Whichever sections hold them are opened, so
     // the message is never pointing at something folded out of sight. This only
     // ever opens sections — it will not close one the editor opened themselves.
+    const ownsError = (field, name) => name === field.name || name.startsWith(`${field.name}.`);
     const guilty = [...new Set(
       resource.fields
-        .filter((field) => fields[field.name])
+        .filter((field) => names.some((name) => ownsError(field, name)))
         .map((field) => field.group || "Other"),
     )];
     if (guilty.length > 0) {
@@ -431,8 +457,9 @@ const RecordEditor = ({resource, abilities, canManageMedia}) => {
       }));
     }
 
-    const rendered = new Set(resource.fields.map((field) => field.name));
-    const orphans = names.filter((name) => !rendered.has(name));
+    const orphans = names.filter(
+      (name) => !resource.fields.some((field) => ownsError(field, name)),
+    );
 
     if (orphans.length === 0) {
       toast.error("Please check the highlighted fields.");

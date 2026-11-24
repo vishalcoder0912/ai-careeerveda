@@ -6,7 +6,8 @@ import {adaptJob, LINKEDIN_SOURCE} from "../lib/contentAdapters";
 import "../components/jobs-page.css";
 
 // Only needed once someone clicks Apply, so it stays out of the page chunk.
-const JobApplyDialog = lazy(() => import("../components/JobApplyDialog"));
+const JobDetailsModal = lazy(() => import("../components/JobDetailsModal"));
+const JobApplicationForm = lazy(() => import("../components/JobApplicationForm"));
 
 // Categories are matched against the listing title with a pattern rather than a
 // list of exact titles. The list version had to name every title in the
@@ -63,6 +64,7 @@ const JobsPage = () => {
   const [category, setCategory] = useState("All");
   const [workMode, setWorkMode] = useState("All");
   const [jobType, setJobType] = useState("All");
+  const [selectedJob, setSelectedJob] = useState(null);
   const [applying, setApplying] = useState(null);
 
   // How many listings each category matches, shown in the dropdown.
@@ -204,10 +206,34 @@ const JobsPage = () => {
 
         <div className="jobs-grid">
           {filteredJobs.length > 0 ? (
-            filteredJobs.map((job) => (
-              <article key={job.id} className="job-card">
+            filteredJobs.map((job) => {
+              return (
+              <article
+                key={job.id}
+                className="job-card"
+                onClick={() => setSelectedJob(job)}
+              >
                 <div className="job-card__header">
-                  <h2 className="job-card__title">{job.title}</h2>
+                  <h2 className="job-card__title">
+                    {/* The card stays a plain article: a click on it is a mouse
+                        convenience, while the title is the real, focusable
+                        control that opens the details dialog. Promoting the
+                        whole card with role="button" gave screen readers a
+                        control with no keyboard model of its own — and it put
+                        that "button" around the Apply button and link below,
+                        whose own semantics then disappeared. */}
+                    <button
+                      type="button"
+                      className="job-card__title-button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedJob(job);
+                      }}
+                    >
+                      <span className="sr-only">View details for </span>
+                      {job.title}
+                    </button>
+                  </h2>
                   {job.acceptsApplications ? (
                     <span className="job-card__badge job-card__badge--direct">Hiring via CareerVeda</span>
                   ) : (
@@ -242,7 +268,14 @@ const JobsPage = () => {
                     {job.postedDate && `Listed ${formatPosted(job.postedDate)}`}
                   </span>
                   {job.acceptsApplications ? (
-                    <button type="button" className="job-card__apply" onClick={() => setApplying(job)}>
+                    <button
+                      type="button"
+                      className="job-card__apply"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setApplying(job);
+                      }}
+                    >
                       Apply with CareerVeda
                       <ArrowUpRight size={16} aria-hidden="true" />
                     </button>
@@ -252,6 +285,7 @@ const JobsPage = () => {
                       href={job.applyUrl}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
                       title={
                         job.source === LINKEDIN_SOURCE
                           ? `Newest "${job.title}" posts on LinkedIn (past 3 days)`
@@ -264,7 +298,8 @@ const JobsPage = () => {
                   )}
                 </div>
               </article>
-            ))
+              );
+            })
           ) : (
             <div className="jobs-empty" role="status">
               <Search className="jobs-empty__icon" size={32} aria-hidden="true" />
@@ -284,9 +319,21 @@ const JobsPage = () => {
         </p>
       </div>
 
+      {selectedJob && (
+        <Suspense fallback={null}>
+          <JobDetailsModal
+            job={selectedJob}
+            onClose={() => setSelectedJob(null)}
+            onApply={(job) => {
+              setSelectedJob(null);
+              setApplying(job);
+            }}
+          />
+        </Suspense>
+      )}
       {applying && (
         <Suspense fallback={null}>
-          <JobApplyDialog job={applying} onClose={() => setApplying(null)} />
+          <JobApplicationForm job={applying} onClose={() => setApplying(null)} />
         </Suspense>
       )}
     </main>

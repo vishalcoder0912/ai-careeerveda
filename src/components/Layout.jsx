@@ -4,6 +4,7 @@ import SiteNavbar from "./SiteNavbar";
 import SocialLinks from "./SocialLinks";
 import WhatsAppButton from "./WhatsAppButton";
 import HireFromUsDialog from "./HireFromUsDialog";
+import ConsentBanner from "./ConsentBanner";
 import CareerVedaBackground from "./background/CareerVedaBackground";
 import { navItems } from "../data/siteData";
 import { Link } from "react-router-dom";
@@ -11,6 +12,7 @@ import BrandLockup from "./BrandLockup";
 import { externalLinks } from "../config/externalLinks";
 import { useContentList } from "../hooks/useContent";
 import { installRoutePrefetch } from "../lib/routeChunks";
+import { openConsentSettings } from "../lib/consent";
 
 const Layout = () => {
   // Start each route's chunk when a visitor hovers, tabs to, or first touches a
@@ -116,6 +118,9 @@ const Layout = () => {
           {footerPolicies.map(({slug, title}) => (
             <Link key={slug} to={`/${slug}`}>{title}</Link>
           ))}
+          <button type="button" className="footer-link-button" onClick={openConsentSettings}>
+            Cookie settings
+          </button>
         </div>
         <div className="footer-col footer-col--contact">
           <h3>Contact Us</h3>
@@ -124,9 +129,13 @@ const Layout = () => {
             Majestic Signia, Plot No. A-27, Block A, Industrial Area, Sector 62,
             Noida, Uttar Pradesh 201309
           </p>
-          {/* Tappable: on a phone these are the two things someone wants to act on. */}
+          {/* Tappable: on a phone these are the two things someone wants to act on.
+              No literal email address here on purpose. Cloudflare's Email Address
+              Obfuscation rewrites any address or mail link in the delivered HTML into
+              a /cdn-cgi/l/email-protection#... link, which crawlers and broken-link
+              checkers report as broken. Email enquiries go through /contact instead. */}
           <a href="tel:+919217801191">+91 9217801191</a>
-          <a href="mailto:Info@careerveda.in">Info@careerveda.in</a>
+          <Link to="/contact">Email us</Link>
           <p className="footer-hours">Mon-Sat: 10:00 AM to 07:00 PM · Sunday: Closed</p>
         </div>
         <small>© 2018 CareerVeda. All rights reserved.</small>
@@ -136,6 +145,7 @@ const Layout = () => {
           itself to decide which message to prefill — see config/whatsapp.js. */}
       <WhatsAppButton />
       <HireFromUsDialog />
+      <ConsentBanner />
     </CareerVedaBackground>
   );
 };

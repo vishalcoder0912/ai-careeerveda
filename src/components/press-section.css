@@ -31,7 +31,10 @@
  * stage, so no mode can ever trap a visitor in a broken layout.
  */
 
-:root {
+/* Scoped to the section. A global :root here overrode the responsive navbar
+   tokens from navbar-hero-merge.css when this deferred chunk arrived, making
+   the fixed navbar and .navbar-shell jump height mid-scroll. */
+.press-section {
   --navbar-height: 76px;
   --press-ink: #102a5c;
   --press-ink-soft: rgba(16, 42, 92, 0.64);
@@ -138,7 +141,14 @@
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
-  overscroll-behavior: contain;
+  /* Deliberately `auto`, not `contain`. On a phone the cards are compacted to
+     fit their stage, so this panel has nothing to scroll — but a touch that
+     starts on it is still captured by the panel. With `contain`, that gesture
+     could not chain to the page: swiping anywhere over a press card moved
+     nothing, so the pinned stack never advanced and the section looked frozen.
+     `auto` lets the same swipe scroll the page, while keeping the internal
+     scroll as a safety net on very short viewports where copy still overflows. */
+  overscroll-behavior: auto;
   scrollbar-width: thin;
   -webkit-overflow-scrolling: touch;
   padding: clamp(30px, 3.6vw, 52px);

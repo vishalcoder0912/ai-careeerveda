@@ -1,5 +1,6 @@
 import {useEffect, useMemo, useState} from "react";
 import {Link} from "react-router-dom";
+import AdUnit from "./AdUnit";
 import staticBlogPosts from "../data/blogPosts";
 import {adaptBlogPost} from "../lib/contentAdapters";
 import "./blog-article.css";
@@ -226,6 +227,8 @@ const BlogArticle = ({post}) => {
             </aside>
           )}
         </div>
+
+        <AdUnit />
 
         {related.length > 0 && (
           <section className="ba-related" aria-labelledby="ba-related-title">

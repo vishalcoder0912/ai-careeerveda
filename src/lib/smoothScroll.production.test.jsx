@@ -224,7 +224,7 @@ describe("useAnchorScroll — in-page navigation", () => {
       </SmoothScrollProvider>,
     );
 
-  it("scrolls through Lenis with the header offset", async () => {
+  it("lets Lenis apply the CSS scroll-margin instead of a second header offset", async () => {
     renderAnchored();
     await waitFor(() => expect(latest()).toBeTruthy());
 
@@ -232,7 +232,7 @@ describe("useAnchorScroll — in-page navigation", () => {
 
     expect(latest().scrolledTo).toHaveLength(1);
     expect(latest().scrolledTo[0].target).toBe(document.getElementById("faq"));
-    expect(latest().scrolledTo[0].options).toEqual({offset: -76});
+    expect(latest().scrolledTo[0].options).toEqual({force: true});
   });
 
   it("moves keyboard focus to the target after scrolling", async () => {

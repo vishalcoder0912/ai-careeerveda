@@ -55,7 +55,7 @@
 		"firestore:status": "bash scripts/firestore-emulator.sh status",
 		"dev:firestore": "npm run firestore:start && sleep 3 && FIRESTORE_EMULATOR_HOST=localhost:8080 npm run dev:backend",
 		"prebuild": "node scripts/generate-sitemap.mjs && node scripts/generate-llms-txt.mjs",
-		"postbuild": "node scripts/prerender.mjs && node scripts/preload-routes.mjs && node scripts/snapshot.mjs",
+		"postbuild": "node scripts/prerender.mjs && node scripts/preload-routes.mjs && node scripts/snapshot.mjs && node scripts/generate-ads-txt.mjs",
 		"doctor": "npx react-doctor@latest"
 	},
 	"dependencies": {
@@ -67,6 +67,7 @@
 		"lenis": "^1.3.25",
 		"lucide-react": "1.47.0",
 		"react": "^19.2.8",
+		"react-doctor": "^0.9.23",
 		"react-dom": "^19.2.8",
 		"react-router-dom": "^7.18.2",
 		"three": "^0.185.1"

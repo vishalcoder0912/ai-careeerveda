@@ -395,6 +395,7 @@ export default function Carousel({
   const shadeRefs = useRef([]);
   const fillRefs = useRef([]);
   const counterRef = useRef(null);
+  const counterAnimationRef = useRef(null);
   const engineRef = useRef(null);
   const onChangeRef = useRef(onChange);
   const ratio = clamp(aspectRatio, 0.3, 4);
@@ -445,6 +446,7 @@ export default function Carousel({
       last: 0,
     };
     let raf = 0;
+    let suppressTimer = 0;
     let alive = true;
 
     const unit = (s) => (s.mode === "fade" || s.mode === "cube" ? s.cardWidth : s.span);
@@ -616,7 +618,7 @@ export default function Carousel({
         return;
       }
       state.suppress = true;
-      window.setTimeout(() => {
+      suppressTimer = window.setTimeout(() => {
         state.suppress = false;
       }, 0);
       const s = settingsRef.current;
@@ -748,6 +750,7 @@ export default function Carousel({
       alive = false;
       cancelAnimationFrame(raf);
       window.clearTimeout(state.wheelTimer);
+      window.clearTimeout(suppressTimer);
       engineRef.current = null;
       resizeObserver.disconnect();
       visibility.disconnect();
@@ -781,13 +784,15 @@ export default function Carousel({
     if (!counter?.animate || previous === active) return;
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
     const delta = loop && count > 1 ? nearest(active - previous, count) : active - previous;
-    counter.animate(
+    counterAnimationRef.current?.cancel();
+    counterAnimationRef.current = counter.animate(
       [
         {transform: `translateY(${delta > 0 ? 70 : -70}%)`, opacity: 0},
         {transform: "translateY(0)", opacity: 1},
       ],
       {duration: 320, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)"},
     );
+    return () => counterAnimationRef.current?.cancel();
   }, [active, count, loop]);
 
   const mask = clipped ? edgeMask(inset) : undefined;

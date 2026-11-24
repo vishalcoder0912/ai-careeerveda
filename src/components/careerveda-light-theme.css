@@ -161,6 +161,37 @@ body .legal-article .legal-group h3 {
   color: #2563eb;
 }
 
+/* Hero-item layer applied to every page-hero child (eyebrow, title, lead,
+   actions). The inline animationDelay staggers them; this class supplies the
+   base reveal so they are not invisible before the animation keyframes run. */
+.cv-page-hero-item {
+  opacity: 0;
+  animation: cv-fade-up 0.5s var(--cv-navbar-ease, cubic-bezier(.22, 1, .36, 1)) forwards;
+}
+
+@keyframes cv-fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* This sheet loads after motion-primitives.css, so its earlier reduced-motion
+   reset is not enough on its own. Keep the hero text visible from first paint
+   when the visitor asked for no motion — no delay, no hidden start state. */
+@media (prefers-reduced-motion: reduce) {
+  .cv-page-hero-item {
+    opacity: 1;
+    transform: none;
+    animation: none;
+    animation-delay: 0s;
+  }
+}
+
+/* Legal / policy page — keep these in the globally-loaded theme sheet so they
+   apply even when a lazy route chunk has not yet fetched page-shell.css. */
+body .legal-block {
+  position: relative;
+}
+
 body .placeholder-note {
   color: #9a3412;
 }

@@ -306,7 +306,7 @@ describe("useAnchorScroll", () => {
       </SmoothScrollProvider>,
     );
 
-  it("scrolls through Lenis with the header offset applied", async () => {
+  it("lets Lenis apply the CSS scroll-margin instead of a second header offset", async () => {
     renderAnchored();
     await waitFor(() => expect(latest()).toBeTruthy());
 
@@ -314,16 +314,16 @@ describe("useAnchorScroll", () => {
 
     expect(latest().scrolledTo).toHaveLength(1);
     expect(latest().scrolledTo[0].target).toBe(document.getElementById("faq"));
-    expect(latest().scrolledTo[0].options).toEqual({offset: -76});
+    expect(latest().scrolledTo[0].options).toEqual({force: true});
   });
 
-  it("honours a custom header height", async () => {
+  it("does not add a legacy headerHeight to Lenis — that double-counts the bar", async () => {
     renderAnchored({headerHeight: 120});
     await waitFor(() => expect(latest()).toBeTruthy());
 
     fireEvent.click(screen.getByText("To the FAQ"));
 
-    expect(latest().scrolledTo[0].options).toEqual({offset: -120});
+    expect(latest().scrolledTo[0].options).toEqual({force: true});
   });
 
   it("moves focus to the target, or a keyboard user is left behind in the nav", async () => {

@@ -139,6 +139,16 @@ describe("paginated", () => {
     expect(response.body.meta.totalPages).toBe(0);
     expect(response.body.meta.hasMore).toBe(false);
   });
+
+  it("preserves caller aggregates such as the job-application status breakdown", () => {
+    // The admin KPI tiles read their counts from meta.stats. If paginated()
+    // silently dropped unknown keys, every status would render as zero.
+    const stats = {totalApplications: 12, new: 9, underReview: 1, rejected: 0};
+    paginated(response, [], {page: 1, limit: 25, total: 12, stats});
+
+    expect(response.body.meta.stats).toEqual(stats);
+    expect(response.body.meta).toMatchObject({page: 1, limit: 25, total: 12});
+  });
 });
 
 describe("noContent", () => {

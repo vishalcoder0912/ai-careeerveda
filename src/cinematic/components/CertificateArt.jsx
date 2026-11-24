@@ -78,7 +78,7 @@ export const CertificateArt = forwardRef(function CertificateArt(
       width={WIDTH}
       height={HEIGHT}
       role="img"
-      aria-label={`Certificate of completion preview for ${cert.title}`}
+      aria-label={`Sample certificate of completion preview for ${cert.title} — not an official credential`}
     >
       <defs>
         <linearGradient id="cvPaper" x1="0" y1="0" x2="1" y2="1">
@@ -142,6 +142,27 @@ export const CertificateArt = forwardRef(function CertificateArt(
           fill={BLUE}
         >
           CAREERVEDA
+        </text>
+      </g>
+
+      {/* This is a website showcase, never an issued credential. The sample mark
+          lives in the SVG itself — not in a CSS class — so it survives the PNG
+          serialisation and the print stylesheet. It is deliberately repeated in
+          the badge, seal and footer below: cropping one marking still leaves
+          three more saying the same thing. */}
+      <g opacity="0.14" pointerEvents="none">
+        <text
+          x={WIDTH / 2}
+          y={HEIGHT / 2 + 10}
+          textAnchor="middle"
+          transform={`rotate(-24 ${WIDTH / 2} ${HEIGHT / 2})`}
+          fontFamily="system-ui, -apple-system, 'Segoe UI', sans-serif"
+          fontSize="190"
+          fontWeight="800"
+          letterSpacing="26"
+          fill="#b42318"
+        >
+          SAMPLE
         </text>
       </g>
 
@@ -244,6 +265,32 @@ export const CertificateArt = forwardRef(function CertificateArt(
       >
         POSTGRADUATE PROGRAMME
       </text>
+
+      <g transform={`translate(${WIDTH - 118} 208)`}>
+        <rect
+          x="-236"
+          y="-22"
+          width="236"
+          height="36"
+          rx="18"
+          fill="#b42318"
+          fillOpacity="0.08"
+          stroke="#b42318"
+          strokeOpacity="0.35"
+        />
+        <text
+          x="-118"
+          y="2"
+          textAnchor="middle"
+          fontFamily="system-ui, -apple-system, 'Segoe UI', sans-serif"
+          fontSize="15"
+          fontWeight="700"
+          letterSpacing="2"
+          fill="#b42318"
+        >
+          SAMPLE · NOT VALID
+        </text>
+      </g>
 
       {/* Kicker */}
       <g transform={`translate(${WIDTH / 2} 300)`}>
@@ -452,7 +499,7 @@ export const CertificateArt = forwardRef(function CertificateArt(
           fill="#ffffff"
           fillOpacity="0.85"
         >
-          VERIFIED
+          SAMPLE
         </text>
       </g>
 
@@ -466,7 +513,7 @@ export const CertificateArt = forwardRef(function CertificateArt(
         letterSpacing="3"
         fill={INK_SOFT}
       >
-        {cert.mark} · {serial}
+        SAMPLE · {cert.mark} · {serial}
       </text>
 
       <text
@@ -478,7 +525,7 @@ export const CertificateArt = forwardRef(function CertificateArt(
         letterSpacing="1.4"
         fill={INK_MUTED}
       >
-        {cert.stage} · 24-week postgraduate programme · issued on successful completion
+        SAMPLE PREVIEW — NOT AN OFFICIAL CREDENTIAL · {cert.stage} · 24-week postgraduate programme · issued on successful completion
       </text>
     </svg>
   );

@@ -100,6 +100,23 @@ describe("CertificateArt", () => {
     expect(markup).toContain("CAREERVEDA");
   });
 
+  /* The download serialises this SVG and the PDF prints a copy of it, so the
+     sample marking has to be in the artwork itself. A note in the dialog would
+     disappear the moment someone saved the file. */
+  it("marks the exported artwork as a sample, not an issued credential", () => {
+    const markup = mark({
+      cert: certificates[0],
+      name: "Ananya Sharma",
+      serial: "CV-TEST-0000",
+      issuedOn: "25 Sep 2026",
+    });
+
+    expect(markup).toContain("SAMPLE · NOT VALID");
+    expect(markup).toContain(`SAMPLE · ${certificates[0].mark} · CV-TEST-0000`);
+    expect(markup).toContain("SAMPLE PREVIEW — NOT AN OFFICIAL CREDENTIAL");
+    expect(markup).not.toContain(">VERIFIED<");
+  });
+
   it("renders every programme's mark, title and outcome", () => {
     certificates.forEach((cert) => {
       const markup = renderToStaticMarkup(

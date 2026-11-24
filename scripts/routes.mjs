@@ -58,7 +58,10 @@ const STATIC_ROUTES = [
 // Returns [{loc, priority, changefreq, lastmod?, title, description, image, type}].
 // `title` is already composed ("Our Programs | CareerVeda") because that is what
 // both the <title> tag and og:title want.
-export function collectRoutes() {
+// `programs` is injected by crawler-facing build steps from the public API so
+// title/description/date changes made in admin are baked into prerendered heads
+// and sitemap lastmod values. The default keeps every other script unchanged.
+export function collectRoutes(programs = programCatalog) {
   const routes = [];
 
   for (const route of STATIC_ROUTES) {
@@ -72,7 +75,7 @@ export function collectRoutes() {
     });
   }
 
-  for (const program of programCatalog) {
+  for (const program of programs) {
     const meta = programMeta(program);
     routes.push({
       // A program may declare a cinematic landing of its own (the Gen AI &
@@ -81,6 +84,10 @@ export function collectRoutes() {
       loc: program.landingPath || `/programs/${program.id}`,
       priority: "0.9",
       changefreq: "monthly",
+      // An admin save updates `updatedAt`; surfacing it as lastmod is the hint
+      // that makes crawlers come back after an edit instead of trusting an old
+      // cached copy of the page.
+      ...(program.updatedAt ? {lastmod: String(program.updatedAt).slice(0, 10)} : {}),
       title: composeTitle(meta.title),
       description: meta.description,
       image: program.image || OG_IMAGE,

@@ -61,3 +61,22 @@ describe("new-record defaults", () => {
     expect(initialValues(RESOURCES.faculty)).toEqual({});
   });
 });
+
+describe("cinematic page copy template", () => {
+  const cinematic = RESOURCES.programs.fields.find((field) => field.name === "cinematic");
+
+  it("is a per-record resolver, not a single static template", () => {
+    expect(typeof cinematic.template).toBe("function");
+    const pm = cinematic.template({slug: "product-management"});
+    const da = cinematic.template({slug: "data-analytics"});
+
+    expect(pm.hero.title).not.toEqual(da.hero.title);
+    expect(da.hero.title).toEqual(["Data", "Analytics"]);
+  });
+
+  it("resolves by id as well as slug, and falls back on a new record", () => {
+    const byId = cinematic.template({id: "gen-ai-agentic-ai"});
+    expect(byId.certs.roadmap).toBeDefined();
+    expect(cinematic.template({})).toEqual(cinematic.template({slug: "product-management"}));
+  });
+});

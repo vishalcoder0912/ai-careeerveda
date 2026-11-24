@@ -2,6 +2,7 @@ import {useEffect, useId, useRef, useState} from "react";
 import {useContentList} from "../hooks/useContent";
 import {adaptProgram} from "../lib/contentAdapters";
 import {submitLead} from "../lib/publicApi";
+import {leadTrackingPayload, trackAdsConversion, trackFormStart} from "../lib/analytics";
 import {useTurnstile} from "../lib/useTurnstile";
 import {useLockSmoothScroll} from "../lib/smoothScroll";
 import {HIRE_FROM_US_HREF} from "../config/externalLinks";
@@ -83,6 +84,7 @@ const HireFromUsDialog = () => {
   const [status, setStatus] = useState("idle"); // idle | submitting | success | error
   const [message, setMessage] = useState("");
   const captcha = useTurnstile();
+  const formStarted = useRef(false);
   const [mailLinks, setMailLinks] = useState(null);
 
   const {items: programs} = useContentList("programs", {adapt: adaptProgram});
@@ -115,6 +117,14 @@ const HireFromUsDialog = () => {
 
   const update = (event) => {
     const {name, value} = event.target;
+    if (!formStarted.current && name !== "company" && String(value).trim()) {
+      formStarted.current = true;
+      trackFormStart({
+        formType: "hiring",
+        source: "hire-from-us-dialog",
+        program: name === "program" ? value : values.program,
+      });
+    }
     setValues((current) => ({...current, [name]: value}));
     setErrors((current) => ({...current, [name]: undefined}));
   };
@@ -136,6 +146,7 @@ const HireFromUsDialog = () => {
     try {
       const result = await submitLead({
         ...values,
+        ...leadTrackingPayload(),
         type: "hiring",
         source: "hire-from-us-dialog",
         consent: true,
@@ -152,9 +163,11 @@ const HireFromUsDialog = () => {
       }
 
       setMailLinks(composeLinks(values));
+      trackAdsConversion({type: "hiring", source: "hire-from-us-dialog"});
       setStatus("success");
       setMessage("Thank you! Our placement team will contact you shortly. A copy has been sent to your email.");
       setValues(EMPTY);
+      formStarted.current = false;
     } catch {
       captcha.reset();
       setStatus("error");

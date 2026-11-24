@@ -268,8 +268,10 @@ export const adaptJob = (record) => ({
   jobType: record.employmentType || "",
   salary: record.salaryRange || "",
   ...jobApplyLink(record),
-  // Every job posted from the panel opens the "Apply with CareerVeda" popup.
-  acceptsApplications: true,
+  // The admin's Applications toggle is the source of truth. A job saved with
+  // it off must not open the CareerVeda form; bundled illustrative listings
+  // carry no flag and keep using their external apply link.
+  acceptsApplications: record.acceptsApplications === true,
   // No posted date set → the day it was published, so a new listing sorts first.
   postedDate: dateOnly(record.postedDate || record.publishedAt),
 });

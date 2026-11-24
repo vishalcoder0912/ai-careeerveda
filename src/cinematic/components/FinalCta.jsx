@@ -3,6 +3,7 @@ import {reducedMotionNow} from "../fx/registry";
 import {useMagneticHover} from "../fx/hooks";
 import {SectionLabel} from "./Atmosphere";
 import {Lines, useCinematic} from "../content";
+import {trackApplyNow} from "../../lib/analytics";
 
 export const FinalCTA = () => {
   const {cta} = useCinematic();
@@ -44,7 +45,13 @@ export const FinalCTA = () => {
         </h2>
         <p className="ga-sub ga-cta-sub">{cta.sub}</p>
         <div className="ga-cta-actions">
-          <a href="#ga-contact" className="ga-btn ga-btn-solid ga-btn-lg" data-cursor="cta" ref={magA}>
+          <a
+            href="#ga-contact"
+            className="ga-btn ga-btn-solid ga-btn-lg"
+            data-cursor="cta"
+            ref={magA}
+            onClick={() => trackApplyNow({source: "cinematic-final-cta", destination: "#ga-contact"})}
+          >
             Apply for the Program
           </a>
 

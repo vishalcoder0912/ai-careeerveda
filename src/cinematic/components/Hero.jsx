@@ -29,6 +29,7 @@ export const HeroSection = () => {
   const streakRef = useRef(null);
   const linesRef = useRef([]);
   const subRef = useRef(null);
+  const badgesRef = useRef(null);
   const ctaRef = useRef(null);
   const extraLeft = useRef(null);
   const extraRight = useRef(null);
@@ -42,6 +43,7 @@ export const HeroSection = () => {
     const els = [
       ...linesRef.current,
       subRef.current,
+      badgesRef.current,
       ctaRef.current,
       statsRef.current,
       extraLeft.current,
@@ -105,7 +107,11 @@ export const HeroSection = () => {
         <h1 className="ga-hero-title" aria-label={hero.ariaLabel}>
           {title.lines.map((line, i) => (
             <span
-              key={line}
+              // Keyed by slot, not by text: the admin API can change the line's
+              // copy after mount. A text key would remount the span and the
+              // entrance tween would keep animating the detached node, leaving
+              // the new line with no animation at all.
+              key={`line-${i}`}
               className={`ga-hero-line${i === 1 ? " ga-hero-line-italic" : ""}`}
               ref={(el) => {
                 if (el) linesRef.current[i] = el;
@@ -120,7 +126,7 @@ export const HeroSection = () => {
           {hero.sub}
         </p>
 
-        <div className="ga-hero-badges" ref={subRef} aria-hidden="true">
+        <div className="ga-hero-badges" ref={badgesRef} aria-hidden="true">
           {hero.badges.map((b) => <span key={b}>{b}</span>)}
         </div>
 

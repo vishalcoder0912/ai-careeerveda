@@ -66,6 +66,27 @@ export const submitLeadSchema = z
       })
       .optional(),
 
+    // Click IDs and session context attached by attribution.js. Optional so
+    // older callers (and API tests that post a bare lead) still validate.
+    clickIds: z
+      .object({
+        gclid: text(200).optional().default(""),
+        gbraid: text(200).optional().default(""),
+        wbraid: text(200).optional().default(""),
+        fbclid: text(200).optional().default(""),
+        dclid: text(200).optional().default(""),
+        msclkid: text(200).optional().default(""),
+      })
+      .optional(),
+    attribution: z
+      .object({
+        referrer: text(500).optional().default(""),
+        landingPage: text(500).optional().default(""),
+        clientId: text(200).optional().default(""),
+        capturedAt: z.coerce.date().optional().nullable(),
+      })
+      .optional(),
+
     // Required and must be true. A lead is personal data stored to be contacted
     // about; under India's DPDP Act that needs the person's consent, so a
     // submission without it is not stored at all.
@@ -107,6 +128,9 @@ export const updateLeadSchema = z.object({
   status: z.enum(LEAD_STATUSES).optional(),
   assignedTo: z.string().regex(/^[a-f0-9]{24}$/i).nullish(),
   archived: z.boolean().optional(),
+  // Optional override when the actual paid amount differs from the list fee.
+  // Left blank, the controller derives it from the program's published fee.
+  conversionValue: z.number().int().min(0).max(100000000).nullish(),
 });
 
 export const addNoteSchema = z.object({

@@ -29,6 +29,7 @@ const COLUMN_LABELS = {
   rejectedReason: "Rejected because",
   workMode: "Work mode",
   employmentType: "Type",
+  acceptsApplications: "Applications",
   salaryRange: "Salary",
 };
 

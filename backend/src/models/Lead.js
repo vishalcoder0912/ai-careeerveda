@@ -22,7 +22,15 @@ export const RECRUITMENT_MODES = [
   "Internship placement",
   "Direct Hire",
 ];
-export const LEAD_STATUSES = ["new", "contacted", "qualified", "converted", "closed", "spam"];
+export const LEAD_STATUSES = [
+  "new",
+  "contacted",
+  "qualified",
+  "converted",
+  "admitted",
+  "closed",
+  "spam",
+];
 
 const noteSchema = new mongoose.Schema(
   {
@@ -68,6 +76,34 @@ const leadSchema = new mongoose.Schema(
       term: {type: String, default: "", maxlength: 200},
       content: {type: String, default: "", maxlength: 200},
     },
+
+    // Google Ads auto-tagging click IDs. First touch is captured once in the
+    // browser session so an SPA navigation cannot lose the paid click.
+    clickIds: {
+      gclid: {type: String, default: "", maxlength: 200},
+      gbraid: {type: String, default: "", maxlength: 200},
+      wbraid: {type: String, default: "", maxlength: 200},
+      fbclid: {type: String, default: "", maxlength: 200},
+      dclid: {type: String, default: "", maxlength: 200},
+      msclkid: {type: String, default: "", maxlength: 200},
+    },
+    attribution: {
+      referrer: {type: String, default: "", maxlength: 500},
+      landingPage: {type: String, default: "", maxlength: 500},
+      // GA4 _ga cookie value (or a local fallback) so a server event joins the
+      // visitor's browser session rather than appearing as a new user.
+      clientId: {type: String, default: "", maxlength: 200},
+      capturedAt: {type: Date, default: null},
+    },
+    // Set after a GA4 event has been accepted, so toggling an admin status
+    // back and forth cannot send the same qualification/admission twice.
+    conversionEvents: {
+      qualified: {type: Date, default: null},
+      admission: {type: Date, default: null},
+    },
+    // Real rupee amount attributed to admission, derived from the program fee
+    // (or supplied by an admin). GA4/Ads need this instead of a token value.
+    conversionValue: {type: Number, default: null, min: 0, max: 100000000},
 
     consent: {type: Boolean, default: false},
 

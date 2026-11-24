@@ -11,11 +11,11 @@ const EXPORT_SCALE = 2;
 
 const MAX_NAME = 48;
 
-/* A stable credential id: the same name on the same programme always produces
+/* A stable sample reference: the same name on the same programme always produces
    the same id, so re-opening the studio or downloading twice does not look like
    two different certificates. FNV-1a is enough for an opaque reference and needs
-   no dependency. This is a reference, not a security token — nothing is
-   authorised by it. */
+   no dependency. It is deliberately not a credential id — this studio only
+   demonstrates the layout, and nothing issued or verified is attached to it. */
 const serialFor = (mark, name) => {
   const seed = `${mark}|${name.trim().toLowerCase()}`;
   let hash = 0x811c9dc5;
@@ -210,8 +210,8 @@ export const CertificateStudio = ({cert, open, onClose}) => {
     setStatus("Rendering your certificate…");
     setError("");
     try {
-      await exportPng(art, `${mark}-${slugify(cleanName)}.png`);
-      setStatus("Downloaded. Check your Downloads folder.");
+      await exportPng(art, `sample-${mark}-${slugify(cleanName)}.png`);
+      setStatus("Downloaded the sample preview. Check your Downloads folder.");
     } catch (exportError) {
       /* Deliberately not exportError.message: anything thrown in here can be a
          browser or library string, and a failed download is not the moment to
@@ -274,10 +274,10 @@ export const CertificateStudio = ({cert, open, onClose}) => {
             <div>
               <p className="ga-cert-studio-mark">{cert.mark}</p>
               <h3 className="ga-cert-studio-title" id={titleId}>
-                Generate your certificate
+                Preview a sample certificate
               </h3>
               <p className="ga-cert-studio-sub">
-                Type your name exactly as you want it printed. The preview updates live.
+                Type your name exactly as you want it printed. The sample updates live.
               </p>
             </div>
             <button
@@ -293,6 +293,11 @@ export const CertificateStudio = ({cert, open, onClose}) => {
 
           <div className="ga-cert-studio-body">
             <div className="ga-cert-studio-controls">
+              <p className="ga-cert-studio-notice" role="note">
+                <strong>Sample preview only.</strong> This is a website showcase, not an issued
+                certificate. It carries no verification and cannot be used as proof of completion.
+              </p>
+
               <label className="ga-cert-studio-label" htmlFor="ga-cert-name">
                 Full name
               </label>
@@ -327,7 +332,7 @@ export const CertificateStudio = ({cert, open, onClose}) => {
 
               <dl className="ga-cert-studio-meta">
                 <div>
-                  <dt>Credential ID</dt>
+                  <dt>Sample ID</dt>
                   <dd>{serial}</dd>
                 </div>
                 <div>
@@ -364,9 +369,10 @@ export const CertificateStudio = ({cert, open, onClose}) => {
               </p>
 
               <p className="ga-cert-studio-fineprint">
-                This is the programme credential layout. The certificate issued on completion carries the
-                same design with your verification ID. Third-party learning badges from Google, IBM and
-                Microsoft Applied Skills are earned separately through the credential roadmap.
+                This is a sample of the programme credential layout, shown for demonstration only. The
+                certificate issued on successful completion uses the same design with a real verification
+                ID. Third-party learning badges from Google, IBM and Microsoft Applied Skills are earned
+                separately through the credential roadmap.
               </p>
             </div>
 

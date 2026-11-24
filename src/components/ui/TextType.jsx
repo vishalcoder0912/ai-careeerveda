@@ -2,6 +2,21 @@ import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { gsap } from 'gsap';
 import './TextType.css';
 
+const usePrefersReducedMotion = () => {
+  const [reduced, setReduced] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  );
+
+  useEffect(() => {
+    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = (event) => setReduced(event.matches);
+    query.addEventListener?.('change', update);
+    return () => query.removeEventListener?.('change', update);
+  }, []);
+
+  return reduced;
+};
+
 const TextType = ({
   text,
   as: Component = 'div',
@@ -27,8 +42,11 @@ const TextType = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(!startOnVisible);
+  const [isPaused, setIsPaused] = useState(false);
+  const prefersReducedMotion = usePrefersReducedMotion();
   const cursorRef = useRef(null);
   const containerRef = useRef(null);
+  const pauseTimeoutRef = useRef(null);
 
   const textArray = useMemo(() => (Array.isArray(text) ? text : [text]), [text]);
 
@@ -62,20 +80,24 @@ const TextType = ({
   }, [startOnVisible]);
 
   useEffect(() => {
-    if (showCursor && cursorRef.current) {
-      gsap.set(cursorRef.current, { opacity: 1 });
-      gsap.to(cursorRef.current, {
-        opacity: 0,
-        duration: cursorBlinkDuration,
-        repeat: -1,
-        yoyo: true,
-        ease: 'power2.inOut'
-      });
-    }
-  }, [showCursor, cursorBlinkDuration]);
+    if (!showCursor || !cursorRef.current) return undefined;
+    gsap.set(cursorRef.current, { opacity: 1 });
+    if (prefersReducedMotion) return undefined;
+
+    const blink = gsap.to(cursorRef.current, {
+      opacity: 0,
+      duration: cursorBlinkDuration,
+      repeat: -1,
+      yoyo: true,
+      ease: 'power2.inOut'
+    });
+    return () => blink.kill();
+  }, [showCursor, cursorBlinkDuration, prefersReducedMotion]);
+
+  useEffect(() => () => clearTimeout(pauseTimeoutRef.current), []);
 
   useEffect(() => {
-    if (!isVisible) return;
+    if (!isVisible || isPaused || prefersReducedMotion) return undefined;
 
     let timeout;
     const currentText = textArray[currentTextIndex];
@@ -91,7 +113,10 @@ const TextType = ({
 
           setCurrentTextIndex(prev => (prev + 1) % textArray.length);
           setCurrentCharIndex(0);
-          timeout = setTimeout(() => {}, pauseDuration);
+          // The old code scheduled an empty timer here, so the next word began
+          // immediately and pauseDuration was silently discarded.
+          setIsPaused(true);
+          pauseTimeoutRef.current = setTimeout(() => setIsPaused(false), pauseDuration);
         } else {
           timeout = setTimeout(() => {
             setDisplayedText(prev => prev.slice(0, -1));
@@ -135,12 +160,16 @@ const TextType = ({
     loop,
     initialDelay,
     isVisible,
+    isPaused,
+    prefersReducedMotion,
     reverseMode,
     variableSpeed
   ]);
 
   const shouldHideCursor =
-    hideCursorWhileTyping && (currentCharIndex < textArray[currentTextIndex].length || isDeleting);
+    !prefersReducedMotion &&
+    hideCursorWhileTyping &&
+    (currentCharIndex < textArray[currentTextIndex].length || isDeleting);
 
   const Tag = Component;
 
@@ -151,7 +180,7 @@ const TextType = ({
       {...props}
     >
       <span className="text-type__content" style={{ color: getCurrentTextColor() || 'inherit' }}>
-        {displayedText}
+        {prefersReducedMotion ? textArray[currentTextIndex] : displayedText}
       </span>
       {showCursor && (
         <span

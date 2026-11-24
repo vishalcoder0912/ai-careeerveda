@@ -27,16 +27,17 @@ describe("Layout footer", () => {
     expect(screen.getByText("© 2018 CareerVeda. All rights reserved.")).toBeTruthy();
   });
 
-  it("makes the phone number and email tappable", () => {
+  it("makes the phone number tappable and routes email enquiries to /contact", () => {
     renderLayout();
     expect(screen.getByRole("link", {name: "+91 9217801191"}).getAttribute("href")).toBe("tel:+919217801191");
-    expect(screen.getByRole("link", {name: "Info@careerveda.in"}).getAttribute("href")).toBe(
-      "mailto:Info@careerveda.in",
-    );
+    expect(screen.getByRole("link", {name: "Email us"}).getAttribute("href")).toBe("/contact");
   });
 
   it("links each published policy", () => {
     renderLayout();
-    expect(screen.getByRole("link", {name: "Privacy Policy"}).getAttribute("href")).toBe("/privacy-policy");
+    // The consent banner also links the policy, so look for the footer link
+    // among all matches rather than assuming there is only one.
+    const links = screen.getAllByRole("link", {name: "Privacy Policy"});
+    expect(links.some((link) => link.getAttribute("href") === "/privacy-policy")).toBe(true);
   });
 });

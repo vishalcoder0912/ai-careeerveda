@@ -9,7 +9,7 @@ import {
   loadContactPage,
   loadEnrollPage,
   loadFacultyPage,
-  loadGenerativeAIPage,
+  loadGenAiProgramPage,
   loadJobsPage,
   loadPolicyPage,
   loadProgramDetailPage,
@@ -23,11 +23,11 @@ describe("program route chunks — one chunk per course surface, shared the same
   it("keeps every advertised course on the program detail loader, exactly like the blog index keeps its permalinks", () => {
     for (const program of programCatalog) {
       const slugPath = `/programs/${program.id}`;
-      // The Gen AI & Agentic AI flagship shares the cinematic landing with
-      // /generative-ai, so its /programs/ URL keeps the cinematic chunk.
+      // The Gen AI & Agentic AI flagship shares the admin-driven cinematic
+      // landing with /generative-ai, so its /programs/ URL keeps that chunk.
       if (program.id === "gen-ai-agentic-ai") {
-        expect(loaderForPath(slugPath)).toBe(loadGenerativeAIPage);
-        expect(loaderForPath(`${slugPath}/`)).toBe(loadGenerativeAIPage);
+        expect(loaderForPath(slugPath)).toBe(loadGenAiProgramPage);
+        expect(loaderForPath(`${slugPath}/`)).toBe(loadGenAiProgramPage);
         continue;
       }
       // Programs with their own cinematic page warm that chunk instead.
@@ -57,8 +57,8 @@ describe("the catalogue-driven route table — every page the navbar and footer 
     expect(loaderForPath("/contact")).toBe(loadContactPage);
     expect(loaderForPath("/alumni")).toBe(loadAlumniPage);
     expect(loaderForPath("/enroll")).toBe(loadEnrollPage);
-    expect(loaderForPath("/generative-ai")).toBe(loadGenerativeAIPage);
-    expect(loaderForPath("/programs/gen-ai-agentic-ai")).toBe(loadGenerativeAIPage);
+    expect(loaderForPath("/generative-ai")).toBe(loadGenAiProgramPage);
+    expect(loaderForPath("/programs/gen-ai-agentic-ai")).toBe(loadGenAiProgramPage);
   });
 
   it("warms the landing page /jobs redirects to, not the redirect itself", () => {

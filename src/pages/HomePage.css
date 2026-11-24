@@ -218,7 +218,29 @@ body .faq-section.faq-spacing {
    calc(430vh + 450px) reserved up to 5,500px, so the page collapsed by
    ~2,000–3,800px the moment the section loaded. */
 .home-defer-press {
-  min-height: 2280px;
+  min-height: 2300px;
+}
+
+/* Every deferred section below reserves its MEASURED mounted height. The old
+   fixed 640/520px holds were hundreds of pixels short on phones and tablets;
+   when the chunk mounted, the browser's scroll anchoring moved the numeric
+   scroll offset under the reader (6000 → 7459 in a 390px reproduction). These
+   values are section heights, not decorative spacing, and are released as soon
+   as the real section is in the DOM. */
+.home-defer-skills {
+  min-height: 960px;
+}
+
+.home-defer-roi {
+  min-height: 650px;
+}
+
+.home-defer-outcomes {
+  min-height: 1420px;
+}
+
+.home-defer-trusted {
+  min-height: 950px;
 }
 
 @media (max-width: 1199.98px) {
@@ -229,13 +251,59 @@ body .faq-section.faq-spacing {
 
 @media (min-width: 768px) and (max-width: 1199.98px) {
   .home-defer-press {
-    min-height: 1820px;
+    min-height: 1960px;
+  }
+
+  .home-defer-skills {
+    min-height: 830px;
+  }
+
+  .home-defer-roi {
+    min-height: 820px;
+  }
+
+  .home-defer-outcomes {
+    min-height: 2000px;
+  }
+
+  .home-defer-trusted {
+    min-height: 870px;
   }
 }
 
 @media (max-width: 767.98px) {
   .home-defer-press {
-    min-height: 1850px;
+    min-height: 1960px;
+  }
+
+  .home-defer-skills {
+    min-height: 1100px;
+  }
+
+  .home-defer-roi {
+    min-height: 1080px;
+  }
+
+  .home-defer-outcomes {
+    min-height: 1990px;
+  }
+
+  .home-defer-trusted {
+    min-height: 660px;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1279.98px) {
+  .home-defer-skills {
+    min-height: 940px;
+  }
+
+  .home-defer-roi {
+    min-height: 640px;
+  }
+
+  .home-defer-outcomes {
+    min-height: 1410px;
   }
 }
 
@@ -250,6 +318,13 @@ body .faq-section.faq-spacing {
    this the wrapper keeps the old placeholder height after mount and leaves
    ~1,400px of blank space below the carousel. */
 .home-defer-programs:has(> .recommended-courses-section) {
+  min-height: 0;
+}
+
+.home-defer-skills:has(> .skills-curve),
+.home-defer-roi:has(> .roi-section),
+.home-defer-outcomes:has(> .learner-outcomes),
+.home-defer-trusted:has(> .trusted-companies) {
   min-height: 0;
 }
 

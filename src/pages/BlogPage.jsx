@@ -4,6 +4,7 @@ import {PageHero, SectionHeading} from "../components/PageShell";
 import {Reveal, StaggerGroup, StaggerItem} from "../components/motionPrimitives";
 import staticBlogPosts from "../data/blogPosts";
 import {adaptBlogPost} from "../lib/contentAdapters";
+import {trackApplyNow} from "../lib/analytics";
 import "../components/blog-page.css";
 
 // The blog renders from src/data/blogPosts.js and makes no network request.
@@ -122,7 +123,13 @@ const BlogPage = () => {
             <h2>Ready to build a career that matters?</h2>
             <p>Talk to a career expert, explore the right program, and start with a free consultation.</p>
             <div className="page-hero__actions">
-              <Link className="page-btn page-btn--primary" to="/enroll">Enroll Now</Link>
+              <Link
+                className="page-btn page-btn--primary"
+                to="/enroll"
+                onClick={() => trackApplyNow({source: "blog-enroll-link", destination: "/enroll"})}
+              >
+                Enroll Now
+              </Link>
               <Link className="page-btn page-btn--ghost" to="/contact">Contact Us</Link>
             </div>
           </Reveal>

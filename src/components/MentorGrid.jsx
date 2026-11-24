@@ -6,6 +6,7 @@ import {publishedMentors, initialsOf} from "../data/mentors";
 import {useContentList} from "../hooks/useContent";
 import {adaptFaculty} from "../lib/contentAdapters";
 import {cdnImage} from "../lib/imageCdn";
+import {useLockSmoothScroll} from "../lib/smoothScroll";
 import {facultySchema, useJsonLd} from "../lib/structuredData";
 import "./mentor-grid.css";
 
@@ -115,6 +116,8 @@ const MentorCard = ({mentor, onOpen}) => {
 // serves a fully-written mentor and one with a bio and nothing else.
 const MentorModal = ({mentor, onClose}) => {
   const dialogRef = useRef(null);
+
+  useLockSmoothScroll(true);
 
   const specializations = toChips(mentor.specialization);
 

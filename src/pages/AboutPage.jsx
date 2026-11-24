@@ -410,7 +410,15 @@ export default function AboutPage() {
               <span>OPEN THE CAREER SYSTEM</span>
             </div>
 
-            <ScrollStack className="about-way-stack" itemDistance={70} itemStackDistance={24} baseScale={0.94} itemScale={0.015}>
+            <ScrollStack
+              className="about-way-stack"
+              useWindowScroll
+              smoothScroll={false}
+              itemDistance={70}
+              itemStackDistance={24}
+              baseScale={0.94}
+              itemScale={0.015}
+            >
               {learningJourney.map(([stage, title, body, papers], i) => <ScrollStackItem itemClassName={`about-way-card ${i < visibleJourneyCards || i === 0 ? "is-revealed" : ""}`} key={stage}><span className="about-way-number">0{i + 1}</span><span className="about-way-stage">{stage}</span><h3>{title}</h3><p>{body}</p><div className="about-way-visual"><Folder size={1.4} color={["#14b8a6", "#2563eb", "#0891b2", "#0d9488"][i]} className="about-way-folder" items={papers.map((label) => <span className="about-way-folder-item">{label}</span>)} onOpenChange={revealJourney} /></div></ScrollStackItem>)}
             </ScrollStack>
           </div>

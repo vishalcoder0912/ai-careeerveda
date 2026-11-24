@@ -1,5 +1,6 @@
 import {Link} from "react-router-dom";
 import {Reveal} from "../motionPrimitives";
+import {trackApplyNow} from "../../lib/analytics";
 
 const ProgramCta = ({program, applyHref}) => {
   return (
@@ -12,7 +13,13 @@ const ProgramCta = ({program, applyHref}) => {
             EMI options.
           </p>
           <div className="pd-cta__actions">
-            <Link className="pd-btn pd-btn--primary pd-btn--lg" to={applyHref}>
+            <Link
+              className="pd-btn pd-btn--primary pd-btn--lg"
+              to={applyHref}
+              onClick={() =>
+                trackApplyNow({source: "program-detail-cta", program: program.title, destination: applyHref})
+              }
+            >
               Apply Now →
             </Link>
             <Link className="pd-btn pd-btn--ghost pd-btn--lg" to="/programs">

@@ -39,6 +39,7 @@ export const ToastProvider = ({children}) => {
   const value = useMemo(
     () => ({
       toast: push,
+      info: (message) => push(message, "info"),
       success: (message) => push(message, "success"),
       error: (message) => push(message, "error"),
     }),

@@ -34,7 +34,7 @@ describe("public job applications", () => {
     const response = await apply();
 
     expect(response.status).toBe(201);
-    expect(response.body.data).toEqual({ok: true});
+    expect(response.body.data).toMatchObject({ok: true});
 
     const stored = await JobApplication.findOne({});
     expect(stored.job.equals(job._id)).toBe(true);
@@ -49,6 +49,7 @@ describe("public job applications", () => {
     ["is a draft", {status: "draft", publishedAt: null}],
     ["is past its deadline", {deadline: new Date(Date.now() - 60_000)}],
     ["is deleted", {deletedAt: new Date()}],
+    ["does not accept applications", {acceptsApplications: false}],
   ])("refuses a job that %s", async (_, overrides) => {
     await openJob(overrides);
     const response = await apply();
@@ -72,13 +73,14 @@ describe("public job applications", () => {
     expect(await JobApplication.countDocuments({})).toBe(0);
   });
 
-  it("accepts one application per phone per job, silently", async () => {
+  it("rejects a second application for the same phone and job", async () => {
     await openJob();
     const first = await apply();
     const second = await apply({mobile: "+91 92178 01191", name: "Someone Else"});
 
-    expect(second.status).toBe(201);
-    expect(second.body.data).toEqual(first.body.data);
+    expect(second.status).toBe(409);
+    expect(second.body.error.code).toBe("DUPLICATE_APPLICATION");
+    expect(first.status).toBe(201);
     expect(await JobApplication.countDocuments({})).toBe(1);
   });
 
@@ -95,8 +97,8 @@ describe("public job applications", () => {
 
     try {
       expect((await apply()).status).toBe(201);
-      expect((await apply({name: "Someone Else"})).status).toBe(201);
-      expect((await apply({mobile: "+91 92178 01191"})).status).toBe(201);
+      expect((await apply({name: "Someone Else"})).status).toBe(409);
+      expect((await apply({mobile: "+91 92178 01191"})).status).toBe(409);
       expect(await JobApplication.countDocuments({})).toBe(1);
     } finally {
       await JobApplication.collection.createIndex({job: 1, mobileKey: 1}, {unique: true});
@@ -145,6 +147,65 @@ describe("public job applications", () => {
     } finally {
       env.isTest = realIsTest;
     }
+  });
+
+  // Finding 2: a bare ImageKit file id is no longer enough to attach a file to
+  // an application; the signed upload token from upload-auth is required.
+  it("refuses a resume file id without the signed upload token", async () => {
+    await openJob();
+    const response = await apply({resumeFileId: "file_from_someone_else"});
+
+    expect(response.status).toBe(400);
+    expect(response.body.error.fields.resume).toMatch(/upload your resume again/i);
+  });
+
+  it("refuses a forged resume upload token", async () => {
+    await openJob();
+    const response = await apply({
+      resumeFileId: "file_from_someone_else",
+      resumeUploadToken: "forged.token",
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error.fields.resume).toMatch(/upload has expired/i);
+  });
+});
+
+describe("resume upload route", () => {
+  const authFor = () =>
+    request(app)
+      .post("/api/v1/public/job-applications/data-analyst/resume-upload-auth")
+      .send({});
+
+  it("issues an opaque folder token and no ImageKit credentials", async () => {
+    await openJob();
+    const response = await authFor();
+
+    expect(response.status).toBe(200);
+    expect(response.body.data).toMatchObject({jobSlug: "data-analyst", uploadToken: expect.any(String)});
+    for (const key of ["token", "signature", "publicKey", "privateKey", "expire"]) {
+      expect(response.body.data).not.toHaveProperty(key);
+    }
+  });
+
+  it("refuses an upload with no file", async () => {
+    await openJob();
+    const auth = await authFor();
+    const response = await request(app)
+      .post("/api/v1/public/job-applications/data-analyst/resume")
+      .field("uploadToken", auth.body.data.uploadToken);
+
+    expect(response.status).toBe(400);
+    expect(response.body.error.fields.resume).toMatch(/choose a resume/i);
+  });
+
+  it("refuses an upload with no signed token", async () => {
+    await openJob();
+    const response = await request(app)
+      .post("/api/v1/public/job-applications/data-analyst/resume")
+      .attach("resume", Buffer.from("%PDF-1.4\nreal resume"), "resume.pdf");
+
+    expect(response.status).toBe(400);
   });
 });
 
@@ -208,5 +269,82 @@ describe("admin job applications", () => {
     expect(response.status).toBe(200);
     expect(response.headers["content-type"]).toContain("text/csv");
     expect(response.text).not.toMatch(/,=HYPERLINK/);
+  });
+
+  // Finding 3: a stored resumeUrl is data, not a redirect target. A legacy row
+  // holding an attacker-controlled URL must not turn "View resume" into an open
+  // redirect, while a genuine ImageKit URL still works.
+  it("does not redirect to an arbitrary stored resume URL", async () => {
+    await openJob();
+    await apply();
+    const stored = await JobApplication.findOne({});
+    await JobApplication.updateOne(
+      {_id: stored._id},
+      {$set: {resumeUrl: "https://evil.example/phish"}},
+    );
+    const token = await asRole(ROLES.ADMIN);
+
+    const response = await request(app)
+      .get(`/api/v1/admin/job-applications/${stored._id}/resume`)
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(404);
+    expect(response.headers.location).toBeUndefined();
+  });
+
+  it("redirects to a genuine ImageKit resume URL", async () => {
+    await openJob();
+    await apply();
+    const stored = await JobApplication.findOne({});
+    const resumeUrl = "https://ik.imagekit.io/careerveda/resumes/data-analyst/file.pdf";
+    await JobApplication.updateOne({_id: stored._id}, {$set: {resumeUrl}});
+    const token = await asRole(ROLES.ADMIN);
+
+    const response = await request(app)
+      .get(`/api/v1/admin/job-applications/${stored._id}/resume`)
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(302);
+    expect(response.headers.location).toBe(resumeUrl);
+  });
+
+  // The admin panel asks for ?format=json so fetch() does not follow a
+  // cross-origin redirect. It must still hand back only trusted ImageKit URLs.
+  it("returns the resume URL as JSON when format=json is requested", async () => {
+    await openJob();
+    await apply();
+    const stored = await JobApplication.findOne({});
+    const resumeUrl = "https://ik.imagekit.io/careerveda/resumes/data-analyst/file.pdf";
+    await JobApplication.updateOne({_id: stored._id}, {$set: {resumeUrl}});
+    const token = await asRole(ROLES.ADMIN);
+
+    const response = await request(app)
+      .get(`/api/v1/admin/job-applications/${stored._id}/resume`)
+      .query({format: "json"})
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.headers.location).toBeUndefined();
+    expect(response.body.success).toBe(true);
+    expect(response.body.data.url).toBe(resumeUrl);
+  });
+
+  it("does not return an arbitrary stored resume URL as JSON", async () => {
+    await openJob();
+    await apply();
+    const stored = await JobApplication.findOne({});
+    await JobApplication.updateOne(
+      {_id: stored._id},
+      {$set: {resumeUrl: "https://evil.example/phish"}},
+    );
+    const token = await asRole(ROLES.ADMIN);
+
+    const response = await request(app)
+      .get(`/api/v1/admin/job-applications/${stored._id}/resume`)
+      .query({format: "json"})
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(404);
+    expect(response.body.data?.url).toBeUndefined();
   });
 });

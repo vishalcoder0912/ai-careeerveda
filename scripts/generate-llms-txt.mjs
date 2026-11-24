@@ -23,15 +23,19 @@
 // summary that still lists a program the catalog dropped is worse than none,
 // because it is confidently wrong rather than absent.
 //
-// Everything below is drawn from programCatalog.js, blogPosts.js and
-// siteMeta.js. There is no positioning copy in here that the site does not
-// already say on the page it links to — no rankings, no ratings, no outcome
-// claims. A model that reads a claim here and cannot corroborate it on the page
-// has been given a reason to distrust the whole file.
+// Program facts come from the public API at build time (the same records the
+// admin panel edits), falling back to programCatalog.js when the API is not
+// reachable. Everything else is drawn from blogPosts.js and siteMeta.js. There
+// is no positioning copy in here that the site does not already say on the page
+// it links to — no rankings, no ratings, no outcome claims. A model that reads a
+// claim here and cannot corroborate it on the page has been given a reason to
+// distrust the whole file.
 
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+
+import {loadLivePrograms} from "./live-programs.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -39,12 +43,15 @@ const load = (relative) =>
   import(new URL(`file:///${path.join(ROOT, relative).replace(/\\/g, "/")}`).href);
 
 const {SITE_URL, SITE_NAME, ORGANISATION} = await load("src/config/siteMeta.js");
-const {programCatalog} = await load("src/data/programCatalog.js");
+// Live admin records when PUBLIC_API_BASE_URL / VITE_PUBLIC_API_BASE_URL is set
+// (it is during the Docker build); static catalogue otherwise.
+const programCatalog = await loadLivePrograms();
 const {default: blogPosts} = await load("src/data/blogPosts.js");
 // src/data/faqs.js, not siteData.js: siteData re-exports partnerLogos.js, which
 // uses Vite's import.meta.glob and cannot be executed by node. See the note at
 // the top of src/data/faqs.js.
 const {faqs} = await load("src/data/faqs.js");
+const {policies} = await load("src/data/policies.js");
 
 const url = (loc) => `${SITE_URL}${loc}`;
 
@@ -78,6 +85,47 @@ const faqLines = faqs.flatMap(([question, answer]) => [
   "",
 ]);
 
+// Render one policy record (from src/data/policies.js) to markdown so LLMs can
+// quote the current terms directly instead of reconstructing them from page
+// fragments. Mirrors what PolicyPage.jsx renders on the site.
+const renderPolicy = (policy) => {
+  const parts = [
+    `### ${policy.title}`,
+    "",
+    policy.lead ? String(policy.lead).replace(/\s+/g, " ").trim() : "",
+    policy.effective ? `**Effective:** ${policy.effective}` : "",
+    policy.updated ? `**Last updated:** ${policy.updated}` : "",
+    "",
+  ];
+
+  for (const section of policy.sections || []) {
+    parts.push(`#### ${section.heading.replace(/^\d+\.\s*/, "")}`);
+    parts.push("");
+    if (section.body?.length) parts.push(String(section.body.join(" ")).replace(/\s+/g, " ").trim(), "");
+    if (section.groups?.length) {
+      for (const group of section.groups) {
+        parts.push(`**${group.title}**`);
+        parts.push("");
+        parts.push(...group.list.map((item) => `- ${item}`));
+        parts.push("");
+      }
+    }
+    if (section.list?.length) parts.push(...section.list.map((item) => `- ${item}`), "");
+    if (section.callout) parts.push(`> ${String(section.callout).replace(/\s+/g, " ").trim()}`, "");
+    if (section.closing) parts.push(String(section.closing).replace(/\s+/g, " ").trim(), "");
+  }
+
+  return parts.filter((p) => p !== null && p !== "").join("\n");
+};
+
+const refundPolicy = policies["refund-policy"];
+const policyLines = refundPolicy
+  ? [
+      `- [${refundPolicy.title}](${url("/refund-policy")}): ${String(refundPolicy.lead).replace(/\s+/g, " ").trim()}. Effective ${refundPolicy.effective}; last updated ${refundPolicy.updated}.`,
+    ]
+  : [];
+
+
 const content = `# ${SITE_NAME}
 
 > ${ORGANISATION.description}
@@ -107,6 +155,10 @@ ${programLines.join("\n")}
 ## Frequently asked questions
 
 ${faqLines.join("\n").trim()}
+
+## Policies
+
+${policyLines.join("\n")}
 
 ## Blog articles
 
@@ -194,6 +246,10 @@ ${programCatalog.map(programSection).join("\n")}
 ## General questions
 
 ${faqLines.join("\n").trim()}
+
+## Policies
+
+${renderPolicy(refundPolicy)}
 `;
 
 const fullTarget = path.join(ROOT, "public", "llms-full.txt");

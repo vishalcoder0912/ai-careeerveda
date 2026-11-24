@@ -1,6 +1,7 @@
 import {useEffect, useRef, useState} from "react";
 import {AnimatePresence, motion, useReducedMotion} from "framer-motion";
 import {reducedMotionNow} from "../fx/registry";
+import {useInView} from "../fx/hooks";
 import {Lines, useCinematic} from "../content";
 import {SectionLabel} from "./Atmosphere";
 
@@ -83,19 +84,23 @@ export const CareerOutcomes = () => {
   const careerRoles = careers.roles;
   const [active, setActive] = useState(0);
   const hovering = useRef(false);
+  const [sectionRef, inView] = useInView({threshold: 0.25, once: false});
   const reduced = useReducedMotion();
   const reducedScroll = typeof window !== "undefined" && reducedMotionNow();
   const count = careerRoles.length;
   const current = careerRoles[active];
 
   useEffect(() => {
-    if (reducedScroll || count <= 1) return undefined;
+    // Only walk the roles while the section is actually on screen, so a reader
+    // who scrolls down to "01 / 10" sees the sequence start there rather than
+    // at whatever slot a timer left it on minutes ago.
+    if (!inView || reducedScroll || count <= 1) return undefined;
     const timer = setInterval(() => {
       if (hovering.current) return;
       setActive((i) => (i + 1) % count);
     }, AUTOPLAY_MS);
     return () => clearInterval(timer);
-  }, [count, reducedScroll]);
+  }, [inView, count, reducedScroll]);
 
   const renderChips = (dim) => {
     const Chip = dim ? "li" : motion.li;
@@ -182,6 +187,7 @@ export const CareerOutcomes = () => {
     <section
       className="ga-careers"
       id="ga-career"
+      ref={sectionRef}
       onMouseEnter={() => {
         hovering.current = true;
       }}

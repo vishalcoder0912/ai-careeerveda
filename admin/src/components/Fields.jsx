@@ -495,6 +495,95 @@ const MediaListField = ({value, onChange, disabled}) => {
   );
 };
 
+// Structured page copy is edited as JSON: the shape is deep and section-based,
+// and a generic repeater would only hide that structure behind 15 nested "Add"
+// buttons. Invalid text stays in the box with an inline message instead of
+// reaching the form state, so a half-typed object can never be saved.
+const stringifyOverride = (value) =>
+  value == null || (typeof value === "object" && !Array.isArray(value) && Object.keys(value).length === 0)
+    ? ""
+    : JSON.stringify(value, null, 2);
+
+const JsonField = ({id, value, onChange, disabled, describedBy, rows = 16, template, clearLabel = "Clear overrides"}) => {
+  // The record arrives after the form mounts. Keep the text being typed as a
+  // draft, together with the committed value it came from. When the prop moves
+  // to a different value, derive the box from the prop during render instead of
+  // resetting state in an effect — no extra render, and no reformatting of our
+  // own commits that would move the caret while someone is typing.
+  const [draft, setDraft] = useState(() => ({
+    text: stringifyOverride(value),
+    source: value,
+    error: "",
+  }));
+  const isCurrent = draft.source === value;
+  const raw = isCurrent ? draft.text : stringifyOverride(value);
+  const error = isCurrent ? draft.error : "";
+
+  const commit = (parsed, text) => {
+    setDraft({text, source: parsed, error: ""});
+    onChange(parsed);
+  };
+
+  const handleChange = (event) => {
+    const text = event.target.value;
+    if (!text.trim()) {
+      commit({}, "");
+      return;
+    }
+    try {
+      const parsed = JSON.parse(text);
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+        throw new Error("enter a JSON object, e.g. {\"hero\": {\"title\": [\"Product\"]}}");
+      }
+      commit(parsed, text);
+    } catch (parseError) {
+      // Keep invalid text in the box and out of the form. `source` stays on the
+      // last committed value, so a later external load still wins.
+      setDraft((current) => ({...current, text, error: parseError.message}));
+    }
+  };
+
+  return (
+    <div className="json-field">
+      <textarea
+        id={id}
+        rows={rows}
+        spellCheck="false"
+        value={raw}
+        disabled={disabled}
+        aria-describedby={describedBy || undefined}
+        aria-invalid={error ? "true" : undefined}
+        placeholder={'{\n  "hero": { "title": ["Product", "Management"] }\n}'}
+        onChange={handleChange}
+      />
+      <div className="json-field-actions">
+        {template ? (
+          <button
+            type="button"
+            className="btn btn--small"
+            disabled={disabled}
+            onClick={() => {
+              const cloned = structuredClone(template);
+              commit(cloned, JSON.stringify(cloned, null, 2));
+            }}
+          >
+            Load current page copy
+          </button>
+        ) : null}
+        <button type="button" className="btn btn--small btn--danger" disabled={disabled} onClick={() => commit({}, "")}>
+          {clearLabel}
+        </button>
+        <span className="field-hint">Only changed sections need to be included.</span>
+      </div>
+      {error ? (
+        <p className="field-error" role="alert">
+          Invalid JSON — {error}
+        </p>
+      ) : null}
+    </div>
+  );
+};
+
 export const Field = ({field, value, onChange, disabled, error, needed = false, prefilled = false}) => {
   const id = fieldDomId(field.name);
   const describedBy = [
@@ -591,6 +680,19 @@ export const Field = ({field, value, onChange, disabled, error, needed = false, 
         return <MediaField value={value} onChange={onChange} disabled={disabled} />;
       case "mediaList":
         return <MediaListField value={value} onChange={onChange} disabled={disabled} />;
+      case "json":
+        return (
+          <JsonField
+            id={id}
+            value={value}
+            onChange={onChange}
+            disabled={disabled}
+            describedBy={describedBy}
+            rows={field.rows}
+            template={field.template}
+            clearLabel={field.clearLabel}
+          />
+        );
       default:
         return (
           <input

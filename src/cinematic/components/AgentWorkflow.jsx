@@ -1,11 +1,14 @@
 import {useEffect, useRef, useState} from "react";
+import {gsap} from "gsap";
 import {ScrollTrigger} from "gsap/ScrollTrigger";
 import {Check} from "lucide-react";
 import {createPinnedScrub} from "../fx/pinned";
-import {reducedMotionNow} from "../fx/registry";
 import {Lines, useCinematic} from "../content";
 import {SectionLabel} from "./Atmosphere";
 import "./workflow.css";
+
+const MQ_MOBILE = "(max-width: 899px) and (prefers-reduced-motion: no-preference)";
+const MQ_DESKTOP = "(min-width: 900px) and (prefers-reduced-motion: no-preference)";
 const pad = (n) => String(n).padStart(2, "0");
 
 // Ten-step workflow. Desktop pins the section and scrolling walks the steps:
@@ -24,9 +27,10 @@ export const AgentWorkflow = () => {
     const section = sectionRef.current;
     const pin = pinRef.current;
     if (!section || !pin) return undefined;
-    if (reducedMotionNow()) return undefined;
 
-    if (!window.matchMedia("(min-width: 900px)").matches) {
+    const mm = gsap.matchMedia();
+
+    mm.add(MQ_MOBILE, () => {
       const sts = stepsRef.current.map((el, i) =>
         ScrollTrigger.create({
           trigger: el,
@@ -36,18 +40,23 @@ export const AgentWorkflow = () => {
         }),
       );
       return () => sts.forEach((st) => st.kill());
-    }
-
-    return createPinnedScrub({
-      section,
-      pinEl: pin,
-      end: "+=170%",
-      scrub: 1,
-      onUpdate: (proxy) => {
-        const idx = Math.round(proxy.p * (workflowSteps.length - 1));
-        setActive(Math.min(workflowSteps.length - 1, Math.max(0, idx)));
-      },
     });
+
+    mm.add(MQ_DESKTOP, () => {
+      const cleanup = createPinnedScrub({
+        section,
+        pinEl: pin,
+        end: "+=170%",
+        scrub: 1,
+        onUpdate: (proxy) => {
+          const idx = Math.round(proxy.p * (workflowSteps.length - 1));
+          setActive(Math.min(workflowSteps.length - 1, Math.max(0, idx)));
+        },
+      });
+      return cleanup;
+    });
+
+    return () => mm.revert();
   }, [workflowSteps]);
 
   const current = workflowSteps[active];

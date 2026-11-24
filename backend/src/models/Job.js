@@ -23,16 +23,31 @@ const jobSchema = new mongoose.Schema(
     employmentType: {type: String, default: "", maxlength: 60},
     experienceLevel: {type: String, default: "", maxlength: 80},
 
+    department: {type: String, default: "", maxlength: 120},
+    vacancies: {type: Number, default: null, min: 0},
+    experience: {type: String, default: "", maxlength: 120},
+    educationRequirements: {type: String, default: "", maxlength: 2000},
+    aboutCompany: {type: String, default: "", maxlength: 6000},
+    jobOverview: {type: String, default: "", maxlength: 6000},
     description: {type: String, default: "", maxlength: 6000},
     requirements: {type: [String], default: []},
     responsibilities: {type: [String], default: []},
     skills: {type: [String], default: []},
+    preferredSkills: {type: [String], default: []},
+    qualifications: {type: [String], default: []},
+    benefits: {type: [String], default: []},
+    selectionProcess: {type: [String], default: []},
+    additionalInstructions: {type: String, default: "", maxlength: 4000},
 
     salaryRange: {type: String, default: "", maxlength: 120},
+    salaryMin: {type: Number, default: null, min: 0},
+    salaryMax: {type: Number, default: null, min: 0},
 
     // On: the site shows "Apply with CareerVeda" and the listing takes
     // applications through /public/job-applications (name, mobile, email).
-    acceptsApplications: {type: Boolean, default: false},
+    // Matches jobBody's default: a job created without the flag (admin panel,
+    // seed or script) is open for candidates unless explicitly closed.
+    acceptsApplications: {type: Boolean, default: true},
     applicationUrl: {type: String, default: "", maxlength: 1000},
     applicationEmail: {type: String, default: "", maxlength: 254},
     // Named so the card can say where the listing came from — it matters that
@@ -62,6 +77,7 @@ const jobSchema = new mongoose.Schema(
 
     postedDate: {type: Date, default: null},
     deadline: {type: Date, default: null},
+    applicationDeadline: {type: Date, default: null},
   },
   {timestamps: true},
 );

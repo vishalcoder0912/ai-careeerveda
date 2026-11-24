@@ -1,0 +1,12 @@
+.cv-ad-unit {
+  clear: both;
+  margin: 2rem 0;
+  min-height: 1px;
+  text-align: center;
+}
+
+/* AdSense may insert its own sizing; a min-height keeps an unfilled slot from
+   collapsing the article while the network request is in flight. */
+.cv-ad-unit ins.adsbygoogle {
+  min-height: 90px;
+}

@@ -2,8 +2,9 @@ import {describe, expect, it} from "vitest";
 
 import {programCatalog, getProgram} from "../../data/programCatalog";
 import {CINEMATIC_PROGRAMS} from "../../lib/routeChunks";
-import {CATALOG_CINEMATIC} from "./catalogPrograms";
-import {productManagementContent} from "./productManagement";
+import {CATALOG_CINEMATIC, CINEMATIC_COPY} from "./catalogPrograms";
+import {productManagementContent, buildProductManagementContent} from "./productManagement";
+import {buildCinematicContent} from "./fromCatalog";
 
 describe("cinematic program pages built from the catalogue", () => {
   it("covers every catalogue program, and the route list agrees with the content", () => {
@@ -33,5 +34,22 @@ describe("cinematic program pages built from the catalogue", () => {
     expect(content.careers.roles.length).toBeGreaterThan(0);
     for (const role of content.careers.roles) expect(role.salary, role.role).toMatch(/^₹\d+–\d+ LPA$/);
     expect(content.hero.metaRight).toBe(`Next batch · ${getProgram(id).nextBatch}`);
+  });
+
+  // The page rebuilds these objects from the admin API record. These two tests
+  // are the regression guard for the original bug: the hero kept printing the
+  // build-time September date no matter what was saved in the panel.
+  it("prints the admin record's batch date on a catalogue cinematic page", () => {
+    const live = {...getProgram("data-analytics"), nextBatch: "December 5, 2026"};
+    const content = buildCinematicContent("data-analytics", CINEMATIC_COPY["data-analytics"], live);
+    expect(content.hero.metaRight).toBe("Next batch · December 5, 2026");
+    expect(content.cta.meta[0]).toBe("Next batch · December 5, 2026");
+  });
+
+  it("prints the admin record's batch date on the Product Management page", () => {
+    const live = {...getProgram("product-management"), nextBatch: "December 5, 2026"};
+    const content = buildProductManagementContent(live);
+    expect(content.hero.metaRight).toBe("Next batch · December 5, 2026");
+    expect(content.cta.meta[0]).toBe("Next batch · December 5, 2026");
   });
 });

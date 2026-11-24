@@ -210,7 +210,7 @@ export const policies = {
           {
             title: "2.1 Full refund (100%)",
             list: [
-              "Cancellation within 7 days of enrollment and before the program start date",
+              "Cancellation requests submitted before LMS account creation or access to any live or recorded classes.",
               "Cancellation before accessing any course materials or attending any sessions",
               "Program cancellation by CareerVeda due to insufficient enrollment",
               "Technical issues preventing access to the program for more than 15 days",
@@ -272,6 +272,7 @@ export const policies = {
           "Administrative processing fee of ₹500 for partial refunds",
           "Cost of any course materials or resources already provided",
           "Pro-rata charges for sessions attended before cancellation",
+          "Once the LMS account has been created and activated, ₹15,000 will be deducted from the total program fee towards LMS setup, activation, and associated infrastructure costs, subject to applicable laws.",
         ],
         closing:
           "These deductions ensure fair compensation for services rendered and administrative costs incurred.",

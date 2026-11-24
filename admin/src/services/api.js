@@ -319,13 +319,27 @@ export const mediaApi = {
 export const applicationsApi = {
   list: (query) => api.get("/admin/job-applications", query),
   jobs: () => api.get("/admin/job-applications/jobs"),
+  get: (id) => api.get(`/admin/job-applications/${id}`),
   update: (id, body) => api.patch(`/admin/job-applications/${id}`, body),
+  updateStatus: (id, body) => api.patch(`/admin/job-applications/${id}/status`, body),
   remove: (id) => api.delete(`/admin/job-applications/${id}`),
   // A blob for the same reason as the lead export: it needs the Bearer header.
   exportCsv: async (query) => {
     const response = await request("/admin/job-applications/export", {query, raw: true});
     if (!response.ok) throw new ApiError(response.status, "EXPORT_FAILED", "Export failed");
     return response.blob();
+  },
+  resumeUrl: (id) => `${BASE}/admin/job-applications/${id}/resume`,
+  // The backend used to 302 to ImageKit here. fetch() followed that redirect
+  // cross-origin with credentials, so the browser blocked it on CORS and the
+  // generic error handler blamed the API. Asking for JSON keeps the whole call
+  // same-origin; the panel then opens the URL as a top-level navigation, which
+  // CORS does not apply to.
+  openResume: async (id) => {
+    const body = await request(`/admin/job-applications/${id}/resume`, {
+      query: {format: "json"},
+    });
+    return {url: body.data.url};
   },
 };
 

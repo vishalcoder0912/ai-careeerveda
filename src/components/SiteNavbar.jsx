@@ -2,6 +2,8 @@ import {useEffect, useRef, useState, useCallback} from "react";
 import {Link, useLocation} from "react-router-dom";
 import BrandLockup from "./BrandLockup";
 import {externalLinks} from "../config/externalLinks";
+import {useLockSmoothScroll} from "../lib/smoothScroll";
+import {trackApplyNow} from "../lib/analytics";
 import "./navbar-area.css";
 
 const EXIT_MS = 280;
@@ -139,6 +141,9 @@ const SiteNavbar = ({navItems}) => {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [isClosing, setClosing] = useState(false);
 
+  // body overflow alone does not stop Lenis — it drives documentElement.
+  useLockSmoothScroll(isMenuOpen);
+
   const controller = useRef(
     new NavbarController(setMenuOpen, setClosing)
   );
@@ -268,7 +273,14 @@ const SiteNavbar = ({navItems}) => {
           </nav>
 
           <div className="mobile-navbar-actions">
-            <Link className="nav-cta" to="/enroll" onClick={closeMenu}>
+            <Link
+              className="nav-cta"
+              to="/enroll"
+              onClick={() => {
+                trackApplyNow({source: "navbar-cta", destination: "/enroll"});
+                closeMenu();
+              }}
+            >
               Enroll Now <span className="nav-cta__arrow" aria-hidden="true">→</span>
             </Link>
 
@@ -358,7 +370,10 @@ const SiteNavbar = ({navItems}) => {
                 <Link
                   className="mobile-menu-cta"
                   to="/enroll"
-                  onClick={closeMenu}
+                  onClick={() => {
+                    trackApplyNow({source: "mobile-menu-cta", destination: "/enroll"});
+                    closeMenu();
+                  }}
                 >
                   Enroll Now
                 </Link>
