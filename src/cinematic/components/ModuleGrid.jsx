@@ -16,8 +16,11 @@ import "./stage-dialog.css";
 
 // Stage art: Microsoft Fluent Emoji 3D (MIT), 128px webp, named per stage id in
 // the program's modules.art. Decorative — the stage title beside it carries
-// the meaning, so alt is empty.
-const stageArt = (name) => `/images/curriculum/${name}.webp`;
+// the meaning, so alt is empty. Editors may save either a token ("discover")
+// or a full site-relative path; tolerating both avoids a doubled prefix and
+// the broken image it produces.
+const stageArt = (name) =>
+  !name ? "" : name.startsWith("/") ? name : `/images/curriculum/${name}.webp`;
 
 // A stage card is a button: it opens the stage in StageDialog instead of
 // expanding in place, so every card in the grid keeps the same height.

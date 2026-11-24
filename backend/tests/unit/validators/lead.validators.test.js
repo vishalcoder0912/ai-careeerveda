@@ -53,6 +53,18 @@ describe("submitLeadSchema", () => {
     });
   });
 
+  it("accepts click IDs and GA4 client attribution from the browser", () => {
+    const parsed = parse(submitLeadSchema, {
+      ...validLead,
+      clickIds: {gclid: "abc123"},
+      attribution: {clientId: "123.456", capturedAt: "2026-01-01T00:00:00.000Z"},
+    });
+
+    expect(parsed.clickIds.gclid).toBe("abc123");
+    expect(parsed.attribution.clientId).toBe("123.456");
+    expect(parsed.attribution.capturedAt).toBeInstanceOf(Date);
+  });
+
   it("refuses a lead without consent, or with consent declined", () => {
     const {consent, ...withoutConsent} = validLead;
     expect(consent).toBe(true);

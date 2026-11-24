@@ -28,6 +28,12 @@ export const createPinnedScrub = ({
       pin: pinEl,
       scrub,
       anticipatePin: 1,
+      /* Pins add scroll space, so they must refresh BEFORE every unpinned
+         trigger measures its own start/end. Otherwise sections further down
+         are measured against the unpinned document and their animations fire
+         thousands of pixels too early. Equal priorities are then sorted by
+         DOM position, keeping pins in reading order. */
+      refreshPriority: 1,
       onRefresh: (self) => self.scroll(),
     },
   });

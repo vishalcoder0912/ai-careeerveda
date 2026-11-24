@@ -19,7 +19,8 @@
 // injects
 //
 //     <link rel="modulepreload" href="/assets/ProgramsPage-….js">
-//     <link rel="stylesheet"    href="/assets/ProgramsPage-….css">
+//     <link rel="preload" as="style" href="/assets/ProgramsPage-….css"
+//           onload="this.onload=null;this.rel='stylesheet'">
 //
 // into that route's <head>. The downloads then race the app boot instead of
 // following it; the chunk is in cache by the time the router asks for it.
@@ -34,6 +35,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 
 import {collectRoutes} from "./routes.mjs";
+import {loadLivePrograms} from "./live-programs.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = path.join(ROOT, "dist");
@@ -104,7 +106,7 @@ function assetsFor(entry, seen = new Set()) {
   return {files, css};
 }
 
-const routes = collectRoutes();
+const routes = collectRoutes(await loadLivePrograms());
 let injected = 0;
 
 for (const route of routes) {
@@ -131,14 +133,31 @@ for (const route of routes) {
     files.push(...assets.files);
     css.push(...assets.css);
   }
+
+  // Vite already modulepreloads the entry and its static dependencies and links
+  // the entry stylesheet. Repeating those here only bloats the head (and on a
+  // slow connection, the duplicate requests queued ahead of the real work).
+  const alreadyLinked = new Set(
+    [...html.matchAll(/<link[^>]+href=["']([^"']+)["'][^>]*>/g)].map((match) => match[1]),
+  );
+  const unlink = (file) => !alreadyLinked.has(`/${file}`);
+
   // Manifest "file"/"css" paths are relative to dist/ and already begin with
   // assets/ — do not prepend another segment.
+  //
+  // Route CSS must NOT be a plain rel="stylesheet": that would render-block
+  // the whole document for a stylesheet only this one route needs. Lighthouse
+  // measured ~900 ms of blocking on the home page from consultation-form.css
+  // alone. Preload it and flip it to a stylesheet when it lands — the same
+  // pattern snapshot.mjs uses — so it is applied before the reader can scroll
+  // to the section, without holding the hero's first paint hostage.
   const tags = [
-    ...files.map(
+    ...[...new Set(files)].filter(unlink).map(
       (file) => `    <link rel="modulepreload" data-route-preload crossorigin href="/${file}" />`,
     ),
-    ...[...new Set(css)].map(
-      (file) => `    <link rel="stylesheet" data-route-preload crossorigin href="/${file}" />`,
+    ...[...new Set(css)].filter(unlink).map(
+      (file) =>
+        `    <link rel="preload" as="style" data-route-preload crossorigin href="/${file}" onload="this.onload=null;this.rel='stylesheet'" />`,
     ),
   ].join("\n");
 

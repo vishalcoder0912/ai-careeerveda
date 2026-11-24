@@ -1,5 +1,6 @@
 import {useEffect, useRef, useState} from "react";
 import {useLenis} from "../../lib/smoothScroll";
+import {trackApplyNow} from "../../lib/analytics";
 import {navLinks} from "../data";
 import {X} from "lucide-react";
 
@@ -69,7 +70,15 @@ export const CinematicNav = () => {
         </nav>
 
         <div className="ga-nav-actions">
-          <a href="#ga-cta" onClick={go("#ga-cta")} className="ga-btn ga-btn-ghost" data-cursor>
+          <a
+            href="#ga-cta"
+            onClick={(e) => {
+              go("#ga-cta")(e);
+              trackApplyNow({source: "cinematic-nav", destination: "#ga-cta"});
+            }}
+            className="ga-btn ga-btn-ghost"
+            data-cursor
+          >
             Apply Now
           </a>
           <button
@@ -99,7 +108,14 @@ export const CinematicNav = () => {
               {link.label}
             </a>
           ))}
-          <a href="#ga-cta" onClick={go("#ga-cta")} className="ga-overlay-cta">
+          <a
+            href="#ga-cta"
+            onClick={(e) => {
+              go("#ga-cta")(e);
+              trackApplyNow({source: "cinematic-nav-overlay", destination: "#ga-cta"});
+            }}
+            className="ga-overlay-cta"
+          >
             Apply Now
           </a>
         </nav>

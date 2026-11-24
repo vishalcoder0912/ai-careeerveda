@@ -9,6 +9,24 @@
    inside .brand inherits that tile and the text renders inside a coloured box.
    Using <div> and <b> sidesteps all ten without unwinding any of them. */
 
+/* The icon PNG is flush to its own edges (~1% padding), so with no flex gap the
+   glyphs of "Career" collide with it. The mobile drawer already spaces the two
+   by 8px; give the navbar the same breathing room. */
+body header.site-nav .nav-container .brand {
+  gap: 8px !important;
+}
+
+/* `.site-footer a { display: block }` in SplineLanding.css catches the logo
+   link too, stacking the icon above the wordmark and adding the footer's link
+   margin. Re-assert the horizontal lockup here so the footer mark matches the
+   header, and drop that margin so it lines up with the column headings. */
+body .site-footer .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
 .brand-icon {
   flex: none;
   width: auto;

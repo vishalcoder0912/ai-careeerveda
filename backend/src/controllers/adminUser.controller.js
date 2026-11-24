@@ -188,6 +188,12 @@ export const generatePassword = async (request, response, next) => {
       metadata: {email: target.email},
     });
 
+    // This response is the one place a plaintext password crosses the wire, by
+    // design: the super-admin has to hand it to the colleague. Keep it out of
+    // every cache/proxy, and never attach it to the audit trail or a log line.
+    // The panel treats it as show-once (AdminAccounts clears its form state).
+    response.set("Cache-Control", "no-store, private");
+    response.set("Pragma", "no-cache");
     return ok(response, {
       reset: true,
       id: target._id,

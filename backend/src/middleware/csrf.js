@@ -3,16 +3,6 @@ import {randomBytes, timingSafeEqual} from "node:crypto";
 import {env} from "../config/env.js";
 import {forbidden} from "../utils/apiError.js";
 
-// Double-submit CSRF, applied only to the endpoints that authenticate by cookie
-// (refresh and logout). Everything else uses a Bearer header, which a
-// cross-site form cannot set — those routes need no CSRF check at all.
-//
-// Two cookies are set at login:
-//   REFRESH_COOKIE  httpOnly, unreadable by script — the actual credential
-//   CSRF_COOKIE     readable by script — a value the SPA copies into a header
-// A cross-origin attacker's page can cause the browser to SEND both cookies,
-// but same-origin policy stops it READING the CSRF one, so it cannot produce
-// the matching header.
 
 export const REFRESH_COOKIE = "cv_refresh";
 export const CSRF_COOKIE = "cv_csrf";

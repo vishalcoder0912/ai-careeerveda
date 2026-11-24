@@ -5,6 +5,7 @@ import {
   adminLimiter,
   authLimiter,
   formLimiter,
+  globalLimiter,
   jobApplicationLimiter,
   publicLimiter,
   uploadLimiter,
@@ -17,7 +18,7 @@ import {ApiError} from "../../../src/utils/apiError.js";
 // middleware, not a facsimile, is under test. Every call gets a fresh request
 // object: v7's double-count validation keys on the object identity.
 
-const LIMITERS = [authLimiter, formLimiter, jobApplicationLimiter, publicLimiter, adminLimiter, uploadLimiter];
+const LIMITERS = [globalLimiter, authLimiter, formLimiter, jobApplicationLimiter, publicLimiter, adminLimiter, uploadLimiter];
 
 const makeRequest = (ip) => ({
   ip,
@@ -109,6 +110,7 @@ describe("rate limiters", () => {
     env.isTest = false;
 
     const budgets = {
+      globalLimiter: 500,
       authLimiter: 10,
       formLimiter: 5,
       jobApplicationLimiter: 20,
@@ -118,7 +120,15 @@ describe("rate limiters", () => {
     };
 
     for (const [name, budget] of Object.entries(budgets)) {
-      const limiter = {authLimiter, formLimiter, jobApplicationLimiter, uploadLimiter, publicLimiter, adminLimiter}[name];
+      const limiter = {
+        globalLimiter,
+        authLimiter,
+        formLimiter,
+        jobApplicationLimiter,
+        uploadLimiter,
+        publicLimiter,
+        adminLimiter,
+      }[name];
       const {request} = await run(limiter, "203.0.113.30");
       expect(request.rateLimit.limit).toBe(budget);
     }

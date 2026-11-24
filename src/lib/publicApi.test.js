@@ -143,6 +143,26 @@ describe("submitLead", () => {
     expect(fetch.mock.calls[0][1].method).toBe("POST");
   });
 
+  it("reuses one Idempotency-Key across a retry, then clears it after success", async () => {
+    window.sessionStorage.clear();
+    fetch
+      .mockResolvedValueOnce(json({success: false, error: {message: "Service down"}}, 503))
+      .mockResolvedValueOnce(json(envelope({_id: "1"}), 201))
+      .mockResolvedValueOnce(json(envelope({_id: "2"}), 201));
+
+    const payload = {name: "A", email: "a@b.co", mobile: "9876543210"};
+    expect((await submitLead(payload)).ok).toBe(false);
+    const first = fetch.mock.calls[0][1].headers["Idempotency-Key"];
+    expect(first).toMatch(/^[\w-]{1,128}$/);
+
+    expect((await submitLead(payload)).ok).toBe(true);
+    expect(fetch.mock.calls[1][1].headers["Idempotency-Key"]).toBe(first);
+
+    // A later, deliberate enquiry gets a fresh key.
+    await submitLead(payload);
+    expect(fetch.mock.calls[2][1].headers["Idempotency-Key"]).not.toBe(first);
+  });
+
   it("surfaces per-field validation errors under the key the forms read", async () => {
     fetch.mockResolvedValue(
       json(

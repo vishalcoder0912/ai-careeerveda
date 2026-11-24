@@ -6,7 +6,7 @@ import { Reveal } from "../components/motionPrimitives";
 import { useCinematicInteractions } from "../hooks/useCinematicInteractions";
 import { stats } from "../data/siteData";
 import { useContentList } from "../hooks/useContent";
-import { adaptAlumniReview } from "../lib/contentAdapters";
+import { adaptAlumniReview, adaptProgram } from "../lib/contentAdapters";
 import { programCatalog } from "../data/programCatalog";
 import { programListSchema, useJsonLd } from "../lib/structuredData";
 import "../components/SplineLanding.css";
@@ -34,9 +34,14 @@ const ProgramsPage = () => {
     params: {featured: true},
   });
 
-  // The catalog is already in this route's chunk — ProgramExplorer imports it as
-  // its own fallback — so listing it here costs nothing extra to download.
-  useJsonLd("ld-program-list", programListSchema(programCatalog));
+  // Structured data for the program hub must follow the same admin records the
+  // explorer renders, or Google keeps indexing titles/dates from the static file.
+  // Static catalogue is the offline floor until the API answers.
+  const {items: programs} = useContentList("programs", {
+    fallback: programCatalog,
+    adapt: adaptProgram,
+  });
+  useJsonLd("ld-program-list", programListSchema(programs));
   // The Home > Programs trail is emitted centrally by RouteMeta in App.jsx now,
   // along with the one every other static route was missing. Kept here it would
   // be a second BreadcrumbList on the same page saying the same thing.
@@ -67,7 +72,7 @@ const ProgramsPage = () => {
           <ProgramExplorer />
         </Reveal>
         <MarqueeStrip
-          items={programCatalog.map((program) => program.title)}
+          items={programs.map((program) => program.title)}
           label="Career tracks ticker"
           speed={56}
         />

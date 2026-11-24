@@ -480,6 +480,8 @@ const CurriculumCta = ({href, moduleCount}) => (
 // Opening a module re-flows the grid (it takes a full row), which CSS cannot
 // transition. A view transition snapshots every named card and morphs each one
 // from its old box to its new one. No API or reduced motion → instant swap.
+let activeLayoutTransition = null;
+
 const animateLayout = (update) => {
   const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
   if (!document.startViewTransition || reduced) {
@@ -488,9 +490,17 @@ const animateLayout = (update) => {
   }
   const root = document.documentElement;
   root.classList.add("pd-vt");
-  document
-    .startViewTransition(() => flushSync(update))
-    .finished.finally(() => root.classList.remove("pd-vt"));
+  const transition = document.startViewTransition(() => flushSync(update));
+  activeLayoutTransition = transition;
+  transition.finished
+    .finally(() => {
+      // A newer transition may own the class by the time this one settles.
+      if (activeLayoutTransition === transition) {
+        root.classList.remove("pd-vt");
+        activeLayoutTransition = null;
+      }
+    })
+    .catch(() => {});
 };
 
 const ProgramCurriculum = ({program, applyHref}) => {

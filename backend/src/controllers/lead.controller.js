@@ -6,6 +6,7 @@ import {publishedFilter} from "../models/plugins/contentPlugin.js";
 import {AUDIT_ACTIONS} from "../models/AuditLog.js";
 import {recordAudit} from "../services/audit.service.js";
 import {sendHiringEmails} from "../services/mail.service.js";
+import {reportLeadEvent} from "../services/analytics.service.js";
 import {env} from "../config/env.js";
 import {csvSafe, escapeRegex} from "../utils/sanitize.js";
 import {ok, created, paginated} from "../utils/respond.js";
@@ -56,6 +57,15 @@ const startOfTodayIST = () => {
 // "spam" or "converted". Capped, so spamming one number cannot grow a record
 // forever.
 const MAX_REPEAT_NOTES = 20;
+
+// Program fees are stored as display strings ("₹ 1,49,000", "1.5L"), so the
+// conversion value has to be parsed rather than cast. Anything that is not a
+// finite positive number is left unset — a token value in Ads is worse than no
+// value at all, because it looks like real revenue in the report.
+const parseFeeAmount = (value) => {
+  const amount = Number(String(value || "").replace(/[^\d.]/g, ""));
+  return Number.isFinite(amount) && amount > 0 ? Math.min(Math.round(amount), 100000000) : null;
+};
 
 const recordRepeat = (mobileKey, type, body) => {
   const summary = [
@@ -156,6 +166,8 @@ export const submit = async (request, response, next) => {
       source: body.source || "",
       sourcePage: body.sourcePage || "",
       utm: body.utm || {},
+      clickIds: body.clickIds || {},
+      attribution: body.attribution || {},
       consent: Boolean(body.consent),
       ipHash: hashIp(request.ip),
       userAgent: String(request.get("user-agent") || "").slice(0, 400),
@@ -163,6 +175,10 @@ export const submit = async (request, response, next) => {
     });
 
     if (type === "hiring") sendHiringEmails(lead);
+
+    // Report only a lead that was really persisted. Fire-and-forget so a slow
+    // Google endpoint never delays the visitor's success screen.
+    reportLeadEvent("generate_lead", lead);
 
     // 201 only after the write resolved. The frontend must never be told a
     // submission was saved when it was not — a silently dropped applicant is
@@ -292,14 +308,45 @@ export const update = async (request, response, next) => {
     const lead = await Lead.findById(request.params.id);
     if (!lead) return next(notFound("Lead not found"));
 
-    const {status, assignedTo, archived} = request.body;
+    const {status, assignedTo, archived, conversionValue} = request.body;
     const before = lead.status;
 
     if (status !== undefined) lead.status = status;
     if (assignedTo !== undefined) lead.assignedTo = assignedTo;
     if (archived !== undefined) lead.archived = archived;
+    if (conversionValue !== undefined) lead.conversionValue = conversionValue;
+
+    // Report the two milestones the marketing team cares about. The flags are
+    // persisted with the lead so flipping a status back during QA cannot send
+    // the same conversion to GA4 again.
+    if (!lead.conversionEvents) lead.conversionEvents = {};
+    const qualifiedNow =
+      status === "qualified" && before !== status && !lead.conversionEvents.qualified;
+    const admittedNow =
+      (status === "admitted" || status === "converted") &&
+      before !== status &&
+      !lead.conversionEvents.admission;
+    if (qualifiedNow) lead.conversionEvents.qualified = new Date();
+    if (admittedNow) {
+      lead.conversionEvents.admission = new Date();
+      // The real paid amount matters for ROAS. Prefer an explicit admin value;
+      // otherwise use the fee of the program the lead actually selected.
+      if (lead.conversionValue == null && lead.program) {
+        const program = await Program.findOne({title: String(lead.program)})
+          .select("fee.amount")
+          .lean();
+        lead.conversionValue = parseFeeAmount(program?.fee?.amount);
+      }
+    }
 
     await lead.save();
+
+    if (qualifiedNow) reportLeadEvent("qualified_lead", lead);
+    if (admittedNow) {
+      reportLeadEvent("admission_confirmed", lead, {
+        value: lead.conversionValue ?? 1,
+      });
+    }
 
     await recordAudit(request, {
       action: AUDIT_ACTIONS.LEAD_UPDATED,
@@ -309,7 +356,12 @@ export const update = async (request, response, next) => {
       // The lead's own details are not copied into the audit metadata — the
       // trail records who changed what state, not a second copy of a member of
       // the public's contact information.
-      metadata: {from: before, to: lead.status, archived: lead.archived},
+      metadata: {
+        from: before,
+        to: lead.status,
+        archived: lead.archived,
+        ...(lead.conversionValue != null && {conversionValue: lead.conversionValue}),
+      },
     });
 
     return ok(response, lead);
@@ -371,6 +423,11 @@ const CSV_COLUMNS = [
   ["UTM campaign", (lead) => (lead.utm || {}).campaign],
   ["UTM term", (lead) => (lead.utm || {}).term],
   ["UTM content", (lead) => (lead.utm || {}).content],
+  ["GCLID", (lead) => (lead.clickIds || {}).gclid],
+  ["GBRAID", (lead) => (lead.clickIds || {}).gbraid],
+  ["WBRAID", (lead) => (lead.clickIds || {}).wbraid],
+  ["Referrer", (lead) => (lead.attribution || {}).referrer],
+  ["Landing page", (lead) => (lead.attribution || {}).landingPage],
   ["Consent", (lead) => (lead.consent ? "yes" : "no")],
 ];
 

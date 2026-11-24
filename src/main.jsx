@@ -8,36 +8,6 @@ const rootElement = document.getElementById("root");
 if (!rootElement) {
   throw new Error("Root element #root was not found.");
 }
-
-// Yield to the browser before the first React render.
-//
-// Every route ships as prerendered HTML (scripts/prerender.mjs +
-// scripts/snapshot.mjs), so meaningful content exists in the document long
-// before this module finishes evaluating. But createRoot().render() called
-// synchronously at the end of script evaluation starts the whole app's boot
-// work inside the same task sequence the parser just handed over — and on a
-// throttled phone that held the first paint hostage until React had committed
-// the entire tree (~2s of extra FCP/LCP for markup that was already on screen).
-//
-// Handing the render to an idle callback puts a frame boundary between
-// "document parsed" and "app booted": the browser paints the static page, then
-// React mounts and replaces it with the identical tree in one atomic task —
-// visually seamless, because what replaces the static markup is the same
-// markup. The timeout caps how long boot can be deferred on a busy device.
-// ── Keeping the reader in place across the handover ─────────────────────────
-//
-// "Visually seamless" above holds at the top of the page, not further down. A
-// phone visitor scrolls the static page while the JS loads; the app's tree then
-// renders below-the-fold sections as fixed-height placeholders until they load,
-// so everything under them moves, and the section the visitor was reading
-// jumps hundreds of pixels or off screen. The browser's own scroll anchoring
-// cannot help: the node it anchors to is replaced, not resized.
-//
-// So the element in the middle of the screen is recorded by its position in
-// the tree (both trees share their structure) and scrolled back to the same
-// offset once the app has rendered it. Ancestors are recorded too, nearest
-// first, for when the exact element sits inside a section not yet loaded.
-
 const pathFromRoot = (el) => {
   const steps = [];
   for (let node = el; node && node !== rootElement; node = node.parentElement) {
@@ -74,8 +44,7 @@ const restoreAnchor = (candidates) => {
     if (userScrolled) return;
     for (const {path, tag, top} of candidates) {
       const el = rootElement.querySelector(path);
-      // Same position AND same tag, or it is not the same thing. Not class:
-      // Reveal toggles is-in-view across the handover.
+   
       if (el && el.tagName === tag) {
         const shift = el.getBoundingClientRect().top - top;
         if (Math.abs(shift) > 1) window.scrollBy({top: shift, behavior: "instant"});

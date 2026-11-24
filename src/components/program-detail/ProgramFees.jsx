@@ -1,5 +1,6 @@
 import {Link} from "react-router-dom";
 import {Reveal} from "../motionPrimitives";
+import {trackApplyNow} from "../../lib/analytics";
 
 const feeText = (amount) => (amount ? `₹ ${String(amount).replace(/^₹/, "")}` : null);
 
@@ -51,7 +52,13 @@ const ProgramFees = ({program, applyHref}) => {
           )}
 
           <div className="pd-fees__actions">
-            <Link className="pd-btn pd-btn--primary" to={applyHref}>
+            <Link
+              className="pd-btn pd-btn--primary"
+              to={applyHref}
+              onClick={() =>
+                trackApplyNow({source: "program-fees-cta", program: program.title, destination: applyHref})
+              }
+            >
               Enroll Now →
             </Link>
           </div>

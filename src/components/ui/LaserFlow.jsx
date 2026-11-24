@@ -520,6 +520,7 @@ export const LaserFlow = ({
 
     return () => {
       renderer.setAnimationLoop(null);
+      if (resizeRaf) cancelAnimationFrame(resizeRaf);
       ro.disconnect();
       io.disconnect();
       document.removeEventListener('visibilitychange', onVis);

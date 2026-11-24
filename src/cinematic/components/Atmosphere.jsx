@@ -7,6 +7,14 @@ import {reducedMotionNow} from "../fx/registry";
 ──────────────────────────────────────────────────────────────────────────── */
 export const ParticleField = ({className = ""}) => {
   const canvasRef = useRef(null);
+  const [reduced, setReduced] = useState(reducedMotionNow);
+
+  useEffect(() => {
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const onChange = (event) => setReduced(event.matches);
+    query.addEventListener?.("change", onChange);
+    return () => query.removeEventListener?.("change", onChange);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -14,10 +22,13 @@ export const ParticleField = ({className = ""}) => {
     const ctx = canvas.getContext("2d", {alpha: true});
     if (!ctx) return undefined;
 
-    if (reducedMotionNow()) {
-      canvas.remove();
+    if (reduced) {
+      // Keep the React-owned node where React expects it. The cinematic CSS
+      // already hides .ga-particles under reduced motion.
+      canvas.style.display = "none";
       return undefined;
     }
+    canvas.style.display = "";
     const fine = window.matchMedia("(pointer: fine)").matches;
     const DPR = Math.min(window.devicePixelRatio || 1, 1.75);
 
@@ -148,7 +159,7 @@ export const ParticleField = ({className = ""}) => {
       document.removeEventListener("visibilitychange", onVisibility);
       particles = [];
     };
-  }, []);
+  }, [reduced]);
 
   return <canvas ref={canvasRef} className={`ga-particles ${className}`} aria-hidden="true" />;
 };

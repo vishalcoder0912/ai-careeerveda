@@ -452,10 +452,6 @@
   color: var(--ga-ink-2);
 }
 
-.ga-tl-caption-hint {
-  color: var(--ga-ink-3);
-}
-
 .ga-tl-v-year {
   color: var(--ga-gold);
 }
@@ -1493,7 +1489,6 @@
   }
 }
 
-.ga-tl-caption-hint,
 .ga-flow-caption {
   font-size: 0.75rem;
   letter-spacing: 0.18em;
@@ -1501,10 +1496,6 @@
 
 .ga-flow-caption {
   letter-spacing: 0.14em;
-  text-transform: none;
-}
-
-.ga-tl-caption-hint {
   text-transform: none;
 }
 
@@ -1585,14 +1576,14 @@ background: none !important;
 box-shadow: none !important;
 }
 
-/* Remove SVG animated paths used as timeline/connectors */
+/* Remove SVG animated paths used as timeline/connectors
 .ga-timeline svg,
 .ga-timeline svg path,
 .ga-timeline svg line,
 .ga-timeline svg polyline,
 .ga-timeline svg circle {
 /* Keep legitimate timeline content only if explicitly required */
-}
+
 
 /* Remove workflow SVG connectors */
 .ga-flow-line svg,

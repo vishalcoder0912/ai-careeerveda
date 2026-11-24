@@ -131,6 +131,63 @@
   }
 }
 
+/* The disabled mobile-responsiveness.css block contained the phone version of
+   the fix above. Restoring it here (without enabling that whole legacy sheet)
+   keeps the number badges on-canvas at 320–720px instead of clipping them at
+   x < 0 behind a gutter that no longer exists. */
+@media (max-width: 720px) {
+  .strategy-section .step-list,
+  .strategy-section .step-list article,
+  .strategy-section .step-list article:nth-child(2),
+  .strategy-section .step-list article:nth-child(3) {
+    padding-left: 20px;
+  }
+
+  .strategy-section .step-list {
+    padding-left: 0;
+  }
+
+  .strategy-section .step-list::before,
+  .strategy-section .step-list article::before,
+  .strategy-section .step-list article::after {
+    display: none;
+  }
+
+  .strategy-section .step-list article,
+  .strategy-section .step-list article:nth-child(2),
+  .strategy-section .step-list article:nth-child(3) {
+    width: 100%;
+    min-height: 0;
+    padding: 20px;
+    border-radius: 18px;
+  }
+
+  .strategy-section .step-list article > span {
+    position: static;
+    left: auto;
+    top: auto;
+    transform: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .step-list h3 {
+    font-size: 17px;
+  }
+
+  .step-list p {
+    font-size: 14px;
+  }
+}
+
 /* The step number's badge, at every width. strategy-final-polish.css paints it
    with `linear-gradient(135deg, #2563c9, #f37012) !important` and an orange glow —
    the blue-and-orange palette the site used before the slate/teal system landed.

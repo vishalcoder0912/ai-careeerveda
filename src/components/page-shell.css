@@ -789,7 +789,10 @@
 }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 860px) {
+/* Tablet breakpoint: 912px covers common tablet widths (iPad Air, Galaxy Tab,
+   etc.) where a two-column legal grid is too cramped but the page still needs
+   tablet-appropriate spacing. */
+@media (max-width: 912px) {
   .page-split,
   .legal-body {
     grid-template-columns: 1fr;
@@ -797,6 +800,7 @@
 
   .legal-toc {
     position: static;
+    order: -1;
   }
 
   .form-grid {
@@ -809,6 +813,13 @@
 
   .legal-toc {
     order: -1;
+  }
+}
+
+/* 860px and below: additional refinements for smaller tablets and large phones. */
+@media (max-width: 860px) {
+  .form-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -848,6 +859,46 @@
 
   .legal-toc {
     padding: 18px;
+  }
+}
+
+/* Long-form readability. The two-column legal grid used to let paragraphs run
+   the full 930px of the article column — well past the ~75-character measure at
+   which prose stays easy to track across lines. Cap the text (not the column,
+   so the section rules still line up with the sidebar) on wide screens. */
+@media (min-width: 1025px) {
+  .legal-article h2,
+  .legal-article p,
+  .legal-article li,
+  .legal-callout,
+  .legal-closing {
+    max-width: 74ch;
+  }
+}
+
+/* In the stacked layout the twelve-link contents list ran 440px tall before a
+   single line of policy text — more than half a phone screen. Two columns keep
+   every entry and its number, but roughly halve that height. The active rule is
+   dropped here because its negative offset would cross into the other column. */
+@media (max-width: 912px) {
+  .legal-toc-links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 16px;
+  }
+
+  .legal-toc-links a.is-active::before {
+    display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .legal-toc-links {
+    column-gap: 10px;
+  }
+
+  .legal-toc-links a {
+    font-size: 12px;
   }
 }
 

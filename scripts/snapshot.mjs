@@ -65,6 +65,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 
 import {collectRoutes} from "./routes.mjs";
+import {loadLivePrograms} from "./live-programs.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = path.join(ROOT, "dist");
@@ -303,11 +304,17 @@ function inject(html, {body, jsonLd, stylesheets = []}) {
   // each applies the moment it lands, so the layout is still styled long before
   // anyone scrolls there. Once applied they match Vite's own
   // link[rel="stylesheet"][href] check, so the chunk loader does not refetch.
+  //
+  // fetchpriority="low" is the important part on a slow connection. Without it
+  // these eight small files (~24 KB) were treated as high-priority preloads and
+  // queued alongside the entry CSS and JS, delaying the hero's LCP by ~2.7 s.
+  // They still arrive well before a reader can scroll down to them, but they no
+  // longer compete with the resources that determine first paint.
   const missingCss = stylesheets.filter((href) => !out.includes(`href="${href}"`));
   if (missingCss.length > 0) {
     const links = missingCss.map(
       (href) =>
-        `<link rel="preload" as="style" crossorigin href="${href}" onload="this.onload=null;this.rel='stylesheet'">`,
+        `<link rel="preload" as="style" fetchpriority="low" crossorigin href="${href}" onload="this.onload=null;this.rel='stylesheet'">`,
     );
     out = out.replace("</head>", `    ${links.join("\n    ")}\n  </head>`);
   }
@@ -317,7 +324,8 @@ function inject(html, {body, jsonLd, stylesheets = []}) {
 
 // ── Run ──────────────────────────────────────────────────────────────────────
 
-const routes = collectRoutes();
+const livePrograms = await loadLivePrograms();
+const routes = collectRoutes(livePrograms);
 let server;
 let browser;
 let written = 0;
@@ -352,6 +360,32 @@ const context = await browser.newContext({
 // tag at the network layer is enough: the inline gtag() stub still queues into
 // dataLayer, but with googletagmanager.com unreachable nothing is ever sent.
 await context.route("**://*.googletagmanager.com/**", (route) => route.abort());
+
+// The snapshot browser is served from 127.0.0.1, which is not on the backend's
+// CORS allow-list. A real program fetch from these pages would be refused, so
+// the captured HTML would fall back to the build-time catalogue — the exact
+// stale batch date we are trying to make editable. Fulfil the public program
+// reads from the same live records that prerender.mjs/llms.txt already use, so
+// what a non-JS crawler reads in the body matches what it reads in the head.
+const programBySlug = new Map(livePrograms.map((p) => [p.slug || p.id, p]));
+const asApiRecord = (p) => ({slug: p.slug || p.id, ...p});
+await context.route(/\/public\/programs(?:\/[^?]*)?(?:\?.*)?$/, async (route) => {
+  const match = new URL(route.request().url()).pathname.match(/\/public\/programs\/([^/]+)/);
+  if (match) {
+    const record = programBySlug.get(decodeURIComponent(match[1]));
+    await route.fulfill({
+      status: record ? 200 : 404,
+      contentType: "application/json",
+      body: JSON.stringify(record ? {success: true, data: asApiRecord(record)} : {success: false}),
+    });
+    return;
+  }
+  await route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    body: JSON.stringify({success: true, data: livePrograms.map(asApiRecord)}),
+  });
+});
 
 const queue = [...routes];
 

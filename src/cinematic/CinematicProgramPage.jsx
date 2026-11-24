@@ -1,57 +1,43 @@
-import {useEffect} from "react";
-import {useDocumentTitle} from "../hooks/useDocumentTitle";
+import {useMemo} from "react";
+import {useContentItem} from "../hooks/useContent";
 import {getProgram} from "../data/programCatalog";
-import {applySeo} from "../lib/seoTags";
-import {courseSchema, breadcrumbSchema, useJsonLd} from "../lib/structuredData";
-import {absoluteUrl, OG_IMAGE} from "../config/siteMeta";
-import {composeTitle, programMeta} from "../config/pageMeta";
+import {adaptProgram} from "../lib/contentAdapters";
 import {GenerativeAIPage} from "./GenerativeAIPage";
-import {productManagementContent} from "./programs/productManagement";
-import {CATALOG_CINEMATIC} from "./programs/catalogPrograms";
+import {useProgramSeo} from "./useProgramSeo";
+import {buildProductManagementContent} from "./programs/productManagement";
+import {buildCinematicContent} from "./programs/fromCatalog";
+import {CINEMATIC_COPY} from "./programs/catalogPrograms";
 
 /* Programs that render as a cinematic page instead of the standard program
-   template. The slug list lives in lib/routeChunks.js too (CINEMATIC_PROGRAMS),
-   so the right chunk is warmed on hover. Product Management keeps its
-   hand-written page; the rest are built from the catalogue (fromCatalog.js). */
-const CINEMATIC_CONTENT = {
-  ...CATALOG_CINEMATIC,
-  "product-management": productManagementContent,
-};
-
-// The same search tags and structured data the standard program page writes
-// (ProgramDetailPage), so swapping the layout never costs the page its SEO.
-const useProgramSeo = (program) => {
-  const description = programMeta(program)?.description;
-  const href = `/programs/${program.id}`;
-
-  useDocumentTitle(program.title, description);
-
-  useEffect(() => {
-    applySeo({
-      title: composeTitle(program.title),
-      description,
-      url: absoluteUrl(href),
-      image: program.image || OG_IMAGE,
-      type: "article",
-    });
-  }, [program, description, href]);
-
-  useJsonLd("ld-course", courseSchema(program));
-  useJsonLd(
-    "ld-breadcrumb",
-    breadcrumbSchema([
-      {name: "Home", path: "/"},
-      {name: "Programs", path: "/programs"},
-      {name: program.title, path: href},
-    ]),
-  );
-};
+   template are listed in lib/routeChunks.js (CINEMATIC_PROGRAMS), so the right
+   chunk is warmed on hover. Product Management keeps its hand-written voice;
+   the rest are built from the catalogue (fromCatalog.js). Both are rebuilt from
+   the live admin record at runtime, not frozen at build time. */
 
 export default function CinematicProgramPage({programId}) {
-  const program = getProgram(programId);
+  // Static catalogue is the fallback. Once the admin API answers, its record
+  // wins — that is what makes a batch date typed in the panel print in this
+  // hero instead of the build-time date baked into the content files. A 404
+  // from the API for a slug that ships in the catalogue must NOT blank the
+  // page: the static record still carries every section and its animations.
+  const fallback = getProgram(programId);
+  const {item} = useContentItem("programs", programId, {
+    fallback,
+    adapt: adaptProgram,
+  });
+  const program = item || fallback;
+
+  const content = useMemo(() => {
+    if (!program) return null;
+    if (programId === "product-management") return buildProductManagementContent(program);
+    const copy = CINEMATIC_COPY[programId];
+    return copy ? buildCinematicContent(programId, copy, program) : null;
+  }, [programId, program]);
+
   useProgramSeo(program);
 
   // Keyed by program: the page's GSAP/ScrollTrigger setup runs once per mount,
   // so moving between two cinematic programs must start a fresh page.
-  return <GenerativeAIPage key={programId} content={CINEMATIC_CONTENT[programId]} />;
+  if (!program || !content) return null;
+  return <GenerativeAIPage key={programId} content={content} />;
 }

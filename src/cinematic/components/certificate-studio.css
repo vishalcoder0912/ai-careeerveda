@@ -63,6 +63,21 @@
   color: #64748b;
 }
 
+.ga-cert-studio-notice {
+  margin: 0 0 0.4rem;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid rgba(180, 35, 24, 0.28);
+  border-radius: 10px;
+  background: #fff5f4;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: #8c241c;
+}
+
+.ga-cert-studio-notice strong {
+  color: #b42318;
+}
+
 .ga-cert-studio-close {
   flex-shrink: 0;
   display: grid;

@@ -1,4 +1,5 @@
 import {socialLinks} from "../config/externalLinks";
+import {trackWhatsAppClick} from "../lib/analytics";
 import "./social-links.css";
 
 /* Inline SVG rather than an icon font or a package: six paths are cheaper than a
@@ -37,6 +38,11 @@ const SocialLinks = ({className = ""}) => {
             rel="noopener noreferrer"
             aria-label={label}
             title={label}
+            onClick={
+              id === "whatsapp"
+                ? () => trackWhatsAppClick({source: "footer-link"})
+                : undefined
+            }
           >
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
               <path d={ICONS[id]} />

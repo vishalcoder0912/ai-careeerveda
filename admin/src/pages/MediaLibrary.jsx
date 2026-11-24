@@ -66,7 +66,7 @@ const uploadAll = async (files, toast) => {
     }
   }
   if (uploaded > 0) toast.success(`Uploaded ${uploaded} image${uploaded === 1 ? "" : "s"}.`);
-  if (duplicates > 0) toast.toast(`${duplicates} already in the library.`);
+  if (duplicates > 0) toast(`${duplicates} already in the library.`);
 };
 
 const Pagination = ({page, meta, setPage}) => (

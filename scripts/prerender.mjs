@@ -42,6 +42,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 
 import {collectRoutes} from "./routes.mjs";
+import {loadLivePrograms} from "./live-programs.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = path.join(ROOT, "dist");
@@ -105,7 +106,7 @@ function render(route) {
   return html;
 }
 
-const routes = collectRoutes();
+const routes = collectRoutes(await loadLivePrograms());
 let written = 0;
 
 for (const route of routes) {

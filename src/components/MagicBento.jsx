@@ -62,6 +62,7 @@ const ParticleCard = ({
 }) => {
   const cardRef = useRef(null);
   const particlesRef = useRef([]);
+  const ripplesRef = useRef([]);
   const timeoutsRef = useRef([]);
   const isHoveredRef = useRef(false);
   const memoizedParticles = useRef([]);
@@ -84,6 +85,9 @@ const ParticleCard = ({
     magnetismAnimationRef.current?.kill();
 
     particlesRef.current.forEach((particle) => {
+      // The clone carries two infinite tweens. Killing them before the exit
+      // tween is what stops detached nodes from being animated forever.
+      gsap.killTweensOf(particle);
       gsap.to(particle, {
         scale: 0,
         opacity: 0,
@@ -234,6 +238,7 @@ const ParticleCard = ({
       `;
 
       element.appendChild(ripple);
+      ripplesRef.current.push(ripple);
 
       gsap.fromTo(
         ripple,
@@ -260,6 +265,11 @@ const ParticleCard = ({
       element.removeEventListener("mousemove", handleMouseMove);
       element.removeEventListener("click", handleClick);
       clearAllParticles();
+      ripplesRef.current.forEach((ripple) => {
+        gsap.killTweensOf(ripple);
+        ripple.parentNode?.removeChild(ripple);
+      });
+      ripplesRef.current = [];
       // Upstream leaves the card mid-transform if it unmounts while hovered.
       gsap.killTweensOf(element);
     };

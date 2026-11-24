@@ -32,6 +32,14 @@ const openStage = (i) =>
   fireEvent.click(screen.getByRole("button", {name: new RegExp(curriculumJourney[i].title)}));
 
 describe("ModuleGrid stage dialog", () => {
+  it("resolves every stage image with exactly one curriculum prefix", () => {
+    const images = Array.from(document.querySelectorAll(".ga-journey-art"));
+    expect(images.length).toBeGreaterThan(0);
+    for (const image of images) {
+      expect(image.getAttribute("src")).toMatch(/^\/images\/curriculum\/[^/]+\.webp$/);
+    }
+  });
+
   it("opens a stage with every week, topic and deliverable", () => {
     expect(dialog().hasAttribute("open")).toBe(false);
     openStage(0);

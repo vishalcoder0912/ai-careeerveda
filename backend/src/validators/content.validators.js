@@ -61,6 +61,408 @@ const seo = z
   })
   .optional();
 
+// ── Cinematic page overrides ─────────────────────────────────────────────────
+// The Product Management landing page used to be entirely hand-written. Editors
+// now store a partial `cinematic` object on the programme; the page merges it
+// over its built-in copy at runtime. Every string below still goes through
+// stripTags — structured content is never HTML, including nested JSON.
+const footerUrl = z.string().max(1000).refine(
+  (value) => value === "" || /^https?:\/\//i.test(value) || /^(mailto|tel):/i.test(value) || /^\/(?![/\\])/.test(value),
+  "URL must be http(s), mailto, tel or a site-relative path",
+);
+
+const cineList = (max = 30, itemMax = 300) => z.array(text(itemMax)).max(max);
+const headingLine = z.union([text(300), z.object({em: text(300)}).strict()]);
+const heading = z.array(headingLine).max(12);
+// One token vocabulary for every cinematic page. The public site maps these to
+// the same lucide components regardless of which programme saved them.
+const cineIcon = z.enum([
+  "BarChart3", "BookOpen", "Bot", "BrainCircuit", "Briefcase", "Camera", "Code2",
+  "Compass", "Cpu", "Database", "FileText", "Fingerprint", "FolderKanban", "Gauge",
+  "GitBranch", "GraduationCap", "Layers", "Lock", "Mail", "MapIcon", "MessageCircle",
+  "Network", "PenTool", "Phone", "Puzzle", "Radar", "Rocket", "Search", "ServerCog",
+  "ShieldCheck", "Trophy", "TrendingUp", "Users", "Wrench", "Zap",
+]);
+const cinePalette = z.enum(["ember", "gold", "bronze", "tangerine", "brass"]);
+const cineLevel = z.enum(["Fresher", "Mid-level", "Experienced"]);
+const cineStatKey = z.enum([
+  "months", "modules", "assignments", "projects", "tools", "certifications",
+]);
+const cineSystemArt = z.enum([
+  "product", "people", "discover", "compass", "map", "design", "gear",
+  "data", "genai", "megaphone", "moneybag",
+]);
+
+// Artwork keys are the five stage slots the cinematic component reads by id.
+// Values are art tokens ("discover") or a site-relative image path.
+const cineArtMap = z
+  .object({
+    "01": text(160).optional(),
+    "02": text(160).optional(),
+    "03": text(160).optional(),
+    "04": text(160).optional(),
+    "05": text(160).optional(),
+  })
+  .strict();
+
+// The Gen AI flagship maps external learning to its 24 weeks. It is copy, not a
+// live fact, so editors may change it — but the shape and the URL-free text
+// rules stay exactly as strict as every other cinematic section.
+const cineRoadmap = z
+  .object({
+    title: text(300).optional(),
+    sub: text(1000).optional(),
+    rows: z
+      .array(
+        z
+          .object({
+            stage: text(160).optional(),
+            weeks: text(160).optional(),
+            credential: text(300).optional(),
+            provider: text(200).optional(),
+            cost: text(200).optional(),
+          })
+          .strict(),
+      )
+      .max(40)
+      .optional(),
+    narrative: cineList(20, 120).optional(),
+    caveat: text(2000).optional(),
+  })
+  .strict();
+
+const cinematic = z
+  .object({
+    hero: z
+      .object({
+        eyebrow: text(200).optional(),
+        title: heading.optional(),
+        sub: text(1000).optional(),
+        badges: cineList(20, 120).optional(),
+        metaLeft: text(200).optional(),
+        ariaLabel: text(300).optional(),
+        stats: z.array(z.tuple([text(160), text(160)])).max(10).optional(),
+        metaRight: text(200).optional(),
+        image: mediaRef,
+      })
+      .strict()
+      .optional(),
+    timeline: z
+      .object({
+        label: text(300).optional(),
+        title: heading.optional(),
+        items: z
+          .array(
+            z
+              .object({
+                num: text(20).optional(),
+                year: text(60).optional(),
+                // The "Load current page copy" button stores the module range
+                // used to derive `year`; the page re-derives it on every render.
+                from: z.number().int().min(1).max(999).optional(),
+                to: z.number().int().min(1).max(999).optional(),
+                title: text(300).optional(),
+                description: text(1000).optional(),
+                tags: cineList(10, 120).optional(),
+                image: navigationUrl.optional(),
+              })
+              .strict(),
+          )
+          .max(20)
+          .optional(),
+      })
+      .strict()
+      .optional(),
+    skills: z
+      .object({
+        label: text(200).optional(),
+        title: heading.optional(),
+        sub: text(500).optional(),
+        tag: text(200).optional(),
+        items: z
+          .array(
+            z
+              .object({
+                id: text(20).optional(),
+                title: text(200).optional(),
+                stack: cineList(20, 120).optional(),
+                icon: cineIcon.optional(),
+                palette: cinePalette.optional(),
+                intro: text(500).optional(),
+              })
+              .strict(),
+          )
+          .max(12)
+          .optional(),
+      })
+      .strict()
+      .optional(),
+    quote: z
+      .object({lines: cineList(8, 200).optional(), cite: text(300).optional()})
+      .strict()
+      .optional(),
+    architecture: z
+      .object({
+        label: text(200).optional(),
+        title: heading.optional(),
+        sub: text(500).optional(),
+        layers: z
+          .array(
+            z
+              .object({layer: text(20).optional(), title: text(200).optional(), note: text(500).optional()})
+              .strict(),
+          )
+          .max(30)
+          .optional(),
+      })
+      .strict()
+      .optional(),
+    modules: z
+      .object({
+        label: text(200).optional(),
+        title: heading.optional(),
+        sub: text(1000).optional(),
+        unit: text(60).optional(),
+        stages: z
+          .array(
+            z
+              .object({
+                id: text(20).optional(),
+                title: text(200).optional(),
+                range: text(60).optional(),
+                description: text(600).optional(),
+                motif: text(60).optional(),
+                // Some programmes (AI Systems) number their first module 0.
+                from: z.number().int().min(0).max(999).optional(),
+                to: z.number().int().min(0).max(999).optional(),
+                weeks: z
+                  .array(
+                    z
+                      .object({
+                        id: text(40).optional(),
+                        title: text(300).optional(),
+                        topics: cineList(40, 300).optional(),
+                        build: text(500).optional(),
+                      })
+                      .strict(),
+                  )
+                  .max(60)
+                  .optional(),
+              })
+              .strict(),
+          )
+          .max(20)
+          .optional(),
+        art: cineArtMap.optional(),
+        lockCard: z
+          .object({
+            programId: text(140).optional(),
+            badge: text(20).optional(),
+            title: text(200).optional(),
+            range: text(120).optional(),
+            description: text(1000).optional(),
+          })
+          .strict()
+          .optional(),
+        tracksLabel: text(300).optional(),
+        tracks: z
+          .array(z.object({title: text(200).optional(), range: text(120).optional()}).strict())
+          .max(40)
+          .optional(),
+      })
+      .strict()
+      .optional(),
+    system: z
+      .object({
+        label: text(200).optional(),
+        title: heading.optional(),
+        sub: text(500).optional(),
+        center: z
+          .object({title: text(120).optional(), sub: text(200).optional(), art: text(160).optional()})
+          .strict()
+          .optional(),
+        nodes: z
+          .array(
+            z
+              .object({label: text(120).optional(), icon: cineSystemArt.optional(), img: navigationUrl.optional()})
+              .strict(),
+          )
+          .max(30)
+          .optional(),
+      })
+      .strict()
+      .optional(),
+    workflow: z
+      .object({
+        label: text(200).optional(),
+        title: heading.optional(),
+        lead: text(1000).optional(),
+        pipeline: cineList(20, 80).optional(),
+        steps: z
+          .array(z.object({title: text(200).optional(), note: text(500).optional()}).strict())
+          .max(30)
+          .optional(),
+      })
+      .strict()
+      .optional(),
+    projects: z
+      .object({
+        items: z
+          .array(
+            z
+              .object({
+                id: text(20).optional(),
+                name: text(200).optional(),
+                stack: cineList(20, 120).optional(),
+                description: text(1000).optional(),
+                accent: cinePalette.optional(),
+              })
+              .strict(),
+          )
+          .max(40)
+          .optional(),
+        categories: cineList(40, 120).optional(),
+        sideLeft: cineList(20, 120).optional(),
+        sideRight: cineList(20, 120).optional(),
+        footLeft: text(300).optional(),
+        footRight: text(300).optional(),
+      })
+      .strict()
+      .optional(),
+    careers: z
+      .object({
+        label: text(200).optional(),
+        title: heading.optional(),
+        lead: text(500).optional(),
+        roles: z
+          .array(
+            z
+              .object({
+                role: text(200).optional(),
+                level: cineLevel.optional(),
+                domain: text(300).optional(),
+                description: text(600).optional(),
+                skills: cineList(20, 120).optional(),
+                salary: text(60).optional(),
+                // Newer roles on the Gen AI flagship have no documented band of
+                // their own; they show the closest mapped role instead.
+                salaryVaried: z.boolean().optional(),
+                salaryMappedTo: text(200).optional(),
+                salaryMappedRange: text(60).optional(),
+                years: text(60).optional(),
+                location: text(120).optional(),
+                year: z.number().int().min(2000).max(2100).optional(),
+                source: text(300).optional(),
+              })
+              .strict(),
+          )
+          .max(40)
+          .optional(),
+      })
+      .strict()
+      .optional(),
+    stats: z
+      .object({
+        label: text(200).optional(),
+        items: z
+          .array(
+            z
+              .object({
+                key: cineStatKey.optional(),
+                value: z.number().finite().optional(),
+                suffix: text(20).optional(),
+                label: text(200).optional(),
+                note: text(200).optional(),
+              })
+              .strict(),
+          )
+          .max(20)
+          .optional(),
+      })
+      .strict()
+      .optional(),
+    learning: z
+      .object({
+        label: text(200).optional(),
+        title: heading.optional(),
+        items: z
+          .array(
+            z
+              .object({title: text(200).optional(), note: text(500).optional(), icon: cineIcon.optional()})
+              .strict(),
+          )
+          .max(30)
+          .optional(),
+      })
+      .strict()
+      .optional(),
+    certs: z
+      .object({
+        label: text(200).optional(),
+        title: heading.optional(),
+        lede: text(1000).optional(),
+        certificates: z
+          .array(
+            z
+              .object({
+                mark: text(60).optional(),
+                title: text(300).optional(),
+                focus: text(300).optional(),
+                stage: text(160).optional(),
+                outcome: text(1000).optional(),
+                skills: cineList(20, 120).optional(),
+              })
+              .strict(),
+          )
+          .max(12)
+          .optional(),
+        proofPillars: z
+          .array(
+            z
+              .object({title: text(200).optional(), note: text(500).optional(), icon: cineIcon.optional()})
+              .strict(),
+          )
+          .max(12)
+          .optional(),
+        roadmap: cineRoadmap.optional(),
+        note: text(1000).optional(),
+      })
+      .strict()
+      .optional(),
+    cta: z
+      .object({
+        label: text(200).optional(),
+        title: heading.optional(),
+        sub: text(500).optional(),
+        meta: cineList(10, 300).optional(),
+      })
+      .strict()
+      .optional(),
+    footer: z
+      .object({
+        title: heading.optional(),
+        channels: z
+          .array(
+            z
+              .object({
+                label: text(120).optional(),
+                value: text(200).optional(),
+                href: footerUrl.optional(),
+                icon: cineIcon.optional(),
+                external: z.boolean().optional(),
+              })
+              .strict(),
+          )
+          .max(12)
+          .optional(),
+      })
+      .strict()
+      .optional(),
+  })
+  .strict()
+  .optional()
+  .default({});
+
 // Fields every content type accepts. Status is deliberately absent — it moves
 // only through the publish/unpublish endpoints.
 const base = {
@@ -131,6 +533,8 @@ export const programBody = z.object({
   mentors: z.array(objectId).max(50).optional(),
   relatedPrograms: z.array(objectId).max(20).optional(),
   brochureUrl: navigationUrl.optional().default(""),
+  // Optional page overrides; an empty object means "use the built-in copy".
+  cinematic,
 });
 
 export const facultyBody = z.object({
@@ -220,12 +624,30 @@ export const jobBody = z.object({
   workMode: optionalText(60),
   employmentType: optionalText(60),
   experienceLevel: optionalText(80),
+  department: optionalText(120),
+  vacancies: z.number().int().min(0).nullish(),
   description: optionalText(6000),
+  // Every field the public job-details modal renders is accepted here, so an
+  // editor can fill a section instead of discovering the input does not exist.
+  // The long-form fields mirror the limits on the Job model.
+  jobOverview: optionalText(6000),
+  aboutCompany: optionalText(6000),
   requirements: stringArray(50),
+  // Kept alongside requirements: aggregator records carry both, and the public
+  // modal shows the two lists together.
+  qualifications: stringArray(50),
   responsibilities: stringArray(50),
   skills: stringArray(40, 120),
+  preferredSkills: stringArray(40, 120),
+  educationRequirements: optionalText(2000),
+  benefits: stringArray(40),
   salaryRange: optionalText(120),
-  acceptsApplications: z.boolean().optional().default(false),
+  salaryMin: z.number().int().min(0).nullish(),
+  salaryMax: z.number().int().min(0).nullish(),
+  // The admin editor exposes this as an Applications toggle. Older records and
+  // imports that omit it must still mean "accepting", so a job never silently
+  // rejects candidates just because it was saved before the toggle existed.
+  acceptsApplications: z.boolean().optional().default(true),
   // http(s) or blank: the value lands in an Apply button's href, and a blank
   // one falls back to a LinkedIn search on the site.
   applicationUrl: z
@@ -238,6 +660,7 @@ export const jobBody = z.object({
   source: optionalText(120),
   postedDate: z.coerce.date().nullish(),
   deadline: z.coerce.date().nullish(),
+  applicationDeadline: z.coerce.date().nullish(),
 });
 
 export const policyBody = z.object({

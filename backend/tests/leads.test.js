@@ -94,6 +94,25 @@ describe("public lead submission", () => {
     expect(stored.sourcePage).toBe("/enroll");
   });
 
+  it("stores Google click IDs and GA4 client attribution", async () => {
+    await submit({
+      clickIds: {gclid: "abc123", gbraid: "gbraid-1"},
+      attribution: {
+        clientId: "1234567890.1700000000",
+        referrer: "https://www.google.com/",
+        landingPage: "/?gclid=abc123",
+        capturedAt: "2026-01-01T00:00:00.000Z",
+      },
+    });
+
+    const stored = await Lead.findOne({});
+    expect(stored.clickIds.gclid).toBe("abc123");
+    expect(stored.clickIds.gbraid).toBe("gbraid-1");
+    expect(stored.attribution.clientId).toBe("1234567890.1700000000");
+    expect(stored.attribution.referrer).toBe("https://www.google.com/");
+    expect(stored.attribution.landingPage).toBe("/?gclid=abc123");
+  });
+
   it("hashes the IP rather than storing it", async () => {
     await submit();
 
@@ -319,6 +338,48 @@ describe("admin lead management", () => {
     // The trail records the state change, not a second copy of the person's
     // contact details.
     expect(JSON.stringify(entry.metadata)).not.toContain("asha@example.com");
+  });
+
+  it("records qualification and admission milestones once each", async () => {
+    await submit();
+    const token = await asAdmin();
+    const lead = await Lead.findOne({});
+
+    for (const status of ["qualified", "qualified", "admitted", "admitted"]) {
+      const response = await request(app)
+        .patch(`/api/v1/admin/leads/${lead._id}`)
+        .set("Authorization", `Bearer ${token}`)
+        .send({status});
+      expect(response.status).toBe(200);
+    }
+
+    const stored = await Lead.findById(lead._id);
+    expect(stored.status).toBe("admitted");
+    expect(stored.conversionEvents.qualified).toBeInstanceOf(Date);
+    expect(stored.conversionEvents.admission).toBeInstanceOf(Date);
+  });
+
+  it("stores the real program fee as admission conversion value", async () => {
+    const title = "PG Program in Product Management";
+    await Program.create({
+      title,
+      slug: "product-management",
+      status: "published",
+      publishedAt: new Date(),
+      fee: {label: "Program fee", amount: "₹ 1,49,000"},
+    });
+    await submit({program: title});
+    const token = await asAdmin();
+    const lead = await Lead.findOne({});
+
+    const response = await request(app)
+      .patch(`/api/v1/admin/leads/${lead._id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({status: "admitted"});
+
+    expect(response.status).toBe(200);
+    const stored = await Lead.findById(lead._id);
+    expect(stored.conversionValue).toBe(149000);
   });
 
   it("adds a note", async () => {

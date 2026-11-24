@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useRef, useState} from "react";
 import {useSearchParams} from "react-router-dom";
 import {PageHero, SectionHeading} from "../components/PageShell";
 import {Reveal, StaggerGroup, StaggerItem} from "../components/motionPrimitives";
@@ -6,6 +6,7 @@ import {getProgram, programCatalog} from "../data/programCatalog";
 import {useContentList} from "../hooks/useContent";
 import {adaptProgram} from "../lib/contentAdapters";
 import {submitLead} from "../lib/publicApi";
+import {leadTrackingPayload, trackAdsConversion, trackFormStart} from "../lib/analytics";
 import {useTurnstile} from "../lib/useTurnstile";
 import {hasSubmittedPhone, rememberSubmittedPhone} from "../lib/submittedPhones";
 // Carries .consultation-honeypot and .consultation-status. The honeypot import is
@@ -78,9 +79,19 @@ const EnrollPage = () => {
   const [status, setStatus] = useState("idle"); // idle | submitting | success | error
   const [message, setMessage] = useState("");
   const captcha = useTurnstile();
+  const formStarted = useRef(false);
 
   const update = (event) => {
     const {name, value} = event.target;
+
+    if (!formStarted.current && name !== "company" && String(value).trim()) {
+      formStarted.current = true;
+      trackFormStart({
+        formType: "enrollment",
+        source: "enroll-page-form",
+        program: name === "program" ? value : values.program,
+      });
+    }
 
     setValues((current) => ({...current, [name]: value}));
     setErrors((current) => ({...current, [name]: undefined}));
@@ -114,6 +125,7 @@ const EnrollPage = () => {
     try {
       const result = await submitLead({
         ...values,
+        ...leadTrackingPayload(),
         type: "enrollment",
         source: "enroll-page-form",
         // Given by pressing submit under the notice below the button.
@@ -133,8 +145,10 @@ const EnrollPage = () => {
       }
 
       rememberSubmittedPhone(values.mobile);
+      trackAdsConversion({type: "enrollment", source: "enroll-page-form"});
       setStatus("success");
       setMessage("Thanks — a career expert will confirm your batch and payment options shortly.");
+      formStarted.current = false;
       setValues({
         name: "",
         email: "",

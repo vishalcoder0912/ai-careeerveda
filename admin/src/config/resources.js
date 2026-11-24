@@ -1,40 +1,6 @@
 
-
 import {writePath} from "../components/fieldPath";
-
-// Field kinds the editor knows how to render.
-//   text      single line
-//   textarea  multi-line prose
-//   number    numeric input
-//   list      array of strings, one per line
-//   media     image picker backed by the Media Library
-//   select    fixed options
-//   kv        array of {question, answer} style pairs
-//   sections  array of {heading, body[]} article blocks
-//   policySections  array of {heading, body[], callout, list[], groups[{title, list[]}], closing} policy blocks
-//   modules   array of {n, title, points[]} curriculum blocks
-//
-// Two different kinds of "required", deliberately kept apart:
-//   required: true  the schema will not store the record without it, so a draft
-//                   cannot be saved. Marked with a * on the label.
-//   publish: true   the draft saves fine, but the public page needs it before it
-//                   may go live. Mirrors backend/src/config/publishRules.js and
-//                   drives the readiness panel at the top of the editor.
-// A half-written program is a legitimate thing to save and come back to, which
-// is why most of the list below is the second kind and not the first.
-//
-// `initial` is the value a NEW record starts with. It is a starting point, never
-// a lock: the field is an ordinary input and typing over it is the expected
-// thing to do. It exists because most of a CareerVeda program is the same as
-// every other CareerVeda program — the fee model, the eligibility line, the
-// delivery format — and retyping the identical sentence for each new course is
-// both slow and the reason two programs end up disagreeing about the EMI terms.
-//
-// Every value below was taken from the existing catalogue rather than invented:
-// each is what all nine live programs already say, or what all but one says.
-// An `initial` is never applied to a record that already exists, so editing an
-// old program can't have text appear in a field its author deliberately left
-// blank.
+import {cinematicTemplateFor} from "../../../src/cinematic/programs/cinematicTemplates";
 
 const seoFields = [
   {name: "seo.title", label: "SEO title", kind: "text", group: "SEO"},
@@ -59,9 +25,6 @@ export const RESOURCES = {
     label: "Programs",
     singular: "Program",
     permission: "programs.read",
-    // Programs are the one resource with granular CRUD grants. Keep the
-    // action-to-permission map next to the UI definition so a read-only viewer
-    // never sees controls the API will reject.
     permissions: {
       read: "programs.read",
       create: "programs.create",
@@ -70,9 +33,7 @@ export const RESOURCES = {
     },
     titleField: "title",
     columns: ["title", "category", "status", "displayOrder"],
-    // Which media field the card view shows as the thumbnail, and the default
-    // layout. Resources with an image read far better as cards than as a row of
-    // truncated text, so they open that way; the toggle still offers the table.
+  
     imageField: "image",
     defaultView: "cards",
     subtitleField: "subtitle",
@@ -108,8 +69,8 @@ export const RESOURCES = {
       // The batch date is one value for the whole catalogue. Saving either field
       // below updates every program: Auto keeps them all on the next Saturday,
       // Custom makes the typed date apply everywhere.
-      {name: "nextBatch", label: "Next batch", kind: "text", group: "Pricing", hint: "Auto mode keeps this on the next Saturday. In Custom mode, the date you type here is applied to every program when you save."},
-      {name: "nextBatchMode", label: "Next batch mode", kind: "select", group: "Pricing", initial: "auto", options: [{value: "auto", label: "Auto — next Saturday"}, {value: "custom", label: "Custom — I'll type the date"}], hint: "Saving either way updates all programs: Auto rolls every program forward to the next Saturday, Custom pushes the typed date to every program."},
+      {name: "nextBatch", label: "Next batch", kind: "text", group: "Pricing", hint: "Type the date exactly as it should appear, e.g. September 19, 2026. Typing it switches the mode to Custom automatically and applies it to every program. Choose Auto in the mode below only when you want the date to follow the next Saturday."},
+      {name: "nextBatchMode", label: "Next batch mode", kind: "select", group: "Pricing", initial: "auto", options: [{value: "auto", label: "Auto — next Saturday"}, {value: "custom", label: "Custom — keep the date I type"}], hint: "Editing the date above sets this to Custom for you. Switching back to Auto rolls every program forward to the next Saturday on save."},
       {name: "seats", label: "Seats", kind: "text", group: "Pricing", initial: "Few seats left"},
       {name: "badges", label: "Badges", kind: "list", group: "Content", initial: ["Industry-Aligned", "Enrolling Now", "100% Placement Assurance"]},
       {name: "overview", label: "Overview points", kind: "list", publish: true, group: "Content"},
@@ -122,6 +83,19 @@ export const RESOURCES = {
       {name: "internship", label: "Internship", kind: "list", group: "Content", initial: ["Real-world Product Management Projects", "Product Roadmap Development", "User Research & PRD Writing", "Feature Launch & A/B Testing", "Product Analytics & Metrics Tracking", "Industry Mentorship by Senior PMs"]},
       {name: "faqs", label: "FAQs", kind: "kv", group: "FAQ"},
       {name: "gallery", label: "Gallery", kind: "mediaList", group: "Media"},
+      {
+        name: "cinematic",
+        label: "Cinematic page content",
+        kind: "json",
+        group: "Cinematic page",
+        rows: 18,
+        // The template is chosen from the record being edited, so loading copy
+        // on Data Analytics starts from Data Analytics — not Product Management.
+        template: cinematicTemplateFor,
+        clearLabel: "Use built-in copy",
+        hint:
+          "Edits this program's cinematic page sections: hero, timeline, skills, quote, architecture, modules, system, workflow, projects, careers, stats, learning, certs, cta and footer. Load current page copy to start from this page's own text, then change only what you need. Batch, seats, modules, salary bands and hero media still come from the fields above — they are re-applied on save. Icons use fixed tokens such as Search or Rocket; unknown tokens fall back to the built-in icon.",
+      },
       ...seoFields,
     ],
   },
@@ -224,7 +198,7 @@ export const RESOURCES = {
     // `source` earns its column here in a way it does not on other resources:
     // most job rows arrive from an aggregator, and which one sent a listing is
     // the first thing a reviewer wants when the listing looks wrong.
-    columns: ["title", "company", "source", "status", "publishedAt"],
+    columns: ["title", "company", "acceptsApplications", "source", "status", "publishedAt"],
     // Jobs have no logo, so cards use the image-less layout: a compact status
     // header instead of a thumbnail. `cards` opts the resource into the card
     // view without an imageField; subtitleField and cardMeta decide what the
@@ -232,14 +206,12 @@ export const RESOURCES = {
     cards: true,
     defaultView: "cards",
     subtitleField: "company",
-    cardMeta: ["location", "workMode", "employmentType", "salaryRange", "source", "rejectedReason"],
+    cardMeta: ["location", "workMode", "employmentType", "salaryRange", "acceptsApplications", "source", "rejectedReason"],
     publicPath: "/jobs",
     fields: [
       {name: "title", label: "Title", kind: "text", publish: true, required: true, group: "Basics"},
       {name: "company", label: "Company", kind: "text", publish: true, group: "Basics"},
       {name: "location", label: "Location", kind: "text", publish: true, group: "Basics"},
-      // Every job posted here takes applications through the site's own popup
-      // (name, mobile, email); they land under Job applications.
       // Choices, not free text: the /jobs filters match these exact values, so
       // "onsite" or "full time" typed by hand would drop out of every filter.
       {
@@ -266,11 +238,55 @@ export const RESOURCES = {
         kind: "text",
         publish: true,
         group: "Basics",
-        hint: 'Shown on the card, e.g. "0–2 years".',
+        hint: 'Shown on the card and under "Experience requirements", e.g. "0–2 years".',
+      },
+      {
+        name: "department",
+        label: "Department / category",
+        kind: "text",
+        group: "Basics",
+        hint: "Small label above the job title on the public page. Defaults to 'Job Overview'.",
+      },
+      {
+        name: "vacancies",
+        label: "Vacancies",
+        kind: "number",
+        group: "Basics",
+        hint: 'Shown as "<n> vacancies" in the job details. Leave blank to hide it.',
       },
       ...commonFields,
-      {name: "description", label: "Description", kind: "textarea", publish: true, group: "Content"},
+      // Every field below maps to a section the public job details modal renders.
+      // Leaving one blank hides that section on the site; there is no separate
+      // switch to turn a section on.
+      {
+        name: "description",
+        label: "Description",
+        kind: "textarea",
+        publish: true,
+        group: "Content",
+        hint: 'Shown under "Job overview" unless a Job overview override is set.',
+      },
+      {
+        name: "jobOverview",
+        label: "Job overview (optional override)",
+        kind: "textarea",
+        group: "Content",
+        hint: 'When filled, replaces Description in the public "Job overview" section.',
+      },
+      {
+        name: "aboutCompany",
+        label: "About the company",
+        kind: "textarea",
+        group: "Content",
+      },
       {name: "requirements", label: "Requirements", kind: "list", group: "Content"},
+      {
+        name: "qualifications",
+        label: "Additional qualifications",
+        kind: "list",
+        group: "Content",
+        hint: 'Shown together with Requirements under "Required qualifications" — for listings that came from an aggregator.',
+      },
       {name: "responsibilities", label: "Responsibilities", kind: "list", group: "Content"},
       {
         name: "skills",
@@ -281,19 +297,66 @@ export const RESOURCES = {
         hint: "Three or four skills read best — they show as tags on the card.",
       },
       {
+        name: "preferredSkills",
+        label: "Preferred skills",
+        kind: "list",
+        group: "Content",
+      },
+      {
+        name: "educationRequirements",
+        label: "Education requirements",
+        kind: "textarea",
+        group: "Content",
+      },
+      {
+        name: "benefits",
+        label: "Benefits and perks",
+        kind: "list",
+        group: "Content",
+      },
+      {
         name: "salaryRange",
         label: "Salary range",
         kind: "text",
         group: "Details",
         hint: 'e.g. "₹6–10 LPA" or "₹40,000–60,000 /month". Leave blank to hide it.',
       },
+      {
+        name: "salaryMin",
+        label: "Salary minimum",
+        kind: "number",
+        group: "Details",
+        hint: "Used only when Salary range is blank.",
+      },
+      {
+        name: "salaryMax",
+        label: "Salary maximum",
+        kind: "number",
+        group: "Details",
+        hint: "Used only when Salary range is blank.",
+      },
       {name: "source", label: "Source", kind: "text", group: "Details"},
+      {
+        name: "acceptsApplications",
+        label: "Accepting applications",
+        kind: "boolean",
+        group: "Details",
+        initial: true,
+        hint: "On: the site offers the CareerVeda application form. Off: no applications are accepted for this job (any external apply link stays visible).",
+      },
       {
         name: "postedDate",
         label: "Posted date",
         kind: "date",
         group: "Details",
         hint: 'Shown on the job card as "Posted <date>". Leave blank to hide it.',
+      },
+      {
+        name: "applicationDeadline",
+        label: "Application deadline",
+        kind: "date",
+        group: "Details",
+        hint: 'Shown as "Apply by <date>". Applications close automatically after it passes.',
       },
     ],
   },

@@ -1,5 +1,6 @@
 import {Suspense, lazy, useEffect, useRef, useState} from "react";
 import {Link} from "react-router-dom";
+import {Reveal, StaggerGroup, StaggerItem} from "./motionPrimitives";
 import {
   ArrowRight,
   BadgeCheck,
@@ -86,40 +87,44 @@ const Hero = ({stats}) => (
   <section id="top" className="hh" aria-labelledby="hh-title">
     <div className="hh-inner">
       <div className="hh-copy">
-        <p className="hh-eyebrow">
+        <Reveal as="p" className="hh-eyebrow" amount={0.1}>
           <span className="hh-eyebrow__dot" aria-hidden="true" />
           From Learning to Placement
           <span className="hh-eyebrow__more"> — We Guide Every Step</span>
-        </p>
-        <h1 id="hh-title" className="hh-title">
+        </Reveal>
+        <Reveal as="h1" className="hh-title" id="hh-title" amount={0.15}>
           Launch Your Career with <br className="hh-br" />
           <span className="hh-accent">Industry-Led</span> Programs
-        </h1>
-        <p className="hh-lead">
+        </Reveal>
+        <Reveal as="p" className="hh-lead" amount={0.2}>
           Master Data Analytics, Product Management, Data Science and Generative AI
           through live classes, hands-on projects, expert mentorship, and dedicated
           placement support designed to help you become job-ready.
-        </p>
-
-        <ul className="hh-features" aria-label="CareerVeda benefits">
+        </Reveal>
+        <StaggerGroup
+          as="ul"
+          className="hh-features"
+          aria-label="CareerVeda benefits"
+          amount={0.25}
+          stagger={0.12}
+        >
           {FEATURES.map(([Icon, label]) => (
-            <li key={label}>
+            <StaggerItem as="li" key={label}>
               <span className="hh-features__icon" aria-hidden="true">
                 <Icon size={16} strokeWidth={2} />
               </span>
               {label}
-            </li>
+            </StaggerItem>
           ))}
-        </ul>
-
-        <div className="hh-actions">
+        </StaggerGroup>
+        <Reveal as="div" className="hh-actions" amount={0.3}>
           <Link className="hh-btn hh-btn--primary" to="/programs">
             Explore Programs <ArrowRight size={18} aria-hidden="true" />
           </Link>
           <Link className="hh-btn hh-btn--secondary" to="/#consultation">
             Get in Touch
           </Link>
-        </div>
+        </Reveal>
       </div>
 
       <div className="hh-visual">
@@ -130,26 +135,24 @@ const Hero = ({stats}) => (
     {/* A real heading, visually hidden, so the numbers sit in the page's outline
         under the h1 instead of being an unlabelled list to a crawler. */}
     <h2 id="hh-stats-title" className="hh-sr">CareerVeda in numbers</h2>
-    <ul className="hh-stats" aria-labelledby="hh-stats-title">
+    <StaggerGroup as="ul" className="hh-stats" aria-labelledby="hh-stats-title" amount={0.35} stagger={0.09}>
       {stats.map(([value, label]) => {
         const Icon = STAT_ICONS[label] || GraduationCap;
         return (
-          <li key={label}>
+          <StaggerItem as="li" key={label}>
             <span className="hh-stats__icon" aria-hidden="true">
               <Icon size={20} strokeWidth={2} />
             </span>
             <span>
-              {/* <data> carries the bare number for machines; "13,000+" stays
-                  the text people read. */}
               <strong>
                 <data value={value.replace(/[^\d.]/g, "")}>{value}</data>
               </strong>
               <small>{label}</small>
             </span>
-          </li>
+          </StaggerItem>
         );
       })}
-    </ul>
+    </StaggerGroup>
   </section>
 );
 

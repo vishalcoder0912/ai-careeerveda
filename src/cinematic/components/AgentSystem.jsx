@@ -7,36 +7,40 @@ const CX = 50;
 const CY = 50;
 const END_INSET = 4.2;
 
-/* The canvas is a 1:1 square, so the hub's 100x100 SVG space is uniform and the
-   central node maps to a true circle. These are the rim radii in SVG units
-   (the hub is ~160px wide inside an ~820px square), so connectors start at its
-   edge on every axis. */
-const HUB_R = 9.8;
+
+const HUB_R = 9.5;
 
 const rimPoint = (ux, uy) => {
   const t = 1 / Math.hypot(ux, uy);
   return {x: CX + ux * t * HUB_R, y: CY + uy * t * HUB_R};
 };
 
-/* Radial anchors across the 1:1 square. Kept mirrored left/right for symmetry
-   and spaced to use ~10-88% of the canvas so nodes never crowd the hub or
-   touch the edges. */
 const NODE_POS = [
-  {x: 50, y: 10},
-  {x: 19, y: 22},
-  {x: 81, y: 22},
-  {x: 11, y: 42},
-  {x: 89, y: 42},
-  {x: 16, y: 63},
-  {x: 84, y: 63},
-  {x: 32, y: 82},
-  {x: 68, y: 82},
-  {x: 50, y: 88},
+  {x: 50, y: 9},
+  {x: 20, y: 22},
+  {x: 80, y: 22},
+  {x: 13, y: 43},
+  {x: 87, y: 43},
+  {x: 18, y: 64},
+  {x: 82, y: 64},
+  {x: 30, y: 81},
+  {x: 70, y: 81},
+  {x: 50, y: 93},
 ];
 
-/* Ten anchors, filled in order — the nodes array of any program sits on the
-   same symmetric map. A shorter list simply leaves the last anchors empty. */
+
 const nodePos = (i) => NODE_POS[i] || {x: 50, y: 50};
+
+
+const MOBILE_R = 38;
+
+const mobilePoint = (i, total) => {
+  const angle = Math.PI / 2 - (i * 2 * Math.PI) / total;
+  return {
+    x: CX + MOBILE_R * Math.cos(angle),
+    y: CY - MOBILE_R * Math.sin(angle),
+  };
+};
 
 /* Quadratic bezier: hub rim → gentle control → node. Short, controlled curves. */
 const curveTo = (x0, y0, cxp, cyp, x1, y1) =>
@@ -50,9 +54,9 @@ const pointOn = (t, x0, y0, cxp, cyp, x1, y1) => {
   };
 };
 
-const buildLinks = (satellites) =>
+const buildLinks = (satellites, posFn = nodePos) =>
   satellites.map((s, i) => {
-    const {x, y} = nodePos(i);
+    const {x, y} = posFn(i, satellites.length);
     const dx = x - CX;
     const dy = y - CY;
     const len = Math.hypot(dx, dy) || 1;
@@ -97,6 +101,7 @@ export const AgentSystem = () => {
   const {system} = useCinematic();
   const agentSatellites = system.nodes;
   const LINKS = useMemo(() => buildLinks(agentSatellites), [agentSatellites]);
+  const MOBILE_LINKS = useMemo(() => buildLinks(agentSatellites, mobilePoint), [agentSatellites]);
   const svgRef = useRef(null);
   const packetLayerRef = useRef(null);
   const sceneRef = useRef(null);
@@ -111,10 +116,11 @@ export const AgentSystem = () => {
       return undefined;
     }
 
-    const lines = Array.from(svg.querySelectorAll(".ga-agent-line-path"));
+    /* Animate only the desktop paths — the mobile paths are their own group. */
+    const lines = Array.from(svg.querySelectorAll(".ga-agent-line-flow--desktop .ga-agent-line-path"));
     const DOTS = 5;
     const packDots = Array.from({length: DOTS}, (_, k) => {
-      const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      const c = document.createElementNS(svg.namespaceURI, "circle");
       c.setAttribute("r", "0.22");
       c.setAttribute("class", "ga-agent-packet");
       c.setAttribute("opacity", "0");
@@ -178,13 +184,24 @@ export const AgentSystem = () => {
         <span className="ga-agent-arm" aria-hidden="true" />
 
         <svg className="ga-agent-lines" ref={svgRef} viewBox="0 0 100 100" aria-hidden="true">
-          <g className="ga-agent-line-flow">
+          <g className="ga-agent-line-flow ga-agent-line-flow--desktop">
             {LINKS.map((l) => (
               <path key={l.label} className="ga-agent-line-path" d={l.d} />
             ))}
           </g>
-          <g className="ga-agent-ends">
+          <g className="ga-agent-ends ga-agent-ends--desktop">
             {LINKS.map((l) => (
+              <circle key={`${l.label}-end`} className="ga-agent-end" cx={l.end.x.toFixed(2)} cy={l.end.y.toFixed(2)} r="0.3" />
+            ))}
+          </g>
+          {/* Phones use the tighter ring, so the connectors need their own endpoints. */}
+          <g className="ga-agent-line-flow ga-agent-line-flow--mobile">
+            {MOBILE_LINKS.map((l) => (
+              <path key={l.label} className="ga-agent-line-path" d={l.d} />
+            ))}
+          </g>
+          <g className="ga-agent-ends ga-agent-ends--mobile">
+            {MOBILE_LINKS.map((l) => (
               <circle key={`${l.label}-end`} className="ga-agent-end" cx={l.end.x.toFixed(2)} cy={l.end.y.toFixed(2)} r="0.3" />
             ))}
           </g>
@@ -205,25 +222,32 @@ export const AgentSystem = () => {
         </svg>
 
         <div className="ga-agent-center" data-cursor="cta">
-          <img className="ga-agent-center-art" src={system.center.art} alt="" width="48" height="48" />
           <span className="ga-agent-center-title">{system.center.title}</span>
           <span className="ga-agent-center-sub">{system.center.sub}</span>
         </div>
 
-        {agentSatellites.map((s, i) => {
-          const pos = nodePos(i);
-          return (
-            <div
-              className="ga-agent-node"
-              key={s.label}
-              style={{left: `${pos.x}%`, top: `${pos.y}%`, transform: `translate(-50%, -50%)`}}
-              data-cursor
-            >
-              <img className="ga-agent-node-art" src={s.img} alt="" width="40" height="40" loading="lazy" />
-              <span>{s.label}</span>
-            </div>
-          );
-        })}
+        <div className="ga-agent-nodes">
+          {agentSatellites.map((s, i) => {
+            const pos = nodePos(i);
+            const mp = mobilePoint(i, agentSatellites.length);
+            return (
+              <div
+                className="ga-agent-node"
+                key={s.label}
+                style={{
+                  "--nx": `${pos.x}%`,
+                  "--ny": `${pos.y}%`,
+                  "--nxm": `${mp.x.toFixed(2)}%`,
+                  "--nym": `${mp.y.toFixed(2)}%`,
+                }}
+                data-cursor
+              >
+                <img className="ga-agent-node-art" src={s.img} alt="" width="40" height="40" loading="lazy" />
+                <span>{s.label}</span>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

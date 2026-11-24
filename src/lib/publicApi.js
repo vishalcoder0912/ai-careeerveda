@@ -10,9 +10,10 @@
 // write and is rate-limited server-side.
 
 // In dev the site calls the Vite server same-origin and Vite proxies /api to the
-// backend (see vite.config.js). Production uses an explicit absolute API URL, or
-// no base at all and runs off the static data files.
-const DEFAULT_BASE = import.meta.env.DEV ? "/api/v1" : "";
+// backend (see vite.config.js). Production deployments are typically served
+// behind the same-origin /api proxy too, so default to /api/v1 unless an
+// explicit absolute API URL is provided.
+const DEFAULT_BASE = "/api/v1";
 
 // Trailing slashes are stripped so `${BASE}/public/programs` never doubles up.
 export const API_BASE = String(import.meta.env.VITE_PUBLIC_API_BASE_URL || DEFAULT_BASE).replace(
@@ -20,9 +21,9 @@ export const API_BASE = String(import.meta.env.VITE_PUBLIC_API_BASE_URL || DEFAU
   "",
 );
 
-// With no base URL the site runs entirely off its static data files. That is
-// the deliberate fallback, not a failure: a deploy that has not been pointed at
-// a backend yet still renders every page.
+// Admin-managed content (policies, programs, etc.) is served by the backend.
+// Keep this truthy with the default base so the site fetches live content instead
+// of silently rendering bundled static copies that can drift from the admin panel.
 export const isApiConfigured = Boolean(API_BASE);
 
 // A slow API must never hold a page hostage — the static fallback is already on
@@ -128,6 +129,41 @@ export const submitLead = (payload) => postForm("/public/leads", payload);
 // The "Apply with CareerVeda" form on /jobs. Same shape and return as submitLead.
 export const submitJobApplication = (payload) => postForm("/public/job-applications", payload);
 
+// The backend accepts Idempotency-Key and stores it on the lead. Keep one key
+// per attempt in sessionStorage: a retry after a timeout then replays the same
+// key instead of creating a second lead, while a genuinely new enquiry gets a
+// new key. Cleared on success so a later intentional submission is independent.
+const submissionKeySlot = (path, payload) =>
+  `cv-submit-${path.replace(/\W/g, "")}-${String(payload.mobile || payload.email || "anonymous").slice(-40)}`;
+
+const newSubmissionKey = () =>
+  window.crypto?.randomUUID
+    ? window.crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+const submissionKey = (path, payload) => {
+  if (typeof window === "undefined") return newSubmissionKey();
+  const slot = submissionKeySlot(path, payload);
+  try {
+    const existing = window.sessionStorage.getItem(slot);
+    if (existing) return existing;
+    const key = newSubmissionKey();
+    window.sessionStorage.setItem(slot, key);
+    return key;
+  } catch {
+    return newSubmissionKey();
+  }
+};
+
+const clearSubmissionKey = (path, payload) => {
+  if (typeof window === "undefined") return;
+  try {
+    window.sessionStorage.removeItem(submissionKeySlot(path, payload));
+  } catch {
+    // Storage disabled: the key was never persisted.
+  }
+};
+
 const postForm = async (path, payload) => {
   if (!isApiConfigured) {
     return {ok: false, message: "Submissions aren't configured yet. Please try again later.", errors: {}};
@@ -138,20 +174,30 @@ const postForm = async (path, payload) => {
   // dead button; the callers turn the abort into their visible network error.
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  const key = submissionKey(path, payload);
 
   try {
     const response = await fetch(`${API_BASE}${path}`, {
       method: "POST",
-      headers: {"Content-Type": "application/json"},
+      headers: {
+        "Content-Type": "application/json",
+        "Idempotency-Key": key,
+      },
       body: JSON.stringify(payload),
       signal: controller.signal,
     });
 
-    if (response.status === 204) return {ok: true};
+    if (response.status === 204) {
+      clearSubmissionKey(path, payload);
+      return {ok: true};
+    }
 
     const body = await response.json().catch(() => null);
 
-    if (response.ok && body?.success !== false) return {ok: true};
+    if (response.ok && body?.success !== false) {
+      clearSubmissionKey(path, payload);
+      return {ok: true};
+    }
 
     const error = body?.error || {};
 

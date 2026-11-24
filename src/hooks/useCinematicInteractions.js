@@ -1,4 +1,6 @@
 import {useEffect,useRef} from "react";
+import {getAnchorOffset} from "../lib/anchorOffset";
+import {useLenis} from "../lib/smoothScroll";
 
 // GSAP now owns only the effects Framer Motion isn't driving:
 // the section parallax and the projects counter. Reveals, staggers, and card
@@ -16,6 +18,12 @@ const PARALLAX_TARGETS = ".section-block, .partner-band, .consultation-section";
 
 export const useCinematicInteractions = () => {
   const pageRef = useRef(null);
+  const lenis = useLenis();
+  const lenisRef = useRef(null);
+
+  useEffect(() => {
+    lenisRef.current = lenis;
+  }, [lenis]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !pageRef.current) return undefined;
@@ -64,25 +72,46 @@ export const useCinematicInteractions = () => {
       });
     }
 
-    // ── Smooth anchor scrolling: the browser's own, no library. ───────────────
-    page.querySelectorAll("a[href^='#']").forEach((link) => {
-      const handleClick = (event) => {
-        const targetId = link.getAttribute("href");
-        if (!targetId || targetId === "#") return;
+    // ── In-page anchors: delegated so later-rendered links are covered. ──────
+    const onAnchorClick = (event) => {
+      if (
+        event.defaultPrevented ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey
+      ) return;
 
-        const target = document.querySelector(targetId);
-        if (!target) return;
+      const link = event.target.closest?.('a[href^="#"]');
+      if (!link || !page.contains(link)) return;
+      const href = link.getAttribute("href");
+      if (!href || href === "#") return;
 
-        event.preventDefault();
-        target.scrollIntoView({
+      // getElementById accepts any id, including ones that are not valid CSS
+      // selectors. querySelector(href) threw on those.
+      const id = decodeURIComponent(href.slice(1));
+      const target = document.getElementById(id);
+      if (!target) return;
+
+      event.preventDefault();
+
+      if (lenisRef.current) {
+        // Lenis already honours the target's scroll-margin-top; adding a second
+        // offset here used to drop every in-page link below the fixed navbar.
+        lenisRef.current.scrollTo(target, {force: true});
+      } else {
+        const top =
+          target.getBoundingClientRect().top + window.scrollY - getAnchorOffset(target);
+        window.scrollTo({
+          top,
           behavior: prefersReducedMotion ? "auto" : "smooth",
-          block: "start",
         });
-      };
+      }
 
-      link.addEventListener("click", handleClick);
-      cleanupFns.push(() => link.removeEventListener("click", handleClick));
-    });
+      target.setAttribute("tabindex", "-1");
+      target.focus({preventScroll: true});
+    };
+    page.addEventListener("click", onAnchorClick);
+    cleanupFns.push(() => page.removeEventListener("click", onAnchorClick));
 
     // ── Everything below is gsap's, and only loads if it has work to do. ──────
     const wantsParallax =

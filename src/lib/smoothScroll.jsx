@@ -1,6 +1,8 @@
 import {createContext, useContext, useEffect, useState} from "react";
 import Lenis from "lenis";
 
+import {getAnchorOffset} from "./anchorOffset";
+
 // One Lenis for the whole app.
 //
 // Mounted at the root rather than per page, so a route change does not tear the
@@ -130,15 +132,16 @@ export const SmoothScrollProvider = ({enabled = true, children}) => {
 };
 
 /**
- * Smooth-scrolls in-page anchors, clearing a sticky header.
+ * Smooth-scrolls in-page anchors below the sticky header.
  *
  * Without this an `href="#faq"` is a native jump: instant, and landing with the
  * target's first line underneath the fixed header. Delegated from one listener
  * on the container rather than bound per link, so links rendered later are
  * covered without re-binding.
  *
- * Falls back to `scrollIntoView` when Lenis is off, so reduced-motion users
- * still get the header offset — the offset is a layout fix, not a flourish.
+ * Lenis reads the target's `scroll-margin-top` (declared centrally on `[id]`),
+ * so it must not be given a second header offset. The native fallback uses the
+ * same CSS value through `getAnchorOffset` — clearance is layout, not flourish.
  */
 export const useAnchorScroll = (containerRef, {headerHeight = 76} = {}) => {
   const lenis = useLenis();
@@ -164,9 +167,14 @@ export const useAnchorScroll = (containerRef, {headerHeight = 76} = {}) => {
       event.preventDefault();
 
       if (lenis) {
-        lenis.scrollTo(target, {offset: -headerHeight});
+        // Lenis subtracts the target's scroll-margin-top itself. Passing the
+        // header height again double-counts the bar and lands too low.
+        lenis.scrollTo(target, {force: true});
       } else {
-        const top = target.getBoundingClientRect().top + window.scrollY - headerHeight;
+        const top =
+          target.getBoundingClientRect().top +
+          window.scrollY -
+          getAnchorOffset(target, headerHeight);
         window.scrollTo({top, behavior: "auto"});
       }
 
@@ -193,14 +201,29 @@ export const useAnchorScroll = (containerRef, {headerHeight = 76} = {}) => {
  * behind the dialog and the dialog's own content does not. Call with `true`
  * while open.
  */
+// Nested/overlapping overlays must not let the first one closed restart Lenis
+// while another is still open. Count locks per Lenis instance.
+const scrollLocks = new WeakMap();
+
 export const useLockSmoothScroll = (locked) => {
   const lenis = useLenis();
 
   useEffect(() => {
     if (!lenis || !locked) return undefined;
 
-    lenis.stop();
-    return () => lenis.start();
+    const previous = scrollLocks.get(lenis) || 0;
+    scrollLocks.set(lenis, previous + 1);
+    if (previous === 0) lenis.stop();
+
+    return () => {
+      const remaining = Math.max(0, (scrollLocks.get(lenis) || 1) - 1);
+      if (remaining === 0) {
+        scrollLocks.delete(lenis);
+        lenis.start();
+      } else {
+        scrollLocks.set(lenis, remaining);
+      }
+    };
   }, [lenis, locked]);
 };
 

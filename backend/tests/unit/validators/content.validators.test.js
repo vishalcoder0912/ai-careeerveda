@@ -91,6 +91,106 @@ describe("programBody", () => {
   it("refuses a nextBatchMode outside auto/custom", () => {
     expect(() => parse(programBody, {title: "x", nextBatchMode: "manual"})).toThrow();
   });
+
+  it("accepts a partial cinematic page override and strips its markup", () => {
+    const parsed = parse(programBody, {
+      title: "x",
+      cinematic: {
+        hero: {title: ["<b>Product</b>", {em: "Management"}]},
+        timeline: {items: [{from: 1, to: 2, title: "Foundations"}]},
+        skills: {items: [{title: "Discovery", icon: "Search"}]},
+      },
+    });
+
+    expect(parsed.cinematic.hero.title).toEqual(["Product", {em: "Management"}]);
+    expect(parsed.cinematic.timeline.items[0]).toMatchObject({from: 1, to: 2, title: "Foundations"});
+    expect(parsed.cinematic.skills.items[0].icon).toBe("Search");
+  });
+
+  it("keeps the cinematic boundary strict", () => {
+    expect(() => parse(programBody, {title: "x", cinematic: {notASection: {}}})).toThrow();
+    expect(() => parse(programBody, {title: "x", cinematic: {skills: {items: [{icon: "NotAnIcon"}]}}})).toThrow();
+    expect(() =>
+      parse(programBody, {title: "x", cinematic: {footer: {channels: [{href: "javascript:alert(1)"}]}}}),
+    ).toThrow();
+  });
+
+  it("does not reset cinematic on a PATCH that never mentions it", () => {
+    const parsed = parse(updateBody(programBody), {title: "Renamed"});
+
+    expect(parsed).toEqual({title: "Renamed"});
+    expect(parsed.cinematic).toBeUndefined();
+  });
+
+  it("accepts the icon and art tokens used by the other cinematic pages", () => {
+    const parsed = parse(programBody, {
+      title: "x",
+      cinematic: {
+        skills: {items: [{icon: "Bot"}, {icon: "BrainCircuit"}, {icon: "Database"}]},
+        learning: {items: [{icon: "ServerCog"}, {icon: "Gauge"}]},
+        certs: {proofPillars: [{icon: "Fingerprint"}]},
+        system: {nodes: [{label: "AI", icon: "genai"}, {label: "Data", img: "/images/curriculum/data.webp"}]},
+      },
+    });
+
+    expect(parsed.cinematic.skills.items.map((item) => item.icon)).toEqual([
+      "Bot", "BrainCircuit", "Database",
+    ]);
+    expect(parsed.cinematic.certs.proofPillars[0].icon).toBe("Fingerprint");
+  });
+
+  it("keeps every new token strict: unknown icons and bad image URLs still fail", () => {
+    expect(() =>
+      parse(programBody, {title: "x", cinematic: {skills: {items: [{icon: "NotAnIcon"}]}}}),
+    ).toThrow();
+    expect(() =>
+      parse(programBody, {
+        title: "x",
+        cinematic: {system: {nodes: [{img: "javascript:alert(1)"}]}},
+      }),
+    ).toThrow();
+  });
+
+  it("accepts module ranges that start at 0 (AI Systems) and the tools stat key", () => {
+    const parsed = parse(programBody, {
+      title: "x",
+      cinematic: {
+        modules: {stages: [{from: 0, to: 4}]},
+        stats: {items: [{key: "tools", value: 8, label: "Core Tools"}]},
+      },
+    });
+
+    expect(parsed.cinematic.modules.stages[0]).toMatchObject({from: 0, to: 4});
+    expect(parsed.cinematic.stats.items[0].key).toBe("tools");
+  });
+
+  it("accepts the Gen AI flagship's credential roadmap and mapped salary fields", () => {
+    const parsed = parse(programBody, {
+      title: "x",
+      cinematic: {
+        certs: {
+          roadmap: {
+            title: "Roadmap",
+            rows: [{stage: "ML", weeks: "Weeks 5–8", credential: "Crash Course", provider: "Google", cost: "Free"}],
+            narrative: ["One", "Two"],
+            caveat: "Provider catalogues can change.",
+          },
+        },
+        careers: {
+          roles: [{role: "AI Engineer", salaryVaried: true, salaryMappedTo: "LLM Engineer", salaryMappedRange: "₹20 LPA"}],
+        },
+      },
+    });
+
+    expect(parsed.cinematic.certs.roadmap.rows).toHaveLength(1);
+    expect(parsed.cinematic.careers.roles[0].salaryVaried).toBe(true);
+    expect(() =>
+      parse(programBody, {
+        title: "x",
+        cinematic: {certs: {roadmap: {rows: [{unknown: "field"}]}}},
+      }),
+    ).toThrow();
+  });
 });
 
 describe("facultyBody", () => {
@@ -155,6 +255,11 @@ describe("jobBody", () => {
     expect(() => parse(jobBody, {title: "x", postedDate: "not-a-date"})).toThrow();
   });
 
+  it("defaults new jobs to accepting applications unless explicitly closed", () => {
+    expect(parse(jobBody, {title: "x"}).acceptsApplications).toBe(true);
+    expect(parse(jobBody, {title: "x", acceptsApplications: false}).acceptsApplications).toBe(false);
+  });
+
   it("accepts an http(s) or blank application URL and refuses anything else", () => {
     expect(parse(jobBody, {title: "x", applicationUrl: "https://jobs.example.com/1"}).applicationUrl)
       .toBe("https://jobs.example.com/1");
@@ -162,6 +267,40 @@ describe("jobBody", () => {
     // A scheme-less URL rendered as a relative link to /jobs/careers.example.com.
     expect(() => parse(jobBody, {title: "x", applicationUrl: "careers.example.com"})).toThrow();
     expect(() => parse(jobBody, {title: "x", applicationUrl: "javascript:alert(1)"})).toThrow();
+  });
+
+  it("accepts every section the public job-details modal renders", () => {
+    const parsed = parse(jobBody, {
+      title: "x",
+      department: "Product",
+      vacancies: 2,
+      jobOverview: "Overview",
+      aboutCompany: "About us",
+      qualifications: ["Degree"],
+      preferredSkills: ["SQL"],
+      educationRequirements: "B.Tech",
+      benefits: ["Insurance"],
+      salaryMin: 100000,
+      salaryMax: 200000,
+      applicationDeadline: "2026-12-01",
+    });
+
+    expect(parsed.department).toBe("Product");
+    expect(parsed.vacancies).toBe(2);
+    expect(parsed.jobOverview).toBe("Overview");
+    expect(parsed.aboutCompany).toBe("About us");
+    expect(parsed.qualifications).toEqual(["Degree"]);
+    expect(parsed.preferredSkills).toEqual(["SQL"]);
+    expect(parsed.educationRequirements).toBe("B.Tech");
+    expect(parsed.benefits).toEqual(["Insurance"]);
+    expect(parsed.salaryMin).toBe(100000);
+    expect(parsed.salaryMax).toBe(200000);
+    expect(parsed.applicationDeadline).toBeInstanceOf(Date);
+  });
+
+  it("rejects negative vacancies and salary bounds", () => {
+    expect(() => parse(jobBody, {title: "x", vacancies: -1})).toThrow();
+    expect(() => parse(jobBody, {title: "x", salaryMin: -100})).toThrow();
   });
 });
 

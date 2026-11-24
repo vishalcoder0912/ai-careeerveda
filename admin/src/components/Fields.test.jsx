@@ -1,6 +1,6 @@
 import {useState} from "react";
-import {afterEach, describe, expect, it} from "vitest";
-import {cleanup, render, screen} from "@testing-library/react";
+import {afterEach, describe, expect, it, vi} from "vitest";
+import {cleanup, fireEvent, render, screen} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import {Field} from "./Fields.jsx";
@@ -23,6 +23,25 @@ const selectField = {
     {value: "auto", label: "Auto — next Saturday"},
     {value: "custom", label: "Custom — I'll type the date"},
   ],
+};
+const jsonTemplate = {hero: {title: ["Built-in", "Copy"]}};
+const jsonField = {name: "cinematic", label: "Cinematic page content", kind: "json", template: jsonTemplate};
+
+const JsonHarness = ({onValue}) => {
+  const [value, setValue] = useState({hero: {title: ["Original"]}});
+  return (
+    <>
+      <Field
+        field={jsonField}
+        value={value}
+        onChange={(next) => {
+          setValue(next);
+          onValue(next);
+        }}
+      />
+      <output data-testid="saved-value">{JSON.stringify(value)}</output>
+    </>
+  );
 };
 
 describe("multi-line repeater fields", () => {
@@ -153,5 +172,35 @@ describe("select field", () => {
 
     await user.selectOptions(control, "custom");
     expect(control).toHaveValue("custom");
+  });
+});
+
+describe("cinematic JSON field", () => {
+  afterEach(cleanup);
+
+  it("keeps invalid JSON in the box and out of the form", () => {
+    const onValue = vi.fn();
+    render(<JsonHarness onValue={onValue} />);
+
+    const box = screen.getByLabelText("Cinematic page content");
+    fireEvent.change(box, {target: {value: "{ not json"}});
+
+    expect(screen.getByRole("alert")).toHaveTextContent("Invalid JSON");
+    expect(onValue).not.toHaveBeenCalled();
+    expect(screen.getByTestId("saved-value")).toHaveTextContent('{"hero":{"title":["Original"]}}');
+  });
+
+  it("commits valid JSON and can load the built-in page copy", async () => {
+    const user = userEvent.setup();
+    const onValue = vi.fn();
+    render(<JsonHarness onValue={onValue} />);
+
+    const box = screen.getByLabelText("Cinematic page content");
+    fireEvent.change(box, {target: {value: '{"hero":{"title":["New"]}}'}});
+
+    expect(onValue).toHaveBeenLastCalledWith({hero: {title: ["New"]}});
+
+    await user.click(screen.getByRole("button", {name: "Load current page copy"}));
+    expect(box).toHaveValue(JSON.stringify(jsonTemplate, null, 2));
   });
 });

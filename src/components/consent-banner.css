@@ -1,0 +1,129 @@
+/* Footer entry point for changing a choice after the banner is dismissed. */
+.footer-link-button {
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+body footer.site-footer.site-footer .footer-link-button {
+  color: #46597a !important;
+}
+
+body footer.site-footer.site-footer .footer-link-button:hover {
+  color: #1d4ed8 !important;
+}
+
+body footer.site-footer.site-footer .footer-link-button:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.cv-consent {
+  position: fixed;
+  inset: auto 1rem 1rem auto;
+  z-index: 10000;
+  max-width: min(26rem, calc(100vw - 2rem));
+}
+
+.cv-consent-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.18);
+  padding: 1.25rem;
+  color: #0f172a;
+  font-family: "Manrope", "Inter", sans-serif;
+}
+
+.cv-consent-card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.cv-consent-card p {
+  margin: 0 0 1rem;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: #475569;
+}
+
+.cv-consent-card a {
+  color: #4338ca;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.cv-consent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.cv-consent-actions button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  padding: 0.55rem 0.9rem;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.cv-consent-actions button:focus-visible {
+  outline: 3px solid #a5b4fc;
+  outline-offset: 2px;
+}
+
+.cv-consent-accept {
+  background: #4338ca;
+  color: #fff;
+}
+
+.cv-consent-accept:hover {
+  background: #3730a3;
+}
+
+.cv-consent-reject,
+.cv-consent-close {
+  background: #fff;
+  border-color: #cbd5e1 !important;
+  color: #334155;
+}
+
+.cv-consent-reject:hover,
+.cv-consent-close:hover {
+  background: #f8fafc;
+}
+
+.cv-consent-close {
+  flex-basis: 100%;
+  background: transparent;
+  border-color: transparent !important;
+  color: #64748b;
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .cv-consent {
+    inset: auto 0.75rem 0.75rem;
+    max-width: none;
+  }
+
+  .cv-consent-actions button {
+    flex: 1 1 auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cv-consent-actions button {
+    transition: none;
+  }
+}

@@ -9,7 +9,7 @@ import {Modal} from "../components/Modal";
 import {Pagination} from "../components/Pagination";
 import {Skeleton, EmptyState, ErrorState} from "../components/States";
 
-const STATUSES = ["new", "contacted", "qualified", "converted", "closed", "spam"];
+const STATUSES = ["new", "contacted", "qualified", "converted", "admitted", "closed", "spam"];
 
 // How often the inbox re-checks the API in the background. Ten seconds keeps the
 // list feeling live without turning an admin page into a poll source. Every
@@ -27,8 +27,25 @@ const formatDateTime = (value) =>
 
 const dash = (value) => value || "—";
 
+const rupees = (value) =>
+  value == null
+    ? "—"
+    : new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0,
+      }).format(value);
+
 const utmLine = (utm) =>
   utm && (utm.source || utm.campaign) ? `${dash(utm.source)} / ${dash(utm.medium)} / ${dash(utm.campaign)}` : "—";
+
+const clickIdLine = (clickIds) => {
+  const ids = clickIds || {};
+  const value = ids.gclid || ids.gbraid || ids.wbraid;
+  if (!value) return "—";
+  const kind = ids.gclid ? "gclid" : ids.gbraid ? "gbraid" : "wbraid";
+  return `${kind}: ${value}`;
+};
 
 const StatusOptions = () =>
   STATUSES.map((entry) => (
@@ -182,10 +199,14 @@ const LeadDetail = ({lead, canUpdate, note, onNote, onAddNote, onClose}) => {
         )}
         <dt>Program</dt>
         <dd>{dash(lead.program)}</dd>
+        <dt>Conversion value</dt>
+        <dd>{rupees(lead.conversionValue)}</dd>
         <dt>Source page</dt>
         <dd>{dash(lead.sourcePage)}</dd>
         <dt>UTM</dt>
         <dd>{utmLine(lead.utm)}</dd>
+        <dt>Click ID</dt>
+        <dd>{clickIdLine(lead.clickIds)}</dd>
         <dt>Message</dt>
         <dd>{dash(lead.message)}</dd>
         <dt>Spam score</dt>

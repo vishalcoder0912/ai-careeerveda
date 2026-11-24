@@ -40,6 +40,9 @@ export const createApp = ({extraRouters = []} = {}) => {
   // proxy's address and one bucket; one too many and a client can spoof its IP
   // with X-Forwarded-For. Cloud Run alone is 1; Cloudflare in front of it is 2.
   app.set("trust proxy", env.trustProxy);
+  // Log the resolved value once so a deploy's real hop count is visible in the
+  // startup logs instead of being guessed from an env file.
+  logger.info({trustProxy: env.trustProxy}, "trust proxy configured");
 
   // Advertising Express and its version is free reconnaissance.
   app.disable("x-powered-by");

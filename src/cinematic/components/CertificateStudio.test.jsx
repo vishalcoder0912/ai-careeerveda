@@ -84,6 +84,16 @@ describe("CertificateStudio", () => {
     expect(preview.textContent).toContain("Ananya Sharma");
   });
 
+  it("labels the studio and its ID as a sample, not an issued certificate", () => {
+    setup();
+
+    expect(screen.getByRole("heading", {name: /preview a sample certificate/i})).toBeTruthy();
+    expect(document.querySelector(".ga-cert-studio-notice").textContent).toMatch(
+      /not an issued certificate/i,
+    );
+    expect(document.querySelector(".ga-cert-studio-meta dt").textContent).toBe("Sample ID");
+  });
+
   it("keeps both export buttons disabled until a usable name is typed", () => {
     setup();
     expect(downloadButton().disabled).toBe(true);
@@ -243,7 +253,7 @@ describe("CertificateStudio", () => {
 
     await waitFor(() => expect(toBlob).toHaveBeenCalled());
     expect(clicked).toHaveLength(1);
-    expect(clicked[0].download).toBe("PG-AIS-01-ananya-sharma.png");
+    expect(clicked[0].download).toBe("sample-PG-AIS-01-ananya-sharma.png");
     expect(clicked[0].href).toBe("blob:certificate");
     await waitFor(() => expect(statusText()).toMatch(/downloaded/i));
 
@@ -288,7 +298,7 @@ describe("CertificateStudio", () => {
     });
 
     await waitFor(() => expect(clicked.length).toBe(1));
-    expect(clicked[0]).toBe("PG-AIS-01-ananya-sharma.png");
+    expect(clicked[0]).toBe("sample-PG-AIS-01-ananya-sharma.png");
 
     HTMLAnchorElement.prototype.click = realAnchorClick;
     vi.unstubAllGlobals();

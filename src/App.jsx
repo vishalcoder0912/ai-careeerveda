@@ -2,6 +2,7 @@ import {useEffect, useRef, lazy} from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
+import {getAnchorOffset} from "./lib/anchorOffset";
 import {SmoothScrollProvider, useLenis} from "./lib/smoothScroll";
 import HomePage from "./pages/HomePage";
 import {resolvePageMeta, composeTitle, DEFAULT_DESCRIPTION} from "./config/pageMeta";
@@ -22,7 +23,7 @@ const BootMarker = () => {
 };
 
 const ProgramsPage = lazy(routeChunks.loadProgramsPage);
-const GenerativeAIPage = lazy(routeChunks.loadGenerativeAIPage);
+const GenAiProgramPage = lazy(routeChunks.loadGenAiProgramPage);
 const CinematicProgramPage = lazy(routeChunks.loadCinematicProgramPage);
 const ProgramDetailPage = lazy(routeChunks.loadProgramDetailPage);
 const JobsPage = lazy(routeChunks.loadJobsPage);
@@ -79,63 +80,155 @@ const ScrollToTop = () => {
 };
 const ScrollToHash = () => {
   const {pathname, hash} = useLocation();
+  const lenis = useLenis();
 
   useEffect(() => {
     if (!hash) return undefined;
 
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const behavior = prefersReducedMotion ? "auto" : "smooth";
     const id = decodeURIComponent(hash.slice(1));
+    if (!id) return undefined;
 
-    let cancelled = false;
-    const timers = [];
+    let active = true;
+    let detached = false;
+    let raf = 0;
+    let target = null;
+    let initialScrollDone = false;
+    let landed = false;
+    let lastAbsolute = NaN;
+    let settledFrames = 0;
 
-    // The header pins itself (position: fixed) once the page is scrolled, so a
-    // plain top alignment would tuck the section's heading up under it. Offset by
-    // the bar's measured height, with a sane fallback, plus a little breathing room.
-    const headerOffset = () => {
-      const nav = document.querySelector(".site-nav");
-      return (nav && nav.offsetHeight ? nav.offsetHeight : 76) + 12;
+    const mutationObserver = new MutationObserver(schedule);
+    let resizeObserver;
+
+    const reduced = () =>
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // Lenis honours `[id] { scroll-margin-top }` itself. Reading that same value
+    // for native fallbacks and the settle check keeps all three paths in step;
+    // measuring the bar and passing an offset as well used to land twice as low.
+    const absoluteTop = (el) =>
+      el.getBoundingClientRect().top + window.scrollY - getAnchorOffset(el);
+
+    const detach = () => {
+      if (detached) return;
+      detached = true;
+      active = false;
+      if (raf) cancelAnimationFrame(raf);
+      mutationObserver?.disconnect();
+      resizeObserver?.disconnect();
+      window.removeEventListener("wheel", cancelForUser);
+      window.removeEventListener("touchstart", cancelForUser);
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("load", schedule);
+      window.removeEventListener("cv:hash-target-mounted", onHashMounted);
     };
 
-    const scrollToTarget = () => {
+    // If the reader takes over while we are still landing, their scroll wins.
+    // The old retry timers used to keep dragging them back to the hash for over
+    // a second; this is the decision that actually matters.
+    const cancelForUser = () => detach();
+    const onKeyDown = (event) => {
+      const keys = ["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "];
+      if (keys.includes(event.key)) detach();
+    };
+    const onHashMounted = (event) => {
+      if (event.detail?.id === id) schedule();
+    };
+
+    const scrollToTarget = (immediate) => {
+      if (!target) return;
+      const top = Math.max(0, absoluteTop(target));
+      lastAbsolute = top;
+
+      // Lenis owns window scroll and already applies the target's scroll-margin,
+      // so no extra offset is passed here. A native scrollTo does not, hence the
+      // measured `top` only on the fallback path.
+      if (lenis) {
+        lenis.scrollTo(target, {
+          immediate: immediate || reduced(),
+          force: true,
+        });
+      } else {
+        window.scrollTo({
+          top,
+          behavior: immediate || reduced() ? "instant" : "smooth",
+        });
+      }
+    };
+
+    function schedule() {
+      if (active && !detached && !raf) raf = requestAnimationFrame(check);
+    }
+
+    function check() {
+      raf = 0;
+      if (!active || detached) return;
+
       const el = document.getElementById(id);
-      if (!el) return;
-      const y = el.getBoundingClientRect().top + window.scrollY - headerOffset();
-      window.scrollTo({top: Math.max(0, y), behavior});
-    };
-
-    // How far the section still is from resting just below the header.
-    const drift = () => {
-      const el = document.getElementById(id);
-      if (!el) return Infinity;
-      return el.getBoundingClientRect().top - headerOffset();
-    };
-    let waited = 0;
-    const start = () => {
-      if (cancelled) return;
-      if (!document.getElementById(id)) {
-        waited += 1;
-        if (waited < 25) timers.push(window.setTimeout(start, 80));
+      if (!el) {
+        // The section may be behind DeferUntilVisible. Ask its wrapper to mount
+        // the hash target now instead of waiting for a timeout to expire.
+        window.dispatchEvent(new CustomEvent("cv:hash-target-request", {detail: {id}}));
         return;
       }
-      scrollToTarget();
-      [450, 1000, 1600].forEach((ms) =>
-        timers.push(
-          window.setTimeout(() => {
-            if (!cancelled && Math.abs(drift()) > 8) scrollToTarget();
-          }, ms),
-        ),
-      );
-    };
 
-    timers.push(window.setTimeout(start, 0));
+      target = el;
+      if (!initialScrollDone) {
+        initialScrollDone = true;
+        target.setAttribute("tabindex", "-1");
+        target.focus({preventScroll: true});
+        scrollToTarget(false);
+        schedule();
+        return;
+      }
 
-    return () => {
-      cancelled = true;
-      timers.forEach((timer) => window.clearTimeout(timer));
-    };
-  }, [pathname, hash]);
+      const absolute = Math.max(0, absoluteTop(el));
+      if (!Number.isNaN(lastAbsolute) && Math.abs(absolute - lastAbsolute) > 2) {
+        // A deferred section grew above us. Correct immediately, but only while
+        // the reader has not taken over.
+        landed = false;
+        scrollToTarget(true);
+        settledFrames = 0;
+        schedule();
+        return;
+      }
+
+      const viewportTop = el.getBoundingClientRect().top - getAnchorOffset(el);
+      if (Math.abs(viewportTop) <= 1.5) {
+        settledFrames += 1;
+        if (settledFrames >= 3) {
+          // Park the rAF loop, but keep the observers alive: a deferred section
+          // mounting later still needs one geometry correction.
+          landed = true;
+          return;
+        }
+      } else if (landed) {
+        // The layout did not move; the reader (or a script) did. Stop caring.
+        detach();
+        return;
+      } else {
+        settledFrames = 0;
+      }
+      schedule();
+    }
+
+    window.addEventListener("wheel", cancelForUser, {passive: true});
+    window.addEventListener("touchstart", cancelForUser, {passive: true});
+    window.addEventListener("keydown", onKeyDown, {passive: true});
+    window.addEventListener("load", schedule, {once: true});
+    window.addEventListener("cv:hash-target-mounted", onHashMounted);
+
+    // Mutation/geometry observers replace the old fixed retries: we only react
+    // when the DOM or the page height actually changes.
+    mutationObserver.observe(document.documentElement, {childList: true, subtree: true});
+    if (typeof ResizeObserver !== "undefined") {
+      resizeObserver = new ResizeObserver(schedule);
+      resizeObserver.observe(document.body);
+    }
+    schedule();
+
+    return detach;
+  }, [pathname, hash, lenis]);
 
   return null;
 };
@@ -190,8 +283,8 @@ const App = () => {
         <ScrollToHash />
         <RouteMeta />
         <Routes>
-        <Route path="/generative-ai" element={<GenerativeAIPage />} />
-        <Route path="/programs/gen-ai-agentic-ai" element={<GenerativeAIPage />} />
+        <Route path="/generative-ai" element={<GenAiProgramPage />} />
+        <Route path="/programs/gen-ai-agentic-ai" element={<GenAiProgramPage />} />
         {routeChunks.CINEMATIC_PROGRAMS.map((id) => (
           <Route key={id} path={`/programs/${id}`} element={<CinematicProgramPage programId={id} />} />
         ))}

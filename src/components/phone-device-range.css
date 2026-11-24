@@ -1,0 +1,174 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   phone-device-range.css — one place for the phone layout.
+
+   Scope: 320px–480px portrait, plus short landscape phones. Loaded last in
+   styles.css so these rules win over the generic phone queries scattered
+   through the other sheets.
+
+   Target device: Xiaomi Mi 11i (393 × 873 CSS px, 1x). The two things that
+   break at that width are:
+
+   1. The absolutely-positioned NeuralStory beats. They are only 16px narrower
+      than the viewport, and GSAP slides them ±40px on entry — so a beat can
+      sit 24px off the edge while it animates and its copy is cut by the
+      stage's overflow:hidden. Giving the beats a wider side gutter leaves
+      room for that offset.
+
+   2. Flex/grid children that refuse to shrink, which push long words past the
+      right edge. min-width:0 + overflow-wrap fixes that at every width.
+
+   Nothing here uses display:flex on .site-footer .brand — that lockup is
+   handled in brand-wordmark.css (icon beside the wordmark, 8px gap).
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Phone range: up to 480px ─────────────────────────────────────────── */
+@media (max-width: 480px) {
+  /* A flex/grid item's automatic min-size is its content width. Without this,
+     a long heading or the logo lockup can force its parent wider than the
+     screen and the overflow gets clipped. */
+  .hh-inner,
+  .hh-copy,
+  .hh-actions,
+  .hh-stats,
+  .ns-beat,
+  .ns-copy,
+  .ns-actions,
+  .mobile-menu-brand,
+  .site-footer > div {
+    min-width: 0;
+  }
+
+  /* Wrap inside the box rather than spilling past it. Only the copy elements
+     get this — buttons and chips stay nowrap on purpose. */
+  .hh .hh-title,
+  .hh-lead,
+  .hh-eyebrow,
+  .ns h2,
+  .ns-eyebrow,
+  .ns-copy p:not(.ns-eyebrow) {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    text-wrap: pretty;
+  }
+
+  /* Media can never dictate the column width. */
+  .ns-laptop,
+  .ns-laptop__screen img,
+  .hh-visual,
+  .hh-visual canvas {
+    max-width: 100%;
+  }
+
+  /* ── Navbar: logo + Enroll Now + hamburger on one line ──────────────── */
+  body header.site-nav .nav-container .brand {
+    /* 30px icon + 8px gap + the wordmark, capped so the CTA still fits. */
+    gap: 8px !important;
+    min-width: 0;
+  }
+
+  body header.site-nav .nav-container .brand .brand-icon {
+    height: 30px;
+    width: auto;
+    flex: none;
+  }
+
+  body header.site-nav .nav-container .brand .brand-lockup {
+    min-width: 0;
+  }
+
+  body header.site-nav .nav-container .brand .brand-name {
+    font-size: clamp(18px, 5.6vw, 22px);
+    line-height: 1;
+  }
+
+  /* The tagline is decorative at this size — dropping it keeps the lockup
+     inside the 155px brand cap instead of squeezing the wordmark. */
+  body header.site-nav .nav-container .brand .brand-tagline {
+    display: none;
+  }
+
+  /* ── NeuralStory: leave room for the GSAP x-offset ──────────────────── */
+  /* 88px of side gutter = 44px each side, a little more than the ±40px the
+     timeline uses, so a beat is never pushed off-screen mid-animation. */
+  /* neural-story.css is injected after this sheet (it arrives with the lazy
+     home chunk), so these four need !important to win its equal-specificity
+     @media (max-width: 899px) rules. 44px insets leave room for GSAP's ±40px
+     x-slide; `translate: none` stops the old double-shift clipping. */
+  .ns--cinematic .ns-beat--open,
+  .ns--cinematic .ns-beat--approach,
+  .ns--cinematic .ns-beat--side,
+  .ns--cinematic .ns-beat--final {
+    left: 44px !important;
+    right: 44px !important;
+    width: auto !important;
+    max-width: 420px !important;
+    margin-inline: auto !important;
+    translate: none !important;
+  }
+
+  .ns h2 {
+    font-size: clamp(25px, 6.6vw, 32px) !important;
+    line-height: 1.12 !important;
+  }
+
+  .ns-copy p:not(.ns-eyebrow) {
+    font-size: 15.5px !important;
+    line-height: 1.55 !important;
+  }
+
+  /* Static (no WebGL / reduced motion) beats already flow in the column; cap
+     them to the same gutter so both modes read identically. */
+  .ns--static .ns-beat {
+    width: calc(100% - 32px) !important;
+  }
+
+  /* ── Hero copy ──────────────────────────────────────────────────────── */
+  .hh .hh-title {
+    font-size: clamp(27px, 8.2vw, 34px);
+    line-height: 1.1;
+  }
+
+  .hh-lead {
+    font-size: 15px;
+    line-height: 1.55;
+  }
+}
+
+/* ── 2. Small phones: up to 374px ────────────────────────────────────────── */
+@media (max-width: 374px) {
+  body header.site-nav .nav-container .brand .brand-name {
+    font-size: 18px;
+  }
+
+  body header.site-nav .nav-container .mobile-navbar-actions a.nav-cta {
+    min-width: 84px !important;
+    padding: 0 10px !important;
+    font-size: 12px !important;
+  }
+
+  .ns h2 {
+    font-size: 24px !important;
+  }
+
+  .hh-actions .hh-btn {
+    font-size: 13px;
+    padding-inline: 8px;
+  }
+}
+
+/* ── 3. Short landscape phones (browser chrome eats the height) ─────────── */
+@media (max-width: 899px) and (max-height: 500px) and (orientation: landscape) {
+  /* The sticky cinematic stage is only a few hundred px tall here; let the
+     copy sit closer to the middle instead of being pinned near the bottom. */
+  .ns--cinematic .ns-beat--open,
+  .ns--cinematic .ns-beat--approach,
+  .ns--cinematic .ns-beat--side,
+  .ns--cinematic .ns-beat--final {
+    bottom: 24px;
+  }
+
+  .ns--cinematic h2 {
+    font-size: 22px;
+  }
+}

@@ -1,8 +1,9 @@
-import {useState} from "react";
+import {useRef, useState} from "react";
 import {Reveal} from "./motionPrimitives";
 import {useContentList} from "../hooks/useContent";
 import {adaptProgram} from "../lib/contentAdapters";
 import {submitLead} from "../lib/publicApi";
+import {leadTrackingPayload, trackAdsConversion, trackFormStart} from "../lib/analytics";
 import {useTurnstile} from "../lib/useTurnstile";
 import {hasSubmittedPhone, rememberSubmittedPhone} from "../lib/submittedPhones";
 import "./consultation-form.css";
@@ -59,9 +60,21 @@ const ConsultationForm = () => {
   const [status, setStatus] = useState("idle"); // idle | submitting | success | error
   const [message, setMessage] = useState("");
   const captcha = useTurnstile();
+  const formStarted = useRef(false);
 
   const update = (event) => {
     const {name, value} = event.target;
+
+    // intent, not a lead: fire once on the first real field edit, never on the
+    // honeypot. No PII goes into the event.
+    if (!formStarted.current && name !== "company" && String(value).trim()) {
+      formStarted.current = true;
+      trackFormStart({
+        formType: "consultation",
+        source: "home-consultation-form",
+        program: name === "program" ? value : values.program,
+      });
+    }
 
     setValues((current) => ({...current, [name]: value}));
     setErrors((current) => ({...current, [name]: undefined}));
@@ -95,6 +108,7 @@ const ConsultationForm = () => {
     try {
       const result = await submitLead({
         ...values,
+        ...leadTrackingPayload(),
         type: "consultation",
         source: "home-consultation-form",
         // Given by pressing submit under the notice in the footer.
@@ -114,9 +128,11 @@ const ConsultationForm = () => {
       }
 
       rememberSubmittedPhone(values.mobile);
+      trackAdsConversion({type: "consultation", source: "home-consultation-form"});
       setStatus("success");
       setMessage("Thanks — our admissions team will reach out to you shortly.");
       setValues(EMPTY);
+      formStarted.current = false;
     } catch {
       captcha.reset();
       // Network failure. Deliberately not a success message: a lead that

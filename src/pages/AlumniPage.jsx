@@ -9,6 +9,7 @@ import {adaptAlumniReview} from "../lib/contentAdapters";
 import {cdnImage} from "../lib/imageCdn";
 import BrandLogo from "../components/BrandLogo";
 import BrandWord from "../components/BrandWord";
+import {trackApplyNow} from "../lib/analytics";
 
 // The dome gallery renders every alumni portrait at once and drags them around in
 // 3D; the partner trail runs its own GSAP loop. Both sit well below the hero.
@@ -127,7 +128,13 @@ const AlumniPage = () => {
             <h2>Become part of the <BrandWord /> alumni story</h2>
             <p>Start a program today and join a network built on mentorship, referrals, and lifelong support</p>
             <div className="page-hero__actions">
-              <Link className="page-btn page-btn--primary" to="/enroll">Enroll Now</Link>
+              <Link
+                className="page-btn page-btn--primary"
+                to="/enroll"
+                onClick={() => trackApplyNow({source: "alumni-enroll-link", destination: "/enroll"})}
+              >
+                Enroll Now
+              </Link>
             </div>
           </Reveal>
         </div>

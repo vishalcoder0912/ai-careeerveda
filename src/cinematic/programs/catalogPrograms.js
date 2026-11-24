@@ -201,6 +201,12 @@ const COPY = {
   },
 };
 
+// Exported so the page can rebuild a program's cinematic content from the live
+// admin record instead of the build-time catalogue object below.
+export const CINEMATIC_COPY = Object.fromEntries(
+  Object.entries(COPY).map(([id, copy]) => [id, {...shared, ...copy}]),
+);
+
 export const CATALOG_CINEMATIC = Object.fromEntries(
-  Object.entries(COPY).map(([id, copy]) => [id, buildCinematicContent(id, {...shared, ...copy})]),
+  Object.entries(CINEMATIC_COPY).map(([id, copy]) => [id, buildCinematicContent(id, copy)]),
 );

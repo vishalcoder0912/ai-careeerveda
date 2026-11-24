@@ -6,6 +6,7 @@ import {
   WHATSAPP_TOOLTIP,
   buildWhatsAppUrl,
 } from "../config/whatsapp";
+import {trackWhatsAppClick} from "../lib/analytics";
 import "./whatsapp-button.css";
 
 /* The floating chat button. Lives in Layout, so it is on every route, and reads
@@ -67,6 +68,13 @@ const WhatsAppButton = () => {
       target="_blank"
       rel="noopener noreferrer"
       aria-label={WHATSAPP_ARIA_LABEL}
+      onClick={() =>
+        trackWhatsAppClick({
+          source: "floating-button",
+          program: program?.title,
+          pathname,
+        })
+      }
     >
       {WHATSAPP_TOOLTIP && (
         <span className="whatsapp-fab__tip" aria-hidden="true">{WHATSAPP_TOOLTIP}</span>

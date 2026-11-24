@@ -23,6 +23,10 @@ substitutions:
   _AR_REPO: careerveda
   _DOMAIN: careerveda.in
   _TAG: latest
+  # Number of trusted proxy hops in front of Cloud Run. Cloud Run alone is 1;
+  # if Cloudflare proxies the domain as well, deploy with _TRUST_PROXY=2 so
+  # every visitor does not share one rate-limit bucket.
+  _TRUST_PROXY: '1'
   # Public Turnstile site key, baked into the frontend build. Required: the
   # backend refuses public form submissions without a valid token.
   _TURNSTILE_SITE_KEY: ''
@@ -153,7 +157,8 @@ steps:
           --set-env-vars="^@^NODE_ENV=production@MONGODB_DB_NAME=careerveda\
         @FRONTEND_URL=https://${_DOMAIN}@ADMIN_URL=https://admin.${_DOMAIN}\
         @CORS_ALLOWED_ORIGINS=https://${_DOMAIN},https://admin.${_DOMAIN}\
-        @COOKIE_SECURE=true@COOKIE_DOMAIN=.${_DOMAIN}@LOG_LEVEL=info"
+        @COOKIE_SECURE=true@COOKIE_DOMAIN=.${_DOMAIN}@LOG_LEVEL=info\
+        @TRUST_PROXY=${_TRUST_PROXY}"
     waitFor: [push-backend]
 
   # Static nginx images: no secrets, no env vars — the API URL is already baked in.

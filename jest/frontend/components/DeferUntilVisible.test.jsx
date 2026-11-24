@@ -11,8 +11,8 @@
 // stub (which reports everything visible immediately) — "not near" is the state
 // this component exists to enforce, so the test drives the observer explicitly.
 
-import {describe, it, expect, beforeEach} from "@jest/globals";
-import {render} from "@testing-library/react";
+import {afterEach, describe, it, expect, beforeEach} from "@jest/globals";
+import {act, render} from "@testing-library/react";
 
 import DeferUntilVisible from "../../../src/components/DeferUntilVisible";
 
@@ -39,6 +39,10 @@ const Heavy = () => <p>heavy content</p>;
 beforeEach(() => {
   isIntersecting = false;
   globalThis.IntersectionObserver = ObserverMock;
+});
+
+afterEach(() => {
+  window.history.replaceState(null, "", "/");
 });
 
 describe("DeferUntilVisible", () => {
@@ -75,6 +79,23 @@ describe("DeferUntilVisible", () => {
     const {container} = render(<DeferUntilVisible />);
 
     expect(container.firstChild.style.minHeight).toBe("");
+  });
+
+  it("keeps the deep-link listener working when the hash has a malformed escape", () => {
+    // decodeURIComponent("#100%off") throws URIError. The listener must still
+    // run its "id not mounted yet" branch and reveal deferred sections.
+    window.history.replaceState(null, "", "/#100%off");
+    const {container} = render(
+      <DeferUntilVisible>
+        <Heavy />
+      </DeferUntilVisible>,
+    );
+
+    act(() => {
+      window.dispatchEvent(new Event("hashchange"));
+    });
+
+    expect(container.textContent).toContain("heavy content");
   });
 
   it("passes the className through to the wrapping placeholder", () => {

@@ -128,6 +128,11 @@ const ResetPasswordDialog = ({account, onClose, onReset}) => {
         name: response.data.name,
         password: newPassword,
       });
+      // The plaintext is now held only in `result`, which is rendered once and
+      // discarded when the dialog closes. Drop the editable copies immediately.
+      setNewPassword("");
+      setConfirmPassword("");
+      setShowPassword(false);
       toast.success(`Password reset for ${account.email}.`);
       onReset();
     } catch (failure) {

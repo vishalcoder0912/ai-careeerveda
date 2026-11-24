@@ -198,6 +198,7 @@ describe("page_view reporting", () => {
 
   beforeEach(() => {
     window.gtag = vi.fn();
+    window.dataLayer = [];
   });
 
   const lastEvent = () => window.gtag.mock.calls.at(-1);
@@ -229,6 +230,18 @@ describe("page_view reporting", () => {
     applySeo(FULL);
 
     expect(lastEvent()[2].page_path).toBe("/enroll?utm_source=linkedin");
+  });
+
+  it("pushes a GTM-consumable event alongside the GA4 page view", () => {
+    go("/programs/data-analytics");
+    applySeo(FULL);
+
+    expect(window.dataLayer).toContainEqual({
+      event: "cv_page_view",
+      page_path: "/programs/data-analytics",
+      page_title: FULL.title,
+      page_location: window.location.href,
+    });
   });
 
   it("stays silent when the tag was blocked or never loaded", () => {

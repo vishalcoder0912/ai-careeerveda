@@ -11,13 +11,13 @@ export const loadContactPage = () => import("../pages/ContactPage");
 export const loadAlumniPage = () => import("../pages/AlumniPage");
 export const loadEnrollPage = () => import("../pages/EnrollPage");
 export const loadPolicyPage = () => import("../pages/PolicyPage");
-export const loadGenerativeAIPage = () => import("../cinematic/GenerativeAIPage");
+export const loadGenAiProgramPage = () => import("../cinematic/GenAiProgramPage");
 export const loadCinematicProgramPage = () => import("../cinematic/CinematicProgramPage");
 
 // Programs rendered through the cinematic template (CinematicProgramPage)
 // rather than the standard program page. App.jsx gives each one its own route.
 // Every catalogue program except gen-ai-agentic-ai, which has its own route
-// (GenerativeAIPage). Plain ids: this module is in the entry chunk and must
+// (GenAiProgramPage). Plain ids: this module is in the entry chunk and must
 // not import the page content. CinematicProgramPage.test.js checks the two
 // lists agree.
 export const CINEMATIC_PROGRAMS = [
@@ -44,7 +44,7 @@ const EXACT_ROUTES = {
   "/contact": loadContactPage,
   "/alumni": loadAlumniPage,
   "/enroll": loadEnrollPage,
-  "/generative-ai": loadGenerativeAIPage, // cinematic landing page
+  "/generative-ai": loadGenAiProgramPage, // cinematic landing page, now admin-driven
   "/privacy-policy": loadPolicyPage,
   "/refund-policy": loadPolicyPage,
   "/terms": loadPolicyPage,
@@ -54,10 +54,9 @@ const EXACT_ROUTES = {
 /** The loader for a pathname, or null when the path has no chunk of its own. */
 export const loaderForPath = (pathname) => {
   if (EXACT_ROUTES[pathname]) return EXACT_ROUTES[pathname];
-  // The Gen AI & Agentic AI flagship renders the cinematic landing on both of
-  // its URLs (/generative-ai and /programs/gen-ai-agentic-ai), so this slug
-  // keeps the cinematic chunk instead of the detail-page one.
-  if (/^\/programs\/gen-ai-agentic-ai\/?(?:[?#].*)?$/.test(pathname)) return loadGenerativeAIPage;
+  // The Gen AI & Agentic AI flagship renders the admin-driven cinematic landing
+  // on both of its URLs, so this slug keeps that chunk instead of the detail one.
+  if (/^\/programs\/gen-ai-agentic-ai\/?(?:[?#].*)?$/.test(pathname)) return loadGenAiProgramPage;
   const slug = pathname.match(/^\/programs\/([^/?#]+)\/?(?:[?#].*)?$/)?.[1];
   if (slug && CINEMATIC_PROGRAMS.includes(slug)) return loadCinematicProgramPage;
   // /programs/:slug — one chunk shared by every program page.

@@ -1,10 +1,10 @@
 import {useEffect, useRef} from "react";
-import {reducedMotionNow} from "../fx/registry";
+import {gsap} from "gsap";
 import {createPinnedScrub} from "../fx/pinned";
 import {Lines, useCinematic} from "../content";
 import {SectionLabel} from "./Atmosphere";
 
-const MQ_DESKTOP = "(min-width: 900px)";
+const MQ_DESKTOP = "(min-width: 900px) and (prefers-reduced-motion: no-preference)";
 
 export const TimelineSection = () => {
   const {timeline} = useCinematic();
@@ -24,85 +24,100 @@ export const TimelineSection = () => {
     const caption = captionRef.current;
     if (!section || !pin || !row || !stage) return undefined;
 
-    const desktop = window.matchMedia(MQ_DESKTOP).matches;
-    const reduced = reducedMotionNow();
+    const mm = gsap.matchMedia();
 
-    if (!desktop || reduced) return undefined;
+    mm.add(MQ_DESKTOP, () => {
+      let measure = {cardW: 340, gap: 140, center: 1, stageW: 0};
+      let lastStage = -1;
 
-    let measure = {cardW: 340, gap: 140, center: 1, stageW: 0};
-    let cleanup = null;
-    let lastStage = -1;
-
-    const measureLayout = () => {
-      const first = cardEls.current[0];
-      const second = cardEls.current[1] || first;
-      if (first && stage) {
-        const fw = first.getBoundingClientRect().width;
-        const gap = second
-          ? second.getBoundingClientRect().left - first.getBoundingClientRect().right
-          : 140;
-        measure = {
-          cardW: fw,
-          gap: gap || 140,
-          center: stage.clientWidth / 2,
-          stageW: stage.clientWidth,
-        };
-      }
-    };
-
-    const cardTargetX = (i) =>
-      measure.center - (i * (measure.cardW + measure.gap) + measure.cardW / 2);
-
-    const setCardState = (idx) => {
-      cardEls.current.forEach((el, i) => {
-        const dist = Math.abs(i - idx);
-        el.classList.toggle("ga-on", dist === 0);
-        el.classList.toggle("ga-near", dist === 1);
-        el.classList.toggle("ga-far", dist > 1);
-        const delay = el.querySelector(".ga-tl-card-reveal");
-        if (delay) delay.style.transitionDelay = dist === 0 ? "80ms" : "0ms";
-      });
-      if (caption) {
-        const active = caption.querySelector(".ga-tl-caption-active");
-        const frame = active && active.querySelectorAll(".ga-tl-caption-frame")[idx];
-        const prev = active && active.querySelector(".ga-tl-frame-on");
-        if (prev && prev !== frame) prev.classList.remove("ga-tl-frame-on");
-        if (frame) frame.classList.add("ga-tl-frame-on");
-      }
-    };
-
-    measureLayout();
-    setCardState(0);
-
-    cleanup = createPinnedScrub({
-      section,
-      pinEl: pin,
-      end: "+=320%",
-      scrub: 1.2,
-      onUpdate: (proxy) => {
-        const n = timelineData.length;
-        const pos = proxy.p * (n - 1);
-        const i = Math.min(n - 2, Math.max(0, Math.floor(pos)));
-        const frac = pos - i;
-        const x = cardTargetX(i) + frac * (cardTargetX(i + 1) - cardTargetX(i));
-        row.style.transform = `translate3d(${x.toFixed(2)}px, -50%, 0)`;
-
-        const stageIdx = Math.round(pos);
-        if (stageIdx !== lastStage) {
-          lastStage = stageIdx;
-          setCardState(stageIdx);
+      const measureLayout = () => {
+        const first = cardEls.current[0];
+        const second = cardEls.current[1] || first;
+        if (first && stage) {
+          const fw = first.getBoundingClientRect().width;
+          const gap = second
+            ? second.getBoundingClientRect().left - first.getBoundingClientRect().right
+            : 140;
+          measure = {
+            cardW: fw,
+            gap: gap || 140,
+            center: stage.clientWidth / 2,
+            stageW: stage.clientWidth,
+          };
         }
-      },
+      };
+
+      const cardTargetX = (i) =>
+        measure.center - (i * (measure.cardW + measure.gap) + measure.cardW / 2);
+
+      const setCardState = (idx) => {
+        cardEls.current.forEach((el, i) => {
+          const dist = Math.abs(i - idx);
+          el.classList.toggle("ga-on", dist === 0);
+          el.classList.toggle("ga-near", dist === 1);
+          el.classList.toggle("ga-far", dist > 1);
+          const delay = el.querySelector(".ga-tl-card-reveal");
+          if (delay) delay.style.transitionDelay = dist === 0 ? "80ms" : "0ms";
+        });
+        if (caption) {
+          const active = caption.querySelector(".ga-tl-caption-active");
+          const frame = active && active.querySelectorAll(".ga-tl-caption-frame")[idx];
+          const prev = active && active.querySelector(".ga-tl-frame-on");
+          if (prev && prev !== frame) prev.classList.remove("ga-tl-frame-on");
+          if (frame) frame.classList.add("ga-tl-frame-on");
+        }
+      };
+
+      measureLayout();
+      setCardState(0);
+
+      const cleanup = createPinnedScrub({
+        section,
+        pinEl: pin,
+        end: "+=320%",
+        scrub: 1.2,
+        onUpdate: (proxy) => {
+          const n = timelineData.length;
+          const pos = proxy.p * (n - 1);
+          const i = Math.min(n - 2, Math.max(0, Math.floor(pos)));
+          const frac = pos - i;
+          const x = cardTargetX(i) + frac * (cardTargetX(i + 1) - cardTargetX(i));
+          row.style.transform = `translate3d(${x.toFixed(2)}px, -50%, 0)`;
+
+          const stageIdx = Math.round(pos);
+          if (stageIdx !== lastStage) {
+            lastStage = stageIdx;
+            setCardState(stageIdx);
+          }
+        },
+      });
+
+      const onResize = () => {
+        measureLayout();
+      };
+      window.addEventListener("resize", onResize);
+
+      /* The row transform and the card/caption classes are written directly to
+         the DOM, so the matchMedia context cannot revert them for us. */
+      return () => {
+        window.removeEventListener("resize", onResize);
+        cleanup();
+        row.style.removeProperty("transform");
+        cardEls.current.forEach((el) => {
+          if (!el) return;
+          el.classList.remove("ga-on", "ga-near", "ga-far");
+          const delay = el.querySelector(".ga-tl-card-reveal");
+          if (delay) delay.style.removeProperty("transitionDelay");
+        });
+        if (caption) {
+          caption.querySelectorAll(".ga-tl-frame-on").forEach((frame) => {
+            frame.classList.remove("ga-tl-frame-on");
+          });
+        }
+      };
     });
 
-    const onResize = () => {
-      measureLayout();
-    };
-    window.addEventListener("resize", onResize);
-    return () => {
-      window.removeEventListener("resize", onResize);
-      if (cleanup) cleanup();
-    };
+    return () => mm.revert();
   }, [timelineData]);
 
   return (
@@ -150,7 +165,6 @@ export const TimelineSection = () => {
                 </span>
               ))}
             </div>
-            <span className="ga-tl-caption-hint">scroll to advance the timeline</span>
           </div>
         </div>
 

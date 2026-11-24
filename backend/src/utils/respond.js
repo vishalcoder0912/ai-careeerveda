@@ -20,12 +20,16 @@ export const created = (response, data, meta = {}) =>
 
 // `page`/`limit`/`total` travel in meta rather than alongside the records, so
 // `data` is always just the array and never needs shape-sniffing.
-export const paginated = (response, items, {page, limit, total}) =>
+export const paginated = (response, items, {page, limit, total, ...meta}) =>
   response.json({
     success: true,
     data: items,
     meta: {
       requestId: response.locals.requestId,
+      // Callers may attach extra aggregates (e.g. the job-application status
+      // breakdown). They belong beside pagination in meta, not in `data` —
+      // dropping them here made the admin KPI tiles read zero for every status.
+      ...meta,
       page,
       limit,
       total,

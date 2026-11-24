@@ -18,7 +18,12 @@
     transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.cv-reveal.is-in-view {
+/* `data-in-view` is set by motionPrimitives.jsx the moment the element is
+   attached (above the fold) or observed. A data attribute rather than a class
+   because React owns `className`: a re-render that changes it would drop a
+   class it did not put there, while it never touches an attribute it does not
+   render. */
+.cv-reveal[data-in-view] {
   opacity: 1;
   transform: none;
 }
@@ -36,7 +41,10 @@
   transition-delay: var(--cv-delay, 0s);
 }
 
-.cv-stagger-item.is-in-view {
+/* The group carries the flag, so one attribute change starts every child's
+   transition at its own `--cv-delay`. Before this, the group held the entered
+   state in React and re-rendered all of its children to add a per-item class. */
+.cv-stagger-group[data-in-view] .cv-stagger-item {
   opacity: 1;
   transform: none;
 }
@@ -73,6 +81,57 @@
 
 .cv-page-hero-item {
   animation: cv-hero-enter 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Above-the-fold content is revealed instantly (see revealInstantly in
+   motionPrimitives.jsx) so the headline is not held back by a fade. That also
+   means the CSS transition never runs, so the copy appears as a single pop.
+   Play the same entrance as a keyframe animation instead: `data-in-view` lands
+   before first paint, so the animation's first frame is the hidden state and
+   it rises into place. `backwards` (not `both`) holds the start state during
+   the stagger delay and hands the end state back to the normal rules once the
+   animation finishes, so hover transforms keep working afterwards. Runs at
+   every width — an 873px tablet is just as above-the-fold as a 393px phone. */
+@media (prefers-reduced-motion: no-preference) {
+  .cv-reveal[data-in-view] {
+    animation: cv-reveal-in 0.9s cubic-bezier(0.25, 0.8, 0.25, 1) backwards;
+  }
+
+  .cv-stagger-group[data-in-view] .cv-stagger-item {
+    animation: cv-stagger-in 0.9s cubic-bezier(0.25, 0.8, 0.25, 1) var(--cv-delay, 0s) backwards;
+  }
+
+  /* Boot-time, above-fold content has already been painted in the snapshot and
+     must stay visible on the very next frame. A keyframe entrance here starts
+     at opacity 0, so the page's LCP text is hidden again for up to 0.9s while
+     React re-renders over that snapshot. The transition is suppressed inline by
+     revealInstantly; the animation is cancelled here by the "instant" value. */
+  .cv-reveal[data-in-view="instant"],
+  .cv-stagger-group[data-in-view="instant"] .cv-stagger-item {
+    animation: none;
+  }
+}
+
+@keyframes cv-reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(44px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes cv-stagger-in {
+  from {
+    opacity: 0;
+    transform: translateY(56px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

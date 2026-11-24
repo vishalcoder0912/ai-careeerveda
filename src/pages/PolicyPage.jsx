@@ -1,9 +1,9 @@
 import {useEffect, useState} from "react";
 import {Navigate, useParams} from "react-router-dom";
 import {PageHero} from "../components/PageShell";
-import {policies as staticPolicies} from "../data/policies";
 import {useContentMap} from "../hooks/useContent";
 import {adaptPolicyMap} from "../lib/contentAdapters";
+import "../components/page-shell.css";
 
 const PolicyToc = ({sections}) => {
   const [active, setActive] = useState(sections[0]?.id);
@@ -44,28 +44,25 @@ const PolicyPage = ({slug: slugProp}) => {
   const params = useParams();
   const slug = slugProp || params.slug;
 
-  // The public endpoint refuses anything not published, so the draft rule this
-  // page enforces below is also enforced server-side: an unfinished policy is
-  // simply absent from the API's answer and this falls through to the redirect.
+  // Policy pages are admin-managed content. Do not fall back to bundled static
+  // copies, otherwise edits made in the admin panel (e.g. refund terms) can be
+  // hidden by stale build-time data.
   const {map: policies, isLoading} = useContentMap("policies", {
-    fallback: staticPolicies,
+    fallback: {},
     toMap: adaptPolicyMap,
   });
 
   const policy = policies[slug];
 
-  // A policy that exists only in the database is absent from the static map, so
-  // redirecting on that absence would bounce every admin-created policy before
-  // the list arrived. Wait for an answer before deciding the URL is unknown.
+  // Wait for the backend answer before deciding the URL is unknown/unavailable.
+  // If the API is unreachable, this will settle without live data and we must not
+  // render a stale static policy.
   if (!policy && isLoading) {
     return <main className="spline-page page-shell" aria-busy="true" />;
   }
 
-  // A draft policy is treated exactly like a policy that does not exist, because to
-  // a visitor it doesn't: the alternative is serving them "[PLACEHOLDER] State the
-  // number of days within which refunds must be requested" as though it were the
-  // refund terms they are bound by. The guard is here rather than in the router so
-  // it holds however the URL is reached — a link, a bookmark, a search result.
+  // A draft, deleted, unpublished, or unavailable policy is treated as not
+  // public-facing content.
   if (!policy || policy.draft) return <Navigate to="/" replace />;
 
   // Terms of Use puts its dates in the hero tiles, and the meta line under the first

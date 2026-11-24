@@ -1,15 +1,4 @@
-﻿/* Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
-   CINEMATIC Ã¢â‚¬â€ PG PROGRAM IN GENERATIVE AI & AGENTIC AI
-   Premium dark editorial experience. Everything is scoped under .ga-page so it
-   can never bleed into the rest of the site.
-   Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â */
-
-/* Readable-text floor for phones and tablets. The page's mono labels, chips and
-   kickers are sized 0.5–0.66rem (8–10.5px) for the desktop composition; every
-   one of those declarations is written max(var(--ga-fs-floor, 0px), …), so on
-   desktop the floor is 0 and nothing changes, and below 900px none of them
-   renders under 11px. */
-@media (max-width: 900px) {
+﻿@media (max-width: 900px) {
   .ga-page {
     --ga-fs-floor: 11px;
   }
@@ -73,16 +62,10 @@
   color: #ffffff;
 }
 
-/* The native cursor is hidden ONLY while the custom dot + ring are mounted, and
-   only inside .ga-page. The class lives on <html> (a client-side navigation away
-   from this page can be aborted before its cleanup runs), so scoping it to the
-   page guarantees the arrow can never disappear site-wide. */
 .ga-page.ga-cursor-active,
 .ga-page.ga-cursor-active * {
   cursor: none !important;
 }
-
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Shared editorial type Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
 
 .ga-display {
   font-family: var(--ga-serif);
@@ -141,7 +124,6 @@
   color: var(--ga-gold);
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Buttons Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
 
 .ga-btn {
   --btn-pad: 0.95rem 1.6rem;
@@ -815,7 +797,10 @@
   transform: translate3d(0, -50%, 0);
   display: flex;
   align-items: stretch;
-  gap: 3.4rem;
+  /* Give the modules room to breathe. The active card scales up, so a tight
+     gap makes neighbouring cards look like they are collapsing together. The
+     scrub measures this gap from the DOM, so the scroll math follows it. */
+  gap: clamp(4.2rem, 5vw, 5.6rem);
   will-change: transform;
   padding: 1.6rem clamp(1.2rem, 4vw, 3.5rem);
 }
@@ -3931,7 +3916,10 @@
     0 30px 80px -30px rgba(0, 0, 0, 0.6),
     inset 0 1px 0 rgba(255, 196, 107, 0.06);
   will-change: transform;
-  transition: box-shadow 0.6s var(--ga-ease), border-color 0.6s var(--ga-ease);
+  transition:
+    transform 0.45s var(--ga-ease),
+    box-shadow 0.6s var(--ga-ease),
+    border-color 0.6s var(--ga-ease);
 }
 
 .ga-gallery-card:hover .ga-gallery-card-inner {
@@ -3967,104 +3955,6 @@
 .ga-gallery-accent--brass {
   --ga-acc: #bc9d5f;
   --ga-acc-soft: rgba(188, 157, 95, 0.55);
-}
-
-/* ── Mini application screen (real stacks, real descriptions) ── */
-.ga-gallery-screen {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border-radius: 10px;
-  border: 1px solid rgba(225, 174, 104, 0.16);
-  background: rgba(7, 6, 4, 0.72);
-  aspect-ratio: 1.6 / 1;
-}
-
-.ga-gallery-screen-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.45rem 0.6rem;
-  border-bottom: 1px solid rgba(225, 174, 104, 0.12);
-  background: linear-gradient(180deg, rgba(225, 174, 104, 0.07), rgba(7, 6, 4, 0));
-}
-
-.ga-gallery-screen-dots {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.26rem;
-}
-
-.ga-gallery-screen-dots i {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: rgba(240, 169, 63, 0.55);
-}
-
-.ga-gallery-screen-dots i:nth-child(2) {
-  background: rgba(240, 169, 63, 0.26);
-}
-
-.ga-gallery-screen-dots i:nth-child(3) {
-  background: rgba(240, 169, 63, 0.4);
-}
-
-.ga-gallery-screen-route {
-  flex: 1;
-  min-width: 0;
-  font-family: var(--ga-mono);
-  font-size: max(var(--ga-fs-floor, 0px), clamp(0.48rem, 0.52vw, 0.58rem));
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  text-align: right;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: var(--ga-ink-3);
-}
-
-.ga-gallery-screen-body {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
-  justify-content: center;
-  gap: 0.42rem;
-  padding: clamp(0.6rem, 1vw, 1rem) clamp(0.8rem, 1.3vw, 1.4rem);
-}
-
-.ga-gallery-screen-kicker {
-  font-family: var(--ga-mono);
-  font-size: max(var(--ga-fs-floor, 0px), clamp(0.52rem, 0.6vw, 0.66rem));
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--ga-acc, var(--ga-gold));
-}
-
-.ga-gallery-screen-desc {
-  font-size: clamp(0.78rem, 0.9vw, 1rem);
-  line-height: 1.45;
-  color: var(--ga-ink-2);
-}
-
-.ga-gallery-screen-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.32rem;
-}
-
-.ga-gallery-screen-chips em {
-  font-family: var(--ga-mono);
-  font-style: normal;
-  font-size: max(var(--ga-fs-floor, 0px), clamp(0.48rem, 0.52vw, 0.58rem));
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 0.22rem 0.5rem;
-  border-radius: 999px;
-  border: 1px solid rgba(225, 174, 104, 0.26);
-  background: rgba(225, 174, 104, 0.08);
-  color: var(--ga-gold-bright);
 }
 
 /* ── Card headline ── */
@@ -4177,20 +4067,6 @@
   font-size: clamp(1.5rem, 1.9vw, 2.1rem);
 }
 
-[data-state="active"] .ga-gallery-screen-desc {
-  font-size: clamp(0.95rem, 1.08vw, 1.16rem);
-  color: var(--ga-ink);
-}
-
-[data-state="active"] .ga-gallery-screen-kicker {
-  font-size: max(var(--ga-fs-floor, 0px), clamp(0.62rem, 0.72vw, 0.8rem));
-}
-
-[data-state="active"] .ga-gallery-screen-chips em {
-  font-size: max(var(--ga-fs-floor, 0px), clamp(0.58rem, 0.64vw, 0.72rem));
-  padding: 0.3rem 0.72rem;
-}
-
 [data-state="active"] .ga-gallery-num {
   font-size: max(var(--ga-fs-floor, 0px), clamp(0.68rem, 0.76vw, 0.84rem));
 }
@@ -4212,20 +4088,12 @@
   font-size: clamp(1.1rem, 1.28vw, 1.46rem);
 }
 
-[data-state="front"] .ga-gallery-screen-desc {
-  font-size: clamp(0.82rem, 0.94vw, 1.04rem);
-}
-
 [data-state="mid"] .ga-gallery-card-inner {
   box-shadow: 0 28px 62px -28px rgba(0, 0, 0, 0.58);
 }
 
 [data-state="mid"] .ga-gallery-headline h3 {
   font-size: clamp(0.98rem, 1.08vw, 1.2rem);
-}
-
-[data-state="mid"] .ga-gallery-screen-desc {
-  font-size: clamp(0.78rem, 0.88vw, 0.98rem);
 }
 
 [data-state="mid"] .ga-gallery-cta,
@@ -4240,11 +4108,6 @@
 [data-state="back"] .ga-gallery-headline h3 {
   font-size: clamp(0.92rem, 1vw, 1.12rem);
   color: rgba(244, 239, 230, 0.85);
-}
-
-[data-state="back"] .ga-gallery-screen-desc,
-[data-state="back"] .ga-gallery-screen-chips {
-  display: none;
 }
 
 /* ── Active-project floor reflection ── */
@@ -4485,15 +4348,6 @@ body.ga-gallery-active .ga-burger {
     font-size: 1.35rem;
   }
 
-  [data-state="active"] .ga-gallery-screen-desc {
-    font-size: 1rem;
-    color: var(--ga-ink);
-  }
-
-  .ga-gallery-screen-desc {
-    font-size: 0.88rem;
-  }
-
   [data-state="front"] .ga-gallery-headline h3 {
     font-size: 1.1rem;
   }
@@ -4508,7 +4362,7 @@ body.ga-gallery-active .ga-burger {
 }
 
 @media (max-width: 560px) {
-  /* Projects → swipe carousel. Eight stacked laptop cards were ~2,800px of
+  /* Projects → swipe carousel. Eight stacked terminal cards were ~2,800px of
      scrolling on a phone; one card at a time with the next peeking in reads as
      a set, and native scroll-snap does the swiping (no JS, no library). */
   .ga-page .ga-gallery-list {
@@ -4542,10 +4396,6 @@ body.ga-gallery-active .ga-burger {
      of all jumping font size together. */
   .ga-page .ga-gallery-list [data-state] .ga-gallery-headline h3 {
     font-size: 1.15rem;
-  }
-
-  .ga-page .ga-gallery-list [data-state] .ga-gallery-screen-desc {
-    font-size: 0.9rem;
   }
 }
 

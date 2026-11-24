@@ -817,6 +817,119 @@
   }
 }
 
+/* ── Extra-small mobile (<= 420px) refinements ──
+   Covers common small phones (iPhone SE, Pixel 4a, etc.) where even 480px
+   styles can feel cramped. Tighter padding, smaller headings, and stacked
+   everything. */
+@media (max-width: 420px) {
+  body .brand {
+    font-size: 14px !important;
+  }
+
+  body .brand .brand-mark {
+    height: 36px !important;
+    max-width: 140px !important;
+  }
+
+  body .hero-layout {
+    width: calc(100% - 2 * var(--site-gutter, 16px)) !important;
+  }
+
+  body .hero-headline {
+    font-size: clamp(22px, 9vw, 28px) !important;
+  }
+
+  body .stat-strip {
+    width: min(100% - 16px, 420px) !important;
+  }
+
+  body .stat-strip div {
+    padding: 8px 10px !important;
+  }
+
+  body .stat-strip strong {
+    font-size: clamp(16px, 5vw, 20px) !important;
+  }
+
+  .section-block,
+  .partner-band,
+  .consultation-section,
+  .faq-section,
+  .site-footer,
+  .legal-body {
+    padding-inline: 14px;
+  }
+
+  .section-heading :is(h1, h2) {
+    font-size: clamp(20px, 8vw, 26px) !important;
+  }
+
+  .legal-stats {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+    max-width: none !important;
+  }
+
+  .legal-stat {
+    padding: 12px 14px;
+  }
+
+  .legal-stat strong {
+    font-size: clamp(16px, 6vw, 20px);
+  }
+
+  .legal-stat span {
+    font-size: 12.5px;
+  }
+
+  .legal-article h2 {
+    font-size: 18px;
+  }
+
+  .legal-article p,
+  .legal-article li {
+    font-size: 14px;
+  }
+
+  .legal-toc {
+    padding: 16px;
+  }
+
+  .legal-toc-links a span {
+    font-size: 10px;
+  }
+
+  .consultation-section {
+    flex-direction: column !important;
+    gap: 20px !important;
+  }
+
+  .consultation-form {
+    min-width: auto !important;
+    flex: none !important;
+    width: 100% !important;
+  }
+
+  .consultation-copy {
+    flex: none !important;
+    width: 100% !important;
+  }
+
+  .site-nav .nav-container {
+    padding-inline: 14px !important;
+  }
+
+  .nav-cta {
+    padding: 10px 14px !important;
+    font-size: 14px !important;
+  }
+
+  .hamburger-line {
+    width: 24px !important;
+    height: 2px !important;
+  }
+}
+
 /* ── Tablet refinements (768px - 1024px) ── */
 @media (min-width: 769px) and (max-width: 1024px) {
   .section-heading {
@@ -1167,6 +1280,76 @@
    The seven badges (Personalized Learning, Expert Mentorship, …) are a desktop
    device: they ring the robot in the space its grid column leaves around it. In
    the band below the stat strip there is no such space, so they land on top of
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    the robot and read as text scattered over it.
 
    Hiding the container rather than the badges: one rule instead of fighting the

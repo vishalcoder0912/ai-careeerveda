@@ -94,6 +94,11 @@ const programSchema = new mongoose.Schema(
     mentors: [{type: mongoose.Schema.Types.ObjectId, ref: "Faculty"}],
     relatedPrograms: [{type: mongoose.Schema.Types.ObjectId, ref: "Program"}],
     brochureUrl: {type: String, default: "", maxlength: 1000},
+
+    // Editable copy for the cinematic landing page. Zod owns the shape (see
+    // validators/content.validators.js); the whole object is assigned on save,
+    // so Mixed is safe here and avoids duplicating a 15-section schema here.
+    cinematic: {type: mongoose.Schema.Types.Mixed, default: () => ({})},
   },
   {timestamps: true},
 );

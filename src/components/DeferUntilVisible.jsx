@@ -16,6 +16,18 @@ import {Suspense, useEffect, useRef, useState} from "react";
    The visibility check is an IntersectionObserver rather than framer-motion's
    useInView: this wrapper's only dependency was that hook, and one API call is
    not worth the animation library in the entry chunk. */
+// A bad percent escape in the URL (`#100%off`) makes decodeURIComponent throw
+// URIError. In a hash listener that would abort the deep-link lookup entirely,
+// so fall back to the literal fragment — it is still a valid element id.
+const decodeHashId = () => {
+  const hash = window.location.hash.slice(1);
+  try {
+    return decodeURIComponent(hash);
+  } catch {
+    return hash;
+  }
+};
+
 const DeferUntilVisible = ({children, minHeight = 0, margin = "300px", className}) => {
   const ref = useRef(null);
   const [isNear, setIsNear] = useState(false);
@@ -37,7 +49,33 @@ const DeferUntilVisible = ({children, minHeight = 0, margin = "300px", className
       {rootMargin: margin},
     );
     observer.observe(el);
-    return () => observer.disconnect();
+
+    // A deep link can point into a deferred section that is nowhere near the
+    // viewport. The hash scroller broadcasts a request; if the requested id is
+    // not in the DOM at all it must belong to an unmounted wrapper, so every
+    // wrapper mounts and whichever owns the target reveals it. Once the target
+    // exists, only its owning wrapper reacts.
+    const mountForHash = (event) => {
+      const id = event?.detail?.id || decodeHashId();
+      if (!id) return;
+      const target = document.getElementById(id);
+      if (!target) {
+        setIsNear(true);
+        return;
+      }
+      if (el.contains(target)) {
+        setIsNear(true);
+        window.dispatchEvent(new CustomEvent("cv:hash-target-mounted", {detail: {id}}));
+      }
+    };
+    window.addEventListener("hashchange", mountForHash);
+    window.addEventListener("cv:hash-target-request", mountForHash);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("hashchange", mountForHash);
+      window.removeEventListener("cv:hash-target-request", mountForHash);
+    };
   }, [margin]);
 
   // The placeholder height lasts only until the chunk arrives, so a section

@@ -1,11 +1,14 @@
 import {useEffect, useRef} from "react";
+import {gsap} from "gsap";
 import {ScrollTrigger} from "gsap/ScrollTrigger";
 import {createPinnedScrub} from "../fx/pinned";
-import {reducedMotionNow} from "../fx/registry";
 import {useCinematic} from "../content";
 import {SectionLabel} from "./Atmosphere";
+import ProjectTerminal from "./ProjectTerminal";
 
-const MQ_DESKTOP = "(min-width: 900px)";
+const MQ_MOBILE = "(max-width: 899px) and (prefers-reduced-motion: no-preference)";
+const MQ_DESKTOP = "(min-width: 900px) and (prefers-reduced-motion: no-preference)";
+const MQ_DESKTOP_STILL = "(min-width: 900px) and (prefers-reduced-motion: reduce)";
 
 /* The gallery is composed for exactly eight builds — eight slots, one scroll
    order. Every program's projects.items therefore lists eight; each item's
@@ -57,38 +60,7 @@ const GalleryCard = ({project, index, state, category}) => {
       data-state={state}
       data-cursor
     >
-      <span className="ga-gallery-lid" aria-hidden="true" />
-      <div className="ga-gallery-laptop">
-        <div className="ga-gallery-screen">
-          <div className="ga-gallery-screen-bar">
-            <span className="ga-gallery-screen-dots" aria-hidden="true">
-              <i />
-              <i />
-              <i />
-            </span>
-            <span className="ga-gallery-screen-route">{num} · {project.accent}</span>
-          </div>
-          <div className="ga-gallery-screen-body">
-            <span className="ga-gallery-screen-prompt" aria-hidden="true">
-              <i>~/</i>
-              <i>run</i>
-              <i>--project</i>
-              <i>{num.toLowerCase()}</i>
-            </span>
-            <span className="ga-gallery-screen-kicker">{category}</span>
-            <span className="ga-gallery-screen-desc">{project.description}</span>
-            <span className="ga-gallery-screen-chips">
-              {project.stack.map((t) => (
-                <em key={t}>{t}</em>
-              ))}
-            </span>
-            <span className="ga-gallery-screen-caret" aria-hidden="true" />
-          </div>
-        </div>
-        <span className="ga-gallery-laptop-base" aria-hidden="true">
-          <i />
-        </span>
-      </div>
+      <ProjectTerminal project={project} index={index} category={category} />
       <div className="ga-gallery-headline">
         <span className="ga-gallery-num">{num}</span>
         <h3>{project.name}</h3>
@@ -117,12 +89,26 @@ export const ProjectsSection = () => {
     const section = sectionRef.current;
     const stage = stageRef.current;
     if (!section || !stage) return undefined;
-    const reduced = reducedMotionNow();
+
+    /* The fixed cinematic navbar sits above this dark room. While the room is
+       on screen, give it the room's surface so the scene stays continuous. */
+    const watchSection = () => {
+      const io = new IntersectionObserver((entries) => {
+        document.body.classList.toggle("ga-gallery-active", entries[0].isIntersecting);
+      });
+      io.observe(section);
+      return () => {
+        io.disconnect();
+        document.body.classList.remove("ga-gallery-active");
+      };
+    };
+
+    const mm = gsap.matchMedia();
 
     /* Mobile list: the row crossing mid-screen becomes the lit "hero". */
-    if (!window.matchMedia(MQ_DESKTOP).matches) {
+    mm.add(MQ_MOBILE, () => {
       const rows = Array.from(listRef.current?.children || []);
-      if (reduced || !rows.length) return undefined;
+      if (!rows.length) return undefined;
       const sts = rows.map((row) =>
         ScrollTrigger.create({
           trigger: row,
@@ -136,16 +122,22 @@ export const ProjectsSection = () => {
       rows.forEach((row) => {
         row.dataset.state = "front";
       });
-      return () => sts.forEach((st) => st.kill());
-    }
+      return () => {
+        sts.forEach((st) => st.kill());
+        rows.forEach((row) => {
+          row.dataset.state = row.classList.contains("ga-gallery-row--hero") ? "active" : "front";
+        });
+      };
+    });
 
+    /* Desktop layout and paint are shared by the scrubbed and still modes;
+       only the pinned/looping parts are gated by the motion media query. */
     let W = 0;
     let H = 0;
     const measure = () => {
       W = stage.clientWidth;
       H = stage.clientHeight;
     };
-    measure();
 
     const boot = {p: 0};
     const mouse = {x: 0, y: 0, tx: 0, ty: 0};
@@ -210,44 +202,56 @@ export const ProjectsSection = () => {
       }
     };
 
-    const onPointer = (e) => {
-      const r = stage.getBoundingClientRect();
-      mouse.tx = ((e.clientX - r.left) / r.width - 0.5) * 2;
-      mouse.ty = ((e.clientY - r.top) / r.height - 0.5) * 2;
+    /* apply() writes plain inline styles, outside GSAP's context, so each
+       desktop mode has to undo them when the query stops matching. */
+    const clearApplied = () => {
+      if (cardsRef.current) cardsRef.current.style.removeProperty("transform");
+      if (bgRef.current) bgRef.current.style.removeProperty("transform");
+      cardEls.current.forEach((el) => {
+        if (!el) return;
+        el.style.removeProperty("width");
+        el.style.removeProperty("transform");
+        el.style.removeProperty("filter");
+        el.style.removeProperty("z-index");
+        delete el.dataset.state;
+      });
+      stage.classList.remove("ga-gallery-front");
+      if (reflectRef.current) {
+        reflectRef.current.style.removeProperty("width");
+        reflectRef.current.style.removeProperty("opacity");
+        reflectRef.current.style.removeProperty("transform");
+      }
     };
-    stage.addEventListener("pointermove", onPointer, {passive: true});
 
-    let raf = 0;
-    let running = false;
-    const frame = () => {
-      if (!running) return;
-      mouse.x += (mouse.tx - mouse.x) * 0.07;
-      mouse.y += (mouse.ty - mouse.y) * 0.07;
-      apply(boot.p);
-      raf = requestAnimationFrame(frame);
-    };
-
-    if (!reduced) {
-      running = true;
-      raf = requestAnimationFrame(frame);
-    }
-
-    const onResize = () => {
+    mm.add(MQ_DESKTOP, () => {
       measure();
-      apply(boot.p);
-    };
-    window.addEventListener("resize", onResize);
 
-    /* The fixed cinematic navbar sits above this dark room. While the room is
-       on screen, give it the room's surface so the scene stays continuous. */
-    const io = new IntersectionObserver((entries) => {
-      document.body.classList.toggle("ga-gallery-active", entries[0].isIntersecting);
-    });
-    io.observe(section);
+      const onPointer = (e) => {
+        const r = stage.getBoundingClientRect();
+        mouse.tx = ((e.clientX - r.left) / r.width - 0.5) * 2;
+        mouse.ty = ((e.clientY - r.top) / r.height - 0.5) * 2;
+      };
+      stage.addEventListener("pointermove", onPointer, {passive: true});
 
-    let cleanup = () => {};
-    if (!reduced) {
-      cleanup = createPinnedScrub({
+      let raf = 0;
+      let running = true;
+      const frame = () => {
+        if (!running) return;
+        mouse.x += (mouse.tx - mouse.x) * 0.07;
+        mouse.y += (mouse.ty - mouse.y) * 0.07;
+        apply(boot.p);
+        raf = requestAnimationFrame(frame);
+      };
+      raf = requestAnimationFrame(frame);
+
+      const onResize = () => {
+        measure();
+        apply(boot.p);
+      };
+      window.addEventListener("resize", onResize);
+      const stopWatching = watchSection();
+
+      const cleanup = createPinnedScrub({
         section,
         pinEl: pinRef.current,
         end: "+=820%",
@@ -256,18 +260,45 @@ export const ProjectsSection = () => {
           boot.p = proxy.p;
         },
       });
-    } else {
+
+      return () => {
+        running = false;
+        cancelAnimationFrame(raf);
+        window.removeEventListener("resize", onResize);
+        stage.removeEventListener("pointermove", onPointer);
+        stopWatching();
+        cleanup();
+        clearApplied();
+      };
+    });
+
+    /* Reduced motion keeps the same still composition, but no pin, pointer
+       follow, or rAF loop. */
+    mm.add(MQ_DESKTOP_STILL, () => {
+      mouse.x = 0;
+      mouse.y = 0;
+      mouse.tx = 0;
+      mouse.ty = 0;
+      measure();
       apply(0);
-    }
+
+      const onResize = () => {
+        measure();
+        apply(0);
+      };
+      window.addEventListener("resize", onResize);
+      const stopWatching = watchSection();
+
+      return () => {
+        window.removeEventListener("resize", onResize);
+        stopWatching();
+        clearApplied();
+      };
+    });
 
     return () => {
-      running = false;
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", onResize);
-      stage.removeEventListener("pointermove", onPointer);
-      io.disconnect();
+      mm.revert();
       document.body.classList.remove("ga-gallery-active");
-      cleanup();
     };
   }, []);
 
