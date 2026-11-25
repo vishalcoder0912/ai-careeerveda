@@ -1,19 +1,3 @@
-#!/usr/bin/env bash
-# CareerVeda pull-deploy. Runs ON the Compute Engine VM, as root. No Docker.
-#
-#   sudo /opt/careerveda/deploy/deploy.sh           # deploy if origin/main moved
-#   sudo FORCE=1 /opt/careerveda/deploy/deploy.sh   # rebuild + restart regardless
-#
-# Invoked by careerveda-autodeploy.timer (every 2 min) and, optionally, by the
-# GitHub Actions workflow over SSH. A lock stops the two overlapping.
-#
-# Order matters, so a failed step never breaks what is live:
-#   1. build the site and the admin panel in the checkout
-#   2. only then install backend deps and restart the API
-#   3. only then copy the new static files to /var/www, which nginx serves
-# A build that fails exits before 2 and 3: the previous release keeps running,
-# and because "deployed" is the last SUCCESSFUL commit (not git HEAD), the next
-# poll tries again instead of believing it is up to date.
 
 set -euo pipefail
 

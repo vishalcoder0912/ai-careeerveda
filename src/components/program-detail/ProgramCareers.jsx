@@ -143,14 +143,9 @@ const JobCard = ({job}) => (
         ))}
       </ul>
     )}
-    <a
-      className="pd-btn pd-btn--ghost pd-btn--sm"
-      href={job.applyUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      Apply on LinkedIn ↗
-    </a>
+    <Link className="pd-btn pd-btn--ghost pd-btn--sm" to="/jobs">
+      View details ↗
+    </Link>
   </li>
 );
 

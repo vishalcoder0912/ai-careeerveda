@@ -2,7 +2,7 @@ import {lazy, Suspense, useMemo, useState} from "react";
 import {ArrowUpRight, Briefcase, Building2, Clock, Info, MapPin, Search, X} from "lucide-react";
 import {jobs as staticJobs} from "../data/jobsData";
 import {useContentList} from "../hooks/useContent";
-import {adaptJob, LINKEDIN_SOURCE} from "../lib/contentAdapters";
+import {adaptJob} from "../lib/contentAdapters";
 import "../components/jobs-page.css";
 
 // Only needed once someone clicks Apply, so it stays out of the page chunk.
@@ -196,14 +196,6 @@ const JobsPage = () => {
           )}
         </div>
 
-        <p className="jobs-live-note">
-          <Info size={16} aria-hidden="true" />
-          <span>
-            <strong>See latest openings</strong> opens a live LinkedIn search for that role and city,
-            sorted newest first and limited to posts from the past 3 days.
-          </span>
-        </p>
-
         <div className="jobs-grid">
           {filteredJobs.length > 0 ? (
             filteredJobs.map((job) => {
@@ -234,11 +226,7 @@ const JobsPage = () => {
                       {job.title}
                     </button>
                   </h2>
-                  {job.acceptsApplications ? (
-                    <span className="job-card__badge job-card__badge--direct">Hiring via CareerVeda</span>
-                  ) : (
-                    job.featured && <span className="job-card__badge">Featured</span>
-                  )}
+                  <span className="job-card__badge job-card__badge--direct">Hiring via CareerVeda</span>
                 </div>
 
                 <div className="job-card__company">{job.company}</div>
@@ -267,35 +255,17 @@ const JobsPage = () => {
                   <span className="job-card__date">
                     {job.postedDate && `Listed ${formatPosted(job.postedDate)}`}
                   </span>
-                  {job.acceptsApplications ? (
-                    <button
-                      type="button"
-                      className="job-card__apply"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setApplying(job);
-                      }}
-                    >
-                      Apply with CareerVeda
-                      <ArrowUpRight size={16} aria-hidden="true" />
-                    </button>
-                  ) : (
-                    <a
-                      className="job-card__apply"
-                      href={job.applyUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      title={
-                        job.source === LINKEDIN_SOURCE
-                          ? `Newest "${job.title}" posts on LinkedIn (past 3 days)`
-                          : `Apply for ${job.title} at ${job.company}`
-                      }
-                    >
-                      {job.source === LINKEDIN_SOURCE ? "See latest openings" : "Apply Now"}
-                      <ArrowUpRight size={16} aria-hidden="true" />
-                    </a>
-                  )}
+                  <button
+                    type="button"
+                    className="job-card__apply"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setApplying(job);
+                    }}
+                  >
+                    Apply with CareerVeda
+                    <ArrowUpRight size={16} aria-hidden="true" />
+                  </button>
                 </div>
               </article>
               );
@@ -313,7 +283,7 @@ const JobsPage = () => {
 
         <p
           className="jobs-thirdparty-note"
-          title="These listings are aggregated for reference from publicly available third-party job platforms. CareerVeda does not own, post, or guarantee any of these openings, and the company names shown are illustrative. Selecting See latest openings opens a live search on LinkedIn Jobs — always confirm the role and employer on the official source before applying or sharing personal information."
+          title="These listings are aggregated for reference from publicly available third-party job platforms. CareerVeda does not own, post, or guarantee any of these openings, and the company names shown are illustrative. Confirm the role and employer before sharing personal information."
         >
           <Info size={14} aria-hidden="true" /> Aggregated from third-party job sites &middot; for reference only
         </p>

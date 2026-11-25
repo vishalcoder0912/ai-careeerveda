@@ -96,42 +96,23 @@ describe("adaptJob", () => {
     });
   });
 
-  it("keeps the admin's applications toggle instead of forcing it on", () => {
+  it("keeps the admin's applications toggle when it is explicitly set", () => {
     expect(adaptJob({...record, acceptsApplications: true}).acceptsApplications).toBe(true);
     expect(adaptJob({...record, acceptsApplications: false}).acceptsApplications).toBe(false);
   });
 
-  it("does not offer CareerVeda applications on listings with no toggle set", () => {
-    expect(adaptJob(record).acceptsApplications).toBe(false);
+  it("treats a missing applications flag as open, like the Job model does", () => {
+    expect(adaptJob(record).acceptsApplications).toBe(true);
   });
 
-  it("falls back to an email, then a LinkedIn search, when there is no application URL", () => {
-    expect(adaptJob({...record, applicationUrl: "", applicationEmail: "hr@example.com"}).applyUrl)
-      .toBe("mailto:hr@example.com");
-
+  it("never generates a third-party apply URL for a listing", () => {
     const fallback = adaptJob({...record, applicationUrl: "", location: "Pune, Maharashtra"});
-    expect(fallback.applyUrl).toMatch(/^https:\/\/www\.linkedin\.com\/jobs\/search\/\?keywords=Frontend\+Developer/);
-    // Past-3-day postings, newest first: the link always shows recent openings.
-    const params = new URL(fallback.applyUrl).searchParams;
-    expect(params.get("f_TPR")).toBe("r259200");
-    expect(params.get("sortBy")).toBe("DD");
-    expect(fallback.source).toBe("LinkedIn Jobs");
-  });
+    expect(fallback.applyUrl).toBe("");
+    expect(fallback.source).toBe("");
 
-  it("upgrades a saved bare LinkedIn search to newest-first, past 3 days", () => {
-    // Records seeded before the link carried these params opened LinkedIn's
-    // "most relevant, any date" results instead of the latest posts.
-    const saved = "https://www.linkedin.com/jobs/search/?keywords=Private+Equity+Analyst&location=Mumbai%2C+Maharashtra";
-    const params = new URL(adaptJob({...record, applicationUrl: saved}).applyUrl).searchParams;
-    expect(params.get("keywords")).toBe("Private Equity Analyst");
-    expect(params.get("location")).toBe("Mumbai, Maharashtra");
-    expect(params.get("sortBy")).toBe("DD");
-    expect(params.get("f_TPR")).toBe("r259200");
-
-    // A window someone set on purpose is kept; employer links are untouched.
-    const weekly = new URL(adaptJob({...record, applicationUrl: `${saved}&f_TPR=r604800`}).applyUrl);
-    expect(weekly.searchParams.get("f_TPR")).toBe("r604800");
-    expect(adaptJob({...record, applicationUrl: "https://example.com/apply"}).applyUrl).toBe("https://example.com/apply");
+    // A real employer URL is kept as metadata, but no search URL is invented.
+    expect(adaptJob({...record, applicationUrl: "https://example.com/apply"}).applyUrl)
+      .toBe("https://example.com/apply");
   });
 
   it("prints the posted date as a date, not an ISO timestamp", () => {

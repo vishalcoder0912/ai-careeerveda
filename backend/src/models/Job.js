@@ -6,11 +6,9 @@ import {mediaRefSchema} from "./shared/schemas.js";
 // Mirrors src/data/jobsData.js, which serves /jobs (and /achievers, which
 // redirects to it).
 //
-// A note carried over from that file: the listings are illustrative, and
-// `applyUrl` points at a live LinkedIn Jobs search for the exact role and
-// location rather than a dead placeholder link. The Jobs page carries a
-// user-facing disclaimer explaining this. Keeping applyUrl free-form preserves
-// the ability to swap in an employer's real ATS URL per listing.
+// Applications are collected on CareerVeda for every listing, so no external
+// apply URL is generated. `applicationUrl` remains free-form as metadata for
+// an editor who happens to have an employer's real ATS URL.
 
 const jobSchema = new mongoose.Schema(
   {

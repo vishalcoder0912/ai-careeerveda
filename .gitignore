@@ -72,3 +72,11 @@ hero_gurl image.png
 /_*.mjs
 /_*.png
 /probe-*.json
+
+# Deployment secrets — the VM keeps /etc/careerveda/build.env outside git, but
+# ignore any local copy too. These extensions are never source files.
+**/build.env
+*.pem
+*.key
+*.p12
+*.pfx

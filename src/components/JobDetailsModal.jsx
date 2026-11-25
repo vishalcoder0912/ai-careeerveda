@@ -1,7 +1,6 @@
 import {useCallback, useEffect, useRef, useState} from "react";
 import {ArrowUpRight, Briefcase, Building2, Calendar, Clock, MapPin, Users, X} from "lucide-react";
-
-const LINKEDIN_SOURCE = "LinkedIn Jobs";
+import {API_BASE} from "../lib/publicApi";
 
 const Section = ({title, children}) => {
   if (!children) return null;
@@ -38,10 +37,8 @@ const useJobDetailsData = (job) => {
   useEffect(() => {
     const slug = job?.slug || (typeof job?.id === "string" ? job.id : null);
     if (!slug) return;
-    const base = String(import.meta.env.VITE_PUBLIC_API_BASE_URL || (import.meta.env.DEV ? "/api/v1" : "")).replace(/\/+$/, "");
-    if (!base) return;
     const controller = new AbortController();
-    fetch(`${base}/public/jobs/${encodeURIComponent(slug)}`, {signal: controller.signal, headers: {Accept: "application/json"}})
+    fetch(`${API_BASE}/public/jobs/${encodeURIComponent(slug)}`, {signal: controller.signal, headers: {Accept: "application/json"}})
       .then((r) => r.ok ? r.json() : null)
       .then((body) => {
         if (body?.success && body.data) setFull((prev) => ({...prev, ...body.data, slug: body.data.slug || slug, id: prev.id || body.data.slug || slug}));
@@ -62,7 +59,6 @@ const getJobView = (data, job) => {
   const overview = data.jobOverview || data.description || "";
   const isClosed = Boolean((data.applicationDeadline || data.deadline) && new Date(data.applicationDeadline || data.deadline).getTime() < Date.now());
   const slug = data.slug || job?.slug || (typeof data.id === "string" ? data.id : typeof job?.id === "string" ? job.id : "");
-  const canApplyWithCareerVeda = data.acceptsApplications === true;
   const meta = [
     data.location && {icon: MapPin, label: data.location},
     data.workMode && {icon: Building2, label: data.workMode},
@@ -72,7 +68,7 @@ const getJobView = (data, job) => {
     posted && {icon: Calendar, label: `Posted ${posted}`},
     deadline && {icon: Calendar, label: `Apply by ${deadline}`},
   ].filter(Boolean);
-  return {deadline, posted, salary, experience, employmentType, overview, isClosed, slug, canApplyWithCareerVeda, meta};
+  return {deadline, posted, salary, experience, employmentType, overview, isClosed, slug, meta};
 };
 
 const JobDetailsBody = ({data, view}) => {
@@ -118,17 +114,10 @@ const JobDetailsFooter = ({data, view, onApply}) => (
   <footer className="job-details__footer">
     {view.isClosed ? (
       <p className="job-apply__error">Applications for this role are closed.</p>
-    ) : view.canApplyWithCareerVeda ? (
+    ) : (
       <button type="button" className="job-card__apply" onClick={() => { onApply?.({...data, slug: view.slug}); }}>
         Apply with CareerVeda <ArrowUpRight size={16} aria-hidden="true" />
       </button>
-    ) : data.applyUrl ? (
-      <a className="job-card__apply" href={data.applyUrl} target="_blank" rel="noopener noreferrer">
-        {data.source === LINKEDIN_SOURCE ? "See latest openings" : "Apply Now"}
-        <ArrowUpRight size={16} aria-hidden="true" />
-      </a>
-    ) : (
-      <p className="job-apply__error">Applications for this role are closed.</p>
     )}
   </footer>
 );

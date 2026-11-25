@@ -27,14 +27,15 @@ const formatDateTime = (value) =>
 
 const dash = (value) => value || "—";
 
-const rupees = (value) =>
-  value == null
-    ? "—"
-    : new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
-        maximumFractionDigits: 0,
-      }).format(value);
+// The locale and options never change, so build the formatter once instead of
+// once per row on every render and every background refresh.
+const INR_FORMATTER = new Intl.NumberFormat("en-IN", {
+  style: "currency",
+  currency: "INR",
+  maximumFractionDigits: 0,
+});
+
+const rupees = (value) => (value == null ? "—" : INR_FORMATTER.format(value));
 
 const utmLine = (utm) =>
   utm && (utm.source || utm.campaign) ? `${dash(utm.source)} / ${dash(utm.medium)} / ${dash(utm.campaign)}` : "—";

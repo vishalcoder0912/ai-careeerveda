@@ -48,8 +48,8 @@ describe("JobDetailsModal — required qualifications", () => {
   });
 });
 
-describe("JobDetailsModal — applications toggle", () => {
-  it("offers the CareerVeda form only when the job accepts applications", () => {
+describe("JobDetailsModal — application CTA", () => {
+  it("offers the CareerVeda form for every open listing", () => {
     render(<JobDetailsModal job={{...baseJob, acceptsApplications: true}} />);
 
     // The dialog is closed in jsdom, so its controls have no accessible role;
@@ -57,21 +57,29 @@ describe("JobDetailsModal — applications toggle", () => {
     expect(screen.getByText(/Apply with CareerVeda/i)).toBeTruthy();
   });
 
-  it("does not offer the form when applications are switched off", () => {
-    render(<JobDetailsModal job={{...baseJob, acceptsApplications: false}} />);
+  it("offers the form even on legacy records with no applications flag", () => {
+    render(<JobDetailsModal job={baseJob} />);
 
-    expect(screen.queryByText(/Apply with CareerVeda/i)).toBeNull();
-    expect(screen.getByText(/Applications for this role are closed/i)).toBeTruthy();
+    expect(screen.getByText(/Apply with CareerVeda/i)).toBeTruthy();
+    expect(screen.queryByText(/See latest openings/i)).toBeNull();
   });
 
-  it("keeps an external apply link visible when CareerVeda applications are off", () => {
+  it("never falls back to a third-party apply link", () => {
     render(
       <JobDetailsModal
-        job={{...baseJob, acceptsApplications: false, applyUrl: "https://example.com/apply"}}
+        job={{...baseJob, applyUrl: "https://www.linkedin.com/jobs/search/?keywords=x"}}
       />,
     );
 
+    expect(screen.getByText(/Apply with CareerVeda/i)).toBeTruthy();
+    expect(screen.queryByText(/See latest openings/i)).toBeNull();
+    expect(screen.queryByText("Apply Now")).toBeNull();
+  });
+
+  it("closes applications once the deadline has passed", () => {
+    render(<JobDetailsModal job={{...baseJob, applicationDeadline: "2020-01-01"}} />);
+
     expect(screen.queryByText(/Apply with CareerVeda/i)).toBeNull();
-    expect(screen.getByText("Apply Now")).toBeTruthy();
+    expect(screen.getByText(/Applications for this role are closed/i)).toBeTruthy();
   });
 });

@@ -183,14 +183,9 @@ const JobsTab = ({jobs}) => (
       <li className="program-job" key={job.id}>
         <div className="program-job__head">
           <span className="program-job__title">{job.title}</span>
-          <a
-            href={job.applyUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="program-job__apply"
-          >
-            Apply ↗
-          </a>
+          <Link to="/jobs" className="program-job__apply">
+            View details ↗
+          </Link>
         </div>
         <span className="program-job__meta">
           {[job.company, job.location, job.salary].filter(Boolean).join(" · ")}

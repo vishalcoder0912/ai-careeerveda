@@ -43,7 +43,7 @@ const AdUnit = ({slot = ADSENSE_SLOT_ID, format = "auto", label = "Advertisement
   if (!ADSENSE_CLIENT_ID || !slot || !allowed) return null;
 
   return (
-    <div className="cv-ad-unit" role="complementary" aria-label={label}>
+    <aside className="cv-ad-unit" aria-label={label}>
       <ins
         ref={insRef}
         className="adsbygoogle"
@@ -53,7 +53,7 @@ const AdUnit = ({slot = ADSENSE_SLOT_ID, format = "auto", label = "Advertisement
         data-ad-format={format}
         data-full-width-responsive="true"
       />
-    </div>
+    </aside>
   );
 };
 

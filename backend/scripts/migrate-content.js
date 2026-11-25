@@ -327,8 +327,11 @@ const migrateJobs = async (modules) => {
         description: job.description || "",
         skills: job.skills || [],
         salaryRange: job.salary || "",
+        // Every listing is applied for through CareerVeda. There is no longer
+        // a generated third-party apply URL to copy into the record.
         applicationUrl: job.applyUrl || "",
-        source: job.source || "",
+        acceptsApplications: true,
+        source: job.source || "CareerVeda",
         postedDate: job.postedDate ? new Date(job.postedDate) : null,
         featured: Boolean(job.featured),
         displayOrder: index,

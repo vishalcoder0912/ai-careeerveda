@@ -20,6 +20,20 @@ const EXT_BY_MIME = {
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
 };
 
+// Browsers, proxies and object stores relabel documents with generic or legacy
+// MIME types. The type is sniffed from the bytes below, so an unknown label is
+// not a contradiction — it only means the sender did not know what it had.
+const GENERIC_MIME = new Set(["application/octet-stream", "binary/octet-stream"]);
+const MIME_ALIASES = {
+  "application/pdf": new Set(["application/x-pdf", "application/acrobat", "application/x-acrobat"]),
+  "application/msword": new Set(["application/x-msword"]),
+};
+const declaredTypeMatches = (detected, declared) => {
+  const given = String(declared || "").trim().toLowerCase();
+  if (!given || GENERIC_MIME.has(given) || given === detected) return true;
+  return Boolean(MIME_ALIASES[detected]?.has(given));
+};
+
 let client = null;
 
 const getClient = () => {
@@ -91,18 +105,21 @@ const fetchFileBytes = async (url) => {
 };
 
 
-// A resume is a passive document. Anything that can actively execute in a
-// browser is rejected even when the leading bytes happen to look like a PDF or
-// a ZIP — that is the classic polyglot trick (a valid PDF that is also an HTML
-// page, or a ZIP that a browser renders as SVG).
-const ACTIVE_CONTENT_MARKERS = [
-  "<script", "<iframe", "<svg", "<?php", "javascript:", "vbscript:", "data:text/html",
-];
-
-const hasActiveContentMarkers = (buffer) => {
-  const head = Buffer.from(buffer.subarray(0, Math.min(buffer.length, 8192))).toString("latin1").toLowerCase();
-  return ACTIVE_CONTENT_MARKERS.some((marker) => head.includes(marker));
-};
+// Polyglots are rejected structurally, not by scanning for ASCII strings.
+// An earlier version searched the first 8 KB of every file for substrings like
+// "<svg" or "javascript:" and refused any match. Real PDFs routinely contain
+// those strings in XMP metadata, vector artwork and link annotations, so
+// perfectly good resumes were rejected as "active content".
+//
+// The checks below are stronger and have no false positives:
+//   • detectResumeType() requires the document's binary signature at the very
+//     start (ignoring only PDF-legal BOM/whitespace), so a browser can never
+//     fall back to rendering the file as HTML/SVG;
+//   • storeResumeFile() uploads with the MIME type we detected from the bytes,
+//     not one a client declared, so the file is only ever served as a document;
+//   • validateResumeFile() binds the filename extension to that detected type.
+// A file whose bytes really are HTML or SVG has no document signature and is
+// rejected by detectResumeType() before any of this runs.
 
 // A ZIP signature alone is not a Word document: any archive can be renamed to
 // .docx. Require the two OOXML entry names Word actually writes, plus the ZIP
@@ -122,8 +139,22 @@ const isOoxmlDocument = (buffer) => {
 
 export const detectResumeType = (buffer) => {
   if (!buffer || buffer.length < 8) return null;
+  // A few PDF writers prepend a UTF-8 BOM or whitespace before the header and
+  // every PDF reader skips it. Skip only those bytes — never arbitrary markup,
+  // which is how an HTML/SVG polyglot would try to get past the signature.
+  let start = 0;
+  if (buffer[0] === 0xef && buffer[1] === 0xbb && buffer[2] === 0xbf) start = 3;
+  while (
+    start < buffer.length &&
+    start < 1024 &&
+    [0x00, 0x09, 0x0a, 0x0c, 0x0d, 0x20].includes(buffer[start])
+  ) start += 1;
   // PDF: %PDF-
-  if (buffer[0] === 0x25 && buffer[1] === 0x50 && buffer[2] === 0x44 && buffer[3] === 0x46 && buffer[4] === 0x2d) {
+  if (
+    buffer[start] === 0x25 && buffer[start + 1] === 0x50 &&
+    buffer[start + 2] === 0x44 && buffer[start + 3] === 0x46 &&
+    buffer[start + 4] === 0x2d
+  ) {
     return "application/pdf";
   }
   // DOCX is a ZIP/OOXML package starting PK..
@@ -149,15 +180,8 @@ export const validateResumeFile = ({buffer, mimetype, size, originalname}) => {
   if (!detected || !RESUME_ALLOWED_MIME.has(detected)) {
     return "Only PDF and Word resumes (.pdf, .doc, .docx) are allowed.";
   }
-  if (hasActiveContentMarkers(buffer)) {
-    return "This resume contains active content and cannot be accepted.";
-  }
-  if (mimetype && mimetype !== detected) {
-    // Some browsers send a generic type for a perfectly good docx.
-    const altDocx = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-    if (!(detected === altDocx && mimetype === "application/octet-stream")) {
-      return "The file contents do not match its declared type.";
-    }
+  if (!declaredTypeMatches(detected, mimetype)) {
+    return "The file contents do not match its declared type.";
   }
   const name = String(originalname || "");
   if (!/\.(pdf|doc|docx)$/i.test(name) || !name.toLowerCase().endsWith(`.${EXT_BY_MIME[detected]}`)) {
@@ -292,7 +316,10 @@ export const storeResumeFile = async ({buffer, mimetype, originalname, folder}) 
   let uploaded;
   try {
     uploaded = await ik.files.upload({
-      file: await toFile(Buffer.from(buffer), fileName),
+      // Without an explicit type the SDK builds a File with no MIME type.
+      // ImageKit then stores the resume as application/octet-stream and the
+      // submit-time re-check rejects an otherwise valid PDF.
+      file: await toFile(Buffer.from(buffer), fileName, {type: detected}),
       fileName,
       folder,
       // The name already carries a random suffix; let ImageKit keep it so the

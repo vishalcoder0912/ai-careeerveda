@@ -9,7 +9,9 @@ const fetchMock = jest.fn();
 const originalFetch = globalThis.fetch;
 
 jest.unstable_mockModule("@imagekit/nodejs", async () => ({
-  toFile: jest.fn(),
+  // Mirror the SDK: build a real File so tests can assert the MIME type the
+  // service hands to ImageKit.
+  toFile: jest.fn(async (bits, name, options) => new File(bits, name, options)),
   default: class FakeImageKit {
     getAuthenticationParameters() {
       return {token: "upload-token", expire: 1_700_000_000, signature: "upload-signature"};
@@ -148,6 +150,17 @@ describe("verifyResumeFileOnServer", () => {
     );
   });
 
+  it("accepts a PDF that ImageKit labels with a generic MIME type", async () => {
+    // The SDK used to upload without an explicit type, so stored files can
+    // come back as octet-stream. The bytes still prove it is a PDF.
+    filesGet.mockResolvedValue(detail({filePath: `${folder}/resume.pdf`, mime: "application/octet-stream"}));
+    fetchMock.mockResolvedValue(bytesResponse(asciiBytes("%PDF-1.7\n<svg> javascript:void(0)")));
+
+    await expect(verifyResumeFileOnServer({fileId: "file_123", expectedFolder: folder})).resolves.toMatchObject({
+      resumeMimeType: "application/pdf",
+    });
+  });
+
   it("accepts a docx whose bytes are an OOXML zip", async () => {
     // A complete OOXML package: a ZIP local header, the two entries Word always
     // writes, and the end-of-central-directory record at the tail.
@@ -274,8 +287,27 @@ describe("validateResumeFile", () => {
     ).toMatch(/only pdf and word/i);
   });
 
-  it("rejects a PDF polyglot carrying active browser content", () => {
-    expect(check(asciiBytes("%PDF-1.4\n<script>alert(1)</script>"))).toMatch(/active content/i);
+  it("accepts a real PDF whose metadata mentions svg or javascript links", () => {
+    // Those strings appear in ordinary XMP metadata, vector art and link
+    // annotations. They are inert when the file is served as a PDF.
+    const bytes = asciiBytes("%PDF-1.7\n<svg xmlns='http://www.w3.org/2000/svg'> javascript:void(0) data:text/html");
+    expect(check(bytes)).toBeNull();
+  });
+
+  it("rejects an HTML/SVG file disguised as a PDF", () => {
+    // Polyglots are caught by the signature check: it has no %PDF header.
+    expect(check(asciiBytes("<!doctype html><svg onload='alert(1)'></svg>"))).toMatch(/only pdf and word/i);
+  });
+
+  it("accepts generic and legacy declared MIME types for a valid PDF", () => {
+    const bytes = asciiBytes("%PDF-1.4\nreal resume");
+    expect(check(bytes, {mimetype: "application/octet-stream"})).toBeNull();
+    expect(check(bytes, {mimetype: "application/x-pdf"})).toBeNull();
+  });
+
+  it("accepts a PDF with a leading BOM and whitespace", () => {
+    const bytes = Buffer.concat([Buffer.from([0xef, 0xbb, 0xbf, 0x0a]), asciiBytes("%PDF-1.4\nreal")]);
+    expect(check(bytes)).toBeNull();
   });
 
   it("binds the extension to the detected content, not the declared name", () => {
@@ -327,14 +359,24 @@ describe("storeResumeFile", () => {
     );
   });
 
-  it("does not upload active content", async () => {
+  it("uploads a real PDF even when its metadata contains svg/script strings", async () => {
+    filesUpload.mockResolvedValue(stored());
     await expect(
       storeResumeFile({
         ...pdf(),
-        buffer: Buffer.from("%PDF-1.4\n<script>alert(1)</script>"),
+        buffer: Buffer.from("%PDF-1.4\n<svg> javascript:void(0)"),
       }),
-    ).rejects.toMatchObject({status: 400, fields: {resume: expect.stringMatching(/active content/i)}});
-    expect(filesUpload).not.toHaveBeenCalled();
+    ).resolves.toMatchObject({resumeMimeType: "application/pdf"});
+    expect(filesUpload).toHaveBeenCalledWith(
+      expect.objectContaining({file: expect.any(File)}),
+    );
+  });
+
+  it("passes the detected MIME type to ImageKit so PDFs survive re-checking", async () => {
+    filesUpload.mockResolvedValue(stored());
+    await storeResumeFile(pdf());
+    const file = filesUpload.mock.calls[0][0].file;
+    expect(file.type).toBe("application/pdf");
   });
 
   it("does not upload a renamed executable", async () => {

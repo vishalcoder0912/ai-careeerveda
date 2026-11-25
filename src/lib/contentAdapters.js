@@ -209,56 +209,16 @@ export const adaptBlogPost = (record) => ({
   cta: blogCta(record.cta),
 });
 
-// A live LinkedIn Jobs search for the role and location — the apply link for
-// any listing without an employer URL of its own. Remote roles search India
-// with LinkedIn's remote work-type filter (f_WT=2). f_TPR=r259200 limits it to
-// postings from the past 3 days and sortBy=DD puts the newest first, so the
-// link always lands on current openings however old the listing here is.
-export const LINKEDIN_SOURCE = "LinkedIn Jobs";
-const LINKEDIN_RECENT = "r259200";
-export const linkedInSearchUrl = (title, location = "") => {
-  const isRemote = /remote/i.test(location);
-  const params = new URLSearchParams({
-    keywords: title,
-    location: isRemote || !location ? "India" : location,
-    f_TPR: LINKEDIN_RECENT,
-    sortBy: "DD",
-  });
-  if (isRemote) params.set("f_WT", "2");
-  return `https://www.linkedin.com/jobs/search/?${params.toString()}`;
-};
-
-// Listings saved in the panel before the search link carried f_TPR/sortBy
-// still hold a bare "keywords + location" LinkedIn search, which opens on
-// LinkedIn's "most relevant, any date" results. Upgrade any saved LinkedIn
-// *search* link to newest-first, past 3 days; an explicit time window already
-// on the link is kept. Employer URLs and single LinkedIn postings pass through.
-export const freshLinkedInSearch = (url) => {
-  let parsed;
-  try {
-    parsed = new URL(url);
-  } catch {
-    return url;
-  }
-  if (!/(^|\.)linkedin\.com$/i.test(parsed.hostname) || !parsed.pathname.startsWith("/jobs/search")) {
-    return url;
-  }
-  parsed.searchParams.set("sortBy", "DD");
-  if (!parsed.searchParams.has("f_TPR")) parsed.searchParams.set("f_TPR", LINKEDIN_RECENT);
-  return parsed.toString();
-};
-
-// A listing saved in the panel without an application URL used to render
-// href="" — an Apply button that just reloaded /jobs. It falls back to the
-// employer's email, then to a live LinkedIn search for the role.
+// Every listing — whether it came from the admin panel, an aggregator or the
+// bundled catalogue — is applied for through the CareerVeda form. Nothing on
+// the public site opens a third-party job search any more, so there is no
+// generated apply URL: keep an employer URL only as metadata for the editor.
 const jobApplyLink = (record) => {
-  if (/^https?:\/\//i.test(record.applicationUrl || "")) {
-    return {applyUrl: freshLinkedInSearch(record.applicationUrl), source: record.source || ""};
-  }
-  if (record.applicationEmail) {
-    return {applyUrl: `mailto:${record.applicationEmail}`, source: record.source || ""};
-  }
-  return {applyUrl: linkedInSearchUrl(record.title, record.location), source: LINKEDIN_SOURCE};
+  const url = String(record.applicationUrl || "");
+  return {
+    applyUrl: /^(https?:\/\/|mailto:)/i.test(url) ? url : "",
+    source: record.source || "",
+  };
 };
 
 export const adaptJob = (record) => ({
@@ -268,10 +228,10 @@ export const adaptJob = (record) => ({
   jobType: record.employmentType || "",
   salary: record.salaryRange || "",
   ...jobApplyLink(record),
-  // The admin's Applications toggle is the source of truth. A job saved with
-  // it off must not open the CareerVeda form; bundled illustrative listings
-  // carry no flag and keep using their external apply link.
-  acceptsApplications: record.acceptsApplications === true,
+  // Older records (the migrated catalogue in particular) have no flag at all.
+  // The Job model defaults it to true, so a missing flag means applications
+  // are open. Only an explicit false from the admin means "closed".
+  acceptsApplications: record.acceptsApplications !== false,
   // No posted date set → the day it was published, so a new listing sorts first.
   postedDate: dateOnly(record.postedDate || record.publishedAt),
 });

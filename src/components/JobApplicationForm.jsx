@@ -25,11 +25,29 @@ const ALLOWED = [
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ];
 
+// Some browsers report a generic or legacy MIME type for a valid document.
+// The bytes are sniffed below, so those labels mean "unknown", not "wrong".
+const GENERIC_TYPES = new Set(["application/octet-stream", "binary/octet-stream"]);
+const MIME_ALIASES = {
+  "application/pdf": new Set(["application/x-pdf", "application/acrobat", "application/x-acrobat"]),
+  "application/msword": new Set(["application/x-msword"]),
+};
+const declaredTypeMatches = (detected, declared) => {
+  const given = String(declared || "").trim().toLowerCase();
+  if (!given || GENERIC_TYPES.has(given) || given === detected) return true;
+  return Boolean(MIME_ALIASES[detected]?.has(given));
+};
+
 const detectClientType = async (file) => {
-  const buf = new Uint8Array(await file.slice(0, 8).arrayBuffer());
-  if (buf[0] === 0x25 && buf[1] === 0x50 && buf[2] === 0x44 && buf[3] === 0x46) return "application/pdf";
-  if (buf[0] === 0xd0 && buf[1] === 0xcf && buf[2] === 0x11 && buf[3] === 0xe0) return "application/msword";
-  if (buf[0] === 0x50 && buf[1] === 0x4b && buf[2] === 0x03 && buf[3] === 0x04) {
+  const bytes = new Uint8Array(await file.slice(0, 1024).arrayBuffer());
+  // PDF readers ignore a leading BOM/whitespace; do the same so real-world
+  // exports are not refused before the upload even starts.
+  let start = 0;
+  if (bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf) start = 3;
+  while (start < bytes.length && [0x00, 0x09, 0x0a, 0x0c, 0x0d, 0x20].includes(bytes[start])) start += 1;
+  if (bytes[start] === 0x25 && bytes[start + 1] === 0x50 && bytes[start + 2] === 0x44 && bytes[start + 3] === 0x46) return "application/pdf";
+  if (bytes[start] === 0xd0 && bytes[start + 1] === 0xcf && bytes[start + 2] === 0x11 && bytes[start + 3] === 0xe0) return "application/msword";
+  if (bytes[start] === 0x50 && bytes[start + 1] === 0x4b && bytes[start + 2] === 0x03 && bytes[start + 3] === 0x04) {
     const text = await file.slice(0, 4096).text().catch(() => "");
     if (text.includes("word/")) return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
   }
@@ -111,7 +129,7 @@ const useResumeUpload = ({job, captcha, setErrors}) => {
     if (file.size > MAX_RESUME) { setUploadError("Resume must be 5 MB or smaller."); return; }
     const detected = await detectClientType(file);
     if (!ALLOWED.includes(detected)) { setUploadError("Only PDF and Word resumes are allowed."); return; }
-    if (file.type && file.type !== detected && !(detected.includes("wordprocessingml") && file.type === "application/octet-stream")) {
+    if (!declaredTypeMatches(detected, file.type)) {
       setUploadError("The file contents do not match its type.");
       return;
     }

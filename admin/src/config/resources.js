@@ -342,7 +342,7 @@ export const RESOURCES = {
         kind: "boolean",
         group: "Details",
         initial: true,
-        hint: "On: the site offers the CareerVeda application form. Off: no applications are accepted for this job (any external apply link stays visible).",
+        hint: "On: the site offers the Job Overview and the CareerVeda application form. Off: applications are closed for this job.",
       },
       {
         name: "postedDate",

@@ -8,8 +8,12 @@ const ORIGINAL = {
 
 beforeEach(() => {
   jest.resetModules();
-  delete process.env.GA4_MEASUREMENT_ID;
-  delete process.env.GA4_API_SECRET;
+  // dotenv in env.js reloads backend/.env on every fresh import (override:
+  // false), so deleting the keys would let a developer's local GA4 values
+  // leak back in. An empty string is falsy to analyticsEnabled() and, because
+  // the key exists, dotenv leaves it alone.
+  process.env.GA4_MEASUREMENT_ID = "";
+  process.env.GA4_API_SECRET = "";
 });
 
 afterEach(() => {

@@ -1,16 +1,9 @@
 // Edit, add, or remove job listings in this file.
 // Each job must have a unique id.
 //
-// NOTE ON LINKS: The listings below are illustrative examples aggregated for
-// reference. The companies are sample names, so there is no single official
-// posting URL for each one. Instead of dead placeholder links, every "Apply
-// Now" button routes to a LIVE, verified search for that exact role and
-// location on LinkedIn Jobs — a real third-party platform — so learners land
-// on current, genuine openings they can actually apply to. The user-facing
-// disclaimer on the Jobs page explains this. Set an `applyUrl` on the listing to an
-// employer's real ATS URL whenever you have a confirmed direct posting.
-
-import {linkedInSearchUrl, LINKEDIN_SOURCE} from "../lib/contentAdapters";
+// Every listing opens the in-app Job Overview and the "Apply with CareerVeda"
+// form. Nothing here links out to a third-party job board: candidates submit
+// their details once and the placement team reads them in the admin panel.
 
 const listings = [
   {
@@ -1003,9 +996,9 @@ const listings = [
   },
 ];
 
-// Attach a live third-party apply link and source label to every listing.
+// The bundled catalogue is a fallback for when the API is unreachable. Every
+// listing still takes applications through CareerVeda, so mark them all open.
 export const jobs = listings.map((job) => ({
   ...job,
-  source: job.applyUrl ? job.source || "" : LINKEDIN_SOURCE,
-  applyUrl: job.applyUrl || linkedInSearchUrl(job.title, job.location),
+  acceptsApplications: true,
 }));

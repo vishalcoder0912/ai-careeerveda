@@ -23,7 +23,9 @@ describe("jobsData", () => {
       expect(job.location, `job ${job.id}`).toBeTruthy();
       expect(Array.isArray(job.skills), `job ${job.id}`).toBe(true);
       expect(job.postedDate, `job ${job.id}`).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-      expect(job.applyUrl, `job ${job.id}`).toMatch(/^https:\/\/www\.linkedin\.com\/jobs\/search\/\?/);
+      // Every bundled listing opens the in-app application form; none of them
+      // sends a candidate off to a third-party job board.
+      expect(job.acceptsApplications, `job ${job.id}`).toBe(true);
     }
   });
 });
