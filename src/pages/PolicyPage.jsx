@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import {Navigate, useParams} from "react-router-dom";
 import {PageHero} from "../components/PageShell";
+import {policies as staticPolicies} from "../data/policies";
 import {useContentMap} from "../hooks/useContent";
 import {adaptPolicyMap} from "../lib/contentAdapters";
 import "../components/page-shell.css";
@@ -44,11 +45,13 @@ const PolicyPage = ({slug: slugProp}) => {
   const params = useParams();
   const slug = slugProp || params.slug;
 
-  // Policy pages are admin-managed content. Do not fall back to bundled static
-  // copies, otherwise edits made in the admin panel (e.g. refund terms) can be
-  // hidden by stale build-time data.
+  // Show the bundled policy copy immediately, then swap in whatever the API
+  // returns. If the API is unreachable, the updated static copy still renders
+  // instead of redirecting the visitor (and every AI crawler) to the home page.
+  // Keep src/data/policies.js and the admin-panel record in sync via
+  // `npm --prefix backend run migrate:content`.
   const {map: policies, isLoading} = useContentMap("policies", {
-    fallback: {},
+    fallback: staticPolicies,
     toMap: adaptPolicyMap,
   });
 

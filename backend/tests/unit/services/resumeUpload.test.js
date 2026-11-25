@@ -93,7 +93,13 @@ describe("resume upload binding", () => {
   it("refuses a tampered token", () => {
     const auth = getResumeUploadAuth({jobSlug: JOB});
     const [payload, signature] = auth.uploadToken.split(".");
-    const tampered = `${payload}.${signature.slice(0, -1)}${signature.endsWith("A") ? "B" : "A"}`;
+    // Flipping the last base64url character is not reliable: for a 32-byte
+    // digest the final character carries only two significant bits, and Node
+    // ignores the unused padding bits. Mutate a decoded byte instead so the
+    // HMAC is always different.
+    const bytes = Buffer.from(signature, "base64url");
+    bytes[0] ^= 0x01;
+    const tampered = `${payload}.${bytes.toString("base64url")}`;
 
     expect(() => verifyResumeUploadToken({token: tampered, jobSlug: JOB})).toThrow(/upload has expired/i);
   });
