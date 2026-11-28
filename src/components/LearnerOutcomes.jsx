@@ -72,17 +72,6 @@ const accentFor = (name, fallback) => {
   return fallback;
 };
 
-// Stable grid-span key per secondary learner: the asymmetric wall gives each
-// known story its own column span, keyed by first name so it survives changes
-// to the record's ordering.
-const slotKey = (name) => {
-  const n = (name || "").toLowerCase();
-  if (n.includes("syed")) return "syed";
-  if (n.includes("anjali")) return "anjali";
-  if (n.includes("himani")) return "himani";
-  return "medium";
-};
-
 const LearnerAvatar = ({src, name, size, eager}) => {
   const initials = getInitials(name);
   return (
@@ -211,7 +200,7 @@ const LearnerOutcomes = ({reviews, stats}) => {
 
           <StaggerGroup className="learner-secondaries" stagger={0.09} amount={0.1}>
             {secondary.map((story) => (
-              <div key={story.name} className={`learner-secondary-slot learner-secondary-slot--${slotKey(story.name)}`}>
+              <div key={story.name} className="learner-secondary-slot">
                 <SecondaryCard story={story} accent={accentFor(story.name, "teal")} />
               </div>
             ))}

@@ -21,7 +21,7 @@ export default function CinematicProgramPage({programId}) {
   // from the API for a slug that ships in the catalogue must NOT blank the
   // page: the static record still carries every section and its animations.
   const fallback = getProgram(programId);
-  const {item} = useContentItem("programs", programId, {
+  const {item, isPending} = useContentItem("programs", programId, {
     fallback,
     adapt: adaptProgram,
   });
@@ -39,5 +39,5 @@ export default function CinematicProgramPage({programId}) {
   // Keyed by program: the page's GSAP/ScrollTrigger setup runs once per mount,
   // so moving between two cinematic programs must start a fresh page.
   if (!program || !content) return null;
-  return <GenerativeAIPage key={programId} content={content} />;
+  return <GenerativeAIPage key={programId} content={content} isPending={isPending} />;
 }

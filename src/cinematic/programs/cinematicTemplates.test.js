@@ -167,4 +167,16 @@ describe("cinematic overrides on every page type", () => {
       buildGenAiContent(getProgram("gen-ai-agentic-ai")).stats.items,
     );
   });
+
+  it("uses the saved hero video URL, even if the cinematic JSON tries to change it", () => {
+    const url = "https://ik.imagekit.io/q7ucn1rfni/careerveda/programs/hero.mp4";
+    const live = {
+      ...getProgram("gen-ai-agentic-ai"),
+      heroVideo: url,
+      cinematic: {hero: {video: "https://other.example/override.mp4"}},
+    };
+
+    expect(buildGenAiContent(live).hero.video).toBe(url);
+    expect(buildGenAiContent(getProgram("gen-ai-agentic-ai")).hero.video).toBe("");
+  });
 });

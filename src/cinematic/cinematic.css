@@ -558,6 +558,37 @@
     linear-gradient(180deg, #090807 0%, #090807 60%, #16130f 100%);
 }
 
+/* Optional hero video sits behind every existing layer. The light scrim keeps
+   the dark hero copy readable without hiding the footage on the right. */
+.ga-hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+}
+
+.ga-hero-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(240, 240, 240, 0.94) 0%,
+    rgba(240, 240, 240, 0.62) 18%,
+    rgba(255, 255, 255, 0.42) 94%,
+    rgba(255, 255, 255, 0.18) 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ga-hero-video {
+    display: none;
+  }
+}
+
 .ga-hero-glow-a {
   position: absolute;
   left: -10%;
@@ -660,6 +691,47 @@
 .ga-hero-extra-r {
   right: clamp(1.2rem, 4vw, 3.5rem);
   bottom: 7.5rem;
+}
+
+/* Batch highlight for the flagship courses. Scoped to the right meta slot with
+   enough specificity that the light-theme colour rules loaded later cannot wash
+   the accent out. Other program routes never receive this class. */
+.ga-page .ga-hero-extra-r .ga-meta.ga-hero-batch-highlight {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid rgba(37, 99, 235, 0.3);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 10px 28px rgba(37, 99, 235, 0.14);
+  color: #1d4ed8;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.ga-page .ga-hero-extra-r .ga-meta.ga-hero-batch-highlight::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.16);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ga-page .ga-hero-extra-r .ga-meta.ga-hero-batch-highlight::before {
+    animation: ga-batch-dot-pulse 2.4s ease-in-out infinite;
+  }
+}
+
+@keyframes ga-batch-dot-pulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.16); }
+  50% { box-shadow: 0 0 0 7px rgba(37, 99, 235, 0.04); }
 }
 
 .ga-hero-rule {

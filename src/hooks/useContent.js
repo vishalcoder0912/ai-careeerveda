@@ -1,25 +1,3 @@
-// Live content, with the static files as the offline floor.
-//
-// Every content surface renders its static data immediately, then swaps in what
-// the API returns. That ordering is the whole design:
-//
-//   • first paint is never blocked on a network call, and never a spinner;
-//   • a backend that is down, unreachable or not yet configured degrades to
-//     exactly the site that shipped before it existed;
-//   • when the backend answers, what the admin panel published is what renders.
-//
-// The rule that makes admin CRUD actually work is narrower than "prefer the
-// API": **a server that answered is the truth, including when its answer is
-// empty.** Create, update, publish and unpublish would all survive a softer
-// rule, but delete would not — a deleted record whose static copy still exists
-// in src/data would simply keep rendering, and no amount of admin work would
-// remove it. So an empty list empties the section, and a 404 on a detail page
-// is a 404 even when src/data still has that slug.
-//
-// The static files are therefore a fallback for one situation only: we could not
-// reach the server. That is what `reachable` distinguishes, and why it is
-// threaded through publicApi rather than collapsed into null.
-
 import {useEffect, useMemo, useRef, useState} from "react";
 
 import {fetchList, fetchOne, isApiConfigured} from "../lib/publicApi";
@@ -36,9 +14,7 @@ export const useContentList = (resource, {fallback = [], adapt, params} = {}) =>
   const [items, setItems] = useState(fallback);
   const [source, setSource] = useState("static");
 
-  // Params are usually an inline object literal, so comparing them by identity
-  // would refetch on every render. Serialising is cheap here — these are two or
-  // three scalar keys.
+  
   const paramsKey = JSON.stringify(params || {});
 
   // Held in a ref so a changed adapt/fallback identity cannot restart a fetch;
@@ -150,7 +126,13 @@ export const useContentItem = (resource, slug, {fallback = null, adapt} = {}) =>
       // outage would leave its permalink on a blank aria-busy page forever.
       // Settling lets the page redirect to its index, which still renders.
       if (!reachable) {
-        setState((current) => (current === "loading" ? "not-found" : current));
+        setState((current) => {
+          if (current === "loading") return "not-found";
+          // The fallback is all we will get, so stop calling it pending —
+          // callers holding back fallback art can now show it.
+          if (current === "static") return "fallback";
+          return current;
+        });
         return;
       }
 
@@ -174,6 +156,10 @@ export const useContentItem = (resource, slug, {fallback = null, adapt} = {}) =>
     item,
     isLive: state === "api",
     isLoading: state === "loading",
+    // A static fallback is already on screen while its admin record is still
+    // in flight. Callers that swap static art for admin art need to know that
+    // a response is coming before treating the fallback as final.
+    isPending: state === "static" && isApiConfigured,
     notFound: state === "not-found",
   };
 };

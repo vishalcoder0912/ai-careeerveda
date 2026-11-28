@@ -487,6 +487,7 @@ export const programBody = z.object({
   eligibility: optionalText(500),
   image: mediaRef,
   heroMedia: mediaRef,
+  heroVideo: mediaRef,
   badges: stringArray(20, 120),
   overview: stringArray(50),
   curriculumIntro: optionalText(2000),

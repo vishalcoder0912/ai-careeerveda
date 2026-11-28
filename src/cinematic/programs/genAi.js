@@ -62,6 +62,7 @@ export const buildGenAiContent = (program = fallbackProgram) => {
       metaLeft,
       metaRight: record.nextBatch ? `Next batch · ${record.nextBatch}` : genAiContent.hero.metaRight,
       image: record.image || genAiContent.hero.image,
+      video: record.heroVideo || "",
     },
 
     skills: {
@@ -120,6 +121,7 @@ export const buildGenAiContent = (program = fallbackProgram) => {
   content.hero.stats = base.hero.stats;
   content.hero.metaRight = record.nextBatch ? `Next batch · ${record.nextBatch}` : genAiContent.hero.metaRight;
   content.hero.image = record.image || genAiContent.hero.image;
+  content.hero.video = record.heroVideo || "";
   content.hero.metaLeft = metaLeft;
   content.hero.badges = reapplyHeroBadges(content.hero.badges, liveBadges);
 

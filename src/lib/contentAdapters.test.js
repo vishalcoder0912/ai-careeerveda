@@ -49,6 +49,14 @@ describe("adaptProgram", () => {
     expect(adaptProgram({...record, image: undefined}).image).toBe("");
   });
 
+  it("flattens the hero video reference to a URL string", () => {
+    // The hero passes this straight to <video src>; an object would stringify
+    // to "[object Object]" and silently leave the background empty.
+    expect(adaptProgram({...record, heroVideo: {url: "https://ik.imagekit.io/x/hero.mp4"}}).heroVideo)
+      .toBe("https://ik.imagekit.io/x/hero.mp4");
+    expect(adaptProgram(record).heroVideo).toBe("");
+  });
+
   it("builds the fee panel from the price the admin panel actually edits", () => {
     expect(adaptProgram({...record, startingPrice: "₹1,45,000"}).fee).toEqual({
       label: "Program Investment",

@@ -124,8 +124,33 @@ const raw = parsed.data;
 // The two app URLs are always allowed; CORS_ALLOWED_ORIGINS adds to them rather
 // than replacing them, so a deploy can't lock out its own admin panel by
 // setting the variable and forgetting an entry.
+//
+// Both hosts are also accepted with a `www` prefix. The public site and the
+// admin frequently sit behind a redirect from one form to the other, and a
+// browser keeps the address it loaded as the Origin even after the redirect.
+// Deriving the variant here means neither panel can be locked out by that
+// detail — without widening the list to arbitrary subdomains.
+const withWww = (value) => {
+  try {
+    const url = new URL(value);
+    const host = url.hostname;
+    // `www.localhost` is not a thing, and adding it to a non-Secure-cookie
+    // config would fail the check below for no benefit.
+    if (["localhost", "127.0.0.1", "::1", "[::1]"].includes(host)) return null;
+    url.hostname = host.startsWith("www.") ? host.slice(4) : `www.${host}`;
+    return url.origin;
+  } catch {
+    return null;
+  }
+};
+
+const appOrigins = [raw.FRONTEND_URL, raw.ADMIN_URL];
 const allowedOrigins = Array.from(
-  new Set([raw.FRONTEND_URL, raw.ADMIN_URL, ...csv(raw.CORS_ALLOWED_ORIGINS)]),
+  new Set([
+    ...appOrigins,
+    ...appOrigins.map(withWww).filter(Boolean),
+    ...csv(raw.CORS_ALLOWED_ORIGINS),
+  ]),
 );
 
 // Production with non-Secure cookies sends the refresh token over plain http.

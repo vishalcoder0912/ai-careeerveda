@@ -21,4 +21,21 @@ describe("buildCinematicContent with a sparse admin record", () => {
     expect(content.projects.items).toHaveLength(8);
     expect(content.stats.items.find((s) => s.label === "Structured Modules").value).toBeGreaterThan(0);
   });
+
+  it("uses the saved hero video URL, even if cinematic JSON tries to change it", () => {
+    const url = "https://ik.imagekit.io/x/catalog-hero.mp4";
+    const content = buildCinematicContent("data-analytics", CINEMATIC_COPY["data-analytics"], {
+      id: "data-analytics",
+      title: "PG Program in Data Analytics",
+      modules: [],
+      skills: [],
+      internship: [],
+      softSkills: [],
+      projects: "",
+      nextBatch: "",
+      heroVideo: url,
+      cinematic: {hero: {video: "https://other.example/override.mp4"}},
+    });
+    expect(content.hero.video).toBe(url);
+  });
 });

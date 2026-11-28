@@ -46,6 +46,7 @@ export const RESOURCES = {
       ...commonFields,
       {name: "image", label: "Card image", kind: "media", publish: true, group: "Media"},
       {name: "heroMedia", label: "Hero image", kind: "media", group: "Media"},
+      {name: "heroVideo.url", label: "Hero video URL", kind: "text", group: "Media", hint: "Optional MP4 served from ImageKit. Plays muted on a loop behind the cinematic hero; leave blank for the image-only hero."},
       {name: "description", label: "Short description", kind: "textarea", publish: true, group: "Content"},
       {name: "lead", label: "Lead paragraph", kind: "textarea", group: "Content"},
       // 7 of the 9 live programs run 6 months; Data Science and Data

@@ -8,8 +8,8 @@ import {describe, expect, it} from "vitest";
 // it in a fresh process with a controlled environment.
 const backendRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-const boot = (overrides) =>
-  spawnSync(process.execPath, ["--input-type=module", "-e", "await import('./src/config/env.js')"], {
+const boot = (overrides, code = "await import('./src/config/env.js')") =>
+  spawnSync(process.execPath, ["--input-type=module", "-e", code], {
     cwd: backendRoot,
     encoding: "utf8",
     env: {
@@ -30,6 +30,17 @@ const boot = (overrides) =>
 describe("allowed origins on a secure-cookie deploy", () => {
   it("boots with https domains only", () => {
     expect(boot({}).status).toBe(0);
+  });
+
+  it("allows the www form of each app URL", () => {
+    const result = boot(
+      {},
+      "const {env} = await import('./src/config/env.js'); console.log(JSON.stringify(env.allowedOrigins));",
+    );
+    expect(result.status).toBe(0);
+    const origins = JSON.parse(result.stdout.trim().split("\n").pop());
+    expect(origins).toContain("https://www.careerveda.in");
+    expect(origins).toContain("https://www.admin.careerveda.in");
   });
 
   it.each([

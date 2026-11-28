@@ -198,6 +198,98 @@
   color: #4f46e5;
 }
 
+/* Until the admin record lands, the static fallback has no video. Holding back
+   its still image prevents an image → video swap on pages with a saved video. */
+.ga-page-pending .ga-hero-side-image {
+  display: none;
+}
+
+/* Wherever an admin-supplied hero video exists, thin out the white wash so the
+   footage is visible. The left side keeps enough pale base for the dark
+   headline to stay readable. */
+.ga-hero--video .ga-hero-scrim {
+  background: linear-gradient(
+    90deg,
+    rgba(240, 240, 240, 0.82) 0%,
+    rgba(240, 240, 240, 0.48) 20%,
+    rgba(255, 255, 255, 0.22) 70%,
+    rgba(255, 255, 255, 0.06) 100%
+  );
+}
+
+.ga-hero--video .ga-hero-glow-a {
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.08), transparent 66%);
+}
+
+.ga-hero--video .ga-hero-glow-b {
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.06), transparent 64%);
+}
+
+.ga-page-hero-highlight .ga-hero-badges span {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.ga-page-hero-highlight .ga-hero-extra-r .ga-meta.ga-hero-batch-highlight {
+  background: rgba(255, 255, 255, 0.74);
+}
+
+/* The four hero facts are the quick-scan takeaways: lift them into bright glass
+   chips with a blue-violet value so they read over the video at a glance. */
+.ga-page-hero-highlight .ga-hero-stats {
+  gap: 0.8rem;
+  padding-top: 1.25rem;
+  border-top-color: rgba(37, 99, 235, 0.3);
+}
+
+.ga-page-hero-highlight .ga-hero-stat {
+  min-width: 8rem;
+  gap: 0.2rem;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid rgba(37, 99, 235, 0.38);
+  border-radius: 12px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(219, 234, 254, 0.72));
+  box-shadow: 0 14px 32px -16px rgba(37, 99, 235, 0.55);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.ga-page-hero-highlight .ga-hero-stat strong {
+  background: linear-gradient(100deg, #1d4ed8, #7c3aed);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-size: 1.2rem;
+}
+
+.ga-page-hero-highlight .ga-hero-stat em {
+  color: #1e40af;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+/* The batch line gets the same treatment so the date reads as a live callout.
+   Keep the wash mostly white: the old 16% blue/violet gradient disappeared
+   into bright frames of the background video. */
+.ga-page-hero-highlight .ga-hero-extra-r .ga-meta.ga-hero-batch-highlight {
+  background: linear-gradient(100deg, rgba(255, 255, 255, 0.97), rgba(226, 232, 240, 0.94));
+  border-color: rgba(37, 99, 235, 0.55);
+  box-shadow:
+    0 12px 30px -12px rgba(37, 99, 235, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  color: #1e40af;
+  font-weight: 700;
+}
+
+/* The shared mobile rules hide the right meta slot. On the highlighted courses
+   the batch date is a headline fact, so keep it in flow above the hero copy. */
+@media (max-width: 899px) {
+  .ga-page-hero-highlight .ga-hero-extra-r {
+    position: static;
+    display: block;
+    padding: 1.2rem clamp(1.2rem, 4vw, 3.5rem) 0.9rem;
+  }
+}
+
 .ga-page .ga-hero-side-image {
   border-color: rgba(37, 99, 235, 0.16);
   background: #ffffff;
