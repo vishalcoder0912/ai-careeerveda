@@ -154,6 +154,7 @@ export const adaptProgram = (record) => {
     ...record,
     id: record.slug,
     image: mediaUrl(record.image),
+    heroVideo: mediaUrl(record.heroVideo),
     // The API record may not carry brochure yet (older MongoDB documents).
     // Fall back to the static catalogue so the download button always has a URL.
     brochure: record.brochure || staticRecord?.brochure || "",

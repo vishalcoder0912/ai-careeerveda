@@ -55,4 +55,20 @@ describe("buildProductManagementContent with a sparse admin record", () => {
     expect(content.modules.tracks).toEqual([{title: "Stakeholder Communication", range: "All modules"}]);
     expect(content.cta.meta).toEqual(["Next batch · November 28, 2026", "Few seats left", "EMI if eligible"]);
   });
+
+  it("uses the saved hero video URL, even if cinematic JSON tries to change it", () => {
+    const url = "https://ik.imagekit.io/x/pm-hero.mp4";
+    const content = buildProductManagementContent({
+      id: "product-management",
+      title: "PG Program in Product Management",
+      modules: [],
+      internship: [],
+      softSkills: [],
+      projects: "",
+      nextBatch: "",
+      heroVideo: url,
+      cinematic: {hero: {video: "https://other.example/override.mp4"}},
+    });
+    expect(content.hero.video).toBe(url);
+  });
 });

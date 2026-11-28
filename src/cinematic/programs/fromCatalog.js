@@ -233,6 +233,7 @@ export const buildCinematicContent = (programId, copy, liveProgram = getProgram(
       metaLeft,
       metaRight: `Next batch · ${program.nextBatch}`,
       image: program.image,
+      video: program.heroVideo || "",
     },
 
     timeline: {
@@ -389,6 +390,7 @@ export const buildCinematicContent = (programId, copy, liveProgram = getProgram(
   content.hero.stats = base.hero.stats;
   content.hero.metaRight = `Next batch · ${program.nextBatch}`;
   content.hero.image = program.image;
+  content.hero.video = program.heroVideo || "";
   content.hero.metaLeft = metaLeft;
   content.hero.badges = reapplyHeroBadges(content.hero.badges, liveBadges);
 

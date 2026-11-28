@@ -1,10 +1,10 @@
-/* ── Learner Outcomes — asymmetric career-proof wall (light theme) ──────────
+/* ── Learner Outcomes — aligned career-proof wall (light theme) ────────────
  *
  * Rebuild of the old outcome strip. Instead of a row of three metric tiles over
  * a grid of equal testimonial cards, this section reads as ONE evidence system:
  *
  *    SCALE      — the metrics column (left anchor)
- *    PROOF      — the learner stories (asymmetric wall)
+ *    PROOF      — the learner stories (aligned wall)
  *    MECHANISM  — the practical-learning line ("Projects create proof…")
  *
  * The widget lives on CareerVeda's light theme: white glass cards on a soft
@@ -14,11 +14,11 @@
  * looked washed out. Text now uses navy/muted values and the accents are in
  * the blue family, so every string clears WCAG AA against its card.
  *
- * The header is centred; the proof below it is deliberately asymmetric so it
- * feels curated rather than templated. All cards share the same border/radius/
- * shadow material, featured being the one that carries a blue atmosphere and a
- * glow. Shared alignment lines and gutters keep the asymmetry intentional, not
- * random.
+ * The header is centred; the featured story sits beside the metrics and the
+ * remaining stories form one aligned row underneath it. All cards share the
+ * same border/radius/shadow material, featured being the one that carries a
+ * blue atmosphere and a glow. Equal columns, shared gutters and footers pinned
+ * to the card bottoms keep the row reading as a set rather than a scramble.
  *
  * This file is entirely self-contained responsive — it does not lean on the
  * shared mobile-responsiveness.css overrides (which target the old
@@ -210,32 +210,19 @@
   margin-top: auto;
 }
 
-/* Secondary stories: asymmetric spans in row two. */
+/* Secondary stories row: equal-width cards that fill the row edge to edge,
+   however many there are. The old per-name 4/5/3 grid spans could add up to
+   11 of the 12 tracks (or overflow with more than three stories), leaving a
+   visible gap and three different card widths. */
 .learner-secondaries {
   grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
+  display: flex;
   gap: 16px;
 }
 
 .learner-secondary-slot {
+  flex: 1 1 0;
   min-width: 0;
-}
-
-.learner-secondary-slot--syed {
-  grid-column: span 4;
-}
-
-.learner-secondary-slot--anjali {
-  grid-column: span 5;
-}
-
-.learner-secondary-slot--himani {
-  grid-column: span 3;
-}
-
-.learner-secondary-slot--medium {
-  grid-column: span 4;
 }
 
 .learner-story--secondary {
@@ -306,6 +293,7 @@
 }
 
 .learner-quote {
+  flex: 1 1 auto;
   margin: 0;
 }
 
@@ -461,19 +449,16 @@
 
   .learner-secondaries {
     grid-column: 1 / -1;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    flex-wrap: wrap;
   }
 
-  .learner-secondary-slot--syed {
-    grid-column: span 1;
+  /* Two cards per row at tablet width; an odd last card takes a full row. */
+  .learner-secondary-slot {
+    flex: 1 1 calc(50% - 8px);
   }
 
-  .learner-secondary-slot--anjali {
-    grid-column: span 1;
-  }
-
-  .learner-secondary-slot--himani {
-    grid-column: 1 / -1;
+  .learner-secondary-slot:last-child:nth-child(odd) {
+    flex-basis: 100%;
   }
 }
 
@@ -530,19 +515,16 @@
   }
 
   /* The secondary reviews read comfortably as a stacked list on a phone —
-     the asymmetric 4/5/3 spans only exist where the columns are wide enough
-     to keep two or three testimonials side by side. Full width, in order. */
+     equal columns only exist where there is room to put two or three
+     testimonials side by side. Full width, in order. */
   .learner-secondaries {
     display: flex;
     flex-direction: column;
     gap: 14px;
   }
 
-  .learner-secondary-slot--syed,
-  .learner-secondary-slot--anjali,
-  .learner-secondary-slot--himani,
-  .learner-secondary-slot--medium {
-    grid-column: auto;
+  .learner-secondary-slot {
+    flex: 0 0 auto;
   }
 
   .learner-story--secondary .learner-story-inner {

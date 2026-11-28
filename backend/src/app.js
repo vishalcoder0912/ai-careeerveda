@@ -27,6 +27,26 @@ import {ipBlockGuard} from "./middleware/ipBlocklist.js";
 import {anomalyDetector} from "./middleware/anomalyDetector.js";
 import {metricsMiddleware} from "./services/metrics.js";
 
+// Local dev/preview panels run on loopback even when the API process carries
+// production env values (a secure-cookie deploy config, for example). Accept
+// those origins only when the request itself arrives from loopback: the socket
+// peer cannot be forged by a browser or by X-Forwarded-For/Host headers.
+const LOOPBACK_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
+const stripBrackets = (value) => String(value || "").replace(/^\[|\]$/g, "");
+const isLoopbackHost = (host) => LOOPBACK_HOSTS.has(stripBrackets(host).toLowerCase());
+const isLoopbackOrigin = (origin) => {
+  try {
+    const url = new URL(origin);
+    return ["http:", "https:"].includes(url.protocol) && isLoopbackHost(url.hostname);
+  } catch {
+    return false;
+  }
+};
+const isLoopbackPeer = (address) => {
+  const peer = stripBrackets(String(address || "").replace(/^::ffff:/i, ""));
+  return peer === "::1" || /^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(peer);
+};
+
 // `extraRouters` lets a caller mount additional routers between the real ones
 // and the 404 handler. It exists so tests can exercise the auth middleware on a
 // probe route without reaching into Express's internals, and so future feature
@@ -90,19 +110,25 @@ export const createApp = ({extraRouters = []} = {}) => {
     }),
   );
 
+  // Reject disallowed origins before cors() runs. `cors` can only reflect an
+  // origin, so the decision has to be made here — including on preflights,
+  // which is where a browser first notices an origin that is not allowed.
+  app.use((request, _response, next) => {
+    const origin = request.headers.origin;
+    // No Origin header: same-origin navigation, curl, or a server-to-server
+    // call. Not a browser cross-origin request, so there is nothing to guard.
+    if (!origin) return next();
+    if (env.allowedOrigins.includes(origin)) return next();
+    if (isLoopbackOrigin(origin) && isLoopbackPeer(request.socket?.remoteAddress)) return next();
+    return next(forbidden("Origin not allowed"));
+  });
+
   app.use(
     cors({
-      // An allow-list, not a reflector. Returning the caller's own Origin would
-      // make `credentials: true` meaningless — any site could then read
-      // authenticated responses on a logged-in user's behalf.
-      origin: (origin, callback) => {
-        // No Origin header: same-origin navigation, curl, or a server-to-server
-        // call. Not a browser cross-origin request, so there is nothing for CORS
-        // to protect and nothing to reflect.
-        if (!origin) return callback(null, true);
-        if (env.allowedOrigins.includes(origin)) return callback(null, true);
-        return callback(forbidden("Origin not allowed"));
-      },
+      // The guard above has already decided this origin is safe to reflect.
+      // Returning `true` tells the library to echo that one Origin rather than
+      // using a wildcard, which credentialed requests do not allow.
+      origin: (_origin, callback) => callback(null, true),
       credentials: true,
       methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization", "X-Request-Id", "X-CSRF-Token", "Idempotency-Key"],

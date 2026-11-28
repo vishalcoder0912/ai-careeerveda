@@ -35,7 +35,9 @@
     "migrate:media": "node scripts/migrate-media.js",
     "migrate:media:dry-run": "node scripts/migrate-media.js --dry-run",
     "migrate:static-images": "node scripts/migrate-static-images.js",
-    "migrate:static-images:dry-run": "node scripts/migrate-static-images.js --dry-run"
+    "migrate:static-images:dry-run": "node scripts/migrate-static-images.js --dry-run",
+    "upload:hero-video": "node scripts/upload-hero-video.js",
+    "upload:hero-video:dry-run": "node scripts/upload-hero-video.js --dry-run"
   },
   "dependencies": {
     "@imagekit/nodejs": "^7.10.0",

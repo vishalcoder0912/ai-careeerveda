@@ -12,12 +12,6 @@ import {
   reapplyHeroBadges,
   withFallback,
 } from "./cinematicCopy";
-
-/* The cinematic page for the PG Program in Product Management. Editorial copy
-   lives in productManagementCopy.js so it can be edited in the admin panel;
-   facts come from the catalogue/salary market and the live admin record, so the
-   page and the standard program page can never disagree. */
-
 const fallbackProgram = getProgram("product-management");
 const market = getSalaryMarket("product-management");
 
@@ -110,6 +104,7 @@ export const buildProductManagementContent = (program = fallbackProgram) => {
       metaLeft,
       metaRight: `Next batch · ${record.nextBatch}`,
       image: record.image,
+      video: record.heroVideo || "",
     },
 
     timeline: {
@@ -232,6 +227,7 @@ export const buildProductManagementContent = (program = fallbackProgram) => {
   content.hero.stats = base.hero.stats;
   content.hero.metaRight = `Next batch · ${record.nextBatch}`;
   content.hero.image = record.image;
+  content.hero.video = record.heroVideo || "";
   content.hero.metaLeft = metaLeft;
   content.hero.badges = reapplyHeroBadges(content.hero.badges, liveBadges);
 

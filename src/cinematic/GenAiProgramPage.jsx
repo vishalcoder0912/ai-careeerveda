@@ -13,7 +13,7 @@ import {useProgramSeo} from "./useProgramSeo";
 // re-applied from the admin record, exactly like every other program route.
 export default function GenAiProgramPage() {
   const fallback = getProgram("gen-ai-agentic-ai");
-  const {item} = useContentItem("programs", "gen-ai-agentic-ai", {
+  const {item, isPending} = useContentItem("programs", "gen-ai-agentic-ai", {
     fallback,
     adapt: adaptProgram,
   });
@@ -29,5 +29,5 @@ export default function GenAiProgramPage() {
   useProgramSeo(program);
 
   if (!program) return null;
-  return <GenerativeAIPage content={content} />;
+  return <GenerativeAIPage content={content} isPending={isPending} />;
 }

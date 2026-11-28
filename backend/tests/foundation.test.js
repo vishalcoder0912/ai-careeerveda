@@ -94,8 +94,36 @@ describe("CORS allow-list", () => {
     expect(response.headers["access-control-allow-origin"]).toBe("http://localhost:5173");
   });
 
+  it("allows the www form of a configured https origin on preflight", async () => {
+    const response = await request(app)
+      .options("/api/v1/public/programs")
+      .set("Origin", "https://www.careerveda.in")
+      .set("Access-Control-Request-Method", "GET");
+
+    expect(response.status).toBe(204);
+    expect(response.headers["access-control-allow-origin"]).toBe("https://www.careerveda.in");
+  });
+
+  it("allows local dev and preview origins when the request is local", async () => {
+    for (const origin of ["http://127.0.0.1:5174", "http://localhost:4173"]) {
+      const response = await request(app).get("/health").set("Origin", origin);
+
+      expect(response.headers["access-control-allow-origin"]).toBe(origin);
+    }
+  });
+
   it("refuses an unlisted origin instead of reflecting it", async () => {
     const response = await request(app).get("/health").set("Origin", "https://evil.example.com");
+
+    expect(response.headers["access-control-allow-origin"]).toBeUndefined();
+    expect(response.status).toBe(403);
+  });
+
+  it("does not trust the Host header to make an origin look local", async () => {
+    const response = await request(app)
+      .get("/health")
+      .set("Origin", "https://evil.example.com")
+      .set("Host", "localhost");
 
     expect(response.headers["access-control-allow-origin"]).toBeUndefined();
     expect(response.status).toBe(403);

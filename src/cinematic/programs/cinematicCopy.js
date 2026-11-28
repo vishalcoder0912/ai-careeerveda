@@ -115,6 +115,7 @@ export const templateFromContent = (content, {keepTimelineFacts = false, keepWee
     delete copy.hero.stats;
     delete copy.hero.metaRight;
     delete copy.hero.image;
+    delete copy.hero.video;
   }
   if (Array.isArray(copy.timeline?.items)) {
     copy.timeline.items = keepTimelineFacts

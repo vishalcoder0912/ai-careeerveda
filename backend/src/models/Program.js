@@ -55,6 +55,10 @@ const programSchema = new mongoose.Schema(
     // explorer card needs no mapping.
     image: {type: mediaRefSchema, default: () => ({})},
     heroMedia: {type: mediaRefSchema, default: () => ({})},
+    // Optional looping video behind the Gen AI cinematic hero. Kept separate
+    // from heroMedia so the image picker in admin stays image-only and a video
+    // can never be handed to an <img> by mistake.
+    heroVideo: {type: mediaRefSchema, default: () => ({})},
 
     badges: {type: [String], default: []},
     overview: {type: [String], default: []},

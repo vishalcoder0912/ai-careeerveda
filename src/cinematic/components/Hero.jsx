@@ -1,13 +1,11 @@
 import {useEffect, useRef} from "react";
+import {useLocation} from "react-router-dom";
 import {gsap} from "gsap";
 import {addTween, reducedMotionNow} from "../fx/registry";
 import {useMagneticHover} from "../fx/hooks";
 import {ArrowDownRight} from "lucide-react";
 import {useCinematic} from "../content";
-
-// "PG Program in Data Analytics with Generative AI" → lead "PG Program in" and
-// the full name as the two-tone title, broken before its first "with" / "&" /
-// "and" (else before its last word) so it still reads as two lines.
+import {isHighlightedProgram, programSlugFromPath} from "../highlightedPrograms";
 const PREFIX = /^((?:PG|Post Graduate) Program in)\s+(.+)$/i;
 
 const heroTitle = (hero) => {
@@ -15,17 +13,23 @@ const heroTitle = (hero) => {
   if (!match) return {lead: "", lines: hero.title};
   const name = match[2];
   let at = name.search(/ (with|&|and) /i);
-  // No connector: split before the last word, unless the name is too short to
-  // need two lines ("GEN AI").
   if (at < 0 && name.length > 10) at = name.lastIndexOf(" ");
   return {lead: match[1], lines: at > 0 ? [name.slice(0, at), name.slice(at + 1)] : [name]};
 };
 
 export const HeroSection = () => {
   const {hero} = useCinematic();
+  const {pathname} = useLocation();
+  const slug = programSlugFromPath(pathname);
+  const isGenAiRoute = slug === "gen-ai-agentic-ai";
+  // The batch text is hero.metaRight, rebuilt from the admin record's
+  // `nextBatch` on every load, so the pill always shows the published date.
+  const isHighlightedRoute = isHighlightedProgram(slug);
+  const showSideImage = !isGenAiRoute && !hero.video;
   const title = heroTitle(hero);
   const rootRef = useRef(null);
   const bgRef = useRef(null);
+  const videoRef = useRef(null);
   const streakRef = useRef(null);
   const linesRef = useRef([]);
   const subRef = useRef(null);
@@ -64,6 +68,14 @@ export const HeroSection = () => {
 
     return () => tween.kill();
   }, []);
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || reducedMotionNow()) return undefined;
+    video.muted = true;
+    const playing = video.play();
+    if (playing && typeof playing.catch === "function") playing.catch(() => {});
+    return undefined;
+  }, [hero.video]);
 
   const scrollTo = (id) => () => {
     const el = document.getElementById(id);
@@ -72,8 +84,27 @@ export const HeroSection = () => {
   };
 
   return (
-    <section className="ga-hero" id="ga-top" ref={rootRef}>
+    <section className={`ga-hero${hero.video ? " ga-hero--video" : ""}`} id="ga-top" ref={rootRef}>
       <div className="ga-hero-bg" ref={bgRef}>
+        {hero.video ? (
+          <>
+            {/* Background only: decorative, silent, and never focusable. The
+                scrim keeps the copy legible over any frame of the video. */}
+            <video
+              ref={videoRef}
+              className="ga-hero-video"
+              src={hero.video}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+              aria-hidden="true"
+              tabIndex={-1}
+            />
+            <span className="ga-hero-scrim" aria-hidden="true" />
+          </>
+        ) : null}
         <span className="ga-hero-glow ga-hero-glow-a" />
         <span className="ga-hero-glow ga-hero-glow-b" />
         <span className="ga-hero-glow-arch" />
@@ -88,7 +119,9 @@ export const HeroSection = () => {
         <span className="ga-hero-rule" />
       </div>
       <div className="ga-hero-extra ga-hero-extra-r" ref={extraRight}>
-        <span className="ga-meta">{hero.metaRight}</span>
+        <span className={`ga-meta${isHighlightedRoute ? " ga-hero-batch-highlight" : ""}`}>
+          {hero.metaRight}
+        </span>
       </div>
 
       <div className="ga-hero-content">
@@ -107,10 +140,6 @@ export const HeroSection = () => {
         <h1 className="ga-hero-title" aria-label={hero.ariaLabel}>
           {title.lines.map((line, i) => (
             <span
-              // Keyed by slot, not by text: the admin API can change the line's
-              // copy after mount. A text key would remount the span and the
-              // entrance tween would keep animating the detached node, leaving
-              // the new line with no animation at all.
               key={`line-${i}`}
               className={`ga-hero-line${i === 1 ? " ga-hero-line-italic" : ""}`}
               ref={(el) => {
@@ -147,15 +176,17 @@ export const HeroSection = () => {
         </div>
       </div>
 
-      <img
-        className="ga-hero-side-image"
-        src={hero.image}
-        alt=""
-        width="1600"
-        height="1200"
-        decoding="async"
-        aria-hidden="true"
-      />
+      {showSideImage && (
+        <img
+          className="ga-hero-side-image"
+          src={hero.image}
+          alt=""
+          width="1600"
+          height="1200"
+          decoding="async"
+          aria-hidden="true"
+        />
+      )}
     </section>
   );
 };

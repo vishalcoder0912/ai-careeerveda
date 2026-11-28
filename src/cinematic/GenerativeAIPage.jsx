@@ -13,6 +13,7 @@ import {ClickSpark} from "./components/ClickSpark";
 import SiteNavbar from "../components/SiteNavbar";
 import {navItems} from "../data/siteData";
 import {HeroSection} from "./components/Hero";
+import {isHighlightedProgram} from "./highlightedPrograms";
 import {TimelineSection} from "./components/Timeline";
 import {SkillsSection} from "./components/Skills";
 import {AIQuote} from "./components/Quote";
@@ -39,7 +40,7 @@ const MQ_MOBILE_MOTION = "(max-width: 899px) and (prefers-reduced-motion: no-pre
 // The cinematic program page. Renders the Gen AI & Agentic AI flagship by
 // default; CinematicProgramPage passes another program's content (same shape,
 // see content.jsx) to render that program through the same sections.
-export function GenerativeAIPage({content = genAiContent}) {
+export function GenerativeAIPage({content = genAiContent, isPending = false}) {
   const lenis = useLenis();
   const [mobileMotion, setMobileMotion] = useState(false);
 
@@ -152,9 +153,19 @@ export function GenerativeAIPage({content = genAiContent}) {
     return syncLenisToScrollTrigger(lenis);
   }, [lenis]);
 
+  // Highlighted courses share glass stat chips and the accented batch pill.
+  // Other cinematic courses keep their plain hero.
+  const highlightHero = isHighlightedProgram(content?.id);
+
   return (
     <CinematicContext.Provider value={content}>
-    <div className="ga-page">
+    {/* `ga-page-hero-highlight` scopes the course-specific hero styling;
+        `ga-page-pending` holds back the fallback still image until the admin
+        record (which may carry a video) has arrived, so visitors never see an
+        image flash first. */}
+    <div
+      className={`ga-page${highlightHero ? " ga-page-hero-highlight" : ""}${isPending ? " ga-page-pending" : ""}`}
+    >
       <ParticleField />
       <FilmGrain />
       <CustomCursor />
